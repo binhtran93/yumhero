@@ -66,11 +66,11 @@
             {/if}
         </div>
 
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-2">
             {#each recipes as recipe, i}
                 <!-- Friendly Card -->
                 <div
-                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm p-4 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
+                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm px-4 py-2 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
                 >
                     <!-- Type Accent Bar -->
                     <div
@@ -137,7 +137,7 @@
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-12 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface"
+            class="w-full py-8 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface"
         >
             <div
                 class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
