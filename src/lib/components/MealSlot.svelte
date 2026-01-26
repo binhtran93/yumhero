@@ -66,13 +66,7 @@
             {/if}
         </div>
 
-        <div
-            class="flex flex-col gap-3"
-            role="button"
-            tabindex="0"
-            onclick={onClick}
-            onkeydown={(e) => e.key === "Enter" && onClick()}
-        >
+        <div class="flex flex-col gap-3">
             {#each recipes as recipe, i}
                 <!-- Friendly Card -->
                 <div
