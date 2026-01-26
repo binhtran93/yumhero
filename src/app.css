@@ -1,17 +1,123 @@
 @import "tailwindcss";
 
+:root {
+    /* --- Light Mode (Default) --- */
+
+    /* Backgrounds */
+    --color-bg-default: #f9fafb;
+    /* gray-50 */
+    --color-bg-surface: #ffffff;
+    /* white */
+    --color-bg-surface-hover: #f3f4f6;
+    /* gray-100 */
+    --color-bg-accent-subtle: #f3f4f6;
+
+    /* Text */
+    --color-text-primary: #1f2937;
+    /* gray-800 "Balanced" */
+    --color-text-secondary: #6b7280;
+    /* gray-500 */
+    --color-text-inverse: #ffffff;
+
+    /* Borders */
+    --color-border-default: #e5e7eb;
+    /* gray-200 */
+    --color-border-strong: #9ca3af;
+    /* gray-400 */
+
+    /* Semantic Accents (Meal Types) */
+    /* Breakfast: Orange */
+    --color-accent-breakfast: #ea580c;
+    --color-accent-breakfast-bg: #fff7ed;
+    /* Lunch: Teal */
+    --color-accent-lunch: #0f766e;
+    --color-accent-lunch-bg: #f0fdfa;
+    /* Dinner: Indigo */
+    --color-accent-dinner: #4338ca;
+    --color-accent-dinner-bg: #eef2ff;
+
+    /* Action/Brand */
+    --color-action-primary: #1f2937;
+    /* Main Button Color */
+    --color-action-hover: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* --- Dark Mode --- */
+
+        /* Backgrounds */
+        --color-bg-default: #09090b;
+        /* zinc-950 */
+        --color-bg-surface: #18181b;
+        /* zinc-900 */
+        --color-bg-surface-hover: #27272a;
+        /* zinc-800 */
+        --color-bg-accent-subtle: #27272a;
+
+        /* Text */
+        --color-text-primary: #e4e4e7;
+        /* zinc-200 */
+        --color-text-secondary: #a1a1aa;
+        /* zinc-400 */
+        --color-text-inverse: #18181b;
+
+        /* Borders */
+        --color-border-default: #27272a;
+        /* zinc-800 */
+        --color-border-strong: #3f3f46;
+        /* zinc-700 */
+
+        /* Semantic Accents (Softer for Dark Mode) */
+        /* Breakfast */
+        --color-accent-breakfast: #fb923c;
+        /* orange-400 */
+        --color-accent-breakfast-bg: #431407;
+        /* orange-950 */
+        /* Lunch */
+        --color-accent-lunch: #2dd4bf;
+        /* teal-400 */
+        --color-accent-lunch-bg: #042f2e;
+        /* teal-950 */
+        /* Dinner */
+        --color-accent-dinner: #818cf8;
+        /* indigo-400 */
+        --color-accent-dinner-bg: #1e1b4b;
+        /* indigo-950 */
+
+        /* Action */
+        --color-action-primary: #e4e4e7;
+        --color-action-hover: #ffffff;
+    }
+}
+
 @theme {
-    --color-canvas: #FAFAFA;
-    --color-surface: #FFFFFF;
-    --color-border-subtle: #D4D4D8;
-    /* Zinc 300 (was 200) */
-    --color-border-strong: #A1A1AA;
-    /* Zinc 400 (was 300) */
-    --color-text-primary: #18181B;
-    /* Zinc 900 */
-    --color-text-secondary: #71717A;
-    /* Zinc 500 */
-    --color-accent: #000000;
+    /* Mapping Semantic Variables to Tailwind Utilities */
+
+    /* Usage: bg-default, text-primary, border-strong, etc. */
+
+    --color-bg-default: var(--color-bg-default);
+    --color-bg-surface: var(--color-bg-surface);
+    --color-bg-surface-hover: var(--color-bg-surface-hover);
+
+    --color-text-primary: var(--color-text-primary);
+    --color-text-secondary: var(--color-text-secondary);
+    --color-text-inverse: var(--color-text-inverse);
+
+    --color-border-default: var(--color-border-default);
+    --color-border-strong: var(--color-border-strong);
+
+    --color-accent-breakfast: var(--color-accent-breakfast);
+    --color-accent-breakfast-bg: var(--color-accent-breakfast-bg);
+
+    --color-accent-lunch: var(--color-accent-lunch);
+    --color-accent-lunch-bg: var(--color-accent-lunch-bg);
+
+    --color-accent-dinner: var(--color-accent-dinner);
+    --color-accent-dinner-bg: var(--color-accent-dinner-bg);
+
+    --color-action-primary: var(--color-action-primary);
+    --color-action-hover: var(--color-action-hover);
 
     --font-display: "Inter", system-ui, sans-serif;
     --font-body: "Inter", system-ui, sans-serif;

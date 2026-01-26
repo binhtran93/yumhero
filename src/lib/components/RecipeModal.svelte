@@ -27,7 +27,7 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <!-- Dimmed Backdrop -->
     <div
-      class="absolute inset-0 bg-white/90 backdrop-blur-md transition-opacity"
+      class="absolute inset-0 bg-bg-default/90 backdrop-blur-md transition-opacity"
       onclick={onClose}
       onkeydown={(e) => e.key === "Escape" && onClose()}
       role="button"
@@ -36,11 +36,11 @@
 
     <!-- Modal Content -->
     <div
-      class="relative z-10 w-full max-w-lg bg-surface border border-border-strong shadow-2xl flex flex-col max-h-[60vh] rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      class="relative z-10 w-full max-w-lg bg-bg-surface border border-border-strong shadow-2xl flex flex-col max-h-[60vh] rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
     >
       <!-- Header -->
       <div
-        class="p-4 border-b border-border-subtle flex items-center justify-between bg-canvas"
+        class="p-4 border-b border-border-default flex items-center justify-between bg-bg-surface"
       >
         <span
           class="text-xs uppercase font-bold tracking-widest text-text-secondary"
@@ -56,7 +56,7 @@
       </div>
 
       <!-- Search -->
-      <div class="px-4 py-3 border-b border-border-subtle bg-surface">
+      <div class="px-4 py-3 border-b border-border-default bg-bg-surface">
         <div class="relative">
           <Search
             class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
@@ -66,31 +66,31 @@
             autofocus
             type="text"
             placeholder={`Search for a ${mealType} recipe...`}
-            class="w-full pl-10 pr-4 py-2 text-sm bg-canvas border border-border-subtle rounded-lg focus:outline-none focus:border-text-primary transition-colors placeholder:text-text-secondary/50"
+            class="w-full pl-10 pr-4 py-2 text-sm bg-bg-accent-subtle border border-border-default rounded-lg focus:outline-none focus:border-text-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
           />
         </div>
       </div>
 
       <!-- List -->
-      <div class="flex-1 overflow-y-auto bg-surface">
+      <div class="flex-1 overflow-y-auto bg-bg-surface">
         {#each mockRecipes as recipe (recipe.id)}
           <div
             onclick={() => onSelect(recipe)}
             onkeydown={(e) => e.key === "Enter" && onSelect(recipe)}
             role="button"
             tabindex="0"
-            class="cursor-pointer group flex items-center justify-between p-4 border-b border-border-subtle hover:bg-canvas last:border-b-0 transition-colors"
+            class="cursor-pointer group flex items-center justify-between p-4 border-b border-border-default hover:bg-bg-accent-subtle last:border-b-0 transition-colors"
           >
             <div>
               <h3
-                class="font-bold text-text-primary group-hover:text-amber-600 transition-colors"
+                class="font-bold text-text-primary group-hover:text-action-primary transition-colors"
               >
                 {recipe.title}
               </h3>
               <div class="flex gap-2 mt-1.5">
                 {#each recipe.tags as tag}
                   <span
-                    class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold uppercase tracking-wide"
+                    class="text-[10px] px-2 py-0.5 rounded bg-bg-accent-subtle text-text-secondary border border-border-default font-bold uppercase tracking-wide"
                   >
                     {tag}
                   </span>
@@ -98,7 +98,7 @@
               </div>
             </div>
             <div
-              class="opacity-0 group-hover:opacity-100 text-amber-600 transition-opacity"
+              class="opacity-0 group-hover:opacity-100 text-action-primary transition-opacity"
             >
               <Check size={18} strokeWidth={3} />
             </div>

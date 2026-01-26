@@ -75,7 +75,8 @@
 </script>
 
 <div
-    class="flex flex-row overflow-x-auto snap-x snap-mandatory h-screen w-full bg-gray-50 items-start divide-x divide-gray-200"
+    <div
+    class="flex flex-row overflow-x-auto snap-x snap-mandatory h-screen w-full bg-bg-default items-start divide-x divide-border-default"
 >
     {#each plan as dayPlan (dayPlan.day)}
         <div class="h-full shrink-0 snap-start">
