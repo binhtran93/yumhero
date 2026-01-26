@@ -162,7 +162,7 @@
 
 <svelte:window onresize={checkScroll} />
 
-<div class="h-full flex flex-col bg-bg-default">
+<div class="h-full flex flex-col">
     <!-- Header -->
     <!-- Header -->
     <Header title="Plan">
