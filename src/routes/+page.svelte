@@ -72,26 +72,95 @@
 
     const currentDayName =
         DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+
+    // Scroll Detection & Navigation
+    let dayRefs: (HTMLDivElement | null)[] = $state([]);
+    let scrollContainer: HTMLDivElement | null = $state(null);
+    let isScrollable = $state(false);
+
+    const checkScroll = () => {
+        if (scrollContainer) {
+            isScrollable =
+                scrollContainer.scrollWidth > scrollContainer.clientWidth;
+        }
+    };
+
+    let flashingIndex = $state<number | null>(null);
+    let flashTimeout: ReturnType<typeof setTimeout>;
+
+    const scrollToDay = (index: number) => {
+        dayRefs[index]?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+        });
+
+        // Trigger flash
+        if (flashTimeout) clearTimeout(flashTimeout);
+        flashingIndex = index;
+        flashTimeout = setTimeout(() => {
+            flashingIndex = null;
+        }, 1500); // 1.5s flash duration
+    };
+
+    import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
+
+    onMount(() => {
+        checkScroll();
+        window.addEventListener("resize", checkScroll);
+        return () => window.removeEventListener("resize", checkScroll);
+    });
 </script>
 
+<svelte:window onresize={checkScroll} />
+
 <div
+    bind:this={scrollContainer}
     class="h-screen w-full overflow-x-auto bg-bg-default snap-x snap-mandatory"
 >
     <div
         class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-border-default"
     >
-        {#each plan as dayPlan (dayPlan.day)}
-            <div class="h-full shrink-0 snap-start">
+        {#each plan as dayPlan, i (dayPlan.day)}
+            <div
+                class="h-full shrink-0 snap-start relative"
+                bind:this={dayRefs[i]}
+            >
                 <DayColumn
                     {dayPlan}
                     isToday={dayPlan.day === currentDayName}
                     onMealClick={handleMealClick}
                     onMealClear={handleClearMeal}
                 />
+                {#if flashingIndex === i}
+                    <div
+                        transition:fade={{ duration: 300 }}
+                        class="absolute inset-0 bg-yellow-400/20 pointer-events-none z-20 mix-blend-multiply dark:mix-blend-overlay dark:bg-yellow-600/30"
+                    ></div>
+                {/if}
             </div>
         {/each}
     </div>
 </div>
+
+{#if isScrollable}
+    <div
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1.5 rounded-full bg-bg-surface/80 backdrop-blur-md border border-border-default shadow-lg transition-opacity duration-300"
+    >
+        {#each DAYS as day, i}
+            <button
+                class="{day === currentDayName
+                    ? 'w-auto px-3 bg-bg-surface-hover text-text-primary'
+                    : 'w-10 text-text-secondary'} h-8 rounded-full flex items-center justify-center text-[10px] font-bold uppercase transition-colors hover:bg-bg-surface-hover"
+                onclick={() => scrollToDay(i)}
+                aria-label="Scroll to {day}"
+            >
+                {day === currentDayName ? "Today" : day.slice(0, 3)}
+            </button>
+        {/each}
+    </div>
+{/if}
 
 <!-- Modal acts as a pure controlled component -->
 <RecipeModal
