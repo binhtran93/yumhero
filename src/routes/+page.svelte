@@ -157,23 +157,15 @@
         currentDate = d;
         // Logic to refresh plan would go here
     };
+    import Header from "$lib/components/Header.svelte";
 </script>
 
 <svelte:window onresize={checkScroll} />
 
 <div class="h-full flex flex-col bg-bg-default">
     <!-- Header -->
-    <header
-        class="h-16 border-b border-border-default bg-bg-surface flex items-center justify-between px-6 shrink-0 z-20 relative"
-    >
-        <div class="flex items-center gap-4">
-            <h1
-                class="text-xl font-bold tracking-tight text-action-primary font-display"
-            >
-                YumHero
-            </h1>
-        </div>
-
+    <!-- Header -->
+    <Header title="Plan">
         <div
             class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
         >
@@ -193,7 +185,7 @@
                 <ChevronRight size={18} />
             </button>
         </div>
-    </header>
+    </Header>
 
     <div
         bind:this={scrollContainer}

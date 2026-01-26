@@ -5,18 +5,13 @@
     const toggleTheme = () => {
         $theme = $theme === "light" ? "dark" : "light";
     };
+    import Header from "$lib/components/Header.svelte";
 </script>
 
-<div class="p-8 max-w-2xl mx-auto">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold font-display text-text-primary mb-2">
-            Settings
-        </h1>
-        <p class="text-text-secondary">
-            Manage your preferences and account settings.
-        </p>
-    </div>
+<!-- Header -->
+<Header title="Setup" />
 
+<div class="p-8 max-w-2xl mx-auto">
     <div class="space-y-6">
         <!-- Appearance -->
         <section

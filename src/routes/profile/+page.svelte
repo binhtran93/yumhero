@@ -60,16 +60,13 @@
         // Placeholder for delete account logic
         alert("Delete account functionality coming soon.");
     };
+    import Header from "$lib/components/Header.svelte";
 </script>
 
-<div class="p-8 max-w-2xl mx-auto">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold font-display text-text-primary mb-2">
-            Profile
-        </h1>
-        <p class="text-text-secondary">Manage your account and subscription.</p>
-    </div>
+<!-- Header -->
+<Header title="Profile" />
 
+<div class="p-8 max-w-2xl mx-auto">
     {#if $user}
         <!-- User Authenticated View -->
         <div

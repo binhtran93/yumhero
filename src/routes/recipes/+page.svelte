@@ -1,16 +1,11 @@
 <script lang="ts">
+    import Header from "$lib/components/Header.svelte";
 </script>
 
-<div class="p-8 max-w-4xl mx-auto">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold font-display text-text-primary mb-2">
-            My Recipes
-        </h1>
-        <p class="text-text-secondary">
-            Manage your family favorite recipes here.
-        </p>
-    </div>
+<!-- Header -->
+<Header title="Recipes" />
 
+<div class="p-8 max-w-4xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
             class="bg-bg-surface p-6 rounded-2xl border border-border-default shadow-sm flex flex-col items-center justify-center text-center h-64 gap-4 bg-dashed border-dashed border-2"
