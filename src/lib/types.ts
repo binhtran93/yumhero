@@ -11,9 +11,9 @@ export interface Recipe {
 export interface DayPlan {
     day: string; // e.g., "Monday"
     meals: {
-        breakfast: Recipe | null;
-        lunch: Recipe | null;
-        dinner: Recipe | null;
+        breakfast: Recipe[];
+        lunch: Recipe[];
+        dinner: Recipe[];
     };
 }
 

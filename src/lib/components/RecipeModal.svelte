@@ -90,10 +90,7 @@
               <div class="flex gap-2 mt-1.5">
                 {#each recipe.tags as tag}
                   <span
-                    class={twMerge(
-                      "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide",
-                      getTagColor(tag),
-                    )}
+                    class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold uppercase tracking-wide"
                   >
                     {tag}
                   </span>

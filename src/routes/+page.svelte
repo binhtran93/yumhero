@@ -18,9 +18,9 @@
         DAYS.map((day) => ({
             day,
             meals: {
-                breakfast: null,
-                lunch: null,
-                dinner: null,
+                breakfast: [],
+                lunch: [],
+                dinner: [],
             },
         })),
     );
@@ -50,17 +50,18 @@
 
         const dayIndex = plan.findIndex((d) => d.day === modal.day);
         if (dayIndex !== -1) {
-            // Direct mutation is valid and reactive in Svelte 5
-            plan[dayIndex].meals[modal.mealType] = recipe;
+            // Append recipe
+            plan[dayIndex].meals[modal.mealType].push(recipe);
         }
 
-        closeModal();
+        modal.isOpen = false;
     };
 
     const handleClearMeal = (day: string, type: MealType) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            plan[dayIndex].meals[type] = null;
+            // Clear all for now
+            plan[dayIndex].meals[type] = [];
         }
     };
 
