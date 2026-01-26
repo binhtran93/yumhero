@@ -165,7 +165,7 @@
 <div class="h-full flex flex-col">
     <!-- Header -->
     <!-- Header -->
-    <Header title="Plan">
+    <Header title="Plan Your Meal">
         <div
             class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
         >
