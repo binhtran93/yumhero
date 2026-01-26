@@ -13,7 +13,7 @@
 </script>
 
 <div
-  class="flex flex-col h-full w-[85vw] md:w-[320px] bg-white border-r border-gray-300 last:border-r-0 overflow-y-auto"
+  class="flex flex-col h-full w-[85vw] md:w-[320px] bg-white overflow-y-auto"
 >
   <!-- Sticky Header -->
   <div
