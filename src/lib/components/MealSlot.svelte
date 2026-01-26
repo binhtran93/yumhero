@@ -8,9 +8,10 @@
         recipes: Recipe[];
         onClick: () => void;
         onClear?: (e: MouseEvent) => void;
+        onRemove?: (index: number) => void;
     }
 
-    let { type, recipes, onClick, onClear }: Props = $props();
+    let { type, recipes, onClick, onClear, onRemove }: Props = $props();
 
     // "Warm Family" Theme Colors
     // Friendly, soft, natural tones.
@@ -72,7 +73,7 @@
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
         >
-            {#each recipes as recipe}
+            {#each recipes as recipe, i}
                 <!-- Friendly Card -->
                 <div
                     class="bg-bg-surface rounded-xl border border-border-default shadow-sm p-4 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
@@ -88,6 +89,20 @@
                                   : "bg-accent-dinner",
                         )}
                     ></div>
+
+                    <!-- Remove Button (Top Right) -->
+                    {#if onRemove}
+                        <button
+                            class="absolute top-2 right-2 p-1 text-text-secondary hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-sm"
+                            onclick={(e) => {
+                                e.stopPropagation();
+                                onRemove(i);
+                            }}
+                            title="Remove"
+                        >
+                            <X size={14} />
+                        </button>
+                    {/if}
 
                     <h4
                         class="text-sm font-bold text-text-primary mb-2 pl-2 leading-snug font-display"

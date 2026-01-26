@@ -8,9 +8,16 @@
     isToday?: boolean;
     onMealClick: (day: string, type: MealType) => void;
     onMealClear: (day: string, type: MealType) => void;
+    onRemoveRecipe: (type: MealType, index: number) => void;
   }
 
-  let { dayPlan, isToday = false, onMealClick, onMealClear }: Props = $props();
+  let {
+    dayPlan,
+    isToday = false,
+    onMealClick,
+    onMealClear,
+    onRemoveRecipe,
+  }: Props = $props();
 </script>
 
 <div
@@ -57,6 +64,7 @@
         recipes={dayPlan.meals.breakfast}
         onClick={() => onMealClick(dayPlan.day, "breakfast")}
         onClear={() => onMealClear(dayPlan.day, "breakfast")}
+        onRemove={(index) => onRemoveRecipe("breakfast", index)}
       />
     </div>
 
@@ -74,6 +82,7 @@
         recipes={dayPlan.meals.lunch}
         onClick={() => onMealClick(dayPlan.day, "lunch")}
         onClear={() => onMealClear(dayPlan.day, "lunch")}
+        onRemove={(index) => onRemoveRecipe("lunch", index)}
       />
     </div>
 
@@ -91,6 +100,7 @@
         recipes={dayPlan.meals.dinner}
         onClick={() => onMealClick(dayPlan.day, "dinner")}
         onClear={() => onMealClear(dayPlan.day, "dinner")}
+        onRemove={(index) => onRemoveRecipe("dinner", index)}
       />
     </div>
   </div>

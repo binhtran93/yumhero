@@ -55,6 +55,13 @@
         }
     };
 
+    const handleRemoveRecipe = (day: string, type: MealType, index: number) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex !== -1) {
+            plan[dayIndex].meals[type].splice(index, 1);
+        }
+    };
+
     const handleClearMeal = (day: string, type: MealType) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
@@ -225,6 +232,8 @@
                         isToday={dayPlan.day === currentDayName}
                         onMealClick={handleMealClick}
                         onMealClear={handleClearMeal}
+                        onRemoveRecipe={(type, index) =>
+                            handleRemoveRecipe(dayPlan.day, type, index)}
                     />
                     {#if flashingIndex === i}
                         <div
