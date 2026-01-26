@@ -100,7 +100,7 @@
         flashingIndex = index;
         flashTimeout = setTimeout(() => {
             flashingIndex = null;
-        }, 1500); // 1.5s flash duration
+        }, 500); // 0.5s flash duration
     };
 
     import { onMount } from "svelte";
