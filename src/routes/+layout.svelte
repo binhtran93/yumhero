@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "../app.css";
 	import { theme } from "$lib/stores/theme";
+	import { user } from "$lib/stores/auth";
 	let { children } = $props();
 </script>
 

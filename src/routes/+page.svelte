@@ -156,11 +156,30 @@
         // Logic to refresh plan would go here
     };
 
-    import { ChevronLeft, ChevronRight, Moon, Sun } from "lucide-svelte";
+    import {
+        ChevronLeft,
+        ChevronRight,
+        Moon,
+        Sun,
+        LogIn,
+        LogOut,
+    } from "lucide-svelte";
     import { theme } from "$lib/stores/theme";
+    import { user, signOut } from "$lib/stores/auth";
+    import LoginModal from "$lib/components/LoginModal.svelte";
 
     const toggleTheme = () => {
         $theme = $theme === "light" ? "dark" : "light";
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+    };
+
+    let isLoginModalOpen = $state(false);
+
+    const openLoginModal = () => {
+        isLoginModalOpen = true;
     };
 </script>
 
@@ -199,17 +218,39 @@
             </button>
         </div>
 
-        <button
-            class="p-2 ml-4 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-            onclick={toggleTheme}
-            aria-label="Toggle Dark Mode"
-        >
-            {#if $theme === "light"}
-                <Sun size={22} />
+        <div class="flex items-center gap-2 ml-4">
+            <button
+                class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                onclick={toggleTheme}
+                aria-label="Toggle Dark Mode"
+            >
+                {#if $theme === "light"}
+                    <Sun size={22} />
+                {:else}
+                    <Moon size={22} />
+                {/if}
+            </button>
+
+            {#if $user}
+                <button
+                    class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                    onclick={handleSignOut}
+                    aria-label="Sign Out"
+                    title="Sign Out"
+                >
+                    <LogOut size={22} />
+                </button>
             {:else}
-                <Moon size={22} />
+                <button
+                    onclick={openLoginModal}
+                    class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                    aria-label="Sign In"
+                    title="Sign In"
+                >
+                    <LogIn size={22} />
+                </button>
             {/if}
-        </button>
+        </div>
     </header>
 
     <div
@@ -266,4 +307,9 @@
     mealType={modal.mealType}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
+/>
+
+<LoginModal
+    isOpen={isLoginModalOpen}
+    onClose={() => (isLoginModalOpen = false)}
 />

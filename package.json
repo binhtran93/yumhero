@@ -27,6 +27,7 @@
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.5.2",
 		"clsx": "^2.1.1",
+		"firebase": "^12.8.0",
 		"lucide-svelte": "^0.563.0",
 		"tailwind-merge": "^3.4.0"
 	}
