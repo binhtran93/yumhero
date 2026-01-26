@@ -164,50 +164,50 @@
 <div class="h-full flex flex-col bg-bg-default">
     <!-- Header -->
     <header
-        class="h-14 border-b border-border-default bg-bg-surface flex items-center justify-between px-4 shrink-0 z-20 relative"
+        class="h-16 border-b border-border-default bg-bg-surface flex items-center justify-between px-6 shrink-0 z-20 relative"
     >
         <div class="flex items-center gap-4">
             <h1
-                class="text-sm font-bold tracking-tight uppercase text-text-primary"
+                class="text-xl font-bold tracking-tight text-action-primary font-display"
             >
                 YumHero <span
-                    class="text-text-secondary font-normal ml-2 hidden sm:inline"
-                    >Weekly Planner</span
+                    class="text-text-secondary font-medium text-sm ml-2 hidden sm:inline"
+                    >Family Meal Planner</span
                 >
             </h1>
         </div>
 
         <div
-            class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default"
+            class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
         >
             <button
-                class="p-1 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
                 onclick={prevWeek}
             >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={18} />
             </button>
             <span
-                class="text-xs font-mono font-medium w-28 text-center text-text-primary"
+                class="text-xs font-bold w-32 text-center text-text-primary"
             >
                 {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
             </span>
             <button
-                class="p-1 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
                 onclick={nextWeek}
             >
-                <ChevronRight size={16} />
+                <ChevronRight size={18} />
             </button>
         </div>
 
         <button
-            class="p-2 ml-4 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors"
+            class="p-2 ml-4 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
             onclick={toggleTheme}
             aria-label="Toggle Dark Mode"
         >
             {#if $theme === "light"}
-                <Sun size={20} />
+                <Sun size={22} />
             {:else}
-                <Moon size={20} />
+                <Moon size={22} />
             {/if}
         </button>
     </header>
@@ -244,13 +244,13 @@
 
 {#if isScrollable}
     <div
-        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1.5 rounded-full bg-bg-surface/80 backdrop-blur-md border border-border-default shadow-lg transition-opacity duration-300"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-bg-surface/90 backdrop-blur-md border border-border-default shadow-xl transition-opacity duration-300"
     >
         {#each DAYS as day, i}
             <button
                 class="{day === currentDayName
-                    ? 'w-auto px-3 bg-bg-surface-hover text-text-primary'
-                    : 'w-10 text-text-secondary'} h-8 rounded-full flex items-center justify-center text-[10px] font-bold uppercase transition-colors hover:bg-bg-surface-hover"
+                    ? 'w-auto px-4 bg-action-primary text-white shadow-sm'
+                    : 'w-10 text-text-secondary'} h-9 rounded-full flex items-center justify-center text-[11px] font-bold transition-all hover:bg-bg-surface-hover active:scale-95"
                 onclick={() => scrollToDay(i)}
                 aria-label="Scroll to {day}"
             >

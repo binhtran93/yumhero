@@ -66,21 +66,21 @@
         </div>
 
         <div
-            class="flex flex-col gap-2"
+            class="flex flex-col gap-3"
             role="button"
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
         >
             {#each recipes as recipe}
-                <!-- High Contrast Card -->
+                <!-- Friendly Card -->
                 <div
-                    class="bg-bg-surface rounded border border-border-default shadow-sm p-3 relative group cursor-pointer hover:border-text-primary transition-all hover:-translate-y-0.5"
+                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm p-4 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
                 >
                     <!-- Type Accent Bar -->
                     <div
                         class={twMerge(
-                            "absolute left-0 top-0 bottom-0 w-1.5 rounded-l",
+                            "absolute left-0 top-3 bottom-3 w-1 rounded-r-full",
                             type === "breakfast"
                                 ? "bg-accent-breakfast"
                                 : type === "lunch"
@@ -90,7 +90,7 @@
                     ></div>
 
                     <h4
-                        class="text-sm font-black text-text-primary mb-2 pl-2 leading-snug"
+                        class="text-sm font-bold text-text-primary mb-2 pl-2 leading-snug font-display"
                     >
                         {recipe.title}
                     </h4>
@@ -98,7 +98,7 @@
                     <div class="flex flex-wrap gap-1.5 pl-2">
                         {#each recipe.tags.slice(0, 2) as tag}
                             <span
-                                class="text-[10px] text-text-primary bg-bg-surface-hover px-1.5 py-0.5 rounded border border-border-default font-bold"
+                                class="text-[10px] text-text-secondary bg-bg-accent-subtle px-2 py-0.5 rounded-full border border-border-default font-medium"
                             >
                                 {tag}
                             </span>
@@ -107,29 +107,29 @@
                 </div>
             {/each}
 
-            <!-- Clean Add Button -->
+            <!-- Friendly Add Button -->
             <button
-                class="w-full py-2 rounded border border-dashed border-border-strong text-text-secondary hover:border-text-primary hover:bg-bg-surface-hover text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
+                class="w-full py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
-                <Plus size={12} /> Add Item
+                <Plus size={14} /> Add Item
             </button>
         </div>
     {:else}
-        <!-- Empty State: High Contrast -->
+        <!-- Empty State: Friendly -->
         <div
             role="button"
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-16 rounded border border-dashed border-border-strong hover:border-text-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center gap-2 group bg-bg-surface"
+            class="w-full py-12 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center gap-2 group bg-bg-surface"
         >
             <div
-                class="text-text-secondary group-hover:scale-110 transition-transform"
+                class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
             >
-                <Plus size={18} strokeWidth={2.5} />
+                <Plus size={20} />
             </div>
             <span
-                class="text-[11px] font-black text-text-secondary uppercase tracking-widest"
+                class="text-xs font-bold text-text-secondary group-hover:text-action-primary transition-colors"
             >
                 Add {type}
             </span>

@@ -17,27 +17,27 @@
 >
   <!-- Sticky Header -->
   <div
-    class={`sticky top-0 z-10 text-center py-4 border-b border-border-default ${isToday ? "bg-text-primary text-bg-surface" : "bg-bg-surface text-text-primary"}`}
+    class={`sticky top-0 z-10 text-center py-6 border-b border-border-default ${isToday ? "bg-action-primary text-white" : "bg-bg-surface text-text-primary"}`}
   >
-    <span class="text-sm uppercase tracking-widest font-black">
+    <span class="text-lg font-display font-bold">
       {dayPlan.day}
     </span>
     {#if isToday}
-      <span
-        class="ml-2 px-2 py-0.5 rounded-sm bg-bg-surface text-text-primary text-[10px] font-bold uppercase border border-bg-surface"
-        >Today</span
+      <div
+        class="mt-1 text-[10px] font-bold uppercase tracking-wider opacity-80"
+        >Today</div
       >
     {/if}
   </div>
 
   <!-- Slots Container -->
-  <div class="flex-1 flex flex-col p-4 gap-6">
+  <div class="flex-1 flex flex-col p-6 gap-8">
     <!-- Breakfast Section -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b-2 border-text-primary">
-        <div class="w-2 h-2 bg-accent-breakfast"></div>
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+        <div class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"></div>
         <span
-          class="text-xs font-black text-text-primary uppercase tracking-wider"
+          class="text-xs font-bold text-text-primary uppercase tracking-widest"
           >Breakfast</span
         >
       </div>
@@ -50,11 +50,11 @@
     </div>
 
     <!-- Lunch Section -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b-2 border-text-primary">
-        <div class="w-2 h-2 bg-accent-lunch"></div>
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+        <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
         <span
-          class="text-xs font-black text-text-primary uppercase tracking-wider"
+          class="text-xs font-bold text-text-primary uppercase tracking-widest"
           >Lunch</span
         >
       </div>
@@ -67,11 +67,11 @@
     </div>
 
     <!-- Dinner Section -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b-2 border-text-primary">
-        <div class="w-2 h-2 bg-accent-dinner"></div>
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+        <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
         <span
-          class="text-xs font-black text-text-primary uppercase tracking-wider"
+          class="text-xs font-bold text-text-primary uppercase tracking-widest"
           >Dinner</span
         >
       </div>

@@ -3,59 +3,59 @@
 :root {
     /* --- Light Mode (Warm Family Theme) --- */
 
-    /* Backgrounds: Warm & Cozy */
+    /* Backgrounds: Warm & Cozy Cream */
     --color-bg-default: #fffaf5;
     /* very light warm cream */
     --color-bg-surface: #ffffff;
     /* white */
-    --color-bg-surface-hover: #fdf4eb;
-    /* light peach tint */
-    --color-bg-accent-subtle: #f5f5f4;
-    /* stone-100 */
+    --color-bg-surface-hover: #fff3e6;
+    /* very light peach tint */
+    --color-bg-accent-subtle: #f9f8f6;
+    /* soft off-white */
 
-    /* Text: Softer Charcoal, not pure black */
-    --color-text-primary: #44403c;
-    /* stone-700 */
-    --color-text-secondary: #78716c;
-    /* stone-500 */
+    /* Text: Warm Charcoal & Soft Brown */
+    --color-text-primary: #57534e;
+    /* stone-600 */
+    --color-text-secondary: #a8a29e;
+    /* stone-400 */
     --color-text-inverse: #ffffff;
 
-    /* Borders: Warm Stone */
-    --color-border-default: #e7e5e4;
+    /* Borders: Soft & Subtle */
+    --color-border-default: #f5f5f4;
+    /* stone-100 */
+    --color-border-strong: #e7e5e4;
     /* stone-200 */
-    --color-border-strong: #a8a29e;
-    /* stone-400 */
 
-    /* Semantic Accents (Organic/Pastel-ish) */
-    /* Breakfast: Apricot/Peach */
-    --color-accent-breakfast: #f97316;
-    /* orange-500 (kept vibrant for readability, but context is warmer) */
-    --color-accent-breakfast-bg: #fff7ed;
-    /* orange-50 */
+    /* Semantic Accents (Soft Pastels) */
+    /* Breakfast: Peach/Apricot */
+    --color-accent-breakfast: #fbbf24;
+    /* amber-400 */
+    --color-accent-breakfast-bg: #fffbeb;
+    /* amber-50 */
 
-    /* Lunch: Sage/Olive */
-    --color-accent-lunch: #65a30d;
-    /* lime-600 */
+    /* Lunch: Sage/Green */
+    --color-accent-lunch: #a3e635;
+    /* lime-400 */
     --color-accent-lunch-bg: #f7fee7;
     /* lime-50 */
 
-    /* Dinner: Periwinkle/Soft Indigo */
-    --color-accent-dinner: #6366f1;
-    /* indigo-500 */
-    --color-accent-dinner-bg: #eef2ff;
-    /* indigo-50 */
+    /* Dinner: Rose/Coral */
+    --color-accent-dinner: #f87171;
+    /* red-400 */
+    --color-accent-dinner-bg: #fef2f2;
+    /* red-50 */
 
-    /* Action/Brand */
-    --color-action-primary: #292524;
-    /* stone-800 */
-    --color-action-hover: #0c0a09;
-    /* stone-950 */
+    /* Action/Brand: Soft Terracotta */
+    --color-action-primary: #d97706;
+    /* amber-600 */
+    --color-action-hover: #b45309;
+    /* amber-700 */
 }
 
 :root.dark {
-    /* --- Dark Mode (Cozy Den) --- */
+    /* --- Dark Mode (Cozy Evening) --- */
 
-    /* Backgrounds: Deep Warm Stone */
+    /* Backgrounds: Deep Warm Cocoa/Stone */
     --color-bg-default: #1c1917;
     /* stone-900 */
     --color-bg-surface: #292524;
@@ -65,10 +65,10 @@
     --color-bg-accent-subtle: #44403c;
 
     /* Text */
-    --color-text-primary: #f5f5f4;
-    /* stone-100 */
-    --color-text-secondary: #a8a29e;
-    /* stone-400 */
+    --color-text-primary: #fafaf9;
+    /* stone-50 */
+    --color-text-secondary: #d6d3d1;
+    /* stone-300 */
     --color-text-inverse: #1c1917;
 
     /* Borders */
@@ -79,24 +79,24 @@
 
     /* Semantic Accents (Softer Glow) */
     /* Breakfast */
-    --color-accent-breakfast: #fb923c;
-    /* orange-400 */
-    --color-accent-breakfast-bg: #431407;
-    /* orange-950 */
+    --color-accent-breakfast: #fcd34d;
+    /* amber-300 */
+    --color-accent-breakfast-bg: #451a03;
+    /* amber-950 */
     /* Lunch */
-    --color-accent-lunch: #a3e635;
-    /* lime-400 */
+    --color-accent-lunch: #bef264;
+    /* lime-300 */
     --color-accent-lunch-bg: #1a2e05;
     /* lime-950 */
     /* Dinner */
-    --color-accent-dinner: #818cf8;
-    /* indigo-400 */
-    --color-accent-dinner-bg: #1e1b4b;
-    /* indigo-950 */
+    --color-accent-dinner: #fca5a5;
+    /* red-300 */
+    --color-accent-dinner-bg: #450a0a;
+    /* red-950 */
 
     /* Action */
-    --color-action-primary: #f5f5f4;
-    --color-action-hover: #ffffff;
+    --color-action-primary: #fbbf24;
+    --color-action-hover: #fcd34d;
 }
 
 @theme {
@@ -127,6 +127,6 @@
     --color-action-primary: var(--color-action-primary);
     --color-action-hover: var(--color-action-hover);
 
-    --font-display: "Inter", system-ui, sans-serif;
+    --font-display: "Quicksand", "Inter", system-ui, sans-serif;
     --font-body: "Inter", system-ui, sans-serif;
 }
