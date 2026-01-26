@@ -42,53 +42,51 @@
     --color-action-hover: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* --- Dark Mode --- */
+:root.dark {
+    /* --- Dark Mode --- */
 
-        /* Backgrounds */
-        --color-bg-default: #09090b;
-        /* zinc-950 */
-        --color-bg-surface: #18181b;
-        /* zinc-900 */
-        --color-bg-surface-hover: #27272a;
-        /* zinc-800 */
-        --color-bg-accent-subtle: #27272a;
+    /* Backgrounds */
+    --color-bg-default: #09090b;
+    /* zinc-950 */
+    --color-bg-surface: #18181b;
+    /* zinc-900 */
+    --color-bg-surface-hover: #27272a;
+    /* zinc-800 */
+    --color-bg-accent-subtle: #27272a;
 
-        /* Text */
-        --color-text-primary: #e4e4e7;
-        /* zinc-200 */
-        --color-text-secondary: #a1a1aa;
-        /* zinc-400 */
-        --color-text-inverse: #18181b;
+    /* Text */
+    --color-text-primary: #e4e4e7;
+    /* zinc-200 */
+    --color-text-secondary: #a1a1aa;
+    /* zinc-400 */
+    --color-text-inverse: #18181b;
 
-        /* Borders */
-        --color-border-default: #27272a;
-        /* zinc-800 */
-        --color-border-strong: #3f3f46;
-        /* zinc-700 */
+    /* Borders */
+    --color-border-default: #27272a;
+    /* zinc-800 */
+    --color-border-strong: #3f3f46;
+    /* zinc-700 */
 
-        /* Semantic Accents (Softer for Dark Mode) */
-        /* Breakfast */
-        --color-accent-breakfast: #fb923c;
-        /* orange-400 */
-        --color-accent-breakfast-bg: #431407;
-        /* orange-950 */
-        /* Lunch */
-        --color-accent-lunch: #2dd4bf;
-        /* teal-400 */
-        --color-accent-lunch-bg: #042f2e;
-        /* teal-950 */
-        /* Dinner */
-        --color-accent-dinner: #818cf8;
-        /* indigo-400 */
-        --color-accent-dinner-bg: #1e1b4b;
-        /* indigo-950 */
+    /* Semantic Accents (Softer for Dark Mode) */
+    /* Breakfast */
+    --color-accent-breakfast: #fb923c;
+    /* orange-400 */
+    --color-accent-breakfast-bg: #431407;
+    /* orange-950 */
+    /* Lunch */
+    --color-accent-lunch: #2dd4bf;
+    /* teal-400 */
+    --color-accent-lunch-bg: #042f2e;
+    /* teal-950 */
+    /* Dinner */
+    --color-accent-dinner: #818cf8;
+    /* indigo-400 */
+    --color-accent-dinner-bg: #1e1b4b;
+    /* indigo-950 */
 
-        /* Action */
-        --color-action-primary: #e4e4e7;
-        --color-action-hover: #ffffff;
-    }
+    /* Action */
+    --color-action-primary: #e4e4e7;
+    --color-action-hover: #ffffff;
 }
 
 @theme {

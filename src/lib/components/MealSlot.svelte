@@ -57,7 +57,7 @@
                         e.stopPropagation();
                         onClear(e);
                     }}
-                    class="text-gray-500 hover:text-red-600 transition-colors"
+                    class="text-text-secondary hover:text-red-600 transition-colors"
                     title="Clear"
                 >
                     <X size={14} />
@@ -75,22 +75,22 @@
             {#each recipes as recipe}
                 <!-- High Contrast Card -->
                 <div
-                    class="bg-white rounded border border-gray-300 shadow-sm p-3 relative group cursor-pointer hover:border-black transition-all hover:-translate-y-0.5"
+                    class="bg-bg-surface rounded border border-border-default shadow-sm p-3 relative group cursor-pointer hover:border-text-primary transition-all hover:-translate-y-0.5"
                 >
                     <!-- Type Accent Bar -->
                     <div
                         class={twMerge(
                             "absolute left-0 top-0 bottom-0 w-1.5 rounded-l",
                             type === "breakfast"
-                                ? "bg-orange-600"
+                                ? "bg-accent-breakfast"
                                 : type === "lunch"
-                                  ? "bg-teal-700"
-                                  : "bg-indigo-700",
+                                  ? "bg-accent-lunch"
+                                  : "bg-accent-dinner",
                         )}
                     ></div>
 
                     <h4
-                        class="text-sm font-black text-black mb-2 pl-2 leading-snug"
+                        class="text-sm font-black text-text-primary mb-2 pl-2 leading-snug"
                     >
                         {recipe.title}
                     </h4>
@@ -98,7 +98,7 @@
                     <div class="flex flex-wrap gap-1.5 pl-2">
                         {#each recipe.tags.slice(0, 2) as tag}
                             <span
-                                class="text-[10px] text-black bg-gray-100 px-1.5 py-0.5 rounded border border-gray-300 font-bold"
+                                class="text-[10px] text-text-primary bg-bg-surface-hover px-1.5 py-0.5 rounded border border-border-default font-bold"
                             >
                                 {tag}
                             </span>
@@ -109,7 +109,7 @@
 
             <!-- Clean Add Button -->
             <button
-                class="w-full py-2 rounded border border-dashed border-gray-400 text-gray-700 hover:border-black hover:bg-gray-50 text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
+                class="w-full py-2 rounded border border-dashed border-border-strong text-text-secondary hover:border-text-primary hover:bg-bg-surface-hover text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
             >
                 <Plus size={12} /> Add Item
             </button>
@@ -121,13 +121,15 @@
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-16 rounded border border-dashed border-gray-400 hover:border-black hover:bg-gray-50 transition-all cursor-pointer flex items-center justify-center gap-2 group bg-white"
+            class="w-full py-16 rounded border border-dashed border-border-strong hover:border-text-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center gap-2 group bg-bg-surface"
         >
-            <div class="text-black group-hover:scale-110 transition-transform">
+            <div
+                class="text-text-secondary group-hover:scale-110 transition-transform"
+            >
                 <Plus size={18} strokeWidth={2.5} />
             </div>
             <span
-                class="text-[11px] font-black text-black uppercase tracking-widest"
+                class="text-[11px] font-black text-text-secondary uppercase tracking-widest"
             >
                 Add {type}
             </span>

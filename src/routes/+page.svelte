@@ -151,7 +151,12 @@
         // Logic to refresh plan would go here
     };
 
-    import { ChevronLeft, ChevronRight } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight, Moon, Sun } from "lucide-svelte";
+    import { theme } from "$lib/stores/theme";
+
+    const toggleTheme = () => {
+        $theme = $theme === "light" ? "dark" : "light";
+    };
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -193,6 +198,18 @@
                 <ChevronRight size={16} />
             </button>
         </div>
+
+        <button
+            class="p-2 ml-4 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors"
+            onclick={toggleTheme}
+            aria-label="Toggle Dark Mode"
+        >
+            {#if $theme === "light"}
+                <Sun size={20} />
+            {:else}
+                <Moon size={20} />
+            {/if}
+        </button>
     </header>
 
     <div
