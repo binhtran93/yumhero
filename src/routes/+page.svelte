@@ -75,19 +75,22 @@
 </script>
 
 <div
-    <div
-    class="flex flex-row overflow-x-auto snap-x snap-mandatory h-screen w-full bg-bg-default items-start divide-x divide-border-default"
+    class="h-screen w-full overflow-x-auto bg-bg-default snap-x snap-mandatory"
 >
-    {#each plan as dayPlan (dayPlan.day)}
-        <div class="h-full shrink-0 snap-start">
-            <DayColumn
-                {dayPlan}
-                isToday={dayPlan.day === currentDayName}
-                onMealClick={handleMealClick}
-                onMealClear={handleClearMeal}
-            />
-        </div>
-    {/each}
+    <div
+        class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-border-default"
+    >
+        {#each plan as dayPlan (dayPlan.day)}
+            <div class="h-full shrink-0 snap-start">
+                <DayColumn
+                    {dayPlan}
+                    isToday={dayPlan.day === currentDayName}
+                    onMealClick={handleMealClick}
+                    onMealClear={handleClearMeal}
+                />
+            </div>
+        {/each}
+    </div>
 </div>
 
 <!-- Modal acts as a pure controlled component -->
