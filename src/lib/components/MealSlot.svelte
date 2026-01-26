@@ -110,7 +110,10 @@
             <!-- Friendly Add Button -->
             <button
                 class="w-full py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
-                onclick={(e) => { e.stopPropagation(); onClick(); }}
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onClick();
+                }}
             >
                 <Plus size={14} /> Add Item
             </button>
@@ -122,18 +125,13 @@
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-12 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center gap-2 group bg-bg-surface"
+            class="w-full py-12 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface"
         >
             <div
                 class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
             >
                 <Plus size={20} />
             </div>
-            <span
-                class="text-xs font-bold text-text-secondary group-hover:text-action-primary transition-colors"
-            >
-                Add {type}
-            </span>
         </div>
     {/if}
 </div>
