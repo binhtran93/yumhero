@@ -72,33 +72,26 @@
   };
 </script>
 
-<Modal
-  {isOpen}
-  {onClose}
-  class="max-w-lg"
-  showCloseButton={false}
-  headerClass="border-b border-border-default bg-bg-surface"
->
-  <!-- Custom Header Content to match design (with title passed differently if needed, but here we construct it manually to match "Add to MealType") -->
-  {#snippet titleOverride()}
-    <!-- Just in case, but we can reuse header logic or replace it. I'll pass title=null and build custom header for strict parity? Or just use slot? My Modal has limited header. Lets bypass standard header to keep custom "Add to {mealType}" -->
-  {/snippet}
-
-  <!-- Header (Replacing standard one to keep "Add to {mealType} styling) -->
+{#snippet customHeader()}
   <div
-    class="p-6 border-b border-border-default flex items-center justify-between bg-bg-surface shrink-0"
+    class="p-6 pb-2 flex items-start justify-between shrink-0 border-b border-border-default bg-bg-surface"
   >
-    <span class="text-sm font-display font-bold text-text-primary">
-      Add to <span class="capitalize text-action-primary">{mealType}</span>
-    </span>
+    <div>
+      <h2 class="text-2xl font-display font-bold text-text-primary">
+        Add to <span class="capitalize text-action-primary">{mealType}</span>
+      </h2>
+    </div>
     <button
       onclick={onClose}
-      class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+      class="p-2 -mr-2 -mt-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+      aria-label="Close"
     >
       <X size={20} />
     </button>
   </div>
+{/snippet}
 
+<Modal {isOpen} {onClose} class="max-w-lg" header={customHeader}>
   <!-- Search & Selected -->
   <div
     class="flex flex-col border-b border-border-default bg-bg-surface shrink-0"
@@ -139,7 +132,6 @@
   <div
     class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2 h-96"
   >
-    <!-- Fixed height or relative? Modal handles flex-1 overflow, but we need to ensure parent flex works. Modal body is flex-1 overflow-auto. -->
     {#each mockRecipes as recipe (recipe.id)}
       <div
         onclick={() => handleSelect(recipe)}

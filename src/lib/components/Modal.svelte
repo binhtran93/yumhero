@@ -10,6 +10,7 @@
         title?: string;
         description?: string;
         children?: import("svelte").Snippet;
+        header?: import("svelte").Snippet;
         class?: string;
         showCloseButton?: boolean;
         headerClass?: string;
@@ -21,6 +22,7 @@
         title,
         description,
         children,
+        header,
         class: className,
         showCloseButton = true,
         headerClass = "",
@@ -58,7 +60,9 @@
             role="dialog"
             aria-modal="true"
         >
-            {#if title || showCloseButton}
+            {#if header}
+                {@render header()}
+            {:else if title || showCloseButton}
                 <!-- Header -->
                 <div
                     class={twMerge(
