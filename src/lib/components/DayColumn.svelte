@@ -52,7 +52,7 @@
   <div class="flex-1 flex flex-col p-6 gap-8">
     <!-- Breakfast Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+      <div class="flex items-center gap-2">
         <div class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"></div>
         <span
           class="text-xs font-bold text-text-primary uppercase tracking-widest"
@@ -70,7 +70,7 @@
 
     <!-- Lunch Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+      <div class="flex items-center gap-2">
         <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
         <span
           class="text-xs font-bold text-text-primary uppercase tracking-widest"
@@ -88,7 +88,7 @@
 
     <!-- Dinner Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2 pb-1.5 border-b border-border-strong">
+      <div class="flex items-center gap-2">
         <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
         <span
           class="text-xs font-bold text-text-primary uppercase tracking-widest"
