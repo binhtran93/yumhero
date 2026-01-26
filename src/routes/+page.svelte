@@ -1,75 +1,93 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import type { MealType, Recipe, WeeklyPlan } from '$lib/types';
-  import DayColumn from '$lib/components/DayColumn.svelte';
-  import RecipeModal from '$lib/components/RecipeModal.svelte';
+    import type { MealType, Recipe, WeeklyPlan } from "$lib/types";
+    import DayColumn from "$lib/components/DayColumn.svelte";
+    import RecipeModal from "$lib/components/RecipeModal.svelte";
 
-  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const DAYS = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
 
-  // Initial State
-  let plan: WeeklyPlan = $state(DAYS.map(day => ({
-    day,
-    meals: {
-      breakfast: null,
-      lunch: null,
-      dinner: null,
-    }
-  })));
+    // State: Weekly Plan
+    let plan = $state<WeeklyPlan>(
+        DAYS.map((day) => ({
+            day,
+            meals: {
+                breakfast: null,
+                lunch: null,
+                dinner: null,
+            },
+        })),
+    );
 
-  let modalState = $state<{
-    isOpen: boolean;
-    day: string | null;
-    mealType: MealType | null;
-  }>({
-    isOpen: false,
-    day: null,
-    mealType: null,
-  });
+    // State: Modal
+    // We keep this simple and local. No stores needed suitable for MVP.
+    let modal = $state<{
+        isOpen: boolean;
+        day: string | null;
+        mealType: MealType | null;
+    }>({
+        isOpen: false,
+        day: null,
+        mealType: null,
+    });
 
-  const handleMealClick = (day: string, type: MealType) => {
-    modalState = {
-      isOpen: true,
-      day,
-      mealType: type,
+    // Handlers
+    const handleMealClick = (day: string, type: MealType) => {
+        console.log("Open Modal:", day, type);
+        modal.isOpen = true;
+        modal.day = day;
+        modal.mealType = type;
     };
-  };
 
-  const handleRecipeSelect = (recipe: Recipe) => {
-    if (!modalState.day || !modalState.mealType) return;
+    const handleRecipeSelect = (recipe: Recipe) => {
+        if (!modal.day || !modal.mealType) return;
 
-    // Direct mutation thanks to Svelte 5 Runes
-    const dayIndex = plan.findIndex(d => d.day === modalState.day);
-    if (dayIndex !== -1) {
-        plan[dayIndex].meals[modalState.mealType!] = recipe;
-    }
+        const dayIndex = plan.findIndex((d) => d.day === modal.day);
+        if (dayIndex !== -1) {
+            // Direct mutation is valid and reactive in Svelte 5
+            plan[dayIndex].meals[modal.mealType] = recipe;
+        }
 
-    modalState = { ...modalState, isOpen: false };
-  };
+        closeModal();
+    };
 
-  const handleClearMeal = (day: string, type: MealType) => {
-    const dayIndex = plan.findIndex(d => d.day === day);
-    if (dayIndex !== -1) {
-        plan[dayIndex].meals[type] = null;
-    }
-  };
+    const handleClearMeal = (day: string, type: MealType) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex !== -1) {
+            plan[dayIndex].meals[type] = null;
+        }
+    };
 
-  const currentDayName = DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]; 
+    const closeModal = () => {
+        modal.isOpen = false;
+        // Optional: reset day/type if needed, but keeping them helps with exit animations if we had them
+    };
+
+    const currentDayName =
+        DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
 </script>
 
-<div class="grid grid-cols-7 h-full w-full">
-  {#each plan as dayPlan}
-    <DayColumn 
-      dayPlan={dayPlan}
-      isToday={dayPlan.day === currentDayName}
-      onMealClick={handleMealClick}
-      onMealClear={handleClearMeal}
-    />
-  {/each}
+<div class="grid grid-cols-7 h-full w-full bg-canvas">
+    {#each plan as dayPlan (dayPlan.day)}
+        <DayColumn
+            {dayPlan}
+            isToday={dayPlan.day === currentDayName}
+            onMealClick={handleMealClick}
+            onMealClear={handleClearMeal}
+        />
+    {/each}
 </div>
 
-<RecipeModal 
-  isOpen={modalState.isOpen}
-  mealType={modalState.mealType}
-  onClose={() => modalState.isOpen = false}
-  onSelect={handleRecipeSelect}
+<!-- Modal acts as a pure controlled component -->
+<RecipeModal
+    isOpen={modal.isOpen}
+    mealType={modal.mealType}
+    onClose={closeModal}
+    onSelect={handleRecipeSelect}
 />

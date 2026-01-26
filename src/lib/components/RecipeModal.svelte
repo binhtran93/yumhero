@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { X, Search, Check } from 'lucide-svelte';
-  import type { Recipe, MealType } from '$lib/types';
-  import { mockRecipes } from '$lib/data/mockRecipes';
+  import { X, Search, Check } from "lucide-svelte";
+  import type { Recipe, MealType } from "$lib/types";
+  import { mockRecipes } from "$lib/data/mockRecipes";
+  import { twMerge } from "tailwind-merge";
 
   interface Props {
     isOpen: boolean;
@@ -11,67 +12,102 @@
   }
 
   let { isOpen, mealType, onClose, onSelect }: Props = $props();
+
+  // Helper for tag colors
+  const getTagColor = (tag: string) => {
+    const char = tag.charCodeAt(0);
+    if (char % 4 === 0) return "bg-rose-100 text-rose-700";
+    if (char % 4 === 1) return "bg-sky-100 text-sky-700";
+    if (char % 4 === 2) return "bg-violet-100 text-violet-700";
+    return "bg-lime-100 text-lime-700";
+  };
 </script>
 
 {#if isOpen}
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <!-- Dimmed Backdrop -->
-      <div 
-        class="absolute inset-0 bg-white/80 backdrop-blur-sm transition-opacity"
-        onclick={onClose}
-        onkeydown={(e) => e.key === 'Escape' && onClose()}
-        role="button"
-        tabindex="0"
-      ></div>
-      
-      <!-- Modal Content - Minimalist -->
-      <div class="relative z-10 w-full max-w-lg bg-surface border border-border-strong shadow-2xl flex flex-col max-h-[60vh]">
-        
-        <!-- Header -->
-        <div class="p-4 border-b border-border-subtle flex items-center justify-between">
-            <span class="text-xs uppercase font-bold tracking-widest text-text-secondary">Select Recipe</span>
-            <button onclick={onClose} class="text-text-primary hover:opacity-50">
-                <X size={16} />
-            </button>
-        </div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Dimmed Backdrop -->
+    <div
+      class="absolute inset-0 bg-white/90 backdrop-blur-md transition-opacity"
+      onclick={onClose}
+      onkeydown={(e) => e.key === "Escape" && onClose()}
+      role="button"
+      tabindex="0"
+    ></div>
 
-        <!-- Search -->
-        <div class="px-4 py-3 border-b border-border-subtle bg-canvas">
-          <div class="relative">
-            <Search class="absolute left-2 top-1/2 -translate-y-1/2 text-text-secondary" size={14} />
-            <input 
-              autofocus
-              type="text" 
-              placeholder={`Search for a ${mealType} recipe...`}
-              class="w-full pl-8 pr-4 py-1.5 text-sm bg-transparent border-none focus:outline-none focus:ring-0 placeholder:text-text-secondary/50"
-            />
-          </div>
-        </div>
+    <!-- Modal Content -->
+    <div
+      class="relative z-10 w-full max-w-lg bg-surface border border-border-strong shadow-2xl flex flex-col max-h-[60vh] rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+    >
+      <!-- Header -->
+      <div
+        class="p-4 border-b border-border-subtle flex items-center justify-between bg-canvas"
+      >
+        <span
+          class="text-xs uppercase font-bold tracking-widest text-text-secondary"
+        >
+          Select <span class="text-text-primary">{mealType}</span> Recipe
+        </span>
+        <button
+          onclick={onClose}
+          class="text-text-primary hover:opacity-50 transition-opacity"
+        >
+          <X size={16} />
+        </button>
+      </div>
 
-        <!-- List -->
-        <div class="flex-1 overflow-y-auto">
-          {#each mockRecipes as recipe (recipe.id)}
-            <div 
-              onclick={() => onSelect(recipe)}
-              onkeydown={(e) => e.key === 'Enter' && onSelect(recipe)}
-              role="button"
-              tabindex="0"
-              class="cursor-pointer group flex items-center justify-between p-4 border-b border-border-subtle hover:bg-canvas last:border-b-0 transition-colors"
-            >
-              <div>
-                <h3 class="font-medium text-text-primary group-hover:underline decoration-1 underline-offset-2">{recipe.title}</h3>
-                <div class="flex gap-2 mt-1"> 
-                    {#each recipe.tags as tag}
-                        <span class="text-[10px] text-text-secondary uppercase">{tag}</span>
-                    {/each}
-                </div>
-              </div>
-              <div class="opacity-0 group-hover:opacity-100 text-text-primary">
-                  <Check size={16} />
-              </div>
-            </div>
-          {/each}
+      <!-- Search -->
+      <div class="px-4 py-3 border-b border-border-subtle bg-surface">
+        <div class="relative">
+          <Search
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+            size={16}
+          />
+          <input
+            autofocus
+            type="text"
+            placeholder={`Search for a ${mealType} recipe...`}
+            class="w-full pl-10 pr-4 py-2 text-sm bg-canvas border border-border-subtle rounded-lg focus:outline-none focus:border-text-primary transition-colors placeholder:text-text-secondary/50"
+          />
         </div>
       </div>
+
+      <!-- List -->
+      <div class="flex-1 overflow-y-auto bg-surface">
+        {#each mockRecipes as recipe (recipe.id)}
+          <div
+            onclick={() => onSelect(recipe)}
+            onkeydown={(e) => e.key === "Enter" && onSelect(recipe)}
+            role="button"
+            tabindex="0"
+            class="cursor-pointer group flex items-center justify-between p-4 border-b border-border-subtle hover:bg-canvas last:border-b-0 transition-colors"
+          >
+            <div>
+              <h3
+                class="font-bold text-text-primary group-hover:text-amber-600 transition-colors"
+              >
+                {recipe.title}
+              </h3>
+              <div class="flex gap-2 mt-1.5">
+                {#each recipe.tags as tag}
+                  <span
+                    class={twMerge(
+                      "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide",
+                      getTagColor(tag),
+                    )}
+                  >
+                    {tag}
+                  </span>
+                {/each}
+              </div>
+            </div>
+            <div
+              class="opacity-0 group-hover:opacity-100 text-amber-600 transition-opacity"
+            >
+              <Check size={18} strokeWidth={3} />
+            </div>
+          </div>
+        {/each}
+      </div>
     </div>
+  </div>
 {/if}
