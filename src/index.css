@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-border-subtle: #E4E4E7;
+  /* Zinc 200 */
+  --color-border-strong: #D4D4D8;
+  /* Zinc 300 */
+  --color-text-primary: #18181B;
+  /* Zinc 900 */
+  --color-text-secondary: #71717A;
+  /* Zinc 500 */
+  --color-accent: #000000;
+
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
