@@ -130,3 +130,24 @@
     --font-display: "Quicksand", "Inter", system-ui, sans-serif;
     --font-body: "Inter", system-ui, sans-serif;
 }
+
+@layer utilities {
+
+    /* Mobile-like Scrollbar for Webkit */
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-border-strong/50 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-border-strong;
+    }
+}
