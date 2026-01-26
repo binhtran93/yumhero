@@ -1,91 +1,183 @@
 <script lang="ts">
-    import { Moon, Sun, User, Bell, Shield } from "lucide-svelte";
-    import { theme } from "$lib/stores/theme";
-
-    const toggleTheme = () => {
-        $theme = $theme === "light" ? "dark" : "light";
-    };
     import Header from "$lib/components/Header.svelte";
+    import { units, categories } from "$lib/stores/settings";
+    import { Plus, Trash2, Scale, ShoppingBasket } from "lucide-svelte";
+    import { slide, fade } from "svelte/transition";
+
+    let activeTab = $state("units"); // 'units' | 'categories'
+    let newUnit = $state("");
+    let newCategory = $state("");
+
+    const addUnit = () => {
+        if (newUnit.trim()) {
+            $units = [...$units, newUnit.trim()];
+            newUnit = "";
+        }
+    };
+
+    const deleteUnit = (item: string) => {
+        $units = $units.filter((u) => u !== item);
+    };
+
+    const addCategory = () => {
+        if (newCategory.trim()) {
+            $categories = [...$categories, newCategory.trim()];
+            newCategory = "";
+        }
+    };
+
+    const deleteCategory = (item: string) => {
+        $categories = $categories.filter((c) => c !== item);
+    };
 </script>
 
 <!-- Header -->
 <Header title="Setup" />
 
-<div class="p-8 max-w-2xl mx-auto">
-    <div class="space-y-6">
-        <!-- Appearance -->
-        <section
-            class="bg-bg-surface p-6 rounded-2xl border border-border-default shadow-sm"
+<div
+    class="p-4 md:p-8 max-w-4xl mx-auto h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
+>
+    <!-- Tab Navigation -->
+    <div
+        class="flex items-center gap-2 mb-6 p-1 bg-bg-surface border border-border-default rounded-xl shrink-0"
+    >
+        <button
+            class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
+            'units'
+                ? 'bg-action-primary text-white shadow-sm'
+                : 'text-text-secondary hover:text-text-primary hover:bg-bg-default/50'}"
+            onclick={() => (activeTab = "units")}
         >
-            <h2
-                class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2"
-            >
-                <Sun size={20} />
-                Appearance
-            </h2>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="font-medium text-text-primary">Theme Mode</p>
-                    <p class="text-sm text-text-secondary">
-                        Switch between light and dark mode
-                    </p>
-                </div>
-                <button
-                    class="p-2 rounded-lg bg-bg-default border border-border-default hover:bg-bg-surface-hover transition-colors flex items-center gap-2"
-                    onclick={toggleTheme}
-                >
-                    {#if $theme === "light"}
-                        <Sun size={18} />
-                        <span>Light</span>
-                    {:else}
-                        <Moon size={18} />
-                        <span>Dark</span>
-                    {/if}
-                </button>
-            </div>
-        </section>
+            <Scale size={18} />
+            Units
+        </button>
+        <button
+            class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
+            'categories'
+                ? 'bg-action-primary text-white shadow-sm'
+                : 'text-text-secondary hover:text-text-primary hover:bg-bg-default/50'}"
+            onclick={() => (activeTab = "categories")}
+        >
+            <ShoppingBasket size={18} />
+            Food Categories
+        </button>
+    </div>
 
-        <!-- Account -->
-        <section
-            class="bg-bg-surface p-6 rounded-2xl border border-border-default shadow-sm"
-        >
-            <h2
-                class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2"
+    <!-- Content Area -->
+    <div class="flex-1 overflow-hidden relative">
+        {#if activeTab === "units"}
+            <div
+                class="absolute inset-0 flex flex-col bg-bg-surface rounded-2xl border border-border-default shadow-sm overflow-hidden"
+                in:fade={{ duration: 200, delay: 100 }}
+                out:fade={{ duration: 100 }}
             >
-                <User size={20} />
-                Account
-            </h2>
-            <div class="space-y-4">
+                <!-- Header (Hidden / Optional since tab explains it) -->
+                <!-- List -->
+                <div class="flex-1 overflow-y-auto p-0">
+                    {#each $units as unit (unit)}
+                        <div
+                            class="group flex items-center justify-between px-6 py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            transition:slide|local
+                        >
+                            <span class="text-text-primary font-medium"
+                                >{unit}</span
+                            >
+                            <button
+                                onclick={() => deleteUnit(unit)}
+                                class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
+                                title="Delete"
+                                aria-label="Delete unit"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                    {/each}
+                </div>
+
+                <!-- Add Item -->
                 <div
-                    class="flex items-center justify-between py-2 border-b border-border-default/50"
+                    class="p-4 border-t border-border-default bg-bg-default/50 shrink-0"
                 >
-                    <p class="text-text-primary">Profile Information</p>
-                    <button
-                        class="text-sm text-action-primary font-medium hover:underline"
-                        >Edit</button
+                    <form
+                        onsubmit={(e) => {
+                            e.preventDefault();
+                            addUnit();
+                        }}
+                        class="flex gap-2"
                     >
-                </div>
-                <div class="flex items-center justify-between py-2">
-                    <p class="text-text-primary">Sign Out</p>
-                    <button
-                        class="text-sm text-red-500 font-medium hover:underline"
-                        >Log Out</button
-                    >
+                        <input
+                            type="text"
+                            bind:value={newUnit}
+                            placeholder="Add new unit..."
+                            class="flex-1 px-4 py-2.5 rounded-xl border border-border-default focus:outline-none focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 bg-bg-surface text-text-primary placeholder:text-text-secondary/50 transition-all font-medium"
+                        />
+                        <button
+                            type="submit"
+                            disabled={!newUnit.trim()}
+                            class="p-2.5 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center aspect-square"
+                            aria-label="Add unit"
+                        >
+                            <Plus size={20} />
+                        </button>
+                    </form>
                 </div>
             </div>
-        </section>
-
-        <!-- Notifications -->
-        <section
-            class="bg-bg-surface p-6 rounded-2xl border border-border-default shadow-sm opacity-60"
-        >
-            <h2
-                class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2"
+        {:else}
+            <div
+                class="absolute inset-0 flex flex-col bg-bg-surface rounded-2xl border border-border-default shadow-sm overflow-hidden"
+                in:fade={{ duration: 200, delay: 100 }}
+                out:fade={{ duration: 100 }}
             >
-                <Bell size={20} />
-                Notifications
-            </h2>
-            <p class="text-sm text-text-secondary">Coming soon...</p>
-        </section>
+                <!-- List -->
+                <div class="flex-1 overflow-y-auto p-0">
+                    {#each $categories as category (category)}
+                        <div
+                            class="group flex items-center justify-between px-6 py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            transition:slide|local
+                        >
+                            <span class="text-text-primary font-medium"
+                                >{category}</span
+                            >
+                            <button
+                                onclick={() => deleteCategory(category)}
+                                class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
+                                title="Delete"
+                                aria-label="Delete category"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                    {/each}
+                </div>
+
+                <!-- Add Item -->
+                <div
+                    class="p-4 border-t border-border-default bg-bg-default/50 shrink-0"
+                >
+                    <form
+                        onsubmit={(e) => {
+                            e.preventDefault();
+                            addCategory();
+                        }}
+                        class="flex gap-2"
+                    >
+                        <input
+                            type="text"
+                            bind:value={newCategory}
+                            placeholder="Add new category..."
+                            class="flex-1 px-4 py-2.5 rounded-xl border border-border-default focus:outline-none focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 bg-bg-surface text-text-primary placeholder:text-text-secondary/50 transition-all font-medium"
+                        />
+                        <button
+                            type="submit"
+                            disabled={!newCategory.trim()}
+                            class="p-2.5 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center aspect-square"
+                            aria-label="Add category"
+                        >
+                            <Plus size={20} />
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {/if}
     </div>
 </div>
