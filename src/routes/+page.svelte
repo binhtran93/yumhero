@@ -45,16 +45,14 @@
         modal.mealType = type;
     };
 
-    const handleRecipeSelect = (recipe: Recipe) => {
+    const handleRecipeSelect = (recipes: Recipe[]) => {
         if (!modal.day || !modal.mealType) return;
 
         const dayIndex = plan.findIndex((d) => d.day === modal.day);
         if (dayIndex !== -1) {
-            // Append recipe
-            plan[dayIndex].meals[modal.mealType].push(recipe);
+            // Append recipes
+            plan[dayIndex].meals[modal.mealType].push(...recipes);
         }
-
-        modal.isOpen = false;
     };
 
     const handleClearMeal = (day: string, type: MealType) => {
