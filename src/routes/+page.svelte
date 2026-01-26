@@ -161,7 +161,7 @@
         ChevronRight,
         Moon,
         Sun,
-        LogIn,
+        UserCircle,
         LogOut,
     } from "lucide-svelte";
     import { theme } from "$lib/stores/theme";
@@ -247,7 +247,7 @@
                     aria-label="Sign In"
                     title="Sign In"
                 >
-                    <LogIn size={22} />
+                    <UserCircle size={22} />
                 </button>
             {/if}
         </div>
