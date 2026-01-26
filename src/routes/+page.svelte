@@ -75,15 +75,17 @@
 </script>
 
 <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 w-full min-h-screen bg-stone-100 gap-3 p-4 items-start"
+    class="flex flex-row overflow-x-auto snap-x snap-mandatory h-screen w-full bg-gray-50 items-start divide-x divide-gray-200"
 >
     {#each plan as dayPlan (dayPlan.day)}
-        <DayColumn
-            {dayPlan}
-            isToday={dayPlan.day === currentDayName}
-            onMealClick={handleMealClick}
-            onMealClear={handleClearMeal}
-        />
+        <div class="h-full shrink-0 snap-start">
+            <DayColumn
+                {dayPlan}
+                isToday={dayPlan.day === currentDayName}
+                onMealClick={handleMealClick}
+                onMealClear={handleClearMeal}
+            />
+        </div>
     {/each}
 </div>
 

@@ -47,21 +47,17 @@
 <!-- The Slot Container -->
 <div class="flex flex-col gap-2 w-full">
     {#if recipes.length > 0}
-        <!-- Populated State -->
-        <div class="flex items-center justify-between px-2">
-            <span
-                class={twMerge(
-                    "text-[10px] uppercase font-bold tracking-widest opacity-70",
-                    colors.label,
-                )}>{type}</span
-            >
+        <!-- Header is now handled by DayColumn for better structure -->
+        <!-- Just Clean Cards -->
+
+        <div class="flex items-center justify-end px-1 -mt-8 mb-2">
             {#if onClear}
                 <button
                     onclick={(e) => {
                         e.stopPropagation();
                         onClear(e);
                     }}
-                    class="text-stone-400 hover:text-red-500 transition-colors"
+                    class="text-gray-300 hover:text-red-500 transition-colors"
                     title="Clear"
                 >
                     <X size={12} />
@@ -77,31 +73,32 @@
             onkeydown={(e) => e.key === "Enter" && onClick()}
         >
             {#each recipes as recipe}
-                <!-- Card: Friendly rounded, soft color -->
+                <!-- Clean Pro Card -->
                 <div
-                    class={twMerge(
-                        "rounded-2xl shadow-sm border p-3 relative group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md",
-                        "bg-white border-stone-100", // Cards stay white for cleanliness, canvas provides warmth
-                    )}
+                    class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 relative group cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5"
                 >
-                    <!-- Color Pill -->
+                    <!-- Type Accent Bar -->
                     <div
                         class={twMerge(
-                            "absolute left-3 top-3 bottom-3 w-1.5 rounded-full opacity-80",
-                            colors.accent,
+                            "absolute left-0 top-0 bottom-0 w-1 rounded-l-lg",
+                            type === "breakfast"
+                                ? "bg-orange-400"
+                                : type === "lunch"
+                                  ? "bg-teal-400"
+                                  : "bg-indigo-400",
                         )}
                     ></div>
 
                     <h4
-                        class="text-sm font-bold text-stone-800 mb-2 pl-3 leading-snug"
+                        class="text-sm font-bold text-slate-800 mb-2 pl-2 leading-snug"
                     >
                         {recipe.title}
                     </h4>
 
-                    <div class="flex flex-wrap gap-1.5 pl-3">
+                    <div class="flex flex-wrap gap-1.5 pl-2">
                         {#each recipe.tags.slice(0, 2) as tag}
                             <span
-                                class="text-[10px] text-stone-600 bg-stone-100 px-2 py-0.5 rounded-lg border border-stone-200 font-bold"
+                                class="text-[10px] text-slate-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200 font-medium"
                             >
                                 {tag}
                             </span>
@@ -110,45 +107,32 @@
                 </div>
             {/each}
 
-            <!-- Subtle Add Button -->
+            <!-- Clean Add Button -->
             <button
-                class={twMerge(
-                    "w-full py-2 rounded-xl border border-dashed text-[11px] uppercase font-bold transition-all flex items-center justify-center gap-1",
-                    "border-stone-200 text-stone-400 hover:bg-white hover:text-stone-600 hover:border-stone-300",
-                )}
+                class="w-full py-2 rounded-lg border border-dashed border-gray-300 text-gray-400 hover:text-gray-600 hover:border-gray-400 hover:bg-white text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
             >
                 <Plus size={12} /> Add Item
             </button>
         </div>
     {:else}
-        <!-- Empty State: Compact Button -->
+        <!-- Empty State: Clean Minimal -->
         <div
             role="button"
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class={twMerge(
-                "w-full py-4 rounded-2xl border border-dashed transition-all cursor-pointer flex items-center justify-center gap-2 group",
-                "border-stone-300 bg-white/40 hover:bg-white",
-                colors.emptyBg.replace("/50", "/30"),
-            )}
+            class="w-full py-6 rounded-lg border border-dashed border-gray-200 hover:border-gray-300 hover:bg-white transition-all cursor-pointer flex items-center justify-center gap-2 group bg-gray-50/50"
         >
-            <span
-                class={twMerge(
-                    "text-[10px] uppercase font-bold tracking-widest opacity-60 group-hover:opacity-100 transition-opacity",
-                    colors.label,
-                )}
-            >
-                {type}
-            </span>
             <div
-                class={twMerge(
-                    "opacity-50 group-hover:opacity-100 transition-transform group-hover:scale-110 duration-200",
-                    colors.emptyIcon,
-                )}
+                class="text-gray-300 group-hover:text-gray-400 transition-colors"
             >
-                <Plus size={16} strokeWidth={3} />
+                <Plus size={16} strokeWidth={2} />
             </div>
+            <span
+                class="text-[10px] font-bold text-gray-300 group-hover:text-gray-500 uppercase tracking-widest transition-colors"
+            >
+                Add {type}
+            </span>
         </div>
     {/if}
 </div>
