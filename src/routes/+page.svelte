@@ -164,17 +164,15 @@
         UserCircle,
     } from "lucide-svelte";
     import { theme } from "$lib/stores/theme";
-    import { user, signOut } from "$lib/stores/auth";
+    import { user } from "$lib/stores/auth";
     import LoginModal from "$lib/components/LoginModal.svelte";
-    import Avatar from "$lib/components/Avatar.svelte";
+    import UserDropdown from "$lib/components/UserDropdown.svelte";
 
     const toggleTheme = () => {
         $theme = $theme === "light" ? "dark" : "light";
     };
 
-    const handleSignOut = async () => {
-        await signOut();
-    };
+    // signOut is now handled in UserDropdown
 
     let isLoginModalOpen = $state(false);
 
@@ -232,18 +230,7 @@
             </button>
 
             {#if $user}
-                <button
-                    class="rounded-full transition-transform hover:scale-105 active:scale-95"
-                    onclick={handleSignOut}
-                    aria-label="Sign Out"
-                    title="Sign Out"
-                >
-                    <Avatar
-                        src={$user.photoURL}
-                        name={$user.displayName || $user.email}
-                        size="md"
-                    />
-                </button>
+                <UserDropdown />
             {:else}
                 <button
                     onclick={openLoginModal}
