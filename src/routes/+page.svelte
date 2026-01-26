@@ -188,7 +188,7 @@
             >
                 <ChevronLeft size={18} />
             </button>
-            <span class="text-xs font-bold w-32 text-center text-text-primary">
+            <span class="text-xs font-bold text-center text-text-primary">
                 {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
             </span>
             <button
