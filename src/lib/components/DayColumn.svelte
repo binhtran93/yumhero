@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { DayPlan, MealType } from "$lib/types";
   import MealSlot from "./MealSlot.svelte";
+  import { twMerge } from "tailwind-merge";
 
   interface Props {
     dayPlan: DayPlan;
@@ -17,17 +18,22 @@
 >
   <!-- Sticky Header -->
   <div
-    class={`sticky top-0 z-10 text-center py-6 border-b border-border-default ${isToday ? "bg-action-primary text-white" : "bg-bg-surface text-text-primary"}`}
+    class="sticky top-0 z-10 py-6 border-b border-border-default bg-bg-surface text-text-primary"
   >
-    <span class="text-lg font-display font-bold">
-      {dayPlan.day}
-    </span>
     {#if isToday}
-      <div
-        class="mt-1 text-[10px] font-bold uppercase tracking-wider opacity-80"
-        >Today</div
-      >
+      <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
     {/if}
+    <div class="flex items-center justify-center gap-2">
+      <span class={twMerge("text-lg font-display font-bold", isToday && "text-action-primary")}>
+        {dayPlan.day}
+      </span>
+      {#if isToday}
+        <span
+          class="text-[10px] font-bold uppercase tracking-wider text-action-primary/80 bg-action-primary/10 px-1.5 py-0.5 rounded-md"
+          >Today</span
+        >
+      {/if}
+    </div>
   </div>
 
   <!-- Slots Container -->

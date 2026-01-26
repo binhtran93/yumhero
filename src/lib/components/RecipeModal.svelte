@@ -16,10 +16,10 @@
   // Helper for tag colors
   const getTagColor = (tag: string) => {
     const char = tag.charCodeAt(0);
-    if (char % 4 === 0) return "bg-orange-100 text-orange-700";
-    if (char % 4 === 1) return "bg-lime-100 text-lime-700";
-    if (char % 4 === 2) return "bg-rose-100 text-rose-700";
-    return "bg-amber-100 text-amber-700";
+    if (char % 4 === 0) return "bg-orange-100 text-orange-800 border-orange-200";
+    if (char % 4 === 1) return "bg-lime-100 text-lime-800 border-lime-200";
+    if (char % 4 === 2) return "bg-rose-100 text-rose-800 border-rose-200";
+    return "bg-amber-100 text-amber-800 border-amber-200";
   };
 </script>
 
@@ -90,7 +90,7 @@
               <div class="flex gap-2 mt-2">
                 {#each recipe.tags as tag}
                   <span
-                    class={twMerge("text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider", getTagColor(tag))}
+                    class={twMerge("text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border", getTagColor(tag))}
                   >
                     {tag}
                   </span>

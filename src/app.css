@@ -13,43 +13,43 @@
     --color-bg-accent-subtle: #f9f8f6;
     /* soft off-white */
 
-    /* Text: Warm Charcoal & Soft Brown */
-    --color-text-primary: #57534e;
+    /* Text: Warmer & Higher Contrast Charcoal/Stone */
+    --color-text-primary: #292524;
+    /* stone-800 */
+    --color-text-secondary: #57534e;
     /* stone-600 */
-    --color-text-secondary: #a8a29e;
-    /* stone-400 */
     --color-text-inverse: #ffffff;
 
-    /* Borders: Soft & Subtle */
-    --color-border-default: #f5f5f4;
-    /* stone-100 */
-    --color-border-strong: #e7e5e4;
+    /* Borders: More defined */
+    --color-border-default: #e7e5e4;
     /* stone-200 */
+    --color-border-strong: #d6d3d1;
+    /* stone-300 */
 
-    /* Semantic Accents (Soft Pastels) */
+    /* Semantic Accents (Higher Contrast Pastels) */
     /* Breakfast: Peach/Apricot */
-    --color-accent-breakfast: #fbbf24;
-    /* amber-400 */
+    --color-accent-breakfast: #d97706;
+    /* amber-600 */
     --color-accent-breakfast-bg: #fffbeb;
     /* amber-50 */
 
     /* Lunch: Sage/Green */
-    --color-accent-lunch: #a3e635;
-    /* lime-400 */
+    --color-accent-lunch: #65a30d;
+    /* lime-600 */
     --color-accent-lunch-bg: #f7fee7;
     /* lime-50 */
 
     /* Dinner: Rose/Coral */
-    --color-accent-dinner: #f87171;
-    /* red-400 */
+    --color-accent-dinner: #dc2626;
+    /* red-600 */
     --color-accent-dinner-bg: #fef2f2;
     /* red-50 */
 
-    /* Action/Brand: Soft Terracotta */
-    --color-action-primary: #d97706;
-    /* amber-600 */
-    --color-action-hover: #b45309;
+    /* Action/Brand: Deep Warm Terracotta */
+    --color-action-primary: #b45309;
     /* amber-700 */
+    --color-action-hover: #92400e;
+    /* amber-800 */
 }
 
 :root.dark {
@@ -71,11 +71,11 @@
     /* stone-300 */
     --color-text-inverse: #1c1917;
 
-    /* Borders */
-    --color-border-default: #44403c;
-    /* stone-700 */
-    --color-border-strong: #57534e;
+    /* Borders: More defined */
+    --color-border-default: #57534e;
     /* stone-600 */
+    --color-border-strong: #78716c;
+    /* stone-500 */
 
     /* Semantic Accents (Softer Glow) */
     /* Breakfast */

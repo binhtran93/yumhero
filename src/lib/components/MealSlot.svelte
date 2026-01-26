@@ -16,28 +16,28 @@
     // Friendly, soft, natural tones.
     const colorMap = {
         breakfast: {
-            label: "text-amber-700",
-            card: "bg-amber-50 hover:bg-amber-100", // Warm yellow tones
-            border: "border-amber-100",
-            accent: "bg-amber-400",
+            label: "text-amber-800",
+            card: "bg-amber-50 hover:bg-amber-100",
+            border: "border-amber-200",
+            accent: "bg-amber-600",
             emptyBg: "bg-amber-50/50 hover:bg-amber-100",
-            emptyIcon: "text-amber-400",
+            emptyIcon: "text-amber-600",
         },
         lunch: {
-            label: "text-lime-700",
-            card: "bg-lime-50 hover:bg-lime-100", // Fresh green tones
-            border: "border-lime-100",
-            accent: "bg-lime-500",
+            label: "text-lime-800",
+            card: "bg-lime-50 hover:bg-lime-100",
+            border: "border-lime-200",
+            accent: "bg-lime-600",
             emptyBg: "bg-lime-50/50 hover:bg-lime-100",
-            emptyIcon: "text-lime-500",
+            emptyIcon: "text-lime-600",
         },
         dinner: {
-            label: "text-orange-700",
-            card: "bg-orange-50 hover:bg-orange-100", // Warm terracotta tones
-            border: "border-orange-100",
-            accent: "bg-orange-400",
+            label: "text-orange-800",
+            card: "bg-orange-50 hover:bg-orange-100",
+            border: "border-orange-200",
+            accent: "bg-orange-600",
             emptyBg: "bg-orange-50/50 hover:bg-orange-100",
-            emptyIcon: "text-orange-400",
+            emptyIcon: "text-orange-600",
         },
     };
 
@@ -98,7 +98,7 @@
                     <div class="flex flex-wrap gap-1.5 pl-2">
                         {#each recipe.tags.slice(0, 2) as tag}
                             <span
-                                class="text-[10px] text-text-secondary bg-bg-accent-subtle px-2 py-0.5 rounded-full border border-border-default font-medium"
+                                class="text-[10px] text-text-secondary bg-bg-accent-subtle px-2 py-0.5 rounded-full border border-border-strong font-medium"
                             >
                                 {tag}
                             </span>
@@ -110,6 +110,7 @@
             <!-- Friendly Add Button -->
             <button
                 class="w-full py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
+                onclick={(e) => { e.stopPropagation(); onClick(); }}
             >
                 <Plus size={14} /> Add Item
             </button>
