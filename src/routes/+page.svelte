@@ -175,10 +175,7 @@
             <h1
                 class="text-xl font-bold tracking-tight text-action-primary font-display"
             >
-                YumHero <span
-                    class="text-text-secondary font-medium text-sm ml-2 hidden sm:inline"
-                    >Family Meal Planner</span
-                >
+                YumHero
             </h1>
         </div>
 
