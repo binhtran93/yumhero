@@ -74,7 +74,9 @@
         DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
 </script>
 
-<div class="grid grid-cols-7 h-full w-full bg-slate-50 gap-2 p-2">
+<div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 h-full w-full bg-stone-100 gap-3 p-4 overflow-y-auto"
+>
     {#each plan as dayPlan (dayPlan.day)}
         <DayColumn
             {dayPlan}

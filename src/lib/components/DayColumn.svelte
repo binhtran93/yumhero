@@ -14,10 +14,15 @@
 
 <div class="flex flex-col h-full min-w-0">
   <!-- Compact Header -->
+  <!-- Compact Header (Warm & Friendly) -->
   <div
-    class={`mb-2 text-center py-1 rounded-t-lg mx-1 ${isToday ? "bg-black text-white" : "text-text-secondary"}`}
+    class={`mb-3 text-center py-2 rounded-2xl mx-1 shadow-sm transition-all ${
+      isToday
+        ? "bg-rose-500 text-white transform -translate-y-1 shadow-md"
+        : "bg-white text-stone-600"
+    }`}
   >
-    <span class="text-[10px] uppercase tracking-widest font-bold">
+    <span class="text-xs uppercase tracking-wider font-bold">
       {dayPlan.day.substring(0, 3)}
     </span>
   </div>
