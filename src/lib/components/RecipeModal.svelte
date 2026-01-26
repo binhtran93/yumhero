@@ -14,13 +14,25 @@
   let { isOpen, mealType, onClose, onSelect }: Props = $props();
 
   let selectedRecipes = $state<Recipe[]>([]);
+  let servings = $state<Map<string, number>>(new Map());
 
   // Reset selection when modal opens
   $effect(() => {
     if (isOpen) {
       selectedRecipes = [];
+      servings = new Map();
     }
   });
+
+  const getServings = (recipeId: string) => {
+    return servings.get(recipeId) || 1;
+  };
+
+  const updateServings = (recipeId: string, delta: number) => {
+    const current = getServings(recipeId);
+    const newValue = Math.max(1, current + delta);
+    servings = new Map(servings.set(recipeId, newValue));
+  };
 
   const isSelected = (recipe: Recipe) => {
     return selectedRecipes.some((r) => r.id === recipe.id);
@@ -38,7 +50,12 @@
 
   const handleDone = () => {
     if (selectedRecipes.length > 0) {
-      onSelect(selectedRecipes);
+      // Add servings to each recipe
+      const recipesWithServings = selectedRecipes.map((recipe) => ({
+        ...recipe,
+        servings: getServings(recipe.id),
+      }));
+      onSelect(recipesWithServings);
     }
     onClose();
   };
@@ -157,6 +174,37 @@
                     {tag}
                   </span>
                 {/each}
+              </div>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs text-text-secondary font-medium"
+                  >Servings:</span
+                >
+                <div
+                  class="flex items-center gap-1 bg-bg-accent-subtle border border-border-default rounded-lg overflow-hidden"
+                >
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      updateServings(recipe.id, -1);
+                    }}
+                    class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                  >
+                    <span class="text-sm font-bold">−</span>
+                  </button>
+                  <span
+                    class="px-2 py-1 text-xs font-bold text-text-primary min-w-[24px] text-center"
+                    >{getServings(recipe.id)}</span
+                  >
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      updateServings(recipe.id, 1);
+                    }}
+                    class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                  >
+                    <span class="text-sm font-bold">+</span>
+                  </button>
+                </div>
               </div>
             </div>
 

@@ -6,6 +6,7 @@ export interface Recipe {
     image: string;
     calories?: number;
     tags: string[];
+    servings?: number;
 }
 
 export interface DayPlan {

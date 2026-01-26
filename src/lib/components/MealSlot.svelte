@@ -42,7 +42,7 @@
         },
     };
 
-    const colors = colorMap[type];
+    const colors = $derived(colorMap[type]);
 </script>
 
 <!-- The Slot Container -->
@@ -113,6 +113,19 @@
                             </span>
                         {/each}
                     </div>
+
+                    {#if recipe.servings}
+                        <div class="pl-2 mt-2">
+                            <span
+                                class="text-[11px] text-text-secondary font-medium"
+                            >
+                                Servings: <span
+                                    class="font-bold text-text-primary"
+                                    >{recipe.servings}</span
+                                >
+                            </span>
+                        </div>
+                    {/if}
                 </div>
             {/each}
 
