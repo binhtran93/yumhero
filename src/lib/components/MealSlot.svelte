@@ -45,10 +45,10 @@
 </script>
 
 <!-- The Slot Container -->
+<!-- The Slot Container -->
 <div class="flex flex-col gap-2 w-full">
     {#if recipes.length > 0}
         <!-- Header is now handled by DayColumn for better structure -->
-        <!-- Just Clean Cards -->
 
         <div class="flex items-center justify-end px-1 -mt-8 mb-2">
             {#if onClear}
@@ -57,10 +57,10 @@
                         e.stopPropagation();
                         onClear(e);
                     }}
-                    class="text-gray-300 hover:text-red-500 transition-colors"
+                    class="text-gray-500 hover:text-red-600 transition-colors"
                     title="Clear"
                 >
-                    <X size={12} />
+                    <X size={14} />
                 </button>
             {/if}
         </div>
@@ -73,24 +73,24 @@
             onkeydown={(e) => e.key === "Enter" && onClick()}
         >
             {#each recipes as recipe}
-                <!-- Clean Pro Card -->
+                <!-- High Contrast Card -->
                 <div
-                    class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 relative group cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5"
+                    class="bg-white rounded border border-gray-300 shadow-sm p-3 relative group cursor-pointer hover:border-black transition-all hover:-translate-y-0.5"
                 >
                     <!-- Type Accent Bar -->
                     <div
                         class={twMerge(
-                            "absolute left-0 top-0 bottom-0 w-1 rounded-l-lg",
+                            "absolute left-0 top-0 bottom-0 w-1.5 rounded-l",
                             type === "breakfast"
-                                ? "bg-orange-400"
+                                ? "bg-orange-600"
                                 : type === "lunch"
-                                  ? "bg-teal-400"
-                                  : "bg-indigo-400",
+                                  ? "bg-teal-700"
+                                  : "bg-indigo-700",
                         )}
                     ></div>
 
                     <h4
-                        class="text-sm font-bold text-slate-800 mb-2 pl-2 leading-snug"
+                        class="text-sm font-black text-black mb-2 pl-2 leading-snug"
                     >
                         {recipe.title}
                     </h4>
@@ -98,7 +98,7 @@
                     <div class="flex flex-wrap gap-1.5 pl-2">
                         {#each recipe.tags.slice(0, 2) as tag}
                             <span
-                                class="text-[10px] text-slate-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200 font-medium"
+                                class="text-[10px] text-black bg-gray-100 px-1.5 py-0.5 rounded border border-gray-300 font-bold"
                             >
                                 {tag}
                             </span>
@@ -109,27 +109,25 @@
 
             <!-- Clean Add Button -->
             <button
-                class="w-full py-2 rounded-lg border border-dashed border-gray-300 text-gray-400 hover:text-gray-600 hover:border-gray-400 hover:bg-white text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
+                class="w-full py-2 rounded border border-dashed border-gray-400 text-gray-700 hover:border-black hover:bg-gray-50 text-[10px] uppercase font-bold transition-all flex items-center justify-center gap-1"
             >
                 <Plus size={12} /> Add Item
             </button>
         </div>
     {:else}
-        <!-- Empty State: Clean Minimal -->
+        <!-- Empty State: High Contrast -->
         <div
             role="button"
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-6 rounded-lg border border-dashed border-gray-200 hover:border-gray-300 hover:bg-white transition-all cursor-pointer flex items-center justify-center gap-2 group bg-gray-50/50"
+            class="w-full py-6 rounded border border-dashed border-gray-400 hover:border-black hover:bg-gray-50 transition-all cursor-pointer flex items-center justify-center gap-2 group bg-white"
         >
-            <div
-                class="text-gray-300 group-hover:text-gray-400 transition-colors"
-            >
-                <Plus size={16} strokeWidth={2} />
+            <div class="text-black group-hover:scale-110 transition-transform">
+                <Plus size={18} strokeWidth={2.5} />
             </div>
             <span
-                class="text-[10px] font-bold text-gray-300 group-hover:text-gray-500 uppercase tracking-widest transition-colors"
+                class="text-[11px] font-black text-black uppercase tracking-widest"
             >
                 Add {type}
             </span>

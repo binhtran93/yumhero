@@ -13,20 +13,18 @@
 </script>
 
 <div
-  class="flex flex-col h-full w-[85vw] md:w-[320px] bg-gray-50 border-r border-gray-100 last:border-r-0 overflow-y-auto"
+  class="flex flex-col h-full w-[85vw] md:w-[320px] bg-white border-r border-gray-300 last:border-r-0 overflow-y-auto"
 >
   <!-- Sticky Header -->
   <div
-    class={`sticky top-0 z-10 text-center py-3 border-b border-gray-200 backdrop-blur-sm ${isToday ? "bg-black/5" : "bg-gray-50/90"}`}
+    class={`sticky top-0 z-10 text-center py-4 border-b border-gray-300 ${isToday ? "bg-black text-white" : "bg-white text-black"}`}
   >
-    <span
-      class={`text-xs uppercase tracking-widest font-black ${isToday ? "text-black" : "text-gray-500"}`}
-    >
+    <span class="text-sm uppercase tracking-widest font-black">
       {dayPlan.day}
     </span>
     {#if isToday}
       <span
-        class="ml-2 px-1.5 py-0.5 rounded-full bg-black text-white text-[9px] font-bold uppercase"
+        class="ml-2 px-2 py-0.5 rounded-sm bg-white text-black text-[10px] font-bold uppercase border border-black"
         >Today</span
       >
     {/if}
@@ -36,10 +34,9 @@
   <div class="flex-1 flex flex-col p-4 gap-6">
     <!-- Breakfast Section -->
     <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b border-gray-200">
-        <div class="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
-        <span
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"
+      <div class="flex items-center gap-2 pb-1 border-b-2 border-black">
+        <div class="w-2 h-2 bg-orange-600"></div>
+        <span class="text-xs font-black text-black uppercase tracking-wider"
           >Breakfast</span
         >
       </div>
@@ -53,10 +50,9 @@
 
     <!-- Lunch Section -->
     <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b border-gray-200">
-        <div class="w-1.5 h-1.5 rounded-full bg-teal-400"></div>
-        <span
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"
+      <div class="flex items-center gap-2 pb-1 border-b-2 border-black">
+        <div class="w-2 h-2 bg-teal-700"></div>
+        <span class="text-xs font-black text-black uppercase tracking-wider"
           >Lunch</span
         >
       </div>
@@ -70,10 +66,9 @@
 
     <!-- Dinner Section -->
     <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 pb-1 border-b border-gray-200">
-        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
-        <span
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"
+      <div class="flex items-center gap-2 pb-1 border-b-2 border-black">
+        <div class="w-2 h-2 bg-indigo-700"></div>
+        <span class="text-xs font-black text-black uppercase tracking-wider"
           >Dinner</span
         >
       </div>
