@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X, Search, Check } from "lucide-svelte";
+  import { X, Search, Check, Plus } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
   import { mockRecipes } from "$lib/data/mockRecipes";
   import { twMerge } from "tailwind-merge";
@@ -22,10 +22,16 @@
     }
   });
 
+  const isSelected = (recipe: Recipe) => {
+    return selectedRecipes.some((r) => r.id === recipe.id);
+  };
+
   const handleSelect = (recipe: Recipe) => {
-    // Prevent duplicates in current selection if desired, or allow.
-    // Assuming simple push for now, or check existence.
-    if (!selectedRecipes.find((r) => r.id === recipe.id)) {
+    if (isSelected(recipe)) {
+      // Remove
+      selectedRecipes = selectedRecipes.filter((r) => r.id !== recipe.id);
+    } else {
+      // Add
       selectedRecipes.push(recipe);
     }
   };
@@ -89,7 +95,6 @@
               size={18}
             />
             <input
-              autofocus
               type="text"
               placeholder={`Search recipes...`}
               class="w-full pl-11 pr-4 py-3 text-sm bg-bg-accent-subtle border border-border-default rounded-2xl focus:outline-none focus:border-action-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
@@ -102,12 +107,13 @@
           <div class="px-6 pb-4 overflow-x-auto">
             <div class="flex flex-wrap gap-2">
               {#each selectedRecipes as recipe}
-                <div
-                  class="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200"
+                <button
+                  onclick={() => handleSelect(recipe)}
+                  class="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
                 >
                   <span>{recipe.title}</span>
-                  <Check size={12} strokeWidth={3} />
-                </div>
+                  <X size={12} strokeWidth={3} />
+                </button>
               {/each}
             </div>
           </div>
@@ -115,18 +121,28 @@
       </div>
 
       <!-- List -->
-      <div class="flex-1 overflow-y-auto bg-bg-surface p-2">
+      <div class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2">
         {#each mockRecipes as recipe (recipe.id)}
           <div
             onclick={() => handleSelect(recipe)}
             onkeydown={(e) => e.key === "Enter" && handleSelect(recipe)}
             role="button"
             tabindex="0"
-            class="cursor-pointer group flex items-center justify-between p-4 rounded-2xl hover:bg-bg-surface-hover transition-colors"
+            class={twMerge(
+              "cursor-pointer group flex items-center justify-between p-4 rounded-2xl transition-all border",
+              isSelected(recipe)
+                ? "bg-action-primary/5 border-action-primary/20"
+                : "bg-transparent border-transparent hover:bg-bg-surface-hover",
+            )}
           >
             <div>
               <h3
-                class="font-bold text-text-primary group-hover:text-action-primary transition-colors font-display"
+                class={twMerge(
+                  "font-display font-bold transition-colors",
+                  isSelected(recipe)
+                    ? "text-action-primary"
+                    : "text-text-primary group-hover:text-action-primary",
+                )}
               >
                 {recipe.title}
               </h3>
@@ -143,10 +159,21 @@
                 {/each}
               </div>
             </div>
+
+            <!-- Selection Icon -->
             <div
-              class="opacity-0 group-hover:opacity-100 text-action-primary transition-opacity bg-bg-surface p-2 rounded-full shadow-sm"
+              class={twMerge(
+                "p-2 rounded-full shadow-sm transition-all",
+                isSelected(recipe)
+                  ? "bg-action-primary text-white scale-100 opacity-100"
+                  : "bg-bg-surface text-text-secondary opacity-100 group-hover:text-action-primary group-hover:bg-white",
+              )}
             >
-              <Check size={18} strokeWidth={3} />
+              {#if isSelected(recipe)}
+                <Check size={18} strokeWidth={3} />
+              {:else}
+                <Plus size={18} strokeWidth={3} />
+              {/if}
             </div>
           </div>
         {/each}
