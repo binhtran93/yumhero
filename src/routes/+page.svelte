@@ -186,9 +186,7 @@
             >
                 <ChevronLeft size={18} />
             </button>
-            <span
-                class="text-xs font-bold w-32 text-center text-text-primary"
-            >
+            <span class="text-xs font-bold w-32 text-center text-text-primary">
                 {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
             </span>
             <button
@@ -248,9 +246,7 @@
     >
         {#each DAYS as day, i}
             <button
-                class="{day === currentDayName
-                    ? 'w-auto px-4 bg-action-primary text-white shadow-sm'
-                    : 'w-10 text-text-secondary'} h-9 rounded-full flex items-center justify-center text-[11px] font-bold transition-all hover:bg-bg-surface-hover active:scale-95"
+                class="w-auto px-3 h-9 rounded-full flex items-center justify-center text-[11px] font-bold transition-all hover:bg-bg-surface-hover active:scale-95 text-text-secondary"
                 onclick={() => scrollToDay(i)}
                 aria-label="Scroll to {day}"
             >

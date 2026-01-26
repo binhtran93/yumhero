@@ -24,7 +24,12 @@
       <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
     {/if}
     <div class="flex items-center justify-center gap-2">
-      <span class={twMerge("text-lg font-display font-bold", isToday && "text-action-primary")}>
+      <span
+        class={twMerge(
+          "text-lg font-display font-bold",
+          isToday && "text-action-primary",
+        )}
+      >
         {dayPlan.day}
       </span>
       {#if isToday}
