@@ -234,11 +234,12 @@
             {:else}
                 <button
                     onclick={openLoginModal}
-                    class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors border border-border-default shadow-sm lg:shadow-none lg:border-transparent"
                     aria-label="Sign In"
                     title="Sign In"
                 >
-                    <UserCircle size={22} />
+                    <UserCircle size={20} />
+                    <span class="text-sm font-bold">Log In</span>
                 </button>
             {/if}
         </div>

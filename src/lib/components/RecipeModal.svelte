@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { X, Search, Check, Plus } from "lucide-svelte";
+  import { Search, Check, Plus, X } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
   import { mockRecipes } from "$lib/data/mockRecipes";
   import { twMerge } from "tailwind-merge";
+  import Modal from "$lib/components/Modal.svelte";
 
   interface Props {
     isOpen: boolean;
@@ -71,159 +72,157 @@
   };
 </script>
 
-{#if isOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <!-- Soft Backdrop -->
-    <div
-      class="absolute inset-0 bg-stone-900/40 backdrop-blur-sm transition-opacity"
+<Modal
+  {isOpen}
+  {onClose}
+  class="max-w-lg"
+  showCloseButton={false}
+  headerClass="border-b border-border-default bg-bg-surface"
+>
+  <!-- Custom Header Content to match design (with title passed differently if needed, but here we construct it manually to match "Add to MealType") -->
+  {#snippet titleOverride()}
+    <!-- Just in case, but we can reuse header logic or replace it. I'll pass title=null and build custom header for strict parity? Or just use slot? My Modal has limited header. Lets bypass standard header to keep custom "Add to {mealType}" -->
+  {/snippet}
+
+  <!-- Header (Replacing standard one to keep "Add to {mealType} styling) -->
+  <div
+    class="p-6 border-b border-border-default flex items-center justify-between bg-bg-surface shrink-0"
+  >
+    <span class="text-sm font-display font-bold text-text-primary">
+      Add to <span class="capitalize text-action-primary">{mealType}</span>
+    </span>
+    <button
       onclick={onClose}
-      onkeydown={(e) => e.key === "Escape" && onClose()}
-      role="button"
-      tabindex="0"
-    ></div>
-
-    <!-- Modal Content -->
-    <div
-      class="relative z-10 w-full max-w-lg bg-bg-surface border border-border-strong shadow-2xl flex flex-col max-h-[85vh] rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
     >
-      <!-- Header -->
-      <div
-        class="p-6 border-b border-border-default flex items-center justify-between bg-bg-surface shrink-0"
-      >
-        <span class="text-sm font-display font-bold text-text-primary">
-          Add to <span class="capitalize text-action-primary">{mealType}</span>
-        </span>
-        <button
-          onclick={onClose}
-          class="p-2 -mr-2 text-text-secondary hover:text-text-primary transition-colors"
-        >
-          <X size={20} />
-        </button>
-      </div>
+      <X size={20} />
+    </button>
+  </div>
 
-      <!-- Search & Selected -->
+  <!-- Search & Selected -->
+  <div
+    class="flex flex-col border-b border-border-default bg-bg-surface shrink-0"
+  >
+    <div class="px-6 py-4">
+      <div class="relative">
+        <Search
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+          size={18}
+        />
+        <input
+          type="text"
+          placeholder={`Search recipes...`}
+          class="w-full pl-11 pr-4 py-3 text-sm bg-bg-accent-subtle border border-border-default rounded-2xl focus:outline-none focus:border-action-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
+        />
+      </div>
+    </div>
+
+    <!-- Selected Recipes Display -->
+    {#if selectedRecipes.length > 0}
+      <div class="px-6 pb-4 overflow-x-auto">
+        <div class="flex flex-wrap gap-2">
+          {#each selectedRecipes as recipe}
+            <button
+              onclick={() => handleSelect(recipe)}
+              class="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
+            >
+              <span>{recipe.title}</span>
+              <X size={12} strokeWidth={3} />
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
+  </div>
+
+  <!-- List -->
+  <div
+    class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2 h-96"
+  >
+    <!-- Fixed height or relative? Modal handles flex-1 overflow, but we need to ensure parent flex works. Modal body is flex-1 overflow-auto. -->
+    {#each mockRecipes as recipe (recipe.id)}
       <div
-        class="flex flex-col border-b border-border-default bg-bg-surface shrink-0"
+        onclick={() => handleSelect(recipe)}
+        onkeydown={(e) => e.key === "Enter" && handleSelect(recipe)}
+        role="button"
+        tabindex="0"
+        class={twMerge(
+          "cursor-pointer group flex items-center justify-between px-4 py-2 rounded-2xl transition-all border",
+          isSelected(recipe)
+            ? "bg-action-primary/5 border-action-primary/20"
+            : "bg-transparent border-transparent hover:bg-bg-surface-hover",
+        )}
       >
-        <div class="px-6 py-4">
-          <div class="relative">
-            <Search
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder={`Search recipes...`}
-              class="w-full pl-11 pr-4 py-3 text-sm bg-bg-accent-subtle border border-border-default rounded-2xl focus:outline-none focus:border-action-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
-            />
+        <div>
+          <h3
+            class={twMerge(
+              "font-display font-bold transition-colors",
+              isSelected(recipe)
+                ? "text-action-primary"
+                : "text-text-primary group-hover:text-action-primary",
+            )}
+          >
+            {recipe.title}
+          </h3>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-xs text-text-secondary font-medium"
+              >Servings:</span
+            >
+            <div
+              class="flex items-center gap-1 bg-bg-accent-subtle border border-border-default rounded-lg overflow-hidden"
+            >
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  updateServings(recipe.id, -1);
+                }}
+                class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+              >
+                <span class="text-sm font-bold">−</span>
+              </button>
+              <span
+                class="px-2 py-1 text-xs font-bold text-text-primary min-w-6 text-center"
+                >{getServings(recipe.id)}</span
+              >
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  updateServings(recipe.id, 1);
+                }}
+                class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+              >
+                <span class="text-sm font-bold">+</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Selected Recipes Display -->
-        {#if selectedRecipes.length > 0}
-          <div class="px-6 pb-4 overflow-x-auto">
-            <div class="flex flex-wrap gap-2">
-              {#each selectedRecipes as recipe}
-                <button
-                  onclick={() => handleSelect(recipe)}
-                  class="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
-                >
-                  <span>{recipe.title}</span>
-                  <X size={12} strokeWidth={3} />
-                </button>
-              {/each}
-            </div>
-          </div>
-        {/if}
-      </div>
-
-      <!-- List -->
-      <div class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2">
-        {#each mockRecipes as recipe (recipe.id)}
-          <div
-            onclick={() => handleSelect(recipe)}
-            onkeydown={(e) => e.key === "Enter" && handleSelect(recipe)}
-            role="button"
-            tabindex="0"
-            class={twMerge(
-              "cursor-pointer group flex items-center justify-between px-4 py-2 rounded-2xl transition-all border",
-              isSelected(recipe)
-                ? "bg-action-primary/5 border-action-primary/20"
-                : "bg-transparent border-transparent hover:bg-bg-surface-hover",
-            )}
-          >
-            <div>
-              <h3
-                class={twMerge(
-                  "font-display font-bold transition-colors",
-                  isSelected(recipe)
-                    ? "text-action-primary"
-                    : "text-text-primary group-hover:text-action-primary",
-                )}
-              >
-                {recipe.title}
-              </h3>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-xs text-text-secondary font-medium"
-                  >Servings:</span
-                >
-                <div
-                  class="flex items-center gap-1 bg-bg-accent-subtle border border-border-default rounded-lg overflow-hidden"
-                >
-                  <button
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      updateServings(recipe.id, -1);
-                    }}
-                    class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-                  >
-                    <span class="text-sm font-bold">−</span>
-                  </button>
-                  <span
-                    class="px-2 py-1 text-xs font-bold text-text-primary min-w-6 text-center"
-                    >{getServings(recipe.id)}</span
-                  >
-                  <button
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      updateServings(recipe.id, 1);
-                    }}
-                    class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-                  >
-                    <span class="text-sm font-bold">+</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Selection Icon -->
-            <div
-              class={twMerge(
-                "p-2 rounded-full shadow-sm transition-all",
-                isSelected(recipe)
-                  ? "bg-action-primary text-white scale-100 opacity-100"
-                  : "bg-bg-surface text-text-secondary opacity-100 group-hover:text-action-primary group-hover:bg-white",
-              )}
-            >
-              {#if isSelected(recipe)}
-                <Check size={18} strokeWidth={3} />
-              {:else}
-                <Plus size={18} strokeWidth={3} />
-              {/if}
-            </div>
-          </div>
-        {/each}
-      </div>
-
-      <!-- Done Button Footer -->
-      <div class="p-4 border-t border-border-default bg-bg-surface shrink-0">
-        <button
-          onclick={handleDone}
-          class="w-full py-3 rounded-xl bg-action-primary text-white font-bold text-sm shadow-sm hover:bg-action-primary/90 transition-colors"
+        <!-- Selection Icon -->
+        <div
+          class={twMerge(
+            "p-2 rounded-full shadow-sm transition-all",
+            isSelected(recipe)
+              ? "bg-action-primary text-white scale-100 opacity-100"
+              : "bg-bg-surface text-text-secondary opacity-100 group-hover:text-action-primary group-hover:bg-white",
+          )}
         >
-          Done {selectedRecipes.length > 0 ? `(${selectedRecipes.length})` : ""}
-        </button>
+          {#if isSelected(recipe)}
+            <Check size={18} strokeWidth={3} />
+          {:else}
+            <Plus size={18} strokeWidth={3} />
+          {/if}
+        </div>
       </div>
-    </div>
+    {/each}
   </div>
-{/if}
+
+  <!-- Done Button Footer -->
+  <div class="p-4 border-t border-border-default bg-bg-surface shrink-0">
+    <button
+      onclick={handleDone}
+      class="w-full py-3 rounded-xl bg-action-primary text-white font-bold text-sm shadow-sm hover:bg-action-primary/90 transition-colors"
+    >
+      Done {selectedRecipes.length > 0 ? `(${selectedRecipes.length})` : ""}
+    </button>
+  </div>
+</Modal>
