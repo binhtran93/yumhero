@@ -29,7 +29,7 @@
 <div class="relative">
     <button
         onclick={toggle}
-        class="rounded-full transition-transform hover:scale-105 active:scale-95 focus:outline-none"
+        class="rounded-full transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary/30"
         aria-label="User Menu"
         aria-expanded={isOpen}
     >
