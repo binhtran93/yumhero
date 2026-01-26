@@ -12,25 +12,18 @@
   let { dayPlan, isToday = false, onMealClick, onMealClear }: Props = $props();
 </script>
 
-<div
-  class="flex flex-col h-full border-r border-border-subtle last:border-r-0 min-w-0 bg-canvas"
->
-  <!-- Header -->
+<div class="flex flex-col h-full min-w-0">
+  <!-- Compact Header -->
   <div
-    class={`p-4 border-b border-border-strong flex flex-col justify-between h-32 ${isToday ? "bg-surface" : ""}`}
+    class={`mb-2 text-center py-1 rounded-t-lg mx-1 ${isToday ? "bg-black text-white" : "text-text-secondary"}`}
   >
-    <span
-      class={`text-xs uppercase tracking-widest font-bold ${isToday ? "text-accent" : "text-text-secondary"}`}
-    >
-      {dayPlan.day}
+    <span class="text-[10px] uppercase tracking-widest font-bold">
+      {dayPlan.day.substring(0, 3)}
     </span>
-    {#if isToday}
-      <div class="w-1.5 h-1.5 bg-accent rounded-full mb-1"></div>
-    {/if}
   </div>
 
-  <!-- Slots -->
-  <div class="flex-1 flex flex-col">
+  <!-- Slots Container -->
+  <div class="flex-1 flex flex-col gap-3 px-1 pb-4">
     <MealSlot
       type="breakfast"
       recipes={dayPlan.meals.breakfast}
