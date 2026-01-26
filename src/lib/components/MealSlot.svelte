@@ -121,7 +121,7 @@
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
-            class="w-full py-6 rounded border border-dashed border-gray-400 hover:border-black hover:bg-gray-50 transition-all cursor-pointer flex items-center justify-center gap-2 group bg-white"
+            class="w-full py-16 rounded border border-dashed border-gray-400 hover:border-black hover:bg-gray-50 transition-all cursor-pointer flex items-center justify-center gap-2 group bg-white"
         >
             <div class="text-black group-hover:scale-110 transition-transform">
                 <Plus size={18} strokeWidth={2.5} />
