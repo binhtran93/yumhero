@@ -3,10 +3,10 @@
 @theme {
     --color-canvas: #FAFAFA;
     --color-surface: #FFFFFF;
-    --color-border-subtle: #E4E4E7;
-    /* Zinc 200 */
-    --color-border-strong: #D4D4D8;
-    /* Zinc 300 */
+    --color-border-subtle: #D4D4D8;
+    /* Zinc 300 (was 200) */
+    --color-border-strong: #A1A1AA;
+    /* Zinc 400 (was 300) */
     --color-text-primary: #18181B;
     /* Zinc 900 */
     --color-text-secondary: #71717A;
