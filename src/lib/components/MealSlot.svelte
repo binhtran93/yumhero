@@ -99,23 +99,13 @@
                     {/if}
 
                     <h4
-                        class="text-sm font-bold text-text-primary mb-2 pl-2 leading-snug font-display"
+                        class="text-sm font-bold text-text-primary leading-snug font-display"
                     >
                         {recipe.title}
                     </h4>
 
-                    <div class="flex flex-wrap gap-1.5 pl-2">
-                        {#each recipe.tags.slice(0, 2) as tag}
-                            <span
-                                class="text-[10px] text-text-secondary bg-bg-accent-subtle px-2 py-0.5 rounded-full border border-border-strong font-medium"
-                            >
-                                {tag}
-                            </span>
-                        {/each}
-                    </div>
-
                     {#if recipe.servings}
-                        <div class="pl-2 mt-2">
+                        <div class="">
                             <span
                                 class="text-[11px] text-text-secondary font-medium"
                             >
