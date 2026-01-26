@@ -162,11 +162,11 @@
         Moon,
         Sun,
         UserCircle,
-        LogOut,
     } from "lucide-svelte";
     import { theme } from "$lib/stores/theme";
     import { user, signOut } from "$lib/stores/auth";
     import LoginModal from "$lib/components/LoginModal.svelte";
+    import Avatar from "$lib/components/Avatar.svelte";
 
     const toggleTheme = () => {
         $theme = $theme === "light" ? "dark" : "light";
@@ -233,12 +233,16 @@
 
             {#if $user}
                 <button
-                    class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                    class="rounded-full transition-transform hover:scale-105 active:scale-95"
                     onclick={handleSignOut}
                     aria-label="Sign Out"
                     title="Sign Out"
                 >
-                    <LogOut size={22} />
+                    <Avatar
+                        src={$user.photoURL}
+                        name={$user.displayName || $user.email}
+                        size="md"
+                    />
                 </button>
             {:else}
                 <button
