@@ -12,7 +12,7 @@
   let { dayPlan, isToday = false, onMealClick, onMealClear }: Props = $props();
 </script>
 
-<div class="flex flex-col h-full min-w-0">
+<div class="flex flex-col min-w-0 h-auto">
   <!-- Compact Header -->
   <!-- Compact Header (Warm & Friendly) -->
   <div

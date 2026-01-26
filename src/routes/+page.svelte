@@ -75,7 +75,7 @@
 </script>
 
 <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 h-full w-full bg-stone-100 gap-3 p-4 overflow-y-auto"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 w-full min-h-screen bg-stone-100 gap-3 p-4 items-start"
 >
     {#each plan as dayPlan (dayPlan.day)}
         <DayColumn

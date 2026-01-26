@@ -45,7 +45,7 @@
 </script>
 
 <!-- The Slot Container -->
-<div class="flex flex-col gap-2 h-full">
+<div class="flex flex-col gap-2 w-full">
     {#if recipes.length > 0}
         <!-- Populated State -->
         <div class="flex items-center justify-between px-2">
@@ -121,21 +121,21 @@
             </button>
         </div>
     {:else}
-        <!-- Empty State: Friendly Big Button -->
+        <!-- Empty State: Compact Button -->
         <div
             role="button"
             tabindex="0"
             onclick={onClick}
             onkeydown={(e) => e.key === "Enter" && onClick()}
             class={twMerge(
-                "h-full min-h-[90px] rounded-2xl border border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-1 group",
-                "border-stone-300",
-                colors.emptyBg,
+                "w-full py-4 rounded-2xl border border-dashed transition-all cursor-pointer flex items-center justify-center gap-2 group",
+                "border-stone-300 bg-white/40 hover:bg-white",
+                colors.emptyBg.replace("/50", "/30"),
             )}
         >
             <span
                 class={twMerge(
-                    "text-[10px] uppercase font-bold tracking-widest opacity-50 group-hover:opacity-100 transition-opacity",
+                    "text-[10px] uppercase font-bold tracking-widest opacity-60 group-hover:opacity-100 transition-opacity",
                     colors.label,
                 )}
             >
@@ -143,11 +143,11 @@
             </span>
             <div
                 class={twMerge(
-                    "opacity-60 group-hover:opacity-100 transition-transform group-hover:scale-110 duration-200",
+                    "opacity-50 group-hover:opacity-100 transition-transform group-hover:scale-110 duration-200",
                     colors.emptyIcon,
                 )}
             >
-                <Plus size={20} strokeWidth={3} />
+                <Plus size={16} strokeWidth={3} />
             </div>
         </div>
     {/if}
