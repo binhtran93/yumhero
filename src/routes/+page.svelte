@@ -111,36 +111,117 @@
         window.addEventListener("resize", checkScroll);
         return () => window.removeEventListener("resize", checkScroll);
     });
+
+    // Week Navigation logic
+    let currentDate = $state(new Date());
+
+    const getWeekRange = (date: Date) => {
+        const start = new Date(date);
+        const day = start.getDay();
+        const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+        start.setDate(diff);
+
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+
+        return { start, end };
+    };
+
+    let weekRange = $derived(getWeekRange(currentDate));
+
+    // Format: "Jan 26 - Feb 01"
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+        });
+    };
+
+    const prevWeek = () => {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() - 7);
+        currentDate = d;
+        // Logic to refresh plan would go here
+    };
+
+    const nextWeek = () => {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() + 7);
+        currentDate = d;
+        // Logic to refresh plan would go here
+    };
+
+    import { ChevronLeft, ChevronRight } from "lucide-svelte";
 </script>
 
 <svelte:window onresize={checkScroll} />
 
-<div
-    bind:this={scrollContainer}
-    class="h-screen w-full overflow-x-auto bg-bg-default snap-x snap-mandatory"
->
-    <div
-        class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-border-default"
+<div class="h-full flex flex-col bg-bg-default">
+    <!-- Header -->
+    <header
+        class="h-14 border-b border-border-default bg-bg-surface flex items-center justify-between px-4 shrink-0 z-20 relative"
     >
-        {#each plan as dayPlan, i (dayPlan.day)}
-            <div
-                class="h-full shrink-0 snap-start relative"
-                bind:this={dayRefs[i]}
+        <div class="flex items-center gap-4">
+            <h1
+                class="text-sm font-bold tracking-tight uppercase text-text-primary"
             >
-                <DayColumn
-                    {dayPlan}
-                    isToday={dayPlan.day === currentDayName}
-                    onMealClick={handleMealClick}
-                    onMealClear={handleClearMeal}
-                />
-                {#if flashingIndex === i}
-                    <div
-                        transition:fade={{ duration: 300 }}
-                        class="absolute inset-0 bg-yellow-400/20 pointer-events-none z-20 mix-blend-multiply dark:mix-blend-overlay dark:bg-yellow-600/30"
-                    ></div>
-                {/if}
-            </div>
-        {/each}
+                YumHero <span
+                    class="text-text-secondary font-normal ml-2 hidden sm:inline"
+                    >Weekly Planner</span
+                >
+            </h1>
+        </div>
+
+        <div
+            class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default"
+        >
+            <button
+                class="p-1 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                onclick={prevWeek}
+            >
+                <ChevronLeft size={16} />
+            </button>
+            <span
+                class="text-xs font-mono font-medium w-28 text-center text-text-primary"
+            >
+                {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+            </span>
+            <button
+                class="p-1 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                onclick={nextWeek}
+            >
+                <ChevronRight size={16} />
+            </button>
+        </div>
+    </header>
+
+    <div
+        bind:this={scrollContainer}
+        class="flex-1 w-full overflow-x-auto bg-bg-default snap-x snap-mandatory"
+    >
+        <div
+            class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-border-default"
+        >
+            {#each plan as dayPlan, i (dayPlan.day)}
+                <div
+                    class="h-full shrink-0 snap-start relative"
+                    bind:this={dayRefs[i]}
+                >
+                    <DayColumn
+                        {dayPlan}
+                        isToday={dayPlan.day === currentDayName}
+                        onMealClick={handleMealClick}
+                        onMealClear={handleClearMeal}
+                    />
+                    {#if flashingIndex === i}
+                        <div
+                            transition:fade={{ duration: 300 }}
+                            class="absolute inset-0 bg-yellow-400/20 pointer-events-none z-20 mix-blend-multiply dark:mix-blend-overlay dark:bg-yellow-600/30"
+                        ></div>
+                    {/if}
+                </div>
+            {/each}
+        </div>
     </div>
 </div>
 
