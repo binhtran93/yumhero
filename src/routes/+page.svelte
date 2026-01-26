@@ -134,6 +134,8 @@
 
     let weekRange = $derived(getWeekRange(currentDate));
 
+    import { ChevronLeft, ChevronRight } from "lucide-svelte";
+
     // Format: "Jan 26 - Feb 01"
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("en-US", {
@@ -154,30 +156,6 @@
         d.setDate(d.getDate() + 7);
         currentDate = d;
         // Logic to refresh plan would go here
-    };
-
-    import {
-        ChevronLeft,
-        ChevronRight,
-        Moon,
-        Sun,
-        UserCircle,
-    } from "lucide-svelte";
-    import { theme } from "$lib/stores/theme";
-    import { user } from "$lib/stores/auth";
-    import LoginModal from "$lib/components/LoginModal.svelte";
-    import UserDropdown from "$lib/components/UserDropdown.svelte";
-
-    const toggleTheme = () => {
-        $theme = $theme === "light" ? "dark" : "light";
-    };
-
-    // signOut is now handled in UserDropdown
-
-    let isLoginModalOpen = $state(false);
-
-    const openLoginModal = () => {
-        isLoginModalOpen = true;
     };
 </script>
 
@@ -214,34 +192,6 @@
             >
                 <ChevronRight size={18} />
             </button>
-        </div>
-
-        <div class="flex items-center gap-2 ml-4">
-            <button
-                class="p-2 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-                onclick={toggleTheme}
-                aria-label="Toggle Dark Mode"
-            >
-                {#if $theme === "light"}
-                    <Sun size={22} />
-                {:else}
-                    <Moon size={22} />
-                {/if}
-            </button>
-
-            {#if $user}
-                <UserDropdown />
-            {:else}
-                <button
-                    onclick={openLoginModal}
-                    class="flex items-center gap-2 px-3 py-1.5 rounded-full text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors border border-border-default shadow-sm lg:shadow-none lg:border-transparent"
-                    aria-label="Sign In"
-                    title="Sign In"
-                >
-                    <UserCircle size={20} />
-                    <span class="text-sm font-bold">Log In</span>
-                </button>
-            {/if}
         </div>
     </header>
 
@@ -299,9 +249,4 @@
     mealType={modal.mealType}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
-/>
-
-<LoginModal
-    isOpen={isLoginModalOpen}
-    onClose={() => (isLoginModalOpen = false)}
 />
