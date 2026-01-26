@@ -146,7 +146,7 @@
             role="button"
             tabindex="0"
             class={twMerge(
-              "cursor-pointer group flex items-center justify-between p-4 rounded-2xl transition-all border",
+              "cursor-pointer group flex items-center justify-between px-4 py-2 rounded-2xl transition-all border",
               isSelected(recipe)
                 ? "bg-action-primary/5 border-action-primary/20"
                 : "bg-transparent border-transparent hover:bg-bg-surface-hover",
@@ -163,19 +163,7 @@
               >
                 {recipe.title}
               </h3>
-              <div class="flex gap-2 mt-2">
-                {#each recipe.tags as tag}
-                  <span
-                    class={twMerge(
-                      "text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border",
-                      getTagColor(tag),
-                    )}
-                  >
-                    {tag}
-                  </span>
-                {/each}
-              </div>
-              <div class="flex items-center gap-2 mt-2">
+              <div class="flex items-center gap-2 mt-1">
                 <span class="text-xs text-text-secondary font-medium"
                   >Servings:</span
                 >
@@ -192,7 +180,7 @@
                     <span class="text-sm font-bold">−</span>
                   </button>
                   <span
-                    class="px-2 py-1 text-xs font-bold text-text-primary min-w-[24px] text-center"
+                    class="px-2 py-1 text-xs font-bold text-text-primary min-w-6 text-center"
                     >{getServings(recipe.id)}</span
                   >
                   <button
