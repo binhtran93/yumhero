@@ -69,7 +69,7 @@ export async function POST({ request }) {
         `;
 
         const { output: recipe } = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-2.0-flash-lite'),
             experimental_output: Output.object({ schema: RecipeSchema }),
             system: prompt,
             messages: [
