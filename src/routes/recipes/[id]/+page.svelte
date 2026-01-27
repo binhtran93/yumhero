@@ -10,20 +10,13 @@
         Clock,
         Users,
         Flame,
-        ArrowLeft,
-        Pencil,
-        Share2,
         ChefHat,
         Utensils,
         ExternalLink,
         Check,
-        EllipsisVertical,
-        Trash2,
     } from "lucide-svelte";
-    import { fade, fly, slide, scale } from "svelte/transition";
-    import { goto } from "$app/navigation";
-    import { deleteDoc, doc } from "firebase/firestore";
-    import { db } from "$lib/firebase";
+    import { fade } from "svelte/transition";
+    import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
 
     interface Props {
         data: PageData;
@@ -49,145 +42,15 @@
 
     let recipe = $derived($recipeStore.data);
     let loading = $derived($recipeStore.loading);
-
-    let isMenuOpen = $state(false);
-    let isDeleteModalOpen = $state(false);
-    let isDeleting = $state(false);
-
-    function toggleMenu() {
-        isMenuOpen = !isMenuOpen;
-    }
-
-    function closeMenu() {
-        isMenuOpen = false;
-    }
-
-    // Handle clicking outside of menu
-    function clickOutside(node: HTMLElement) {
-        const handleClick = (event: MouseEvent) => {
-            if (node && !node.contains(event.target as Node) && isMenuOpen) {
-                closeMenu();
-            }
-        };
-
-        document.addEventListener("click", handleClick, true);
-
-        return {
-            destroy() {
-                document.removeEventListener("click", handleClick, true);
-            },
-        };
-    }
-
-    async function handleDelete() {
-        if (!$user) return;
-        isDeleting = true;
-        try {
-            await deleteDoc(doc(db, `users/${$user.uid}/recipes/${data.id}`));
-            await goto("/recipes");
-        } catch (error) {
-            console.error("Error deleting recipe:", error);
-            isDeleting = false;
-        }
-    }
 </script>
 
 <div class="h-full flex flex-col bg-bg-default overflow-hidden">
     <!-- Header (Visible on all screens) -->
     <div class="shrink-0 z-20 bg-bg-default border-b border-border-default">
         <Header title="Recipe Details" showBack={true} backUrl="/recipes">
-            <div class="relative" use:clickOutside>
-                <button
-                    onclick={toggleMenu}
-                    class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-default rounded-full transition-colors"
-                >
-                    <EllipsisVertical size={24} />
-                </button>
-
-                {#if isMenuOpen}
-                    <div
-                        transition:fade={{ duration: 100 }}
-                        class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border-default py-1 z-50 overflow-hidden"
-                    >
-                        <button
-                            class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
-                            onclick={() => {
-                                closeMenu();
-                                // TODO: Implement share
-                            }}
-                        >
-                            <Share2 size={16} />
-                            Share Recipe
-                        </button>
-                        <button
-                            class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
-                            onclick={() => {
-                                closeMenu();
-                                // TODO: Implement edit
-                            }}
-                        >
-                            <Pencil size={16} />
-                            Edit Recipe
-                        </button>
-                        <button
-                            class="w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
-                            onclick={() => {
-                                closeMenu();
-                                isDeleteModalOpen = true;
-                            }}
-                        >
-                            <Trash2 size={16} />
-                            Delete Recipe
-                        </button>
-                    </div>
-                {/if}
-            </div>
+            <RecipeActionMenu recipeId={data.id} />
         </Header>
     </div>
-
-    <!-- Delete Confirmation Modal -->
-    <!-- Delete Confirmation Modal -->
-    {#if isDeleteModalOpen}
-        <div
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            transition:fade={{ duration: 200 }}
-        >
-            <div
-                class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-border-default"
-                in:scale={{ start: 0.95, duration: 200 }}
-                out:scale={{ start: 0.95, duration: 150 }}
-            >
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-text-primary mb-2">
-                        Delete Recipe
-                    </h3>
-                    <p class="text-text-secondary">
-                        Are you sure you want to delete this recipe? This action
-                        cannot be undone.
-                    </p>
-                </div>
-                <div class="bg-bg-surface px-6 py-4 flex justify-end gap-3">
-                    <button
-                        class="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface-hover transition-colors"
-                        onclick={() => (isDeleteModalOpen = false)}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50"
-                        onclick={handleDelete}
-                        disabled={isDeleting}
-                    >
-                        {#if isDeleting}
-                            Deleting...
-                        {:else}
-                            Delete
-                        {/if}
-                    </button>
-                </div>
-            </div>
-        </div>
-    {/if}
 
     <!-- Main Content Scrollable Area -->
     <div class="flex-1 overflow-y-auto w-full">

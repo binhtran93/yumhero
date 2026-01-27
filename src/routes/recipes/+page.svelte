@@ -108,15 +108,14 @@
             >
                 {#each filteredRecipes as recipe (recipe.id)}
                     <div in:fade={{ duration: 300 }}>
-                        <a href="/recipes/{recipe.id}" class="block h-full">
-                            <RecipeCard
-                                title={recipe.title}
-                                image={recipe.image}
-                                totalTime={recipe.totalTime}
-                                servings={recipe.servings}
-                                tags={recipe.tags}
-                            />
-                        </a>
+                        <RecipeCard
+                            id={recipe.id}
+                            title={recipe.title}
+                            image={recipe.image}
+                            totalTime={recipe.totalTime}
+                            servings={recipe.servings}
+                            tags={recipe.tags}
+                        />
                     </div>
                 {/each}
             </div>
