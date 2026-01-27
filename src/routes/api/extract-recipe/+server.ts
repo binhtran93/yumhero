@@ -111,6 +111,8 @@ export async function POST({ request }) {
             For the 'unit' field, try to normalize to one of our existing units if it's a direct match or common abbreviation (e.g. 'tbsp' -> 'Tablespoon'). If it doesn't match effectively, keep the original unit.
             
             For the 'category' field in ingredients, try to assign one of our existing categories based on the ingredient name.
+
+            CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.
             
             Extract the recipe details as accurately as possible.
         `;
