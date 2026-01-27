@@ -70,7 +70,7 @@
             {#each recipes as recipe, i}
                 <!-- Friendly Card -->
                 <div
-                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm px-4 py-2 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
+                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm px-3 py-2 md:px-4 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
                 >
                     <!-- Type Accent Bar -->
                     <div
@@ -99,14 +99,14 @@
                     {/if}
 
                     <h4
-                        class="text-sm font-bold text-text-primary leading-snug font-display"
+                        class="text-xs md:text-sm font-bold text-text-primary leading-snug font-display"
                     >
                         {recipe.title}
                     </h4>
 
                     <div class="">
                         <span
-                            class="text-[11px] text-text-secondary font-medium"
+                            class="text-[10px] md:text-[11px] text-text-secondary font-medium"
                         >
                             Servings: <span class="font-bold text-text-primary"
                                 >{recipe.servings || 1}</span
@@ -118,7 +118,7 @@
 
             <!-- Friendly Add Button -->
             <button
-                class="w-full py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
+                class="w-full py-2.5 md:py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
                 onclick={(e) => {
                     e.stopPropagation();
                     onClick();

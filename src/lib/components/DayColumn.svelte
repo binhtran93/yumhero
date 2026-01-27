@@ -21,11 +21,11 @@
 </script>
 
 <div
-  class="flex flex-col h-full w-[85vw] md:w-[320px] bg-bg-surface overflow-y-auto"
+  class="flex flex-col h-full w-[90vw] md:w-[320px] bg-bg-surface overflow-y-auto"
 >
   <!-- Sticky Header -->
   <div
-    class="sticky top-0 z-10 py-6 border-b border-border-default bg-bg-surface text-text-primary"
+    class="sticky top-0 z-10 py-4 md:py-6 border-b border-border-default bg-bg-surface text-text-primary"
   >
     {#if isToday}
       <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
@@ -49,7 +49,7 @@
   </div>
 
   <!-- Slots Container -->
-  <div class="flex-1 flex flex-col p-6 gap-8">
+  <div class="flex-1 flex flex-col p-4 md:p-6 gap-5 md:gap-8">
     <!-- Breakfast Section -->
     <div class="flex flex-col gap-3">
       <div class="flex items-center gap-2">

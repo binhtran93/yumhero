@@ -35,14 +35,14 @@
 <Header title="Setup" />
 
 <div
-    class="p-4 md:p-8 max-w-4xl mx-auto h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
+    class="p-3 md:p-8 max-w-4xl mx-auto h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
 >
     <!-- Tab Navigation -->
     <div
-        class="flex items-center gap-2 mb-6 p-1 bg-bg-surface border border-border-default rounded-xl shrink-0"
+        class="flex items-center gap-2 mb-4 md:mb-6 p-1 bg-bg-surface border border-border-default rounded-xl shrink-0"
     >
         <button
-            class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
+            class="flex-1 flex items-center justify-center gap-2 py-2 md:py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
             'units'
                 ? 'bg-action-primary text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary hover:bg-bg-default/50'}"
@@ -52,7 +52,7 @@
             Units
         </button>
         <button
-            class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
+            class="flex-1 flex items-center justify-center gap-2 py-2 md:py-2.5 rounded-lg text-sm font-bold transition-all {activeTab ===
             'categories'
                 ? 'bg-action-primary text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary hover:bg-bg-default/50'}"
@@ -76,7 +76,7 @@
                 <div class="flex-1 overflow-y-auto p-0">
                     {#each $units as unit (unit)}
                         <div
-                            class="group flex items-center justify-between px-6 py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
                             transition:slide|local
                         >
                             <span class="text-text-primary font-medium"
@@ -132,7 +132,7 @@
                 <div class="flex-1 overflow-y-auto p-0">
                     {#each $categories as category (category)}
                         <div
-                            class="group flex items-center justify-between px-6 py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
                             transition:slide|local
                         >
                             <span class="text-text-primary font-medium"

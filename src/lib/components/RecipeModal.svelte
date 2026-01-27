@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { Search, Plus, Minus, X } from "lucide-svelte";
+  import { Search, Plus, Minus, X, Check } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
   import { mockRecipes } from "$lib/data/mockRecipes";
   import { twMerge } from "tailwind-merge";
+  import { fade, scale } from "svelte/transition";
   import Modal from "$lib/components/Modal.svelte";
 
   interface Props {
@@ -14,6 +15,8 @@
 
   let { isOpen, mealType, onClose, onSelect }: Props = $props();
 
+  let searchQuery = $state("");
+
   // Track quantity: Recipe ID -> { recipe, count }
   let selection = $state<Map<string, { recipe: Recipe; count: number }>>(
     new Map(),
@@ -23,6 +26,7 @@
   $effect(() => {
     if (isOpen) {
       selection = new Map();
+      searchQuery = "";
     }
   });
 
@@ -77,6 +81,12 @@
     }
     onClose();
   };
+
+  let filteredRecipes = $derived(
+    mockRecipes.filter((r) =>
+      r.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
+  );
 </script>
 
 {#snippet customHeader()}
@@ -103,7 +113,7 @@
   <div
     class="flex flex-col border-b border-border-default bg-bg-surface shrink-0"
   >
-    <div class="px-6 py-4">
+    <div class="p-4">
       <div class="relative">
         <Search
           class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
@@ -111,6 +121,7 @@
         />
         <input
           type="text"
+          bind:value={searchQuery}
           placeholder={`Search recipes...`}
           class="w-full pl-11 pr-4 py-3 text-sm bg-bg-accent-subtle border border-border-default rounded-2xl focus:outline-none focus:border-action-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
         />
@@ -119,7 +130,7 @@
 
     <!-- Selected Recipes Display -->
     {#if selection.size > 0}
-      <div class="px-6 pb-4 overflow-x-auto">
+      <div class="px-4 pb-4 overflow-x-auto">
         <div class="flex flex-wrap gap-2">
           {#each selection.values() as { recipe, count } (recipe.id)}
             <button
@@ -139,7 +150,7 @@
   <div
     class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2 h-96"
   >
-    {#each mockRecipes as recipe (recipe.id)}
+    {#each filteredRecipes as recipe (recipe.id)}
       {@const count = getCount(recipe.id)}
       <div
         class={twMerge(
@@ -154,7 +165,15 @@
         tabindex="0"
       >
         <!-- Info area -->
-        <div class="flex-1">
+        <div class="flex-1 flex items-center gap-2">
+          {#if count > 0}
+            <div
+              class="flex items-center justify-center w-5 h-5 rounded-full bg-action-primary text-white shrink-0"
+              transition:scale
+            >
+              <Check size={12} strokeWidth={3} />
+            </div>
+          {/if}
           <h3
             class={twMerge(
               "font-display font-bold transition-colors text-sm",

@@ -66,15 +66,15 @@
 <!-- Header -->
 <Header title="Profile" />
 
-<div class="p-8 max-w-2xl mx-auto">
+<div class="p-4 md:p-8 max-w-2xl mx-auto">
     {#if $user}
         <!-- User Authenticated View -->
         <div
-            class="bg-bg-surface p-8 rounded-2xl border border-border-default shadow-sm space-y-8"
+            class="bg-bg-surface p-5 md:p-8 rounded-2xl border border-border-default shadow-sm space-y-6 md:space-y-8"
             transition:fade
         >
             <div
-                class="flex flex-col items-center justify-center text-center gap-4"
+                class="flex flex-col items-center justify-center text-center gap-3 md:gap-4"
             >
                 <Avatar
                     src={$user.photoURL}
@@ -82,19 +82,21 @@
                     size="lg"
                 />
                 <div>
-                    <h2 class="text-2xl font-bold text-text-primary">
+                    <h2 class="text-xl md:text-2xl font-bold text-text-primary">
                         {$user.displayName || "User"}
                     </h2>
-                    <p class="text-text-secondary">{$user.email}</p>
+                    <p class="text-sm md:text-base text-text-secondary">
+                        {$user.email}
+                    </p>
                 </div>
             </div>
 
-            <div class="border-t border-border-default my-6"></div>
+            <div class="border-t border-border-default my-4 md:my-6"></div>
 
             <!-- User Details & Plan -->
             <div class="space-y-4">
                 <div
-                    class="flex items-center justify-between p-4 bg-bg-default rounded-xl"
+                    class="flex items-center justify-between p-3 md:p-4 bg-bg-default rounded-xl"
                 >
                     <div class="flex items-center gap-3">
                         <div
@@ -118,20 +120,20 @@
                 </div>
             </div>
 
-            <div class="border-t border-border-default my-6"></div>
+            <div class="border-t border-border-default my-4 md:my-6"></div>
 
             <!-- Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <button
                     onclick={handleSignOut}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-border-default text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors font-medium"
+                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-border-default text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors font-medium text-sm md:text-base"
                 >
                     <LogOut size={18} />
                     Sign Out
                 </button>
                 <button
                     onclick={handleDeleteAccount}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium"
+                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium text-sm md:text-base"
                 >
                     <Trash2 size={18} />
                     Delete Account
@@ -141,7 +143,7 @@
     {:else}
         <!-- Guest Login View -->
         <div
-            class="bg-bg-surface p-8 rounded-2xl border border-border-default shadow-sm max-w-md mx-auto"
+            class="bg-bg-surface p-5 md:p-8 rounded-2xl border border-border-default shadow-sm max-w-md mx-auto"
             transition:fade
         >
             <h2 class="text-xl font-bold text-text-primary mb-6 text-center">
