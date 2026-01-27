@@ -132,7 +132,7 @@
 
         <!-- Filter Chips -->
         <div
-            class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 md:-mx-6 px-4 md:px-6"
+            class="flex items-start flex-wrap gap-2 max-h-28 overflow-y-auto pr-1"
         >
             <button
                 onclick={() => (activeFilter = "All")}
