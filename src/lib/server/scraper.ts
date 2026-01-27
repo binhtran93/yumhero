@@ -94,7 +94,7 @@ export async function scrapeText(url: string): Promise<{ text: string }> {
         proxyServer: proxyServerArg
     });
 
-    let page = null;
+    let page: any = null;
 
     try {
         page = await context.newPage();
@@ -104,7 +104,7 @@ export async function scrapeText(url: string): Promise<{ text: string }> {
             // @ts-ignore
             page.route = async (pattern, handler) => {
                 await page.setRequestInterception(true);
-                page.on('request', async (req) => {
+                page.on('request', async (req: any) => {
                     const route = {
                         request: () => req,
                         continue: (overrides: any) => req.continue(overrides),
@@ -135,7 +135,7 @@ export async function scrapeText(url: string): Promise<{ text: string }> {
                 }
                 return "direct"; // Let browser context proxy handle it
             }
-        });
+        } as any);
 
         // Strict timeout and navigation
         await page.goto(url, {
