@@ -16,6 +16,7 @@
         Scale,
         ShoppingBasket,
         RotateCcw,
+        Loader2,
     } from "lucide-svelte";
     import { slide, fade } from "svelte/transition";
 
@@ -122,25 +123,34 @@
                     </button>
                 </div>
                 <!-- List -->
-                <div class="flex-1 overflow-y-auto p-0">
-                    {#each $userUnits as unit (unit.id)}
+                <div class="flex-1 overflow-y-auto p-0 relative">
+                    {#if $userUnits.loading}
                         <div
-                            class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
-                            transition:slide|local
+                            class="absolute inset-0 flex items-center justify-center bg-bg-surface/50 z-10"
                         >
-                            <span class="text-text-primary font-medium"
-                                >{unit.label}</span
-                            >
-                            <button
-                                onclick={() => deleteUnit(unit.id)}
-                                class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
-                                title="Delete"
-                                aria-label="Delete unit"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                            <Loader2
+                                class="w-8 h-8 text-action-primary animate-spin"
+                            />
                         </div>
-                    {/each}
+                    {:else}
+                        {#each $userUnits.data as unit (unit.id)}
+                            <div
+                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            >
+                                <span class="text-text-primary font-medium"
+                                    >{unit.label}</span
+                                >
+                                <button
+                                    onclick={() => deleteUnit(unit.id)}
+                                    class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
+                                    title="Delete"
+                                    aria-label="Delete unit"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        {/each}
+                    {/if}
                 </div>
 
                 <!-- Add Item -->
@@ -193,25 +203,34 @@
                     </button>
                 </div>
                 <!-- List -->
-                <div class="flex-1 overflow-y-auto p-0">
-                    {#each $userTags as category (category.id)}
+                <div class="flex-1 overflow-y-auto p-0 relative">
+                    {#if $userTags.loading}
                         <div
-                            class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
-                            transition:slide|local
+                            class="absolute inset-0 flex items-center justify-center bg-bg-surface/50 z-10"
                         >
-                            <span class="text-text-primary font-medium"
-                                >{category.label}</span
-                            >
-                            <button
-                                onclick={() => deleteCategory(category.id)}
-                                class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
-                                title="Delete"
-                                aria-label="Delete category"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                            <Loader2
+                                class="w-8 h-8 text-action-primary animate-spin"
+                            />
                         </div>
-                    {/each}
+                    {:else}
+                        {#each $userTags.data as category (category.id)}
+                            <div
+                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                            >
+                                <span class="text-text-primary font-medium"
+                                    >{category.label}</span
+                                >
+                                <button
+                                    onclick={() => deleteCategory(category.id)}
+                                    class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
+                                    title="Delete"
+                                    aria-label="Delete category"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        {/each}
+                    {/if}
                 </div>
 
                 <!-- Add Item -->

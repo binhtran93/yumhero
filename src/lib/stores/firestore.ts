@@ -8,18 +8,24 @@ interface StoreState<T> {
     error: Error | null;
 }
 
+export interface CollectionState<T> {
+    data: T[];
+    loading: boolean;
+}
+
 export function collectionStore<T>(
     path: string,
     queryConstraints: QueryConstraint[] = []
 ) {
-    const store = writable<T[]>([], (set) => {
+    const store = writable<CollectionState<T>>({ data: [], loading: true }, (set) => {
         const q = query(collection(db, path), ...queryConstraints);
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
-            set(data);
+            set({ data, loading: false });
         }, (error) => {
             console.error(`Error fetching collection ${path}:`, error);
+            set({ data: [], loading: false });
         });
 
         return () => unsubscribe();
@@ -30,20 +36,26 @@ export function collectionStore<T>(
     };
 }
 
+export interface DocumentState<T> {
+    data: T | null;
+    loading: boolean;
+}
+
 export function documentStore<T>(
     path: string
 ) {
-    const store = writable<T | null>(null, (set) => {
+    const store = writable<DocumentState<T>>({ data: null, loading: true }, (set) => {
         const docRef = doc(db, path);
 
         const unsubscribe = onSnapshot(docRef, (snapshot) => {
             if (snapshot.exists()) {
-                set({ id: snapshot.id, ...snapshot.data() } as T);
+                set({ data: { id: snapshot.id, ...snapshot.data() } as T, loading: false });
             } else {
-                set(null);
+                set({ data: null, loading: false });
             }
         }, (error) => {
             console.error(`Error fetching document ${path}:`, error);
+            set({ data: null, loading: false });
         });
 
         return () => unsubscribe();

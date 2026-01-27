@@ -72,9 +72,9 @@
 
     $effect(() => {
         const store = getWeekPlan(weekId);
-        const unsubscribe = store.subscribe((remotePlan) => {
-            if (remotePlan) {
-                plan = remotePlan;
+        const unsubscribe = store.subscribe((state) => {
+            if (state.data) {
+                plan = state.data;
             } else {
                 plan = createEmptyPlan(DAYS[0]);
             }

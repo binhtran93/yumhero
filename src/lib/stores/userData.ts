@@ -1,6 +1,6 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user } from './auth';
-import { collectionStore, documentStore } from './firestore';
+import { collectionStore, documentStore, type CollectionState, type DocumentState } from './firestore';
 import type { Recipe, WeeklyPlan } from '$lib/types';
 import { doc, setDoc, deleteDoc, collection, addDoc, updateDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '$lib/firebase';
@@ -20,48 +20,48 @@ export interface FoodTag {
 // Stores
 
 // 1. Units
-export const userUnits = derived<Readable<any>, Unit[]>(
+export const userUnits = derived<Readable<any>, CollectionState<Unit>>(
     user,
     ($user, set) => {
         if (!$user) {
-            set([]);
+            set({ data: [], loading: false });
             return;
         }
 
         const store = collectionStore<Unit>(`users/${$user.uid}/units`);
         return store.subscribe(set);
     },
-    []
+    { data: [], loading: true }
 );
 
 // 2. Food Tags (Categories)
-export const userTags = derived<Readable<any>, FoodTag[]>(
+export const userTags = derived<Readable<any>, CollectionState<FoodTag>>(
     user,
     ($user, set) => {
         if (!$user) {
-            set([]);
+            set({ data: [], loading: false });
             return;
         }
 
         const store = collectionStore<FoodTag>(`users/${$user.uid}/food-categories`);
         return store.subscribe(set);
     },
-    []
+    { data: [], loading: true }
 );
 
 // 3. Recipes
-export const userRecipes = derived<Readable<any>, Recipe[]>(
+export const userRecipes = derived<Readable<any>, CollectionState<Recipe>>(
     user,
     ($user, set) => {
         if (!$user) {
-            set([]);
+            set({ data: [], loading: false });
             return;
         }
 
         const store = collectionStore<Recipe>(`users/${$user.uid}/recipes`);
         return store.subscribe(set);
     },
-    []
+    { data: [], loading: true }
 );
 
 // Actions - Units
@@ -131,23 +131,22 @@ export const deleteRecipe = async (id: string) => {
 
 // Actions - Plans
 export const getWeekPlan = (weekId: string) => {
-    return derived<Readable<any>, WeeklyPlan | null>(
+    return derived<Readable<any>, { data: WeeklyPlan | null, loading: boolean }>(
         user,
         ($user, set) => {
             if (!$user) {
-                set(null);
+                set({ data: null, loading: false });
                 return;
             }
             const store = documentStore<{ days: WeeklyPlan }>(`users/${$user.uid}/plans/${weekId}`);
-            return store.subscribe((doc) => {
-                if (doc) {
-                    set(doc.days);
-                } else {
-                    set(null);
-                }
+            return store.subscribe((state) => {
+                set({
+                    data: state.data ? state.data.days : null,
+                    loading: state.loading
+                });
             });
         },
-        null
+        { data: null, loading: true }
     );
 };
 

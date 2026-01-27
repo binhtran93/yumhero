@@ -1,7 +1,7 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
     import RecipeCard from "$lib/components/RecipeCard.svelte";
-    import { Search, Filter, Plus } from "lucide-svelte";
+    import { Search, Filter, Plus, Loader2 } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
     import { userRecipes, userTags } from "$lib/stores/userData";
 
@@ -11,7 +11,7 @@
 
     // Reactive filtering
     let filteredRecipes = $derived(
-        $userRecipes.filter(
+        ($userRecipes.data || []).filter(
             (recipe) =>
                 recipe.title
                     .toLowerCase()
@@ -74,7 +74,7 @@
             >
                 All
             </button>
-            {#each $userTags as category}
+            {#each $userTags.data as category}
                 <button
                     onclick={() => (activeFilter = category.label)}
                     class="px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border {activeFilter ===
@@ -93,7 +93,11 @@
         class="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 pb-24"
         onscroll={handleScroll}
     >
-        {#if filteredRecipes.length > 0}
+        {#if $userRecipes.loading}
+            <div class="flex items-center justify-center h-64">
+                <Loader2 class="w-8 h-8 text-action-primary animate-spin" />
+            </div>
+        {:else if filteredRecipes.length > 0}
             <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto"
             >
