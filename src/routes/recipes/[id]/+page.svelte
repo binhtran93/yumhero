@@ -5,6 +5,7 @@
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
     import Header from "$lib/components/Header.svelte";
+    import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import {
         Clock,
         Users,
@@ -45,8 +46,8 @@
 </script>
 
 <div class="h-full flex flex-col bg-bg-default">
-    <!-- Mobile Header (Hidden on Desktop) -->
-    <div class="lg:hidden">
+    <!-- Header (Visible on all screens now) -->
+    <div>
         <Header title="Recipe Details" showBack={true} backUrl="/recipes" />
     </div>
 
@@ -90,19 +91,11 @@
                             <div
                                 class="relative aspect-square lg:aspect-[4/3] bg-bg-accent-subtle group"
                             >
-                                {#if recipe.image}
-                                    <img
-                                        src={recipe.image}
-                                        alt={recipe.title}
-                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
-                                {:else}
-                                    <div
-                                        class="w-full h-full flex flex-col items-center justify-center text-text-secondary/40"
-                                    >
-                                        <ChefHat size={64} />
-                                    </div>
-                                {/if}
+                                <RecipeThumbnail
+                                    src={recipe.image}
+                                    alt={recipe.title}
+                                    class="w-full h-full"
+                                />
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60 lg:opacity-40"
                                 ></div>

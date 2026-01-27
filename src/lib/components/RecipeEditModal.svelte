@@ -126,7 +126,10 @@
             const res = await fetch("/api/extract-recipe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({
+                    url,
+                    availableTags: $userTags.data.map((t) => t.label),
+                }),
             });
 
             if (!res.ok) {
