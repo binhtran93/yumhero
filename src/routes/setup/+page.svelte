@@ -7,8 +7,16 @@
         deleteUnit as deleteUnitAction,
         addCategory as addCategoryAction,
         deleteCategory as deleteCategoryAction,
+        resetUnitsToDefaults,
+        resetCategoriesToDefaults,
     } from "$lib/stores/userData";
-    import { Plus, Trash2, Scale, ShoppingBasket } from "lucide-svelte";
+    import {
+        Plus,
+        Trash2,
+        Scale,
+        ShoppingBasket,
+        RotateCcw,
+    } from "lucide-svelte";
     import { slide, fade } from "svelte/transition";
 
     let activeTab = $state("units"); // 'units' | 'categories'
@@ -26,6 +34,16 @@
         await deleteUnitAction(id);
     };
 
+    const resetUnits = async () => {
+        if (
+            confirm(
+                "This will delete all current units and restore the defaults. Are you sure?",
+            )
+        ) {
+            await resetUnitsToDefaults();
+        }
+    };
+
     const addCategory = async () => {
         if (newCategory.trim()) {
             await addCategoryAction(newCategory.trim());
@@ -35,6 +53,16 @@
 
     const deleteCategory = async (id: string) => {
         await deleteCategoryAction(id);
+    };
+
+    const resetCategories = async () => {
+        if (
+            confirm(
+                "This will delete all current categories and restore the defaults. Are you sure?",
+            )
+        ) {
+            await resetCategoriesToDefaults();
+        }
     };
 </script>
 
@@ -78,7 +106,21 @@
                 in:fade={{ duration: 200, delay: 100 }}
                 out:fade={{ duration: 100 }}
             >
-                <!-- Header (Hidden / Optional since tab explains it) -->
+                <div
+                    class="flex items-center justify-between px-4 py-2 bg-bg-default/50 border-b border-border-default"
+                >
+                    <span
+                        class="text-xs font-bold text-text-secondary uppercase tracking-wider"
+                        >My Units</span
+                    >
+                    <button
+                        onclick={resetUnits}
+                        class="text-xs flex items-center gap-1 text-action-primary hover:underline font-medium"
+                    >
+                        <RotateCcw size={12} />
+                        Reset Default
+                    </button>
+                </div>
                 <!-- List -->
                 <div class="flex-1 overflow-y-auto p-0">
                     {#each $userUnits as unit (unit.id)}
@@ -135,6 +177,21 @@
                 in:fade={{ duration: 200, delay: 100 }}
                 out:fade={{ duration: 100 }}
             >
+                <div
+                    class="flex items-center justify-between px-4 py-2 bg-bg-default/50 border-b border-border-default"
+                >
+                    <span
+                        class="text-xs font-bold text-text-secondary uppercase tracking-wider"
+                        >My Categories</span
+                    >
+                    <button
+                        onclick={resetCategories}
+                        class="text-xs flex items-center gap-1 text-action-primary hover:underline font-medium"
+                    >
+                        <RotateCcw size={12} />
+                        Reset Default
+                    </button>
+                </div>
                 <!-- List -->
                 <div class="flex-1 overflow-y-auto p-0">
                     {#each $userTags as category (category.id)}

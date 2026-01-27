@@ -2,8 +2,9 @@ import { derived, get, type Readable } from 'svelte/store';
 import { user } from './auth';
 import { collectionStore, documentStore } from './firestore';
 import type { Recipe, WeeklyPlan } from '$lib/types';
-import { doc, setDoc, deleteDoc, collection, addDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, collection, addDoc, updateDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '$lib/firebase';
+import { DEFAULT_UNITS, DEFAULT_CATEGORIES } from '$lib/constants';
 
 // Interfaces
 export interface Unit {
@@ -159,4 +160,77 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
         days: plan,
         updatedAt: new Date()
     }, { merge: true });
+};
+
+// Initialization & Resets
+export const initializeDefaults = async () => {
+    const $user = get(user);
+    if (!$user) return;
+
+    const settingsRef = doc(db, `users/${$user.uid}/settings/general`);
+    const settingsSnap = await getDoc(settingsRef);
+
+    if (!settingsSnap.exists()) {
+        const batch = writeBatch(db);
+
+        // Add Units
+        for (const u of DEFAULT_UNITS) {
+            const ref = doc(db, `users/${$user.uid}/units`, u);
+            batch.set(ref, { id: u, label: u });
+        }
+
+        // Add Categories
+        for (const c of DEFAULT_CATEGORIES) {
+            const ref = doc(db, `users/${$user.uid}/food-categories`, c);
+            batch.set(ref, { id: c, label: c });
+        }
+
+        // Mark initialized
+        batch.set(settingsRef, { initialized: true });
+
+        await batch.commit();
+        console.log("Initialized default data for user");
+    }
+};
+
+export const resetUnitsToDefaults = async () => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    const batch = writeBatch(db);
+
+    // 1. Delete existing
+    const snapshot = await getDocs(collection(db, `users/${$user.uid}/units`));
+    snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+
+    // 2. Add defaults
+    for (const u of DEFAULT_UNITS) {
+        const ref = doc(db, `users/${$user.uid}/units`, u);
+        batch.set(ref, { id: u, label: u });
+    }
+
+    await batch.commit();
+};
+
+export const resetCategoriesToDefaults = async () => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    const batch = writeBatch(db);
+
+    // 1. Delete existing
+    const snapshot = await getDocs(collection(db, `users/${$user.uid}/food-categories`));
+    snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+
+    // 2. Add defaults
+    for (const c of DEFAULT_CATEGORIES) {
+        const ref = doc(db, `users/${$user.uid}/food-categories`, c);
+        batch.set(ref, { id: c, label: c });
+    }
+
+    await batch.commit();
 };

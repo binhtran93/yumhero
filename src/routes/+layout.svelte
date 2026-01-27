@@ -2,7 +2,15 @@
 	import "../app.css";
 	import { theme } from "$lib/stores/theme";
 	import { user } from "$lib/stores/auth";
+	import { initializeDefaults } from "$lib/stores/userData";
 	import Navbar from "$lib/components/Navbar.svelte";
+
+	$effect(() => {
+		if ($user) {
+			initializeDefaults();
+		}
+	});
+
 	let { children } = $props();
 </script>
 
