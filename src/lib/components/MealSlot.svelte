@@ -66,7 +66,7 @@
                 <!-- Friendly Card -->
                 <div
                     class={twMerge(
-                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5 overflow-hidden",
+                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer transition-all hover:-translate-y-0.5 overflow-hidden",
                         "border-l-[3px]",
                         type === "breakfast"
                             ? "border-l-accent-breakfast hover:border-l-accent-breakfast"
@@ -75,7 +75,7 @@
                               : "border-l-accent-dinner hover:border-l-accent-dinner",
                         isCompact
                             ? "px-2 py-1.5 rounded-md border-l-2"
-                            : "px-3 py-2 md:px-4 rounded-xl",
+                            : "px-3 py-2 md:px-4 rounded-lg",
                     )}
                 >
                     <!-- Remove Button (Top Right) -->
@@ -136,7 +136,7 @@
                 disabled={isLoading}
             >
                 {#if isLoading}
-                    <div class="flex items-center justify-center h-[14px]">
+                    <div class="flex items-center justify-center h-3.5">
                         <Loader
                             size={14}
                             class="animate-spin text-text-secondary/50"
