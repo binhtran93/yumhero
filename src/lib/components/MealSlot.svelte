@@ -104,18 +104,15 @@
                         {recipe.title}
                     </h4>
 
-                    {#if recipe.servings}
-                        <div class="">
-                            <span
-                                class="text-[11px] text-text-secondary font-medium"
+                    <div class="">
+                        <span
+                            class="text-[11px] text-text-secondary font-medium"
+                        >
+                            Servings: <span class="font-bold text-text-primary"
+                                >{recipe.servings || 1}</span
                             >
-                                Servings: <span
-                                    class="font-bold text-text-primary"
-                                    >{recipe.servings}</span
-                                >
-                            </span>
-                        </div>
-                    {/if}
+                        </span>
+                    </div>
                 </div>
             {/each}
 
