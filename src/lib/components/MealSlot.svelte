@@ -83,25 +83,18 @@
                 <!-- Friendly Card -->
                 <div
                     class={twMerge(
-                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5",
+                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5 overflow-hidden",
+                        "border-l-[3px]",
+                        type === "breakfast"
+                            ? "border-l-accent-breakfast hover:border-l-accent-breakfast"
+                            : type === "lunch"
+                              ? "border-l-accent-lunch hover:border-l-accent-lunch"
+                              : "border-l-accent-dinner hover:border-l-accent-dinner",
                         isCompact
-                            ? "px-2 py-1.5 rounded-md"
+                            ? "px-2 py-1.5 rounded-md border-l-2"
                             : "px-3 py-2 md:px-4 rounded-xl",
                     )}
                 >
-                    <!-- Type Accent Bar -->
-                    <div
-                        class={twMerge(
-                            "absolute left-0 top-3 bottom-3 w-1 rounded-r-full",
-                            type === "breakfast"
-                                ? "bg-accent-breakfast"
-                                : type === "lunch"
-                                  ? "bg-accent-lunch"
-                                  : "bg-accent-dinner",
-                            isCompact && "w-0.5 top-1 bottom-1",
-                        )}
-                    ></div>
-
                     <!-- Remove Button (Top Right) -->
                     {#if onRemove}
                         <button
