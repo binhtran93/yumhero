@@ -2,6 +2,7 @@
   import type { DayPlan, MealType } from "$lib/types";
   import MealSlot from "./MealSlot.svelte";
   import { twMerge } from "tailwind-merge";
+  import { X } from "lucide-svelte";
 
   interface Props {
     dayPlan: DayPlan;
@@ -74,12 +75,25 @@
     <!-- Breakfast Section -->
     <div class="flex flex-col gap-3">
       {#if !isCompact}
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"></div>
-          <span
-            class="text-xs font-bold text-text-primary uppercase tracking-widest"
-            >Breakfast</span
-          >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"
+            ></div>
+            <span
+              class="text-xs font-bold text-text-primary uppercase tracking-widest"
+              >Breakfast</span
+            >
+          </div>
+          {#if dayPlan.meals.breakfast.length > 0}
+            <button
+              onclick={() => onMealClear(dayPlan.day, "breakfast")}
+              class="text-text-secondary hover:text-red-600 transition-colors"
+              title="Clear Breakfast"
+            >
+              <X size={14} />
+            </button>
+          {/if}
         </div>
       {/if}
       <MealSlot
@@ -96,12 +110,23 @@
     <!-- Lunch Section -->
     <div class="flex flex-col gap-3">
       {#if !isCompact}
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
-          <span
-            class="text-xs font-bold text-text-primary uppercase tracking-widest"
-            >Lunch</span
-          >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
+            <span
+              class="text-xs font-bold text-text-primary uppercase tracking-widest"
+              >Lunch</span
+            >
+          </div>
+          {#if dayPlan.meals.lunch.length > 0}
+            <button
+              onclick={() => onMealClear(dayPlan.day, "lunch")}
+              class="text-text-secondary hover:text-red-600 transition-colors"
+              title="Clear Lunch"
+            >
+              <X size={14} />
+            </button>
+          {/if}
         </div>
       {/if}
       <MealSlot
@@ -118,12 +143,23 @@
     <!-- Dinner Section -->
     <div class="flex flex-col gap-3">
       {#if !isCompact}
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
-          <span
-            class="text-xs font-bold text-text-primary uppercase tracking-widest"
-            >Dinner</span
-          >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
+            <span
+              class="text-xs font-bold text-text-primary uppercase tracking-widest"
+              >Dinner</span
+            >
+          </div>
+          {#if dayPlan.meals.dinner.length > 0}
+            <button
+              onclick={() => onMealClear(dayPlan.day, "dinner")}
+              class="text-text-secondary hover:text-red-600 transition-colors"
+              title="Clear Dinner"
+            >
+              <X size={14} />
+            </button>
+          {/if}
         </div>
       {/if}
       <MealSlot

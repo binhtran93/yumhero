@@ -61,23 +61,6 @@
     {#if recipes.length > 0}
         <!-- Header is now handled by DayColumn for better structure -->
 
-        {#if !isCompact}
-            <div class="flex items-center justify-end px-1 -mt-8 mb-2">
-                {#if onClear}
-                    <button
-                        onclick={(e) => {
-                            e.stopPropagation();
-                            onClear(e);
-                        }}
-                        class="text-text-secondary hover:text-red-600 transition-colors"
-                        title="Clear"
-                    >
-                        <X size={14} />
-                    </button>
-                {/if}
-            </div>
-        {/if}
-
         <div class="flex flex-col gap-2">
             {#each recipes as recipe, i}
                 <!-- Friendly Card -->
