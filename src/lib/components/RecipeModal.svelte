@@ -9,11 +9,18 @@
   interface Props {
     isOpen: boolean;
     mealType: MealType | null;
+    currentRecipes?: Recipe[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
   }
 
-  let { isOpen, mealType, onClose, onSelect }: Props = $props();
+  let {
+    isOpen,
+    mealType,
+    currentRecipes = [],
+    onClose,
+    onSelect,
+  }: Props = $props();
 
   let searchQuery = $state("");
 
@@ -25,7 +32,22 @@
   // Reset selection when modal opens
   $effect(() => {
     if (isOpen) {
-      selection = new Map();
+      const newSelection = new Map<string, { recipe: Recipe; count: number }>();
+      currentRecipes.forEach((recipe) => {
+        // If the recipe is already in the map (duplicate entries in array), add to count
+        // But typically currentRecipes comes from the plan which merges them.
+        // We act as if currentRecipes is the source of truth.
+        // However, plan structure is array of recipes.
+        // Let's assume unique IDs in the passed currentRecipes for now, or handle duplicates.
+        const existing = newSelection.get(recipe.id);
+        const count = recipe.servings || 1;
+        if (existing) {
+          existing.count += count;
+        } else {
+          newSelection.set(recipe.id, { recipe, count });
+        }
+      });
+      selection = newSelection;
       searchQuery = "";
     }
   });

@@ -46,10 +46,12 @@
         isOpen: boolean;
         day: string | null;
         mealType: MealType | null;
+        currentRecipes: Recipe[];
     }>({
         isOpen: false,
         day: null,
         mealType: null,
+        currentRecipes: [],
     });
 
     // Week Navigation logic
@@ -95,9 +97,13 @@
     // Handlers
     const handleMealClick = (day: string, type: MealType) => {
         console.log("Open Modal:", day, type);
+        const dayPlan = plan.find((d) => d.day === day);
+        const currentRecipes = dayPlan ? dayPlan.meals[type] : [];
+
         modal.isOpen = true;
         modal.day = day;
         modal.mealType = type;
+        modal.currentRecipes = currentRecipes;
     };
 
     const handleRecipeSelect = (recipes: Recipe[]) => {
@@ -306,6 +312,7 @@
 <RecipeModal
     isOpen={modal.isOpen}
     mealType={modal.mealType}
+    currentRecipes={modal.currentRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
 />
