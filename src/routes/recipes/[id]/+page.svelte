@@ -17,8 +17,9 @@
         Utensils,
         ExternalLink,
         Check,
+        EllipsisVertical,
     } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+    import { fade, fly, slide } from "svelte/transition";
 
     interface Props {
         data: PageData;
@@ -44,12 +45,76 @@
 
     let recipe = $derived($recipeStore.data);
     let loading = $derived($recipeStore.loading);
+
+    let isMenuOpen = $state(false);
+
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+    }
+
+    function closeMenu() {
+        isMenuOpen = false;
+    }
+
+    // Handle clicking outside of menu
+    function clickOutside(node: HTMLElement) {
+        const handleClick = (event: MouseEvent) => {
+            if (node && !node.contains(event.target as Node) && isMenuOpen) {
+                closeMenu();
+            }
+        };
+
+        document.addEventListener("click", handleClick, true);
+
+        return {
+            destroy() {
+                document.removeEventListener("click", handleClick, true);
+            },
+        };
+    }
 </script>
 
 <div class="h-full flex flex-col bg-bg-default overflow-hidden">
     <!-- Header (Visible on all screens) -->
     <div class="shrink-0 z-20 bg-bg-default border-b border-border-default">
-        <Header title="Recipe Details" showBack={true} backUrl="/recipes" />
+        <Header title="Recipe Details" showBack={true} backUrl="/recipes">
+            <div class="relative" use:clickOutside>
+                <button
+                    onclick={toggleMenu}
+                    class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-default rounded-full transition-colors"
+                >
+                    <EllipsisVertical size={24} />
+                </button>
+
+                {#if isMenuOpen}
+                    <div
+                        transition:fade={{ duration: 100 }}
+                        class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border-default py-1 z-50 overflow-hidden"
+                    >
+                        <button
+                            class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
+                            onclick={() => {
+                                closeMenu();
+                                // TODO: Implement share
+                            }}
+                        >
+                            <Share2 size={16} />
+                            Share Recipe
+                        </button>
+                        <button
+                            class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
+                            onclick={() => {
+                                closeMenu();
+                                // TODO: Implement edit
+                            }}
+                        >
+                            <Pencil size={16} />
+                            Edit Recipe
+                        </button>
+                    </div>
+                {/if}
+            </div>
+        </Header>
     </div>
 
     <!-- Main Content Scrollable Area -->
@@ -77,21 +142,6 @@
                                 alt={recipe.title}
                                 class="w-full h-full object-cover"
                             />
-                            <!-- Image Actions Overlay -->
-                            <div
-                                class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                                <button
-                                    class="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white text-text-primary transition-all active:scale-95"
-                                >
-                                    <Share2 size={16} />
-                                </button>
-                                <button
-                                    class="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white text-action-primary transition-all active:scale-95"
-                                >
-                                    <Pencil size={16} />
-                                </button>
-                            </div>
                         </div>
                     </div>
 
