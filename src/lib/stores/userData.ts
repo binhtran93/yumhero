@@ -80,7 +80,24 @@ export const deleteUnit = async (id: string) => {
     if (!$user) throw new Error("User not authenticated");
 
     await deleteDoc(doc(db, `users/${$user.uid}/units`, id));
+    await deleteDoc(doc(db, `users/${$user.uid}/units`, id));
 }
+
+export const updateUnit = async (oldLabel: string, newLabel: string) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    if (oldLabel === newLabel) return;
+
+    const batch = writeBatch(db);
+    const newRef = doc(db, `users/${$user.uid}/units`, newLabel);
+    batch.set(newRef, { id: newLabel, label: newLabel });
+
+    const oldRef = doc(db, `users/${$user.uid}/units`, oldLabel);
+    batch.delete(oldRef);
+
+    await batch.commit();
+};
 
 // Actions - Categories
 export const addCategory = async (label: string) => {
@@ -98,7 +115,24 @@ export const deleteCategory = async (id: string) => {
     if (!$user) throw new Error("User not authenticated");
 
     await deleteDoc(doc(db, `users/${$user.uid}/food-categories`, id));
+    await deleteDoc(doc(db, `users/${$user.uid}/food-categories`, id));
 }
+
+export const updateCategory = async (oldLabel: string, newLabel: string) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    if (oldLabel === newLabel) return;
+
+    const batch = writeBatch(db);
+    const newRef = doc(db, `users/${$user.uid}/food-categories`, newLabel);
+    batch.set(newRef, { id: newLabel, label: newLabel });
+
+    const oldRef = doc(db, `users/${$user.uid}/food-categories`, oldLabel);
+    batch.delete(oldRef);
+
+    await batch.commit();
+};
 
 // Actions - Recipes
 export const addRecipe = async (recipe: Omit<Recipe, 'id'>) => {

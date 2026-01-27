@@ -7,6 +7,8 @@
         deleteUnit as deleteUnitAction,
         addCategory as addCategoryAction,
         deleteCategory as deleteCategoryAction,
+        updateUnit as updateUnitAction,
+        updateCategory as updateCategoryAction,
         resetUnitsToDefaults,
         resetCategoriesToDefaults,
     } from "$lib/stores/userData";
@@ -17,12 +19,45 @@
         ShoppingBasket,
         RotateCcw,
         Loader2,
+        Pencil,
+        Check,
+        X,
     } from "lucide-svelte";
     import { slide, fade } from "svelte/transition";
 
     let activeTab = $state("units"); // 'units' | 'categories'
     let newUnit = $state("");
     let newCategory = $state("");
+
+    // Edit State
+    let editingId = $state<string | null>(null);
+    let editValue = $state("");
+
+    const startEdit = (id: string, label: string) => {
+        editingId = id;
+        editValue = label;
+    };
+
+    const cancelEdit = () => {
+        editingId = null;
+        editValue = "";
+    };
+
+    const saveEdit = async (type: "unit" | "category") => {
+        if (!editingId || !editValue.trim()) return;
+
+        try {
+            if (type === "unit") {
+                await updateUnitAction(editingId, editValue.trim());
+            } else {
+                await updateCategoryAction(editingId, editValue.trim());
+            }
+            cancelEdit();
+        } catch (error) {
+            console.error("Failed to update:", error);
+            alert("Failed to update. Item might already exist.");
+        }
+    };
 
     const addUnit = async () => {
         if (newUnit.trim()) {
@@ -135,19 +170,62 @@
                     {:else}
                         {#each $userUnits.data as unit (unit.id)}
                             <div
-                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors h-[60px]"
                             >
-                                <span class="text-text-primary font-medium"
-                                    >{unit.label}</span
-                                >
-                                <button
-                                    onclick={() => deleteUnit(unit.id)}
-                                    class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
-                                    title="Delete"
-                                    aria-label="Delete unit"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                                {#if editingId === unit.id}
+                                    <form
+                                        class="flex-1 flex gap-2 items-center mr-2"
+                                        onsubmit={(e) => {
+                                            e.preventDefault();
+                                            saveEdit("unit");
+                                        }}
+                                    >
+                                        <input
+                                            type="text"
+                                            bind:value={editValue}
+                                            class="flex-1 px-3 py-1.5 rounded-lg border border-action-primary bg-bg-surface text-text-primary text-sm font-medium focus:outline-none"
+                                            autofocus
+                                        />
+                                        <button
+                                            type="submit"
+                                            class="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                            title="Save"
+                                        >
+                                            <Check size={16} />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onclick={cancelEdit}
+                                            class="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                                            title="Cancel"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </form>
+                                {:else}
+                                    <span class="text-text-primary font-medium"
+                                        >{unit.label}</span
+                                    >
+                                    <div
+                                        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <button
+                                            onclick={() =>
+                                                startEdit(unit.id, unit.label)}
+                                            class="p-2 text-text-secondary hover:text-action-primary hover:bg-action-primary/10 rounded-lg transition-colors"
+                                            title="Edit"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            onclick={() => deleteUnit(unit.id)}
+                                            class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                {/if}
                             </div>
                         {/each}
                     {/if}
@@ -215,19 +293,66 @@
                     {:else}
                         {#each $userTags.data as category (category.id)}
                             <div
-                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
+                                class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors h-[60px]"
                             >
-                                <span class="text-text-primary font-medium"
-                                    >{category.label}</span
-                                >
-                                <button
-                                    onclick={() => deleteCategory(category.id)}
-                                    class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
-                                    title="Delete"
-                                    aria-label="Delete category"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                                {#if editingId === category.id}
+                                    <form
+                                        class="flex-1 flex gap-2 items-center mr-2"
+                                        onsubmit={(e) => {
+                                            e.preventDefault();
+                                            saveEdit("category");
+                                        }}
+                                    >
+                                        <input
+                                            type="text"
+                                            bind:value={editValue}
+                                            class="flex-1 px-3 py-1.5 rounded-lg border border-action-primary bg-bg-surface text-text-primary text-sm font-medium focus:outline-none"
+                                            autofocus
+                                        />
+                                        <button
+                                            type="submit"
+                                            class="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                            title="Save"
+                                        >
+                                            <Check size={16} />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onclick={cancelEdit}
+                                            class="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                                            title="Cancel"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </form>
+                                {:else}
+                                    <span class="text-text-primary font-medium"
+                                        >{category.label}</span
+                                    >
+                                    <div
+                                        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <button
+                                            onclick={() =>
+                                                startEdit(
+                                                    category.id,
+                                                    category.label,
+                                                )}
+                                            class="p-2 text-text-secondary hover:text-action-primary hover:bg-action-primary/10 rounded-lg transition-colors"
+                                            title="Edit"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            onclick={() =>
+                                                deleteCategory(category.id)}
+                                            class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                {/if}
                             </div>
                         {/each}
                     {/if}
