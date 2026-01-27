@@ -259,24 +259,33 @@
                                 />
                                 Instructions
                             </h2>
-                            <div class="space-y-8">
+                            <div class="space-y-0">
                                 {#each recipe.instructions as step, i}
-                                    <div class="flex gap-4 md:gap-6 group">
-                                        <!-- Number -->
-                                        <div class="flex-shrink-0">
+                                    <div
+                                        class="relative pl-10 md:pl-12 py-2 group"
+                                    >
+                                        <!-- Timeline Line (connects to next, hidden on last) -->
+                                        {#if i !== recipe.instructions.length - 1}
                                             <div
-                                                class="flex items-center justify-center w-8 h-8 rounded-full bg-bg-surface border border-border-default text-sm font-bold text-text-secondary shadow-sm group-hover:border-action-primary group-hover:text-action-primary transition-colors"
-                                            >
-                                                {i + 1}
-                                            </div>
+                                                class="absolute left-[15px] md:left-[19px] top-8 bottom-[-8px] w-0.5 bg-border-default group-hover:bg-action-primary/30 transition-colors"
+                                            ></div>
+                                        {/if}
+
+                                        <!-- Timeline Node -->
+                                        <div
+                                            class="absolute left-0 md:left-[4px] top-0 w-8 h-8 rounded-full bg-bg-surface border-2 border-border-default text-sm font-bold flex items-center justify-center text-text-secondary group-hover:border-action-primary group-hover:text-action-primary group-hover:bg-action-primary/5 transition-all z-10 shadow-sm"
+                                        >
+                                            {i + 1}
                                         </div>
 
-                                        <!-- Text -->
-                                        <p
-                                            class="text-lg text-text-primary leading-relaxed pt-0.5 group-hover:text-text-primary/80 transition-colors"
-                                        >
-                                            {step}
-                                        </p>
+                                        <!-- Content -->
+                                        <div class="pb-8">
+                                            <p
+                                                class="text-lg text-text-primary leading-relaxed pt-0.5 group-hover:text-text-primary/80 transition-colors"
+                                            >
+                                                {step}
+                                            </p>
+                                        </div>
                                     </div>
                                 {/each}
                             </div>
