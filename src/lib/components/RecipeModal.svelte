@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search, Check, Plus, X } from "lucide-svelte";
+  import { Search, Plus, Minus, X } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
   import { mockRecipes } from "$lib/data/mockRecipes";
   import { twMerge } from "tailwind-merge";
@@ -14,61 +14,68 @@
 
   let { isOpen, mealType, onClose, onSelect }: Props = $props();
 
-  let selectedRecipes = $state<Recipe[]>([]);
-  let servings = $state<Map<string, number>>(new Map());
+  // Track quantity: Recipe ID -> { recipe, count }
+  let selection = $state<Map<string, { recipe: Recipe; count: number }>>(
+    new Map(),
+  );
 
   // Reset selection when modal opens
   $effect(() => {
     if (isOpen) {
-      selectedRecipes = [];
-      servings = new Map();
+      selection = new Map();
     }
   });
 
-  const getServings = (recipeId: string) => {
-    return servings.get(recipeId) || 1;
+  const getCount = (recipeId: string) => {
+    return selection.get(recipeId)?.count || 0;
   };
 
-  const updateServings = (recipeId: string, delta: number) => {
-    const current = getServings(recipeId);
-    const newValue = Math.max(1, current + delta);
-    servings = new Map(servings.set(recipeId, newValue));
-  };
-
-  const isSelected = (recipe: Recipe) => {
-    return selectedRecipes.some((r) => r.id === recipe.id);
-  };
-
-  const handleSelect = (recipe: Recipe) => {
-    if (isSelected(recipe)) {
-      // Remove
-      selectedRecipes = selectedRecipes.filter((r) => r.id !== recipe.id);
+  const increment = (recipe: Recipe) => {
+    const current = selection.get(recipe.id);
+    if (current) {
+      selection = new Map(
+        selection.set(recipe.id, { recipe, count: current.count + 1 }),
+      );
     } else {
-      // Add
-      selectedRecipes.push(recipe);
+      selection = new Map(selection.set(recipe.id, { recipe, count: 1 }));
     }
+  };
+
+  const decrement = (recipe: Recipe) => {
+    const current = selection.get(recipe.id);
+    if (current) {
+      if (current.count > 1) {
+        selection = new Map(
+          selection.set(recipe.id, { recipe, count: current.count - 1 }),
+        );
+      } else {
+        // Remove if count becomes 0
+        const newMap = new Map(selection);
+        newMap.delete(recipe.id);
+        selection = newMap;
+      }
+    }
+  };
+
+  // Directly remove via "x" on tag
+  const removeSelection = (recipeId: string) => {
+    const newMap = new Map(selection);
+    newMap.delete(recipeId);
+    selection = newMap;
   };
 
   const handleDone = () => {
-    if (selectedRecipes.length > 0) {
-      // Add servings to each recipe
-      const recipesWithServings = selectedRecipes.map((recipe) => ({
-        ...recipe,
-        servings: getServings(recipe.id),
-      }));
-      onSelect(recipesWithServings);
+    if (selection.size > 0) {
+      // Flatten the map into a list of recipes based on count
+      const result: Recipe[] = [];
+      for (const { recipe, count } of selection.values()) {
+        for (let i = 0; i < count; i++) {
+          result.push(recipe);
+        }
+      }
+      onSelect(result);
     }
     onClose();
-  };
-
-  // Helper for tag colors
-  const getTagColor = (tag: string) => {
-    const char = tag.charCodeAt(0);
-    if (char % 4 === 0)
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    if (char % 4 === 1) return "bg-lime-100 text-lime-800 border-lime-200";
-    if (char % 4 === 2) return "bg-rose-100 text-rose-800 border-rose-200";
-    return "bg-amber-100 text-amber-800 border-amber-200";
   };
 </script>
 
@@ -111,16 +118,16 @@
     </div>
 
     <!-- Selected Recipes Display -->
-    {#if selectedRecipes.length > 0}
+    {#if selection.size > 0}
       <div class="px-6 pb-4 overflow-x-auto">
         <div class="flex flex-wrap gap-2">
-          {#each selectedRecipes as recipe}
+          {#each selection.values() as { recipe, count } (recipe.id)}
             <button
-              onclick={() => handleSelect(recipe)}
-              class="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
+              onclick={() => removeSelection(recipe.id)}
+              class="flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
             >
-              <span>{recipe.title}</span>
-              <X size={12} strokeWidth={3} />
+              <span>{recipe.title} {count > 1 ? `(${count})` : ""}</span>
+              <X size={14} class="p-0.5" strokeWidth={3} />
             </button>
           {/each}
         </div>
@@ -133,75 +140,75 @@
     class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2 h-96"
   >
     {#each mockRecipes as recipe (recipe.id)}
+      {@const count = getCount(recipe.id)}
       <div
-        onclick={() => handleSelect(recipe)}
-        onkeydown={(e) => e.key === "Enter" && handleSelect(recipe)}
-        role="button"
-        tabindex="0"
         class={twMerge(
-          "cursor-pointer group flex items-center justify-between px-4 py-2 rounded-2xl transition-all border",
-          isSelected(recipe)
+          "flex items-center justify-between px-4 py-3 rounded-2xl transition-all border cursor-pointer",
+          count > 0
             ? "bg-action-primary/5 border-action-primary/20"
             : "bg-transparent border-transparent hover:bg-bg-surface-hover",
         )}
+        onclick={() => increment(recipe)}
+        onkeydown={(e) => e.key === "Enter" && increment(recipe)}
+        role="button"
+        tabindex="0"
       >
-        <div>
+        <!-- Info area -->
+        <div class="flex-1">
           <h3
             class={twMerge(
-              "font-display font-bold transition-colors",
-              isSelected(recipe)
-                ? "text-action-primary"
-                : "text-text-primary group-hover:text-action-primary",
+              "font-display font-bold transition-colors text-sm",
+              count > 0 ? "text-action-primary" : "text-text-primary",
             )}
           >
             {recipe.title}
           </h3>
-          <div class="flex items-center gap-2 mt-1">
-            <span class="text-xs text-text-secondary font-medium"
-              >Servings:</span
-            >
-            <div
-              class="flex items-center gap-1 bg-bg-accent-subtle border border-border-default rounded-lg overflow-hidden"
-            >
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  updateServings(recipe.id, -1);
-                }}
-                class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-              >
-                <span class="text-sm font-bold">−</span>
-              </button>
-              <span
-                class="px-2 py-1 text-xs font-bold text-text-primary min-w-6 text-center"
-                >{getServings(recipe.id)}</span
-              >
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  updateServings(recipe.id, 1);
-                }}
-                class="px-2 py-1 text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
-              >
-                <span class="text-sm font-bold">+</span>
-              </button>
-            </div>
-          </div>
         </div>
 
-        <!-- Selection Icon -->
-        <div
-          class={twMerge(
-            "p-2 rounded-full shadow-sm transition-all",
-            isSelected(recipe)
-              ? "bg-action-primary text-white scale-100 opacity-100"
-              : "bg-bg-surface text-text-secondary opacity-100 group-hover:text-action-primary group-hover:bg-white",
-          )}
-        >
-          {#if isSelected(recipe)}
-            <Check size={18} strokeWidth={3} />
+        <!-- Quantity Controls -->
+        <div class="flex items-center gap-1">
+          {#if count > 0}
+            <div
+              class="flex items-center bg-white border border-border-default rounded-lg shadow-sm overflow-hidden h-8"
+            >
+              <!-- Decrement -->
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  decrement(recipe);
+                }}
+                class="w-8 h-full flex items-center justify-center text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                disabled={count === 0}
+              >
+                <Minus size={14} strokeWidth={3} />
+              </button>
+
+              <!-- Count -->
+              <div
+                class="w-6 h-full flex items-center justify-center text-sm font-bold text-text-primary border-x border-border-default/50 bg-bg-accent-subtle"
+              >
+                {count}
+              </div>
+
+              <!-- Increment -->
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  increment(recipe);
+                }}
+                class="w-8 h-full flex items-center justify-center text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+              >
+                <Plus size={14} strokeWidth={3} />
+              </button>
+            </div>
           {:else}
-            <Plus size={18} strokeWidth={3} />
+            <!-- Initial Add Button -->
+            <button
+              onclick={() => increment(recipe)}
+              class="p-2 rounded-full bg-bg-surface text-text-secondary hover:bg-action-primary hover:text-white transition-all shadow-sm border border-border-default hover:border-action-primary"
+            >
+              <Plus size={16} strokeWidth={3} />
+            </button>
           {/if}
         </div>
       </div>
@@ -214,7 +221,7 @@
       onclick={handleDone}
       class="w-full py-3 rounded-xl bg-action-primary text-white font-bold text-sm shadow-sm hover:bg-action-primary/90 transition-colors"
     >
-      Done {selectedRecipes.length > 0 ? `(${selectedRecipes.length})` : ""}
+      Done
     </button>
   </div>
 </Modal>

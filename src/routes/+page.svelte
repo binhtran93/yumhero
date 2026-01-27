@@ -50,8 +50,22 @@
 
         const dayIndex = plan.findIndex((d) => d.day === modal.day);
         if (dayIndex !== -1) {
-            // Append recipes
-            plan[dayIndex].meals[modal.mealType].push(...recipes);
+            const currentMeals = plan[dayIndex].meals[modal.mealType];
+
+            recipes.forEach((newRecipe) => {
+                const existingRecipe = currentMeals.find(
+                    (r) => r.id === newRecipe.id,
+                );
+                if (existingRecipe) {
+                    // Update servings if recipe exists
+                    existingRecipe.servings =
+                        (existingRecipe.servings || 1) +
+                        (newRecipe.servings || 1);
+                } else {
+                    // Add new recipe
+                    currentMeals.push(newRecipe);
+                }
+            });
         }
     };
 
