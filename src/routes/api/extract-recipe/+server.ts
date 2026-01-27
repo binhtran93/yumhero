@@ -16,6 +16,7 @@ const IngredientSchema = z.object({
 
 const RecipeSchema = z.object({
     title: z.string().describe('The title of the recipe'),
+    image: z.string().optional().describe('The URL of the recipe image'),
     description: z.string().describe('A brief description of the recipe'),
     prepTime: z.number().describe('Preparation time in minutes'),
     cookTime: z.number().describe('Cooking time in minutes'),
@@ -47,9 +48,12 @@ export async function POST({ request }) {
         }
 
         // Use the robust scraper to get text content and raw JSON-LD
-        const { text, jsonLds } = await scrapeText(url);
+        const { text, jsonLds, mainImage } = await scrapeText(url);
 
         let contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
+        if (mainImage) {
+            contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
+        }
         let contentType = 'web page text content';
 
         // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
@@ -80,6 +84,10 @@ export async function POST({ request }) {
 
                     if (recipeData) {
                         console.log('Found valid JSON-LD Recipe, optimizing context.');
+                        // Inject the main image if one wasn't found in the JSON-LD or to reinforce it
+                        if (mainImage && !recipeData.image) {
+                            recipeData.image = mainImage;
+                        }
                         contentToProcess = JSON.stringify(recipeData);
                         contentType = 'structured JSON-LD data';
                         break; // Found one, stop searching
