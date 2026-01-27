@@ -10,6 +10,7 @@
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         isLoading?: boolean;
+        isCompact?: boolean;
     }
 
     let {
@@ -19,6 +20,7 @@
         onClear,
         onRemove,
         isLoading = false,
+        isCompact = false,
     }: Props = $props();
 
     // "Warm Family" Theme Colors
@@ -59,26 +61,31 @@
     {#if recipes.length > 0}
         <!-- Header is now handled by DayColumn for better structure -->
 
-        <div class="flex items-center justify-end px-1 -mt-8 mb-2">
-            {#if onClear}
-                <button
-                    onclick={(e) => {
-                        e.stopPropagation();
-                        onClear(e);
-                    }}
-                    class="text-text-secondary hover:text-red-600 transition-colors"
-                    title="Clear"
-                >
-                    <X size={14} />
-                </button>
-            {/if}
-        </div>
+        {#if !isCompact}
+            <div class="flex items-center justify-end px-1 -mt-8 mb-2">
+                {#if onClear}
+                    <button
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            onClear(e);
+                        }}
+                        class="text-text-secondary hover:text-red-600 transition-colors"
+                        title="Clear"
+                    >
+                        <X size={14} />
+                    </button>
+                {/if}
+            </div>
+        {/if}
 
         <div class="flex flex-col gap-2">
             {#each recipes as recipe, i}
                 <!-- Friendly Card -->
                 <div
-                    class="bg-bg-surface rounded-xl border border-border-default shadow-sm px-3 py-2 md:px-4 relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5"
+                    class={twMerge(
+                        "bg-bg-surface rounded-xl border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5",
+                        isCompact ? "px-2 py-1.5" : "px-3 py-2 md:px-4",
+                    )}
                 >
                     <!-- Type Accent Bar -->
                     <div
@@ -89,44 +96,61 @@
                                 : type === "lunch"
                                   ? "bg-accent-lunch"
                                   : "bg-accent-dinner",
+                            isCompact && "w-0.5 top-1 bottom-1",
                         )}
                     ></div>
 
                     <!-- Remove Button (Top Right) -->
                     {#if onRemove}
                         <button
-                            class="absolute top-2 right-2 p-1 text-text-secondary hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-sm"
+                            class={twMerge(
+                                "absolute text-text-secondary hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all shadow-sm",
+                                isCompact
+                                    ? "top-0.5 right-0.5 p-0.5 opacity-0 group-hover:opacity-100"
+                                    : "top-2 right-2 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
+                            )}
                             onclick={(e) => {
                                 e.stopPropagation();
                                 onRemove(i);
                             }}
                             title="Remove"
                         >
-                            <X size={14} />
+                            <X size={isCompact ? 12 : 14} />
                         </button>
                     {/if}
 
                     <h4
-                        class="text-xs md:text-sm font-bold text-text-primary leading-snug font-display"
+                        class={twMerge(
+                            "font-bold text-text-primary leading-snug font-display",
+                            isCompact
+                                ? "text-[10px] pl-1.5"
+                                : "text-xs md:text-sm",
+                        )}
                     >
                         {recipe.title}
                     </h4>
 
-                    <div class="">
-                        <span
-                            class="text-[10px] md:text-[11px] text-text-secondary font-medium"
-                        >
-                            Servings: <span class="font-bold text-text-primary"
-                                >{recipe.servings || 1}</span
+                    {#if !isCompact}
+                        <div class="">
+                            <span
+                                class="text-[10px] md:text-[11px] text-text-secondary font-medium"
                             >
-                        </span>
-                    </div>
+                                Servings: <span
+                                    class="font-bold text-text-primary"
+                                    >{recipe.servings || 1}</span
+                                >
+                            </span>
+                        </div>
+                    {/if}
                 </div>
             {/each}
 
             <!-- Friendly Add Button -->
             <button
-                class="w-full py-2.5 md:py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
+                class={twMerge(
+                    "w-full rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary font-bold transition-all flex items-center justify-center gap-2",
+                    isCompact ? "py-1.5 text-[10px]" : "py-2.5 md:py-3 text-xs",
+                )}
                 onclick={(e) => {
                     e.stopPropagation();
                     if (!isLoading) onClick();
@@ -141,7 +165,8 @@
                         />
                     </div>
                 {:else}
-                    <Plus size={14} /> Add Item
+                    <Plus size={isCompact ? 12 : 14} />
+                    {#if !isCompact}Add Item{/if}
                 {/if}
             </button>
         </div>
@@ -152,7 +177,10 @@
             tabindex="0"
             onclick={() => !isLoading && onClick()}
             onkeydown={(e) => e.key === "Enter" && !isLoading && onClick()}
-            class="w-full py-8 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface"
+            class={twMerge(
+                "w-full rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface",
+                isCompact ? "py-3" : "py-8",
+            )}
         >
             <div
                 class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
@@ -160,12 +188,12 @@
                 {#if isLoading}
                     <div class="flex items-center justify-center">
                         <Loader2
-                            size={24}
+                            size={isCompact ? 16 : 24}
                             class="animate-spin text-text-secondary/50"
                         />
                     </div>
                 {:else}
-                    <Plus size={20} />
+                    <Plus size={isCompact ? 16 : 20} />
                 {/if}
             </div>
         </div>

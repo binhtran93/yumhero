@@ -11,6 +11,7 @@
     onMealClear: (day: string, type: MealType) => void;
     onRemoveRecipe: (type: MealType, index: number) => void;
     isLoading?: boolean;
+    isCompact?: boolean;
   }
 
   let {
@@ -21,18 +22,23 @@
     onMealClear,
     onRemoveRecipe,
     isLoading = false,
+    isCompact = false,
   }: Props = $props();
 </script>
 
 <div
   class={twMerge(
-    "flex flex-col h-full w-[90vw] md:w-[320px] overflow-y-auto transition-colors",
+    "flex flex-col h-full overflow-y-auto transition-all duration-300",
     index % 2 !== 0 ? "bg-bg-default/50 md:bg-bg-surface" : "bg-bg-surface",
+    isCompact ? "w-[200px]" : "w-[90vw] md:w-[320px]",
   )}
 >
   <!-- Sticky Header -->
   <div
-    class="sticky top-0 z-10 py-4 md:py-6 border-b border-border-default bg-bg-surface text-text-primary shadow-sm"
+    class={twMerge(
+      "sticky top-0 z-10 border-b border-border-default bg-bg-surface text-text-primary shadow-sm transition-all duration-300",
+      isCompact ? "py-2" : "py-4 md:py-6",
+    )}
   >
     {#if isToday}
       <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
@@ -40,32 +46,42 @@
     <div class="flex items-center justify-center gap-2">
       <span
         class={twMerge(
-          "text-lg font-display font-bold",
+          "font-display font-bold transition-all duration-300",
           isToday && "text-action-primary",
+          isCompact ? "text-sm" : "text-lg",
         )}
       >
         {dayPlan.day}
       </span>
       {#if isToday}
         <span
-          class="text-[10px] font-bold uppercase tracking-wider text-action-primary/80 bg-action-primary/10 px-1.5 py-0.5 rounded-md"
-          >Today</span
+          class={twMerge(
+            "font-bold uppercase tracking-wider text-action-primary/80 bg-action-primary/10 rounded-md transition-all duration-300",
+            isCompact ? "text-[8px] px-1 py-0.5" : "text-[10px] px-1.5 py-0.5",
+          )}>Today</span
         >
       {/if}
     </div>
   </div>
 
   <!-- Slots Container -->
-  <div class="flex-1 flex flex-col p-4 md:p-6 gap-5 md:gap-8">
+  <div
+    class={twMerge(
+      "flex-1 flex flex-col transition-all duration-300",
+      isCompact ? "p-2 gap-3" : "p-4 md:p-6 gap-5 md:gap-8",
+    )}
+  >
     <!-- Breakfast Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"></div>
-        <span
-          class="text-xs font-bold text-text-primary uppercase tracking-widest"
-          >Breakfast</span
-        >
-      </div>
+      {#if !isCompact}
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"></div>
+          <span
+            class="text-xs font-bold text-text-primary uppercase tracking-widest"
+            >Breakfast</span
+          >
+        </div>
+      {/if}
       <MealSlot
         type="breakfast"
         recipes={dayPlan.meals.breakfast}
@@ -73,18 +89,21 @@
         onClear={() => onMealClear(dayPlan.day, "breakfast")}
         onRemove={(index) => onRemoveRecipe("breakfast", index)}
         {isLoading}
+        {isCompact}
       />
     </div>
 
     <!-- Lunch Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
-        <span
-          class="text-xs font-bold text-text-primary uppercase tracking-widest"
-          >Lunch</span
-        >
-      </div>
+      {#if !isCompact}
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
+          <span
+            class="text-xs font-bold text-text-primary uppercase tracking-widest"
+            >Lunch</span
+          >
+        </div>
+      {/if}
       <MealSlot
         type="lunch"
         recipes={dayPlan.meals.lunch}
@@ -92,18 +111,21 @@
         onClear={() => onMealClear(dayPlan.day, "lunch")}
         onRemove={(index) => onRemoveRecipe("lunch", index)}
         {isLoading}
+        {isCompact}
       />
     </div>
 
     <!-- Dinner Section -->
     <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
-        <span
-          class="text-xs font-bold text-text-primary uppercase tracking-widest"
-          >Dinner</span
-        >
-      </div>
+      {#if !isCompact}
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
+          <span
+            class="text-xs font-bold text-text-primary uppercase tracking-widest"
+            >Dinner</span
+          >
+        </div>
+      {/if}
       <MealSlot
         type="dinner"
         recipes={dayPlan.meals.dinner}
@@ -111,6 +133,7 @@
         onClear={() => onMealClear(dayPlan.day, "dinner")}
         onRemove={(index) => onRemoveRecipe("dinner", index)}
         {isLoading}
+        {isCompact}
       />
     </div>
   </div>

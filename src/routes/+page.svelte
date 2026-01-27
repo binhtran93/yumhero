@@ -5,7 +5,12 @@
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/userData";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import { ChevronLeft, ChevronRight } from "lucide-svelte";
+    import {
+        ChevronLeft,
+        ChevronRight,
+        Maximize2,
+        Minimize2,
+    } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
 
     const DAYS = [
@@ -32,6 +37,9 @@
     // State: Weekly Plan
     let plan = $state<WeeklyPlan>(createEmptyPlan("Monday"));
     let isLoading = $state(true);
+
+    // State: View Mode
+    let isCompact = $state(false);
 
     // State: Modal
     let modal = $state<{
@@ -206,24 +214,40 @@
     <!-- Header -->
     <!-- Header -->
     <Header title="Plan Your Meal">
-        <div
-            class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
-        >
+        <div class="flex items-center gap-3">
             <button
-                class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
-                onclick={prevWeek}
+                class="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+                onclick={() => (isCompact = !isCompact)}
+                title={isCompact
+                    ? "Switch to Detail View"
+                    : "Switch to Compact View"}
             >
-                <ChevronLeft size={18} />
+                {#if isCompact}
+                    <Maximize2 size={20} />
+                {:else}
+                    <Minimize2 size={20} />
+                {/if}
             </button>
-            <span class="text-xs font-bold text-center text-text-primary">
-                {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
-            </span>
-            <button
-                class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
-                onclick={nextWeek}
+
+            <div
+                class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
             >
-                <ChevronRight size={18} />
-            </button>
+                <button
+                    class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                    onclick={prevWeek}
+                >
+                    <ChevronLeft size={18} />
+                </button>
+                <span class="text-xs font-bold text-center text-text-primary">
+                    {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+                </span>
+                <button
+                    class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                    onclick={nextWeek}
+                >
+                    <ChevronRight size={18} />
+                </button>
+            </div>
         </div>
     </Header>
 
@@ -248,6 +272,7 @@
                         onRemoveRecipe={(type, index) =>
                             handleRemoveRecipe(dayPlan.day, type, index)}
                         {isLoading}
+                        {isCompact}
                     />
                     {#if flashingIndex === i}
                         <div
