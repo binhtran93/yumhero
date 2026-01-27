@@ -10,6 +10,7 @@
     onMealClick: (day: string, type: MealType) => void;
     onMealClear: (day: string, type: MealType) => void;
     onRemoveRecipe: (type: MealType, index: number) => void;
+    isLoading?: boolean;
   }
 
   let {
@@ -19,6 +20,7 @@
     onMealClick,
     onMealClear,
     onRemoveRecipe,
+    isLoading = false,
   }: Props = $props();
 </script>
 
@@ -70,6 +72,7 @@
         onClick={() => onMealClick(dayPlan.day, "breakfast")}
         onClear={() => onMealClear(dayPlan.day, "breakfast")}
         onRemove={(index) => onRemoveRecipe("breakfast", index)}
+        {isLoading}
       />
     </div>
 
@@ -88,6 +91,7 @@
         onClick={() => onMealClick(dayPlan.day, "lunch")}
         onClear={() => onMealClear(dayPlan.day, "lunch")}
         onRemove={(index) => onRemoveRecipe("lunch", index)}
+        {isLoading}
       />
     </div>
 
@@ -106,6 +110,7 @@
         onClick={() => onMealClick(dayPlan.day, "dinner")}
         onClear={() => onMealClear(dayPlan.day, "dinner")}
         onRemove={(index) => onRemoveRecipe("dinner", index)}
+        {isLoading}
       />
     </div>
   </div>

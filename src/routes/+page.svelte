@@ -31,6 +31,7 @@
 
     // State: Weekly Plan
     let plan = $state<WeeklyPlan>(createEmptyPlan("Monday"));
+    let isLoading = $state(true);
 
     // State: Modal
     let modal = $state<{
@@ -73,6 +74,7 @@
     $effect(() => {
         const store = getWeekPlan(weekId);
         const unsubscribe = store.subscribe((state) => {
+            isLoading = state.loading;
             if (state.data) {
                 plan = state.data;
             } else {
@@ -184,12 +186,14 @@
     };
 
     const prevWeek = () => {
+        isLoading = true;
         const d = new Date(currentDate);
         d.setDate(d.getDate() - 7);
         currentDate = d;
     };
 
     const nextWeek = () => {
+        isLoading = true;
         const d = new Date(currentDate);
         d.setDate(d.getDate() + 7);
         currentDate = d;
@@ -243,6 +247,7 @@
                         onMealClear={handleClearMeal}
                         onRemoveRecipe={(type, index) =>
                             handleRemoveRecipe(dayPlan.day, type, index)}
+                        {isLoading}
                     />
                     {#if flashingIndex === i}
                         <div

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Plus, X } from "lucide-svelte";
+    import { Plus, X, Loader2 } from "lucide-svelte";
     import type { Recipe, MealType } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
@@ -9,9 +9,17 @@
         onClick: () => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
+        isLoading?: boolean;
     }
 
-    let { type, recipes, onClick, onClear, onRemove }: Props = $props();
+    let {
+        type,
+        recipes,
+        onClick,
+        onClear,
+        onRemove,
+        isLoading = false,
+    }: Props = $props();
 
     // "Warm Family" Theme Colors
     // Friendly, soft, natural tones.
@@ -121,10 +129,20 @@
                 class="w-full py-2.5 md:py-3 rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
                 onclick={(e) => {
                     e.stopPropagation();
-                    onClick();
+                    if (!isLoading) onClick();
                 }}
+                disabled={isLoading}
             >
-                <Plus size={14} /> Add Item
+                {#if isLoading}
+                    <div class="flex items-center justify-center h-[14px]">
+                        <Loader2
+                            size={14}
+                            class="animate-spin text-text-secondary/50"
+                        />
+                    </div>
+                {:else}
+                    <Plus size={14} /> Add Item
+                {/if}
             </button>
         </div>
     {:else}
@@ -132,14 +150,23 @@
         <div
             role="button"
             tabindex="0"
-            onclick={onClick}
-            onkeydown={(e) => e.key === "Enter" && onClick()}
+            onclick={() => !isLoading && onClick()}
+            onkeydown={(e) => e.key === "Enter" && !isLoading && onClick()}
             class="w-full py-8 rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface"
         >
             <div
                 class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
             >
-                <Plus size={20} />
+                {#if isLoading}
+                    <div class="flex items-center justify-center">
+                        <Loader2
+                            size={24}
+                            class="animate-spin text-text-secondary/50"
+                        />
+                    </div>
+                {:else}
+                    <Plus size={20} />
+                {/if}
             </div>
         </div>
     {/if}
