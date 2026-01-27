@@ -32,7 +32,7 @@
 >
   <!-- Sticky Header -->
   <div
-    class="sticky top-0 z-10 py-4 md:py-6 border-b border-border-default bg-bg-surface text-text-primary"
+    class="sticky top-0 z-10 py-4 md:py-6 border-b border-border-default bg-bg-surface text-text-primary shadow-sm"
   >
     {#if isToday}
       <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
