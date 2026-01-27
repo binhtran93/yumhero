@@ -45,7 +45,7 @@
   class={twMerge(
     "flex flex-col h-full overflow-y-auto transition-all duration-300",
     index % 2 !== 0 ? "bg-bg-default/50 md:bg-bg-surface" : "bg-bg-surface",
-    isCompact ? "w-[200px]" : "w-[90vw] md:w-[320px]",
+    isCompact ? "w-50" : "w-[90vw] md:w-[320px]",
   )}
 >
   <!-- Sticky Header -->
