@@ -31,6 +31,8 @@ const RecipeSchema = z.object({
     tags: z.array(z.string()).describe('List of tags describing the recipe, including course, cuisine, or dietary info')
 });
 
+import { scrapeText } from '$lib/server/scraper';
+
 export async function POST({ request }) {
     // Configure Google provider with explicit API key
     const google = createGoogleGenerativeAI({
@@ -44,25 +46,14 @@ export async function POST({ request }) {
             return json({ error: 'URL is required' }, { status: 400 });
         }
 
-        // Use a browser-like User-Agent to avoid Forbidden errors
-        const headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        };
+        // Use the robust scraper to get text content (handles proxies, fingerprinting, etc.)
+        const { text } = await scrapeText(url);
 
-        // Fetch the HTML content
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-            return json({ error: `Failed to fetch URL: ${response.statusText}` }, { status: 400 });
-        }
-        const html = await response.text();
-
-        // Limit HTML size to avoid token limits if necessary, though Gemini has large context window.
-        // We might want to strip script tags or style tags to reduce noise, but Gemini is good at extracting from noise.
-        // Let's truncate if it's insanely large.
-        const truncatedHtml = html.length > 500000 ? html.substring(0, 500000) : html;
+        // Limit text size to avoid token limits if necessary
+        const truncatedText = text.length > 500000 ? text.substring(0, 500000) : text;
 
         const prompt = `
-            You are an expert recipe extractor. extracting recipe information from the provided HTML content.
+            You are an expert recipe extractor. extracting recipe information from the provided web page text content.
             
             Here is the list of existing UNITS in our system:
             ${DEFAULT_UNITS.join(', ')}
@@ -84,7 +75,7 @@ export async function POST({ request }) {
             messages: [
                 {
                     role: 'user',
-                    content: truncatedHtml
+                    content: truncatedText
                 }
             ]
         });
