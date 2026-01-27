@@ -263,7 +263,7 @@
 
 {#if isScrollable}
     <div
-        class="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-bg-surface/90 backdrop-blur-md border border-border-default shadow-xl transition-opacity duration-300"
+        class="fixed bottom-24 md:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-bg-surface/90 backdrop-blur-md border border-border-default shadow-md transition-opacity duration-300"
     >
         {#each DAYS as day, i}
             <button

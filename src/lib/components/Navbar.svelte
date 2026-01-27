@@ -75,16 +75,4 @@
             </a>
         {/each}
     </nav>
-
-    <!-- Footer / Version -->
-    <div class="hidden lg:block px-6 mt-auto pb-4">
-        <div
-            class="p-4 rounded-2xl bg-bg-default border border-border-default flex flex-col gap-2"
-        >
-            <p class="text-xs font-medium text-text-secondary">YumHero Beta</p>
-            <p class="text-[10px] text-text-secondary/70">
-                Crafted for families.
-            </p>
-        </div>
-    </div>
 </aside>
