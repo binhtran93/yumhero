@@ -267,13 +267,13 @@
                                         <!-- Timeline Line (connects to next, hidden on last) -->
                                         {#if i !== recipe.instructions.length - 1}
                                             <div
-                                                class="absolute left-[15px] md:left-[19px] top-8 bottom-[-8px] w-0.5 bg-border-default group-hover:bg-action-primary/30 transition-colors"
+                                                class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-action-primary/30 transition-colors"
                                             ></div>
                                         {/if}
 
                                         <!-- Timeline Node -->
                                         <div
-                                            class="absolute left-0 md:left-[4px] top-0 w-8 h-8 rounded-full bg-bg-surface border-2 border-border-default text-sm font-bold flex items-center justify-center text-text-secondary group-hover:border-action-primary group-hover:text-action-primary group-hover:bg-action-primary/5 transition-all z-10 shadow-sm"
+                                            class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-bg-surface border border-border-default text-sm font-bold flex items-center justify-center text-text-secondary group-hover:border-action-primary group-hover:text-action-primary group-hover:bg-action-primary/5 transition-all z-10"
                                         >
                                             {i + 1}
                                         </div>
