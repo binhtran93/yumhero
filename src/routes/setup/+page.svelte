@@ -24,6 +24,7 @@
         X,
     } from "lucide-svelte";
     import { slide, fade } from "svelte/transition";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     let activeTab = $state("units"); // 'units' | 'categories'
     let newUnit = $state("");
@@ -59,6 +60,32 @@
         }
     };
 
+    // Confirm Modal State
+    let confirmModal = $state({
+        isOpen: false,
+        title: "",
+        message: "",
+        onConfirm: () => {},
+        isDestructive: false,
+    });
+
+    const openConfirm = (
+        title: string,
+        message: string,
+        action: () => void | Promise<void>,
+        destructive = false,
+    ) => {
+        confirmModal.title = title;
+        confirmModal.message = message;
+        confirmModal.onConfirm = async () => {
+            await action();
+            confirmModal.isOpen = false;
+        };
+        confirmModal.isDestructive = destructive;
+        confirmModal.isOpen = true;
+    };
+
+    // Actions with Confirmation
     const addUnit = async () => {
         if (newUnit.trim()) {
             await addUnitAction(newUnit.trim());
@@ -66,18 +93,24 @@
         }
     };
 
-    const deleteUnit = async (id: string) => {
-        await deleteUnitAction(id);
+    const deleteUnit = (id: string) => {
+        openConfirm(
+            "Delete Unit",
+            "Are you sure you want to delete this unit?",
+            async () => {
+                await deleteUnitAction(id);
+            },
+            true,
+        );
     };
 
-    const resetUnits = async () => {
-        if (
-            confirm(
-                "This will delete all current units and restore the defaults. Are you sure?",
-            )
-        ) {
-            await resetUnitsToDefaults();
-        }
+    const resetUnits = () => {
+        openConfirm(
+            "Reset Units",
+            "This will delete all current units and restore the defaults. This cannot be undone.",
+            resetUnitsToDefaults,
+            true,
+        );
     };
 
     const addCategory = async () => {
@@ -87,18 +120,24 @@
         }
     };
 
-    const deleteCategory = async (id: string) => {
-        await deleteCategoryAction(id);
+    const deleteCategory = (id: string) => {
+        openConfirm(
+            "Delete Category",
+            "Are you sure you want to delete this category?",
+            async () => {
+                await deleteCategoryAction(id);
+            },
+            true,
+        );
     };
 
-    const resetCategories = async () => {
-        if (
-            confirm(
-                "This will delete all current categories and restore the defaults. Are you sure?",
-            )
-        ) {
-            await resetCategoriesToDefaults();
-        }
+    const resetCategories = () => {
+        openConfirm(
+            "Reset Categories",
+            "This will delete all current categories and restore the defaults. This cannot be undone.",
+            resetCategoriesToDefaults,
+            true,
+        );
     };
 </script>
 
@@ -185,6 +224,10 @@
                                             bind:value={editValue}
                                             class="flex-1 px-3 py-1.5 rounded-lg border border-action-primary bg-bg-surface text-text-primary text-sm font-medium focus:outline-none"
                                             autofocus
+                                            onkeydown={(e) => {
+                                                if (e.key === "Escape")
+                                                    cancelEdit();
+                                            }}
                                         />
                                         <button
                                             type="submit"
@@ -206,9 +249,7 @@
                                     <span class="text-text-primary font-medium"
                                         >{unit.label}</span
                                     >
-                                    <div
-                                        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
+                                    <div class="flex items-center gap-1">
                                         <button
                                             onclick={() =>
                                                 startEdit(unit.id, unit.label)}
@@ -308,6 +349,10 @@
                                             bind:value={editValue}
                                             class="flex-1 px-3 py-1.5 rounded-lg border border-action-primary bg-bg-surface text-text-primary text-sm font-medium focus:outline-none"
                                             autofocus
+                                            onkeydown={(e) => {
+                                                if (e.key === "Escape")
+                                                    cancelEdit();
+                                            }}
                                         />
                                         <button
                                             type="submit"
@@ -329,9 +374,7 @@
                                     <span class="text-text-primary font-medium"
                                         >{category.label}</span
                                     >
-                                    <div
-                                        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
+                                    <div class="flex items-center gap-1">
                                         <button
                                             onclick={() =>
                                                 startEdit(
@@ -388,4 +431,13 @@
             </div>
         {/if}
     </div>
+    <!-- Confirm Modal -->
+    <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onClose={() => (confirmModal.isOpen = false)}
+        isDestructive={confirmModal.isDestructive}
+    />
 </div>
