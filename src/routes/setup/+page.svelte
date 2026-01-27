@@ -152,7 +152,7 @@
                             e.preventDefault();
                             addUnit();
                         }}
-                        class="flex gap-2"
+                        class="flex items-center gap-2"
                     >
                         <input
                             type="text"
@@ -163,7 +163,7 @@
                         <button
                             type="submit"
                             disabled={!newUnit.trim()}
-                            class="p-2.5 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center aspect-square"
+                            class="w-11 h-11 p-0 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center shrink-0"
                             aria-label="Add unit"
                         >
                             <Plus size={20} />
@@ -223,7 +223,7 @@
                             e.preventDefault();
                             addCategory();
                         }}
-                        class="flex gap-2"
+                        class="flex items-center gap-2"
                     >
                         <input
                             type="text"
@@ -234,7 +234,7 @@
                         <button
                             type="submit"
                             disabled={!newCategory.trim()}
-                            class="p-2.5 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center aspect-square"
+                            class="w-11 h-11 p-0 bg-action-primary text-white rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center shrink-0"
                             aria-label="Add category"
                         >
                             <Plus size={20} />

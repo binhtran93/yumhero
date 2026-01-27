@@ -54,7 +54,7 @@
             </div>
 
             <button
-                class="flex items-center gap-2 px-3 md:px-4 py-2.5 md:py-3 bg-action-primary text-white rounded-xl shadow-md hover:bg-action-primary/90 transition-all active:scale-95 shrink-0 font-bold"
+                class="flex items-center gap-2 p-2.5 md:px-4 md:py-3 bg-action-primary text-white rounded-xl shadow-md hover:bg-action-primary/90 transition-all active:scale-95 shrink-0 font-bold"
             >
                 <Plus size={20} />
                 <span class="hidden sm:inline">Add Recipe</span>
