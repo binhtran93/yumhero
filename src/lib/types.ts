@@ -5,6 +5,7 @@ export interface Recipe {
     title: string;
     image: string;
     calories?: number;
+    time: number;
     tags: string[];
     servings?: number;
 }

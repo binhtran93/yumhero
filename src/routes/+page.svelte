@@ -1,7 +1,12 @@
 <script lang="ts">
-    import type { MealType, Recipe, WeeklyPlan } from "$lib/types";
+    import type { MealType, Recipe, WeeklyPlan, DayPlan } from "$lib/types";
     import DayColumn from "$lib/components/DayColumn.svelte";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
+    import { getWeekPlan, saveWeekPlan } from "$lib/stores/userData";
+    import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
+    import { ChevronLeft, ChevronRight } from "lucide-svelte";
+    import Header from "$lib/components/Header.svelte";
 
     const DAYS = [
         "Monday",
@@ -13,20 +18,21 @@
         "Sunday",
     ];
 
-    // State: Weekly Plan
-    let plan = $state<WeeklyPlan>(
-        DAYS.map((day) => ({
+    const createEmptyPlan = (startDayName: string): WeeklyPlan => {
+        return DAYS.map((day) => ({
             day,
             meals: {
                 breakfast: [],
                 lunch: [],
                 dinner: [],
             },
-        })),
-    );
+        }));
+    };
+
+    // State: Weekly Plan
+    let plan = $state<WeeklyPlan>(createEmptyPlan("Monday"));
 
     // State: Modal
-    // We keep this simple and local. No stores needed suitable for MVP.
     let modal = $state<{
         isOpen: boolean;
         day: string | null;
@@ -35,6 +41,45 @@
         isOpen: false,
         day: null,
         mealType: null,
+    });
+
+    // Week Navigation logic
+    let currentDate = $state(new Date());
+
+    const getWeekRange = (date: Date) => {
+        const start = new Date(date);
+        const day = start.getDay();
+        const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+        start.setDate(diff);
+
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+
+        return { start, end };
+    };
+
+    let weekRange = $derived(getWeekRange(currentDate));
+
+    // Firestore Sync
+    const getWeekId = (date: Date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    };
+
+    let weekId = $derived(getWeekId(weekRange.start));
+
+    $effect(() => {
+        const store = getWeekPlan(weekId);
+        const unsubscribe = store.subscribe((remotePlan) => {
+            if (remotePlan) {
+                plan = remotePlan;
+            } else {
+                plan = createEmptyPlan(DAYS[0]);
+            }
+        });
+        return unsubscribe;
     });
 
     // Handlers
@@ -57,15 +102,18 @@
                     (r) => r.id === newRecipe.id,
                 );
                 if (existingRecipe) {
-                    // Update servings if recipe exists
                     existingRecipe.servings =
                         (existingRecipe.servings || 1) +
                         (newRecipe.servings || 1);
                 } else {
-                    // Add new recipe
-                    currentMeals.push(newRecipe);
+                    currentMeals.push({
+                        ...newRecipe,
+                        servings: newRecipe.servings || 1,
+                    });
                 }
             });
+
+            saveWeekPlan(weekId, plan);
         }
     };
 
@@ -73,20 +121,20 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
             plan[dayIndex].meals[type].splice(index, 1);
+            saveWeekPlan(weekId, plan);
         }
     };
 
     const handleClearMeal = (day: string, type: MealType) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            // Clear all for now
             plan[dayIndex].meals[type] = [];
+            saveWeekPlan(weekId, plan);
         }
     };
 
     const closeModal = () => {
         modal.isOpen = false;
-        // Optional: reset day/type if needed, but keeping them helps with exit animations if we had them
     };
 
     const currentDayName =
@@ -114,41 +162,18 @@
             inline: "start",
         });
 
-        // Trigger flash
         if (flashTimeout) clearTimeout(flashTimeout);
         flashingIndex = index;
         flashTimeout = setTimeout(() => {
             flashingIndex = null;
-        }, 500); // 0.5s flash duration
+        }, 500);
     };
-
-    import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
 
     onMount(() => {
         checkScroll();
         window.addEventListener("resize", checkScroll);
         return () => window.removeEventListener("resize", checkScroll);
     });
-
-    // Week Navigation logic
-    let currentDate = $state(new Date());
-
-    const getWeekRange = (date: Date) => {
-        const start = new Date(date);
-        const day = start.getDay();
-        const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
-        start.setDate(diff);
-
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-
-        return { start, end };
-    };
-
-    let weekRange = $derived(getWeekRange(currentDate));
-
-    import { ChevronLeft, ChevronRight } from "lucide-svelte";
 
     // Format: "Jan 26 - Feb 01"
     const formatDate = (date: Date) => {
@@ -162,16 +187,13 @@
         const d = new Date(currentDate);
         d.setDate(d.getDate() - 7);
         currentDate = d;
-        // Logic to refresh plan would go here
     };
 
     const nextWeek = () => {
         const d = new Date(currentDate);
         d.setDate(d.getDate() + 7);
         currentDate = d;
-        // Logic to refresh plan would go here
     };
-    import Header from "$lib/components/Header.svelte";
 </script>
 
 <svelte:window onresize={checkScroll} />

@@ -3,97 +3,28 @@
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import { Search, Filter, Plus } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
-    import { categories } from "$lib/stores/settings";
+    import { userRecipes, userTags } from "$lib/stores/userData";
 
     let searchQuery = $state("");
     let activeFilter = $state("All");
     let isScrolled = $state(false);
 
-    // Mock Data for demonstration
-    const recipes = [
-        {
-            id: 1,
-            title: "Avocado Toast with Poached Egg",
-            image: "https://images.unsplash.com/photo-1525351484163-7529414395d8?auto=format&fit=crop&q=80&w=800",
-            time: 15,
-            servings: 1,
-            tags: [
-                "Breakfast",
-                "Healthy",
-                "Quick",
-                "Dairy & Eggs",
-                "Bakery & Deli",
-            ],
-        },
-        {
-            id: 2,
-            title: "Grilled Salmon with Asparagus",
-            image: "https://images.unsplash.com/photo-1467003909585-2f8a7270028d?auto=format&fit=crop&q=80&w=800",
-            time: 30,
-            servings: 2,
-            tags: ["Dinner", "Keto", "Gluten-Free", "Meat & Seafood"],
-        },
-        {
-            id: 3,
-            title: "Berry Smoothie Bowl",
-            image: "https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&q=80&w=800",
-            time: 10,
-            servings: 1,
-            tags: ["Breakfast", "Vegan", "Sweet", "Fruits & Vegetables"],
-        },
-        {
-            id: 4,
-            title: "Chicken Caesar Salad",
-            image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&q=80&w=800",
-            time: 20,
-            servings: 2,
-            tags: [
-                "Lunch",
-                "Salad",
-                "Classic",
-                "Meat & Seafood",
-                "Fruits & Vegetables",
-            ],
-        },
-        {
-            id: 5,
-            title: "Classic Beef Burger",
-            image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
-            time: 45,
-            servings: 4,
-            tags: [
-                "Dinner",
-                "Comfort",
-                "Grill",
-                "Meat & Seafood",
-                "Bakery & Deli",
-            ],
-        },
-        {
-            id: 6,
-            title: "Chocolate Chip Cookies",
-            image: "https://images.unsplash.com/photo-1499636138143-e64b7913f3ae?auto=format&fit=crop&q=80&w=800",
-            time: 60,
-            servings: 12,
-            tags: ["Dessert", "Baking", "Sweet", "Baking Goods", "Pantry"],
-        },
-    ];
-
     // Reactive filtering
     let filteredRecipes = $derived(
-        recipes.filter((recipe) => {
-            const matchesSearch = recipe.title
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
-            const matchesFilter =
-                activeFilter === "All" || recipe.tags.includes(activeFilter);
-            return matchesSearch && matchesFilter;
-        }),
+        $userRecipes.filter(
+            (recipe) =>
+                recipe.title
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) &&
+                (activeFilter === "All" ||
+                    (recipe.tags && recipe.tags.includes(activeFilter))),
+        ),
     );
 
     const handleScroll = (e: Event) => {
-        const target = e.target as HTMLDivElement;
-        isScrolled = target.scrollTop > 10;
+        if (e.target instanceof HTMLDivElement) {
+            isScrolled = e.target.scrollTop > 10;
+        }
     };
 </script>
 
@@ -143,15 +74,15 @@
             >
                 All
             </button>
-            {#each $categories as category}
+            {#each $userTags as category}
                 <button
-                    onclick={() => (activeFilter = category)}
+                    onclick={() => (activeFilter = category.label)}
                     class="px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border {activeFilter ===
-                    category
+                    category.label
                         ? 'bg-text-primary text-bg-surface border-text-primary shadow-md'
                         : 'bg-bg-surface text-text-secondary border-border-default hover:border-text-primary/30 hover:text-text-primary'}"
                 >
-                    {category}
+                    {category.label}
                 </button>
             {/each}
         </div>

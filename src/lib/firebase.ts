@@ -27,3 +27,5 @@ if (!getApps().length) {
 }
 
 export const auth: Auth = getAuth(app);
+import { getFirestore, type Firestore } from 'firebase/firestore';
+export const db: Firestore = getFirestore(app);

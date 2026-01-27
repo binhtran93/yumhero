@@ -1,6 +1,13 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
-    import { units, categories } from "$lib/stores/settings";
+    import {
+        userUnits,
+        userTags,
+        addUnit as addUnitAction,
+        deleteUnit as deleteUnitAction,
+        addCategory as addCategoryAction,
+        deleteCategory as deleteCategoryAction,
+    } from "$lib/stores/userData";
     import { Plus, Trash2, Scale, ShoppingBasket } from "lucide-svelte";
     import { slide, fade } from "svelte/transition";
 
@@ -8,26 +15,26 @@
     let newUnit = $state("");
     let newCategory = $state("");
 
-    const addUnit = () => {
+    const addUnit = async () => {
         if (newUnit.trim()) {
-            $units = [...$units, newUnit.trim()];
+            await addUnitAction(newUnit.trim());
             newUnit = "";
         }
     };
 
-    const deleteUnit = (item: string) => {
-        $units = $units.filter((u) => u !== item);
+    const deleteUnit = async (id: string) => {
+        await deleteUnitAction(id);
     };
 
-    const addCategory = () => {
+    const addCategory = async () => {
         if (newCategory.trim()) {
-            $categories = [...$categories, newCategory.trim()];
+            await addCategoryAction(newCategory.trim());
             newCategory = "";
         }
     };
 
-    const deleteCategory = (item: string) => {
-        $categories = $categories.filter((c) => c !== item);
+    const deleteCategory = async (id: string) => {
+        await deleteCategoryAction(id);
     };
 </script>
 
@@ -74,16 +81,16 @@
                 <!-- Header (Hidden / Optional since tab explains it) -->
                 <!-- List -->
                 <div class="flex-1 overflow-y-auto p-0">
-                    {#each $units as unit (unit)}
+                    {#each $userUnits as unit (unit.id)}
                         <div
                             class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
                             transition:slide|local
                         >
                             <span class="text-text-primary font-medium"
-                                >{unit}</span
+                                >{unit.label}</span
                             >
                             <button
-                                onclick={() => deleteUnit(unit)}
+                                onclick={() => deleteUnit(unit.id)}
                                 class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
                                 title="Delete"
                                 aria-label="Delete unit"
@@ -130,16 +137,16 @@
             >
                 <!-- List -->
                 <div class="flex-1 overflow-y-auto p-0">
-                    {#each $categories as category (category)}
+                    {#each $userTags as category (category.id)}
                         <div
                             class="group flex items-center justify-between px-4 py-3 md:px-6 md:py-3.5 border-b border-border-default/50 last:border-b-0 hover:bg-bg-surface-hover/50 transition-colors"
                             transition:slide|local
                         >
                             <span class="text-text-primary font-medium"
-                                >{category}</span
+                                >{category.label}</span
                             >
                             <button
-                                onclick={() => deleteCategory(category)}
+                                onclick={() => deleteCategory(category.id)}
                                 class="text-red-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
                                 title="Delete"
                                 aria-label="Delete category"
