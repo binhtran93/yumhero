@@ -83,8 +83,10 @@
                 <!-- Friendly Card -->
                 <div
                     class={twMerge(
-                        "bg-bg-surface rounded-xl border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5",
-                        isCompact ? "px-2 py-1.5" : "px-3 py-2 md:px-4",
+                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer hover:border-action-primary transition-all hover:-translate-y-0.5",
+                        isCompact
+                            ? "px-2 py-1.5 rounded-md"
+                            : "px-3 py-2 md:px-4 rounded-xl",
                     )}
                 >
                     <!-- Type Accent Bar -->
