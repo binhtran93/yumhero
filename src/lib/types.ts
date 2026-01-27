@@ -1,13 +1,31 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner';
 
+export interface Ingredient {
+    amount: string;
+    unit: string;
+    name: string;
+    notes?: string;
+}
+
 export interface Recipe {
     id: string;
     title: string;
     image: string;
     calories?: number;
-    time: number;
+    prepTime: number; // in minutes
+    cookTime: number; // in minutes
+    totalTime: number; // in minutes
     tags: string[];
-    servings?: number;
+    servings: number;
+    yields?: string;
+    description?: string;
+    sourceUrl?: string;
+    ingredients: Ingredient[];
+    instructions: string[];
+    prepNotes?: string;
+    course?: string;
+    cuisine?: string;
+    mainIngredient?: string;
 }
 
 export interface DayPlan {

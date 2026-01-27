@@ -1,6 +1,7 @@
 <script lang="ts">
     import Header from "$lib/components/Header.svelte";
     import RecipeCard from "$lib/components/RecipeCard.svelte";
+    import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import { Search, Filter, Plus, Loader2 } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
     import { userRecipes, userTags } from "$lib/stores/userData";
@@ -8,6 +9,7 @@
     let searchQuery = $state("");
     let activeFilter = $state("All");
     let isScrolled = $state(false);
+    let showAddModal = $state(false);
 
     // Reactive filtering
     let filteredRecipes = $derived(
@@ -30,6 +32,8 @@
 
 <!-- Header -->
 <Header title="Recipes" />
+
+<RecipeEditModal isOpen={showAddModal} onClose={() => (showAddModal = false)} />
 
 <div class="h-full flex flex-col overflow-hidden relative">
     <!-- Sticky Search & Filter Bar -->
@@ -54,6 +58,7 @@
             </div>
 
             <button
+                onclick={() => (showAddModal = true)}
                 class="flex items-center gap-2 p-2.5 md:px-4 md:py-3 bg-action-primary text-white rounded-xl shadow-md hover:bg-action-primary/90 transition-all active:scale-95 shrink-0 font-bold"
             >
                 <Plus size={20} />
@@ -106,7 +111,7 @@
                         <RecipeCard
                             title={recipe.title}
                             image={recipe.image}
-                            time={recipe.time}
+                            totalTime={recipe.totalTime}
                             servings={recipe.servings}
                             tags={recipe.tags}
                         />

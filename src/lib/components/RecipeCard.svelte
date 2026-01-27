@@ -6,12 +6,12 @@
     interface Props {
         title: string;
         image: string;
-        time: number;
+        totalTime: number;
         servings: number;
         tags: string[];
     }
 
-    let { title, image, time, servings, tags }: Props = $props();
+    let { title, image, totalTime, servings, tags }: Props = $props();
 </script>
 
 <div
@@ -59,7 +59,7 @@
         >
             <div class="flex items-center gap-1">
                 <Clock size={12} class="md:w-3.5 md:h-3.5 text-accent-lunch" />
-                <span>{time} min</span>
+                <span>{totalTime} min</span>
             </div>
             <div class="flex items-center gap-1">
                 <Users size={12} class="md:w-3.5 md:h-3.5 text-accent-dinner" />
