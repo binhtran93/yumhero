@@ -216,6 +216,7 @@
                     <DayColumn
                         {dayPlan}
                         isToday={dayPlan.day === currentDayName}
+                        index={i}
                         onMealClick={handleMealClick}
                         onMealClear={handleClearMeal}
                         onRemoveRecipe={(type, index) =>

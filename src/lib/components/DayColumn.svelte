@@ -6,6 +6,7 @@
   interface Props {
     dayPlan: DayPlan;
     isToday?: boolean;
+    index?: number;
     onMealClick: (day: string, type: MealType) => void;
     onMealClear: (day: string, type: MealType) => void;
     onRemoveRecipe: (type: MealType, index: number) => void;
@@ -14,6 +15,7 @@
   let {
     dayPlan,
     isToday = false,
+    index = 0,
     onMealClick,
     onMealClear,
     onRemoveRecipe,
@@ -21,7 +23,10 @@
 </script>
 
 <div
-  class="flex flex-col h-full w-[90vw] md:w-[320px] bg-bg-surface overflow-y-auto"
+  class={twMerge(
+    "flex flex-col h-full w-[90vw] md:w-[320px] overflow-y-auto transition-colors",
+    index % 2 !== 0 ? "bg-bg-default/50 md:bg-bg-surface" : "bg-bg-surface",
+  )}
 >
   <!-- Sticky Header -->
   <div
