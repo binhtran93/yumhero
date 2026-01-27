@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Plus, X, Loader2 } from "lucide-svelte";
+    import { Plus, X, Loader } from "lucide-svelte";
     import type { Recipe, MealType } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
@@ -161,7 +161,7 @@
             >
                 {#if isLoading}
                     <div class="flex items-center justify-center h-[14px]">
-                        <Loader2
+                        <Loader
                             size={14}
                             class="animate-spin text-text-secondary/50"
                         />
@@ -189,7 +189,7 @@
             >
                 {#if isLoading}
                     <div class="flex items-center justify-center">
-                        <Loader2
+                        <Loader
                             size={isCompact ? 16 : 24}
                             class="animate-spin text-text-secondary/50"
                         />
