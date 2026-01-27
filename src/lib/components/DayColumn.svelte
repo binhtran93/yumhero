@@ -25,6 +25,20 @@
     isLoading = false,
     isCompact = false,
   }: Props = $props();
+
+  const mealSections = [
+    {
+      type: "breakfast" as const,
+      label: "Breakfast",
+      accentClass: "bg-accent-breakfast",
+    },
+    { type: "lunch" as const, label: "Lunch", accentClass: "bg-accent-lunch" },
+    {
+      type: "dinner" as const,
+      label: "Dinner",
+      accentClass: "bg-accent-dinner",
+    },
+  ];
 </script>
 
 <div
@@ -72,105 +86,43 @@
       isCompact ? "p-2 gap-3" : "p-4 md:p-6 gap-5 md:gap-8",
     )}
   >
-    <!-- Breakfast Section -->
-    <div class="flex flex-col gap-3">
-      {#if !isCompact}
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div
-              class="w-3 h-3 rounded-full bg-accent-breakfast shadow-sm"
-            ></div>
-            <span
-              class="text-xs font-bold text-text-primary uppercase tracking-widest"
-              >Breakfast</span
-            >
+    {#each mealSections as section}
+      <div class="flex flex-col gap-3">
+        {#if !isCompact}
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div
+                class={twMerge(
+                  "w-3 h-3 rounded-full shadow-sm",
+                  section.accentClass,
+                )}
+              ></div>
+              <span
+                class="text-xs font-bold text-text-primary uppercase tracking-widest"
+                >{section.label}</span
+              >
+            </div>
+            {#if dayPlan.meals[section.type].length > 0}
+              <button
+                onclick={() => onMealClear(dayPlan.day, section.type)}
+                class="text-text-secondary hover:text-red-600 transition-colors"
+                title={`Clear ${section.label}`}
+              >
+                <X size={14} />
+              </button>
+            {/if}
           </div>
-          {#if dayPlan.meals.breakfast.length > 0}
-            <button
-              onclick={() => onMealClear(dayPlan.day, "breakfast")}
-              class="text-text-secondary hover:text-red-600 transition-colors"
-              title="Clear Breakfast"
-            >
-              <X size={14} />
-            </button>
-          {/if}
-        </div>
-      {/if}
-      <MealSlot
-        type="breakfast"
-        recipes={dayPlan.meals.breakfast}
-        onClick={() => onMealClick(dayPlan.day, "breakfast")}
-        onClear={() => onMealClear(dayPlan.day, "breakfast")}
-        onRemove={(index) => onRemoveRecipe("breakfast", index)}
-        {isLoading}
-        {isCompact}
-      />
-    </div>
-
-    <!-- Lunch Section -->
-    <div class="flex flex-col gap-3">
-      {#if !isCompact}
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-accent-lunch shadow-sm"></div>
-            <span
-              class="text-xs font-bold text-text-primary uppercase tracking-widest"
-              >Lunch</span
-            >
-          </div>
-          {#if dayPlan.meals.lunch.length > 0}
-            <button
-              onclick={() => onMealClear(dayPlan.day, "lunch")}
-              class="text-text-secondary hover:text-red-600 transition-colors"
-              title="Clear Lunch"
-            >
-              <X size={14} />
-            </button>
-          {/if}
-        </div>
-      {/if}
-      <MealSlot
-        type="lunch"
-        recipes={dayPlan.meals.lunch}
-        onClick={() => onMealClick(dayPlan.day, "lunch")}
-        onClear={() => onMealClear(dayPlan.day, "lunch")}
-        onRemove={(index) => onRemoveRecipe("lunch", index)}
-        {isLoading}
-        {isCompact}
-      />
-    </div>
-
-    <!-- Dinner Section -->
-    <div class="flex flex-col gap-3">
-      {#if !isCompact}
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-accent-dinner shadow-sm"></div>
-            <span
-              class="text-xs font-bold text-text-primary uppercase tracking-widest"
-              >Dinner</span
-            >
-          </div>
-          {#if dayPlan.meals.dinner.length > 0}
-            <button
-              onclick={() => onMealClear(dayPlan.day, "dinner")}
-              class="text-text-secondary hover:text-red-600 transition-colors"
-              title="Clear Dinner"
-            >
-              <X size={14} />
-            </button>
-          {/if}
-        </div>
-      {/if}
-      <MealSlot
-        type="dinner"
-        recipes={dayPlan.meals.dinner}
-        onClick={() => onMealClick(dayPlan.day, "dinner")}
-        onClear={() => onMealClear(dayPlan.day, "dinner")}
-        onRemove={(index) => onRemoveRecipe("dinner", index)}
-        {isLoading}
-        {isCompact}
-      />
-    </div>
+        {/if}
+        <MealSlot
+          type={section.type}
+          recipes={dayPlan.meals[section.type]}
+          onClick={() => onMealClick(dayPlan.day, section.type)}
+          onClear={() => onMealClear(dayPlan.day, section.type)}
+          onRemove={(index) => onRemoveRecipe(section.type, index)}
+          {isLoading}
+          {isCompact}
+        />
+      </div>
+    {/each}
   </div>
 </div>
