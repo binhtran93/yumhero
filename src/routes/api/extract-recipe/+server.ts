@@ -33,6 +33,7 @@ const RecipeSchema = z.object({
 });
 
 import { scrapeText } from '$lib/server/scraper';
+import { uploadImageToR2 } from '$lib/server/r2';
 
 export async function POST({ request }) {
     // Configure Google provider with explicit API key
@@ -114,6 +115,8 @@ export async function POST({ request }) {
             Extract the recipe details as accurately as possible.
         `;
 
+
+
         const { output: recipe } = await generateText({
             model: google('gemini-2.0-flash-lite'),
             experimental_output: Output.object({ schema: RecipeSchema }),
@@ -125,6 +128,20 @@ export async function POST({ request }) {
                 }
             ]
         });
+
+        // Upload image to R2 if available
+        if (recipe && recipe.image) {
+            try {
+                const uniqueKey = `recipes/${crypto.randomUUID()}.jpg`; // Simple key generation
+                console.log(`Uploading image to R2: ${recipe.image} -> ${uniqueKey}`);
+                const r2Url = await uploadImageToR2(recipe.image, uniqueKey);
+                recipe.image = r2Url;
+                console.log('Image uploaded successfully:', r2Url);
+            } catch (uploadError) {
+                console.error('Failed to upload image to R2, keeping original URL:', uploadError);
+                // Keep the original URL if upload fails
+            }
+        }
 
         return json({ recipe });
 
