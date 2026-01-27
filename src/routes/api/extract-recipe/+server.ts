@@ -1,7 +1,7 @@
 import { GOOGLE_GENERATIVE_AI_API_KEY } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { DEFAULT_UNITS, DEFAULT_CATEGORIES } from '$lib/constants';
 
@@ -68,9 +68,9 @@ export async function POST({ request }) {
             Extract the recipe details as accurately as possible.
         `;
 
-        const { object } = await generateObject({
-            model: google('gemini-1.5-flash'),
-            schema: RecipeSchema,
+        const { output: recipe } = await generateText({
+            model: google('gemini-2.5-flash'),
+            experimental_output: Output.object({ schema: RecipeSchema }),
             system: prompt,
             messages: [
                 {
@@ -80,7 +80,7 @@ export async function POST({ request }) {
             ]
         });
 
-        return json({ recipe: object });
+        return json({ recipe });
 
     } catch (error: any) {
         console.error('Error extracting recipe:', error);
