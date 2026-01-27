@@ -126,7 +126,7 @@
             <!-- Friendly Add Button -->
             <button
                 class={twMerge(
-                    "w-full rounded-xl border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary font-bold transition-all flex items-center justify-center gap-2",
+                    "w-full rounded-lg border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary font-bold transition-all flex items-center justify-center gap-2",
                     isCompact ? "py-1.5 text-[10px]" : "py-2.5 md:py-3 text-xs",
                 )}
                 onclick={(e) => {
