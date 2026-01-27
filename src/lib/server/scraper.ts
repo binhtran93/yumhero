@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
 // @ts-ignore
-import { ConnectFingerprinter } from 'puppeteer-extra-plugin-fingerprinter';
+import {ConnectFingerprinter} from 'puppeteer-extra-plugin-fingerprinter';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -65,7 +65,7 @@ async function getBrowser() {
 /**
  * Scrapes plain text from a URL using an isolated context with proxy and fingerprinting.
  */
-export async function scrapeText(url: string): Promise<{ text: string }> {
+export async function scrapeText(url: string): Promise<{ text: string; jsonLds: string[] }> {
     const browser = await getBrowser();
     const proxyUrl = process.env.PROXY_URL;
 
@@ -143,10 +143,16 @@ export async function scrapeText(url: string): Promise<{ text: string }> {
             timeout: 30000
         });
 
-        // Extract text
-        const text = await page.evaluate(() => document.body.innerText);
-
-        return { text };
+        // Extract text and raw JSON-LD scripts
+        return await page.evaluate(() => {
+            return {
+                text: document.body.innerText,
+                // Extract all JSON-LD content as raw strings, let the API handle parsing/validation
+                jsonLds: Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
+                    .map(el => el.textContent)
+                    .filter(content => content !== null) as string[]
+            };
+        });
 
     } catch (error) {
         console.error(`Error scraping ${url}:`, error);

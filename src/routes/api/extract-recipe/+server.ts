@@ -46,14 +46,52 @@ export async function POST({ request }) {
             return json({ error: 'URL is required' }, { status: 400 });
         }
 
-        // Use the robust scraper to get text content (handles proxies, fingerprinting, etc.)
-        const { text } = await scrapeText(url);
+        // Use the robust scraper to get text content and raw JSON-LD
+        const { text, jsonLds } = await scrapeText(url);
 
-        // Limit text size to avoid token limits if necessary
-        const truncatedText = text.length > 500000 ? text.substring(0, 500000) : text;
+        let contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
+        let contentType = 'web page text content';
+
+        // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
+        if (jsonLds && jsonLds.length > 0) {
+            for (const rawJson of jsonLds) {
+                try {
+                    const json = JSON.parse(rawJson);
+
+                    // Helper to check object type
+                    const isRecipe = (obj: any): boolean => {
+                        if (!obj || typeof obj !== 'object') return false;
+                        const type = obj['@type'];
+                        if (Array.isArray(type)) {
+                            return type.includes('Recipe');
+                        }
+                        return type === 'Recipe';
+                    };
+
+                    let recipeData = null;
+
+                    if (Array.isArray(json)) {
+                        recipeData = json.find(isRecipe);
+                    } else if (isRecipe(json)) {
+                        recipeData = json;
+                    } else if (json['@graph'] && Array.isArray(json['@graph'])) {
+                        recipeData = json['@graph'].find(isRecipe);
+                    }
+
+                    if (recipeData) {
+                        console.log('Found valid JSON-LD Recipe, optimizing context.');
+                        contentToProcess = JSON.stringify(recipeData);
+                        contentType = 'structured JSON-LD data';
+                        break; // Found one, stop searching
+                    }
+                } catch (e) {
+                    // Start parsing next script
+                }
+            }
+        }
 
         const prompt = `
-            You are an expert recipe extractor. extracting recipe information from the provided web page text content.
+            You are an expert recipe extractor. extracting recipe information from the provided ${contentType}.
             
             Here is the list of existing UNITS in our system:
             ${DEFAULT_UNITS.join(', ')}
@@ -75,7 +113,7 @@ export async function POST({ request }) {
             messages: [
                 {
                     role: 'user',
-                    content: truncatedText
+                    content: contentToProcess
                 }
             ]
         });
