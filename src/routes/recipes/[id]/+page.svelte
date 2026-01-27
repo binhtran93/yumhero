@@ -18,8 +18,12 @@
         ExternalLink,
         Check,
         EllipsisVertical,
+        Trash2,
     } from "lucide-svelte";
-    import { fade, fly, slide } from "svelte/transition";
+    import { fade, fly, slide, scale } from "svelte/transition";
+    import { goto } from "$app/navigation";
+    import { deleteDoc, doc } from "firebase/firestore";
+    import { db } from "$lib/firebase";
 
     interface Props {
         data: PageData;
@@ -47,6 +51,8 @@
     let loading = $derived($recipeStore.loading);
 
     let isMenuOpen = $state(false);
+    let isDeleteModalOpen = $state(false);
+    let isDeleting = $state(false);
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
@@ -71,6 +77,18 @@
                 document.removeEventListener("click", handleClick, true);
             },
         };
+    }
+
+    async function handleDelete() {
+        if (!$user) return;
+        isDeleting = true;
+        try {
+            await deleteDoc(doc(db, `users/${$user.uid}/recipes/${data.id}`));
+            await goto("/recipes");
+        } catch (error) {
+            console.error("Error deleting recipe:", error);
+            isDeleting = false;
+        }
     }
 </script>
 
@@ -111,11 +129,65 @@
                             <Pencil size={16} />
                             Edit Recipe
                         </button>
+                        <button
+                            class="w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                            onclick={() => {
+                                closeMenu();
+                                isDeleteModalOpen = true;
+                            }}
+                        >
+                            <Trash2 size={16} />
+                            Delete Recipe
+                        </button>
                     </div>
                 {/if}
             </div>
         </Header>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <!-- Delete Confirmation Modal -->
+    {#if isDeleteModalOpen}
+        <div
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            transition:fade={{ duration: 200 }}
+        >
+            <div
+                class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-border-default"
+                in:scale={{ start: 0.95, duration: 200 }}
+                out:scale={{ start: 0.95, duration: 150 }}
+            >
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-text-primary mb-2">
+                        Delete Recipe
+                    </h3>
+                    <p class="text-text-secondary">
+                        Are you sure you want to delete this recipe? This action
+                        cannot be undone.
+                    </p>
+                </div>
+                <div class="bg-bg-surface px-6 py-4 flex justify-end gap-3">
+                    <button
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface-hover transition-colors"
+                        onclick={() => (isDeleteModalOpen = false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                        onclick={handleDelete}
+                        disabled={isDeleting}
+                    >
+                        {#if isDeleting}
+                            Deleting...
+                        {:else}
+                            Delete
+                        {/if}
+                    </button>
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <!-- Main Content Scrollable Area -->
     <div class="flex-1 overflow-y-auto w-full">
