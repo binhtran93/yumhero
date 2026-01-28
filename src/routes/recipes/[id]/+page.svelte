@@ -159,21 +159,21 @@
                                 class="flex items-center gap-2 px-4 py-2.5 bg-app-primary text-white font-semibold rounded-xl hover:bg-app-primary/90 transition-colors shadow-sm"
                             >
                                 <ShoppingCart size={18} />
-                                <span>Shopping Mode</span>
+                                <span>Shopping</span>
                             </a>
                             <a
                                 href="/recipes/{data.id}/cooking"
                                 class="flex items-center gap-2 px-4 py-2.5 bg-accent-lunch text-white font-semibold rounded-xl hover:bg-accent-lunch/90 transition-colors shadow-sm"
                             >
                                 <ChefHat size={18} />
-                                <span>Cooking Mode</span>
+                                <span>Cooking</span>
                             </a>
                         </div>
                     </div>
                 </div>
 
                 <!-- CONTENT GRID -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                     <!-- LEFT: Ingredients (4 cols) - Sticky -->
                     <div class="lg:col-span-4">
                         <div
