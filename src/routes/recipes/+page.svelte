@@ -50,18 +50,34 @@
 
         <!-- Add Button & Dropdown -->
         <div class="relative">
-            <button
-                onclick={() => (showAddDropdown = !showAddDropdown)}
-                class="flex items-center gap-2 p-2 md:px-4 bg-app-primary text-white rounded-lg shadow-sm hover:bg-app-primary/90 transition-all active:scale-95 shrink-0"
-                aria-label="Add Recipe"
-                title="Add Recipe"
+            <div
+                class="flex items-center bg-app-primary rounded-lg shadow-sm hover:bg-app-primary/90 transition-all active:scale-95 shrink-0 text-white group"
             >
-                <Plus size={20} />
-                <span class="hidden md:inline font-bold whitespace-nowrap"
-                    >Add Recipe</span
+                <!-- Main Action: Add Manually -->
+                <button
+                    onclick={() => {
+                        showAddModal = true;
+                        initiallyShowAdvanced = false;
+                        showAddDropdown = false;
+                    }}
+                    class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/10 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
+                    aria-label="Add Recipe Manually"
                 >
-                <ChevronDown size={16} class="hidden md:block opacity-70" />
-            </button>
+                    <Plus size={20} />
+                    <span class="hidden md:inline font-bold whitespace-nowrap"
+                        >Add Recipe</span
+                    >
+                </button>
+
+                <!-- Dropdown Trigger -->
+                <button
+                    onclick={() => (showAddDropdown = !showAddDropdown)}
+                    class="p-2 hover:bg-black/10 transition-colors rounded-r-lg"
+                    aria-label="More Options"
+                >
+                    <ChevronDown size={16} class="opacity-70" />
+                </button>
+            </div>
 
             {#if showAddDropdown}
                 <div
