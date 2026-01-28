@@ -1,5 +1,6 @@
 <script lang="ts">
     import Modal from "$lib/components/Modal.svelte";
+    import ImportUrlModal from "$lib/components/ImportUrlModal.svelte";
     import {
         X,
         ChefHat,
@@ -51,6 +52,9 @@
     // Instructions
     let instructions = $state("");
     let showAdvanced = $state(false);
+
+    // Import Modal State
+    let showImportModal = $state(false);
 
     let fileInput: HTMLInputElement;
 
@@ -229,6 +233,32 @@
     const removeIngredientRow = (index: number) => {
         ingredients = ingredients.filter((_, i) => i !== index);
     };
+
+    const handleImportFromUrl = async (url: string) => {
+        try {
+            const response = await fetch("/api/extract-recipe", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ url }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to import recipe");
+            }
+
+            const { recipe } = await response.json();
+
+            // Populate form with extracted recipe data
+            populateForm(recipe);
+            showAdvanced = true; // Show advanced fields since we have data
+        } catch (error: any) {
+            console.error("Import error:", error);
+            throw error; // Re-throw to be handled by ImportUrlModal
+        }
+    };
 </script>
 
 {#snippet headerContent()}
@@ -271,6 +301,7 @@
         <!-- Import Actions -->
         <div class="grid grid-cols-2 gap-3">
             <button
+                onclick={() => (showImportModal = true)}
                 class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
             >
                 <Globe size={18} class="text-app-primary" />
@@ -548,3 +579,10 @@
         </div>
     </div>
 </Modal>
+
+<!-- Import URL Modal -->
+<ImportUrlModal
+    isOpen={showImportModal}
+    onClose={() => (showImportModal = false)}
+    onImport={handleImportFromUrl}
+/>
