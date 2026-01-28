@@ -14,7 +14,7 @@
         ChefHat,
         Utensils,
         ExternalLink,
-        Check,
+        ShoppingCart,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
@@ -151,6 +151,24 @@
                                 <ExternalLink size={14} /> Source Recipe
                             </a>
                         {/if}
+
+                        <!-- Mode Buttons -->
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <a
+                                href="/recipes/{data.id}/shopping"
+                                class="flex items-center gap-2 px-4 py-2.5 bg-app-primary text-white font-semibold rounded-xl hover:bg-app-primary/90 transition-colors shadow-sm"
+                            >
+                                <ShoppingCart size={18} />
+                                <span>Shopping Mode</span>
+                            </a>
+                            <a
+                                href="/recipes/{data.id}/cooking"
+                                class="flex items-center gap-2 px-4 py-2.5 bg-accent-lunch text-white font-semibold rounded-xl hover:bg-accent-lunch/90 transition-colors shadow-sm"
+                            >
+                                <ChefHat size={18} />
+                                <span>Cooking Mode</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
