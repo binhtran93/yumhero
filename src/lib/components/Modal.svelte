@@ -11,6 +11,7 @@
         description?: string;
         children?: import("svelte").Snippet;
         header?: import("svelte").Snippet;
+        footer?: import("svelte").Snippet;
         class?: string;
         showCloseButton?: boolean;
         headerClass?: string;
@@ -23,6 +24,7 @@
         description,
         children,
         header,
+        footer,
         class: className,
         showCloseButton = true,
         headerClass = "",
@@ -100,6 +102,11 @@
             <div class="flex-1 overflow-auto">
                 {@render children?.()}
             </div>
+
+            <!-- Footer -->
+            {#if footer}
+                {@render footer()}
+            {/if}
         </div>
     </div>
 {/if}
