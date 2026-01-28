@@ -183,7 +183,7 @@
                             <ul class="space-y-3">
                                 {#each recipe.ingredients as ingredient}
                                     <li
-                                        class="flex items-start gap-3 p-2 -mx-2 rounded-lg"
+                                        class="flex items-start gap-3 p-1 -mx-2 rounded-lg"
                                     >
                                         <div
                                             class="mt-2 w-1.5 h-1.5 rounded-full bg-app-primary shrink-0"
@@ -264,7 +264,7 @@
                                             </div>
 
                                             <!-- Content -->
-                                            <div class="pb-8">
+                                            <div class="pb-2">
                                                 <p
                                                     class="text-lg text-app-text leading-relaxed pt-0.5 group-hover:text-app-text/80 transition-colors"
                                                 >
