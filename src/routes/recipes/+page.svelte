@@ -2,13 +2,13 @@
     import Header from "$lib/components/Header.svelte";
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
-    import { Search, Filter, Plus, Loader2 } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+    import RecipeFilterDropdown from "$lib/components/RecipeFilterDropdown.svelte";
+    import { Search, Plus, Loader2 } from "lucide-svelte";
+    import { fade } from "svelte/transition";
     import { userRecipes, userTags } from "$lib/stores/userData";
 
     let searchQuery = $state("");
     let activeFilter = $state("All");
-    let isScrolled = $state(false);
     let showAddModal = $state(false);
 
     // Reactive filtering
@@ -22,82 +22,65 @@
                     (recipe.tags && recipe.tags.includes(activeFilter))),
         ),
     );
-
-    const handleScroll = (e: Event) => {
-        if (e.target instanceof HTMLDivElement) {
-            isScrolled = e.target.scrollTop > 10;
-        }
-    };
 </script>
 
 <!-- Header -->
-<Header title="Recipes" />
+<Header title="Recipes">
+    <div
+        class="flex items-center gap-2 flex-1 justify-end md:justify-center w-full md:w-auto"
+    >
+        <!-- Search -->
+        <div class="relative w-full max-w-[200px] md:max-w-xs hidden sm:block">
+            <Search
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                size={16}
+            />
+            <input
+                type="text"
+                bind:value={searchQuery}
+                placeholder="Search..."
+                class="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-default border border-border-default rounded-lg focus:outline-none focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all"
+            />
+        </div>
+
+        <!-- Filter -->
+        <RecipeFilterDropdown bind:activeFilter tags={$userTags.data} />
+
+        <!-- Add Button -->
+        <button
+            onclick={() => (showAddModal = true)}
+            class="p-2 bg-action-primary text-white rounded-lg shadow-sm hover:bg-action-primary/90 transition-all active:scale-95 shrink-0"
+            aria-label="Add Recipe"
+            title="Add Recipe"
+        >
+            <Plus size={20} />
+        </button>
+    </div>
+</Header>
 
 <RecipeEditModal isOpen={showAddModal} onClose={() => (showAddModal = false)} />
 
 <div class="h-full flex flex-col overflow-hidden relative">
-    <!-- Sticky Search & Filter Bar -->
+    <!-- Mobile Search (Visible only on small screens) -->
     <div
-        class="px-4 md:px-6 pb-2 pt-4 bg-bg-default/95 backdrop-blur-sm z-10 shrink-0 border-b border-border-default/50 transition-shadow {isScrolled
-            ? 'shadow-sm'
-            : ''}"
+        class="px-4 py-2 sm:hidden bg-bg-surface border-b border-border-default"
     >
-        <!-- Search & Add -->
-        <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-            <div class="relative flex-1">
-                <Search
-                    class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-text-secondary"
-                    size={18}
-                />
-                <input
-                    type="text"
-                    bind:value={searchQuery}
-                    placeholder="Search recipes..."
-                    class="w-full pl-10 md:pl-11 pr-4 py-2.5 md:py-3 text-sm bg-bg-surface border border-border-default rounded-xl focus:outline-none focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all font-medium shadow-sm"
-                />
-            </div>
-
-            <button
-                onclick={() => (showAddModal = true)}
-                class="flex items-center gap-2 p-2.5 md:px-4 md:py-3 bg-action-primary text-white rounded-xl shadow-md hover:bg-action-primary/90 transition-all active:scale-95 shrink-0 font-bold"
-            >
-                <Plus size={20} />
-                <span class="hidden sm:inline">Add Recipe</span>
-            </button>
-        </div>
-
-        <!-- Filter Chips -->
-        <div
-            class="flex items-start flex-wrap gap-2 max-h-28 overflow-y-auto pr-1"
-        >
-            <button
-                onclick={() => (activeFilter = "All")}
-                class="px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border {activeFilter ===
-                'All'
-                    ? 'bg-text-primary text-bg-surface border-text-primary shadow-md'
-                    : 'bg-bg-surface text-text-secondary border-border-default hover:border-text-primary/30 hover:text-text-primary'}"
-            >
-                All
-            </button>
-            {#each $userTags.data as category}
-                <button
-                    onclick={() => (activeFilter = category.label)}
-                    class="px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border {activeFilter ===
-                    category.label
-                        ? 'bg-text-primary text-bg-surface border-text-primary shadow-md'
-                        : 'bg-bg-surface text-text-secondary border-border-default hover:border-text-primary/30 hover:text-text-primary'}"
-                >
-                    {category.label}
-                </button>
-            {/each}
+        <div class="relative">
+            <Search
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                size={16}
+            />
+            <input
+                type="text"
+                bind:value={searchQuery}
+                placeholder="Search recipes..."
+                class="w-full pl-9 pr-3 py-2 text-sm bg-bg-default border border-border-default rounded-lg focus:outline-none focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all"
+            />
         </div>
     </div>
 
     <!-- Scrollable Content -->
-    <div
-        class="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 pb-24"
-        onscroll={handleScroll}
-    >
+    <div class="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 pb-24">
         {#if $userRecipes.loading}
             <div class="flex items-center justify-center h-64">
                 <Loader2 class="w-8 h-8 text-action-primary animate-spin" />
