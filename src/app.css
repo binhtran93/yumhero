@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 :root {
-    --app-primary: #ff4d4f;
+    --app-primary: #b45309;
 
-    --app-bg: #f7f8fa;
-    --app-surface-deep: #f1f3f6;
+    --app-bg: #fffbf8;
+    --app-surface-deep: #f9f8f6;
     --app-surface: #ffffff;
-    --app-surface-hover: #f4f6f8;
-    --app-surface-accent: #e8ebef;
+    --app-surface-hover: #fff3e6;
+    --app-surface-accent: #f9f8f6;
 
-    --app-text: #0b1220;
-    --app-text-muted: #6b7280;
+    --app-text: #292524;
+    --app-text-muted: #57534e;
 
-    --app-underline: rgba(15, 23, 42, 0.08);
-    --app-border: rgba(15, 23, 42, 0.14);
+    --app-underline: rgba(87, 83, 78, 0.08);
+    /* Derived from stone-500 */
+    --app-border: #e7e5e4;
 
     --color-accent-breakfast: #d97706;
     --color-accent-breakfast-bg: #fffbeb;
@@ -26,19 +27,27 @@
 }
 
 .dark {
-    --app-primary: #ff6b6d;
+    --app-primary: #fbbf24;
 
-    --app-bg: #111827;
-    --app-surface-deep: #0f172a;
-    --app-surface: #1f2937;
-    --app-surface-hover: #374151;
-    --app-surface-accent: #374151;
+    --app-bg: #1c1917;
+    --app-surface-deep: #44403c;
+    --app-surface: #292524;
+    --app-surface-hover: #44403c;
+    --app-surface-accent: #44403c;
 
-    --app-text: #f9fafb;
-    --app-text-muted: #9ca3af;
+    --app-text: #fafaf9;
+    --app-text-muted: #d6d3d1;
 
-    --app-underline: rgba(243, 244, 246, 0.1);
-    --app-border: rgba(243, 244, 246, 0.1);
+    --app-underline: rgba(214, 211, 209, 0.1);
+    /* Derived from stone-300 */
+    --app-border: #57534e;
+
+    --color-accent-breakfast: #fcd34d;
+    --color-accent-breakfast-bg: #451a03;
+    --color-accent-lunch: #bef264;
+    --color-accent-lunch-bg: #1a2e05;
+    --color-accent-dinner: #fca5a5;
+    --color-accent-dinner-bg: #450a0a;
 }
 
 @theme {
