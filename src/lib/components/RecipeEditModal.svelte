@@ -11,6 +11,8 @@
         ChevronDown,
         ChevronUp,
         Camera,
+        Globe,
+        FileText,
     } from "lucide-svelte";
     // ... existing imports ... (keeping them as context in replacement if needed, but tool replaces exact block)
 
@@ -234,9 +236,7 @@
         class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
     >
         <div class="flex items-center gap-2">
-            <h2 class="text-xl font-display font-medium text-app-text">
-                Add Recipe
-            </h2>
+            <h2 class="text-xl font-bold text-app-text">Add Recipe</h2>
         </div>
         <button
             onclick={onClose}
@@ -268,6 +268,22 @@
 >
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        <!-- Import Actions -->
+        <div class="grid grid-cols-2 gap-3">
+            <button
+                class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
+            >
+                <Globe size={18} class="text-app-primary" />
+                <span>Import from web</span>
+            </button>
+            <button
+                class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
+            >
+                <FileText size={18} class="text-app-primary" />
+                <span>Paste Recipe text</span>
+            </button>
+        </div>
+
         <!-- Basic Info Wrapper -->
         <div class="flex flex-row gap-4 md:gap-6">
             <!-- Left Column - Inputs -->
@@ -276,8 +292,8 @@
                     <input
                         type="text"
                         bind:value={title}
-                        placeholder="Title"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
+                        placeholder="Name"
+                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
                     />
                 </div>
 
@@ -286,7 +302,7 @@
                         type="text"
                         bind:value={source}
                         placeholder="Source"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors"
+                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors"
                     />
                 </div>
             </div>
