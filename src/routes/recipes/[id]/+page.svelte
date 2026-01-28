@@ -49,9 +49,9 @@
     }
 </script>
 
-<div class="h-full flex flex-col bg-bg-default overflow-hidden">
+<div class="h-full flex flex-col bg-app-bg overflow-hidden">
     <!-- Header (Visible on all screens) -->
-    <div class="shrink-0 z-20 bg-bg-default border-b border-border-default">
+    <div class="shrink-0 z-20 bg-app-bg border-b border-app-border">
         <Header title="Recipe Details" showBack={true} backUrl="/recipes">
             <RecipeActionMenu recipeId={data.id} />
         </Header>
@@ -62,7 +62,7 @@
         {#if loading}
             <div class="flex items-center justify-center h-full min-h-[50vh]">
                 <div
-                    class="w-10 h-10 border-4 border-action-primary border-t-transparent rounded-full animate-spin"
+                    class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
                 ></div>
             </div>
         {:else if recipe}
@@ -75,7 +75,7 @@
                     <!-- Image (Compact & Rounded) -->
                     <div class="w-full md:w-[320px] shrink-0">
                         <div
-                            class="h-48 md:h-auto aspect-video md:aspect-[4/3] relative rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-border-default/50 group"
+                            class="h-48 md:h-auto aspect-video md:aspect-[4/3] relative rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-app-border/50 group"
                         >
                             <RecipeThumbnail
                                 src={recipe.image}
@@ -90,11 +90,11 @@
                         <!-- Tags -->
                         {#if recipe.tags && recipe.tags.length > 0}
                             <div
-                                class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-text-secondary"
+                                class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-app-text-muted"
                             >
                                 {#each recipe.tags as tag}
                                     <span
-                                        class="px-2 py-1 rounded-md bg-bg-surface border border-border-default"
+                                        class="px-2 py-1 rounded-md bg-app-surface border border-app-border"
                                     >
                                         {getTagName(tag)}
                                     </span>
@@ -103,17 +103,17 @@
                         {/if}
 
                         <h1
-                            class="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-text-primary leading-tight"
+                            class="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-app-text leading-tight"
                         >
                             {recipe.title}
                         </h1>
 
                         <!-- Quick Stats -->
                         <div
-                            class="flex items-center gap-6 text-text-secondary text-sm md:text-base font-medium py-2 border-y border-border-default/50 w-fit"
+                            class="flex items-center gap-6 text-app-text-muted text-sm md:text-base font-medium py-2 border-y border-app-border/50 w-fit"
                         >
                             <div class="flex items-center gap-2">
-                                <Clock size={18} class="text-action-primary" />
+                                <Clock size={18} class="text-app-primary" />
                                 <span>{recipe.totalTime} mins</span>
                             </div>
                             <div class="w-px h-4 bg-border-default"></div>
@@ -133,7 +133,7 @@
 
                         {#if recipe.description}
                             <p
-                                class="text-text-secondary text-base leading-relaxed line-clamp-3 md:line-clamp-4 hover:line-clamp-none transition-all cursor-pointer"
+                                class="text-app-text-muted text-base leading-relaxed line-clamp-3 md:line-clamp-4 hover:line-clamp-none transition-all cursor-pointer"
                             >
                                 {recipe.description}
                             </p>
@@ -144,7 +144,7 @@
                                 href={recipe.sourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-1.5 text-sm font-bold text-action-primary hover:underline w-fit"
+                                class="inline-flex items-center gap-1.5 text-sm font-bold text-app-primary hover:underline w-fit"
                             >
                                 <ExternalLink size={14} /> Source Recipe
                             </a>
@@ -157,13 +157,13 @@
                     <!-- LEFT: Ingredients (4 cols) - Sticky -->
                     <div class="lg:col-span-4">
                         <div
-                            class="bg-bg-surface rounded-3xl p-6 shadow-sm border border-border-default lg:sticky lg:top-4"
+                            class="bg-app-surface rounded-3xl p-6 shadow-sm border border-app-border lg:sticky lg:top-4"
                         >
                             <div
-                                class="flex items-center justify-between mb-6 pb-4 border-b border-border-default/50"
+                                class="flex items-center justify-between mb-6 pb-4 border-b border-app-border/50"
                             >
                                 <h2
-                                    class="font-display text-xl font-bold text-text-primary flex items-center gap-2"
+                                    class="font-display text-xl font-bold text-app-text flex items-center gap-2"
                                 >
                                     <Utensils
                                         size={20}
@@ -172,7 +172,7 @@
                                     Ingredients
                                 </h2>
                                 <span
-                                    class="text-xs font-semibold text-text-secondary bg-bg-default px-2 py-1 rounded-full border border-border-default"
+                                    class="text-xs font-semibold text-app-text-muted bg-app-bg px-2 py-1 rounded-full border border-app-border"
                                 >
                                     {recipe.ingredients.length}
                                 </span>
@@ -181,14 +181,12 @@
                             <div class="space-y-3">
                                 {#each recipe.ingredients as ingredient}
                                     <label
-                                        class="flex items-center gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-bg-surface-hover transition-colors"
+                                        class="flex items-center gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-app-surface-hover transition-colors"
                                     >
-                                        <div
-                                            class="relative flex items-center"
-                                        >
+                                        <div class="relative flex items-center">
                                             <input
                                                 type="checkbox"
-                                                class="peer appearance-none w-5 h-5 border-2 border-border-strong rounded transition-colors checked:bg-action-primary checked:border-action-primary"
+                                                class="peer appearance-none w-5 h-5 border-2 border-app-border rounded transition-colors checked:bg-app-primary checked:border-app-primary"
                                             />
                                             <Check
                                                 size={14}
@@ -197,7 +195,7 @@
                                             />
                                         </div>
                                         <div
-                                            class="text-[15px] text-text-primary leading-snug flex-1 peer-checked:line-through peer-checked:text-text-secondary/60"
+                                            class="text-[15px] text-app-text leading-snug flex-1 peer-checked:line-through peer-checked:text-app-text-muted/60"
                                         >
                                             <span class="font-bold"
                                                 >{ingredient.amount}
@@ -206,7 +204,7 @@
                                             <span>{ingredient.name}</span>
                                             {#if ingredient.notes}
                                                 <span
-                                                    class="block text-xs text-text-secondary italic mt-0.5"
+                                                    class="block text-xs text-app-text-muted italic mt-0.5"
                                                     >{ingredient.notes}</span
                                                 >
                                             {/if}
@@ -241,12 +239,9 @@
 
                         <div>
                             <h2
-                                class="font-display text-2xl font-bold text-text-primary mb-6 flex items-center gap-2"
+                                class="font-display text-2xl font-bold text-app-text mb-6 flex items-center gap-2"
                             >
-                                <ChefHat
-                                    size={24}
-                                    class="text-action-primary"
-                                />
+                                <ChefHat size={24} class="text-app-primary" />
                                 Instructions
                             </h2>
                             <div class="space-y-0">
@@ -257,13 +252,13 @@
                                         <!-- Timeline Line (connects to next, hidden on last) -->
                                         {#if i !== recipe.instructions.length - 1}
                                             <div
-                                                class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-action-primary/30 transition-colors"
+                                                class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-app-primary/30 transition-colors"
                                             ></div>
                                         {/if}
 
                                         <!-- Timeline Node -->
                                         <div
-                                            class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-bg-surface border border-border-default text-sm font-bold flex items-center justify-center text-text-secondary group-hover:border-action-primary group-hover:text-action-primary group-hover:bg-action-primary/5 transition-all z-10"
+                                            class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-app-surface border border-app-border text-sm font-bold flex items-center justify-center text-app-text-muted group-hover:border-app-primary group-hover:text-app-primary group-hover:bg-app-primary/5 transition-all z-10"
                                         >
                                             {i + 1}
                                         </div>
@@ -271,7 +266,7 @@
                                         <!-- Content -->
                                         <div class="pb-8">
                                             <p
-                                                class="text-lg text-text-primary leading-relaxed pt-0.5 group-hover:text-text-primary/80 transition-colors"
+                                                class="text-lg text-app-text leading-relaxed pt-0.5 group-hover:text-app-text/80 transition-colors"
                                             >
                                                 {step}
                                             </p>
@@ -284,7 +279,7 @@
                         <div
                             class="py-10 flex flex-col items-center justify-center text-center opacity-40"
                         >
-                            <div class="w-16 h-px bg-border-strong mb-4"></div>
+                            <div class="w-16 h-px bg-app-border mb-4"></div>
                             <span
                                 class="font-display font-medium text-lg italic"
                                 >Bon Appétit!</span
@@ -299,18 +294,16 @@
                 class="flex flex-col items-center justify-center h-full text-center px-4"
             >
                 <div
-                    class="w-24 h-24 bg-bg-surface rounded-full flex items-center justify-center mb-6 shadow-sm"
+                    class="w-24 h-24 bg-app-surface rounded-full flex items-center justify-center mb-6 shadow-sm"
                 >
                     <span class="text-4xl">🍳</span>
                 </div>
-                <h2
-                    class="text-2xl font-display font-bold text-text-primary mb-2"
-                >
+                <h2 class="text-2xl font-display font-bold text-app-text mb-2">
                     Recipe not found
                 </h2>
                 <a
                     href="/recipes"
-                    class="px-6 py-3 bg-action-primary text-white font-bold rounded-xl shadow-lg mt-6"
+                    class="px-6 py-3 bg-app-primary text-white font-bold rounded-xl shadow-lg mt-6"
                 >
                     Back to Cookbook
                 </a>

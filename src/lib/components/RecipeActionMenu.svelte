@@ -75,7 +75,7 @@
 <div class="relative {className}" use:clickOutside>
     <button
         onclick={toggleMenu}
-        class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-default rounded-full transition-colors"
+        class="p-2 -mr-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
     >
         <EllipsisVertical size={20} />
     </button>
@@ -83,10 +83,10 @@
     {#if isMenuOpen}
         <div
             transition:fade={{ duration: 100 }}
-            class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border-default py-1 z-50 overflow-hidden"
+            class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-app-border py-1 z-50 overflow-hidden"
         >
             <button
-                class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
+                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
                 onclick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -98,7 +98,7 @@
                 Share Recipe
             </button>
             <button
-                class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-3 transition-colors"
+                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
                 onclick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -138,22 +138,22 @@
         transition:fade={{ duration: 200 }}
     >
         <div
-            class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-border-default"
+            class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-app-border"
             in:scale={{ start: 0.95, duration: 200 }}
             out:scale={{ start: 0.95, duration: 150 }}
         >
             <div class="p-6">
-                <h3 class="text-xl font-bold text-text-primary mb-2">
+                <h3 class="text-xl font-bold text-app-text mb-2">
                     Delete Recipe
                 </h3>
-                <p class="text-text-secondary">
+                <p class="text-app-text-muted">
                     Are you sure you want to delete this recipe? This action
                     cannot be undone.
                 </p>
             </div>
-            <div class="bg-bg-surface px-6 py-4 flex justify-end gap-3">
+            <div class="bg-app-surface px-6 py-4 flex justify-end gap-3">
                 <button
-                    class="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface-hover transition-colors"
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-app-text-muted hover:bg-app-surface-hover transition-colors"
                     onclick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

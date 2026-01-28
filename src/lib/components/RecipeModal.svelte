@@ -113,16 +113,16 @@
 
 {#snippet customHeader()}
   <div
-    class="p-6 pb-2 flex items-start justify-between shrink-0 border-b border-border-default bg-bg-surface"
+    class="p-6 pb-2 flex items-start justify-between shrink-0 border-b border-app-border bg-app-surface"
   >
     <div>
-      <h2 class="text-2xl font-display font-bold text-text-primary">
-        Add to <span class="capitalize text-action-primary">{mealType}</span>
+      <h2 class="text-2xl font-display font-bold text-app-text">
+        Add to <span class="capitalize text-app-primary">{mealType}</span>
       </h2>
     </div>
     <button
       onclick={onClose}
-      class="p-2 -mr-2 -mt-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+      class="p-2 -mr-2 -mt-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors"
       aria-label="Close"
     >
       <X size={20} />
@@ -133,19 +133,19 @@
 <Modal {isOpen} {onClose} class="max-w-lg" header={customHeader}>
   <!-- Search & Selected -->
   <div
-    class="flex flex-col border-b border-border-default bg-bg-surface shrink-0"
+    class="flex flex-col border-b border-app-border bg-app-surface shrink-0"
   >
     <div class="p-4">
       <div class="relative">
         <Search
-          class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted"
           size={18}
         />
         <input
           type="text"
           bind:value={searchQuery}
           placeholder={`Search recipes...`}
-          class="w-full pl-11 pr-4 py-3 text-sm bg-bg-accent-subtle border border-border-default rounded-2xl focus:outline-none focus:border-action-primary text-text-primary transition-colors placeholder:text-text-secondary/50"
+          class="w-full pl-11 pr-4 py-3 text-sm bg-app-surface-deep border border-app-border rounded-2xl focus:outline-none focus:border-app-primary text-app-text transition-colors placeholder:text-app-text-muted/50"
         />
       </div>
     </div>
@@ -157,7 +157,7 @@
           {#each selection.values() as { recipe, count } (recipe.id)}
             <button
               onclick={() => removeSelection(recipe.id)}
-              class="flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-action-primary/10 border border-action-primary/20 text-action-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
+              class="flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-app-primary/10 border border-app-primary/20 text-app-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
             >
               <span>{recipe.title} {count > 1 ? `(${count})` : ""}</span>
               <X size={14} class="p-0.5" strokeWidth={3} />
@@ -170,7 +170,7 @@
 
   <!-- List -->
   <div
-    class="flex-1 overflow-y-auto bg-bg-surface p-2 flex flex-col gap-2 h-96"
+    class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-2 h-96"
   >
     {#each filteredRecipes as recipe (recipe.id)}
       {@const count = getCount(recipe.id)}
@@ -178,8 +178,8 @@
         class={twMerge(
           "flex items-center justify-between px-4 py-3 rounded-2xl transition-all border cursor-pointer",
           count > 0
-            ? "bg-action-primary/5 border-action-primary/20"
-            : "bg-transparent border-transparent hover:bg-bg-surface-hover",
+            ? "bg-app-primary/5 border-app-primary/20"
+            : "bg-transparent border-transparent hover:bg-app-surface-hover",
         )}
         onclick={() => increment(recipe)}
         onkeydown={(e) => e.key === "Enter" && increment(recipe)}
@@ -190,7 +190,7 @@
         <div class="flex-1 flex items-center gap-2">
           {#if count > 0}
             <div
-              class="flex items-center justify-center w-5 h-5 rounded-full bg-action-primary text-white shrink-0"
+              class="flex items-center justify-center w-5 h-5 rounded-full bg-app-primary text-white shrink-0"
               transition:scale
             >
               <Check size={12} strokeWidth={3} />
@@ -199,7 +199,7 @@
           <h3
             class={twMerge(
               "font-display font-bold transition-colors text-sm",
-              count > 0 ? "text-action-primary" : "text-text-primary",
+              count > 0 ? "text-app-primary" : "text-app-text",
             )}
           >
             {recipe.title}
@@ -210,7 +210,7 @@
         <div class="flex items-center gap-1">
           {#if count > 0}
             <div
-              class="flex items-center bg-white border border-border-default rounded-lg shadow-sm overflow-hidden h-8"
+              class="flex items-center bg-white border border-app-border rounded-lg shadow-sm overflow-hidden h-8"
             >
               <!-- Decrement -->
               <button
@@ -218,7 +218,7 @@
                   e.stopPropagation();
                   decrement(recipe);
                 }}
-                class="w-8 h-full flex items-center justify-center text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                class="w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover hover:text-app-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 disabled={count === 0}
               >
                 <Minus size={14} strokeWidth={3} />
@@ -226,7 +226,7 @@
 
               <!-- Count -->
               <div
-                class="w-6 h-full flex items-center justify-center text-sm font-bold text-text-primary border-x border-border-default/50 bg-bg-accent-subtle"
+                class="w-6 h-full flex items-center justify-center text-sm font-bold text-app-text border-x border-app-border/50 bg-app-surface-deep"
               >
                 {count}
               </div>
@@ -237,7 +237,7 @@
                   e.stopPropagation();
                   increment(recipe);
                 }}
-                class="w-8 h-full flex items-center justify-center text-text-secondary hover:bg-bg-surface-hover hover:text-action-primary transition-colors"
+                class="w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover hover:text-app-primary transition-colors"
               >
                 <Plus size={14} strokeWidth={3} />
               </button>
@@ -246,7 +246,7 @@
             <!-- Initial Add Button -->
             <button
               onclick={() => increment(recipe)}
-              class="p-2 rounded-full bg-bg-surface text-text-secondary hover:bg-action-primary hover:text-white transition-all shadow-sm border border-border-default hover:border-action-primary"
+              class="p-2 rounded-full bg-app-surface text-app-text-muted hover:bg-app-primary hover:text-white transition-all shadow-sm border border-app-border hover:border-app-primary"
             >
               <Plus size={16} strokeWidth={3} />
             </button>
@@ -257,10 +257,10 @@
   </div>
 
   <!-- Done Button Footer -->
-  <div class="p-4 border-t border-border-default bg-bg-surface shrink-0">
+  <div class="p-4 border-t border-app-border bg-app-surface shrink-0">
     <button
       onclick={handleDone}
-      class="w-full py-3 rounded-xl bg-action-primary text-white font-bold text-sm shadow-sm hover:bg-action-primary/90 transition-colors"
+      class="w-full py-3 rounded-xl bg-app-primary text-white font-bold text-sm shadow-sm hover:bg-app-primary/90 transition-colors"
     >
       Done
     </button>

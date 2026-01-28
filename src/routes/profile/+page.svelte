@@ -70,7 +70,7 @@
     {#if $user}
         <!-- User Authenticated View -->
         <div
-            class="bg-bg-surface p-5 md:p-8 rounded-2xl border border-border-default shadow-sm space-y-6 md:space-y-8"
+            class="bg-app-surface p-5 md:p-8 rounded-2xl border border-app-border shadow-sm space-y-6 md:space-y-8"
             transition:fade
         >
             <div
@@ -82,33 +82,33 @@
                     size="lg"
                 />
                 <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-text-primary">
+                    <h2 class="text-xl md:text-2xl font-bold text-app-text">
                         {$user.displayName || "User"}
                     </h2>
-                    <p class="text-sm md:text-base text-text-secondary">
+                    <p class="text-sm md:text-base text-app-text-muted">
                         {$user.email}
                     </p>
                 </div>
             </div>
 
-            <div class="border-t border-border-default my-4 md:my-6"></div>
+            <div class="border-t border-app-border my-4 md:my-6"></div>
 
             <!-- User Details & Plan -->
             <div class="space-y-4">
                 <div
-                    class="flex items-center justify-between p-3 md:p-4 bg-bg-default rounded-xl"
+                    class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl"
                 >
                     <div class="flex items-center gap-3">
                         <div
-                            class="p-2 bg-action-primary/10 rounded-lg text-action-primary"
+                            class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
                         >
                             <User size={20} />
                         </div>
                         <div>
-                            <p class="text-sm font-bold text-text-primary">
+                            <p class="text-sm font-bold text-app-text">
                                 Current Plan
                             </p>
-                            <p class="text-xs text-text-secondary">
+                            <p class="text-xs text-app-text-muted">
                                 Free Trial
                             </p>
                         </div>
@@ -120,13 +120,13 @@
                 </div>
             </div>
 
-            <div class="border-t border-border-default my-4 md:my-6"></div>
+            <div class="border-t border-app-border my-4 md:my-6"></div>
 
             <!-- Actions -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <button
                     onclick={handleSignOut}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-border-default text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors font-medium text-sm md:text-base"
+                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-app-border text-app-text-muted hover:bg-app-surface-hover hover:text-app-text transition-colors font-medium text-sm md:text-base"
                 >
                     <LogOut size={18} />
                     Sign Out
@@ -143,10 +143,10 @@
     {:else}
         <!-- Guest Login View -->
         <div
-            class="bg-bg-surface p-5 md:p-8 rounded-2xl border border-border-default shadow-sm max-w-md mx-auto"
+            class="bg-app-surface p-5 md:p-8 rounded-2xl border border-app-border shadow-sm max-w-md mx-auto"
             transition:fade
         >
-            <h2 class="text-xl font-bold text-text-primary mb-6 text-center">
+            <h2 class="text-xl font-bold text-app-text mb-6 text-center">
                 Sign In to YumHero
             </h2>
 
@@ -206,19 +206,19 @@
             </button>
 
             <div class="relative flex py-4 items-center">
-                <div class="flex-grow border-t border-border-default"></div>
+                <div class="flex-grow border-t border-app-border"></div>
                 <span
-                    class="flex-shrink-0 mx-4 text-xs font-bold text-text-secondary uppercase tracking-wider"
+                    class="flex-shrink-0 mx-4 text-xs font-bold text-app-text-muted uppercase tracking-wider"
                     >Or via email</span
                 >
-                <div class="flex-grow border-t border-border-default"></div>
+                <div class="flex-grow border-t border-app-border"></div>
             </div>
 
             {#if !emailSent}
                 <form onsubmit={handleMagicLink} class="space-y-4">
                     <div class="relative">
                         <Mail
-                            class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted"
                             size={18}
                         />
                         <input
@@ -227,13 +227,13 @@
                             placeholder="you@example.com"
                             required
                             disabled={isLoading}
-                            class="w-full pl-11 pr-4 py-3 bg-bg-accent-subtle border border-border-default rounded-xl focus:outline-none focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all font-medium"
+                            class="w-full pl-11 pr-4 py-3 bg-app-surface-deep border border-app-border rounded-xl focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all font-medium"
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        class="w-full bg-action-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-action-primary/20 hover:bg-action-primary/90 hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        class="w-full bg-app-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-app-primary/20 hover:bg-app-primary/90 hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {#if isLoading}
                             <div
@@ -246,13 +246,13 @@
                 </form>
             {:else}
                 <div class="text-center py-4">
-                    <p class="text-text-primary font-medium mb-4">
+                    <p class="text-app-text font-medium mb-4">
                         We sent a magic link to <span
-                            class="text-action-primary font-bold">{email}</span
+                            class="text-app-primary font-bold">{email}</span
                         >
                     </p>
                     <button
-                        class="text-sm font-bold text-text-secondary hover:text-action-primary underline decoration-2 decoration-transparent hover:decoration-current transition-all"
+                        class="text-sm font-bold text-app-text-muted hover:text-app-primary underline decoration-2 decoration-transparent hover:decoration-current transition-all"
                         onclick={() => (emailSent = false)}
                     >
                         Use a different email
@@ -260,7 +260,7 @@
                 </div>
             {/if}
 
-            <div class="mt-6 text-center text-xs text-text-secondary">
+            <div class="mt-6 text-center text-xs text-app-text-muted">
                 By signing in, you agree to our Terms of Service and Privacy
                 Policy.
             </div>

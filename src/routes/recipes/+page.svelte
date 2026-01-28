@@ -34,14 +34,14 @@
         <!-- Search -->
         <div class="relative w-full max-w-[200px] md:max-w-xs hidden sm:block">
             <Search
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
                 size={16}
             />
             <input
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Search..."
-                class="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-default border border-border-default rounded-lg focus:outline-none focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all"
+                class="w-full pl-9 pr-3 py-1.5 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
             />
         </div>
 
@@ -52,7 +52,7 @@
         <div class="relative">
             <button
                 onclick={() => (showAddDropdown = !showAddDropdown)}
-                class="flex items-center gap-2 p-2 md:px-4 bg-action-primary text-white rounded-lg shadow-sm hover:bg-action-primary/90 transition-all active:scale-95 shrink-0"
+                class="flex items-center gap-2 p-2 md:px-4 bg-app-primary text-white rounded-lg shadow-sm hover:bg-app-primary/90 transition-all active:scale-95 shrink-0"
                 aria-label="Add Recipe"
                 title="Add Recipe"
             >
@@ -66,7 +66,7 @@
             {#if showAddDropdown}
                 <div
                     transition:fade={{ duration: 100 }}
-                    class="absolute right-0 top-full mt-2 w-48 bg-bg-surface rounded-xl border border-border-default shadow-lg overflow-hidden z-50 py-1"
+                    class="absolute right-0 top-full mt-2 w-48 bg-app-surface rounded-xl border border-app-border shadow-lg overflow-hidden z-50 py-1"
                 >
                     <button
                         onclick={() => {
@@ -74,7 +74,7 @@
                             initiallyShowAdvanced = false;
                             showAddModal = true;
                         }}
-                        class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-2 transition-colors"
+                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
                     >
                         <Plus size={16} />
                         Add Manually
@@ -85,7 +85,7 @@
                             initiallyShowAdvanced = true;
                             showAddModal = true;
                         }}
-                        class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-2 transition-colors"
+                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
                     >
                         <Link size={16} />
                         Import from URL
@@ -111,19 +111,17 @@
 
 <div class="h-full flex flex-col overflow-hidden relative">
     <!-- Mobile Search (Visible only on small screens) -->
-    <div
-        class="px-4 py-2 sm:hidden bg-bg-surface border-b border-border-default"
-    >
+    <div class="px-4 py-2 sm:hidden bg-app-surface border-b border-app-border">
         <div class="relative">
             <Search
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
                 size={16}
             />
             <input
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Search recipes..."
-                class="w-full pl-9 pr-3 py-2 text-sm bg-bg-default border border-border-default rounded-lg focus:outline-none focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 text-text-primary placeholder:text-text-secondary/50 transition-all"
+                class="w-full pl-9 pr-3 py-2 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
             />
         </div>
     </div>
@@ -132,7 +130,7 @@
     <div class="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 pb-24">
         {#if $userRecipes.loading}
             <div class="flex items-center justify-center h-64">
-                <Loader2 class="w-8 h-8 text-action-primary animate-spin" />
+                <Loader2 class="w-8 h-8 text-app-primary animate-spin" />
             </div>
         {:else if filteredRecipes.length > 0}
             <div
@@ -156,14 +154,12 @@
                 class="flex flex-col items-center justify-center h-64 text-center"
             >
                 <div
-                    class="p-4 bg-bg-surface rounded-full mb-4 text-text-secondary/50"
+                    class="p-4 bg-app-surface rounded-full mb-4 text-app-text-muted/50"
                 >
                     <Search size={32} />
                 </div>
-                <p class="text-lg font-bold text-text-primary">
-                    No recipes found
-                </p>
-                <p class="text-text-secondary">
+                <p class="text-lg font-bold text-app-text">No recipes found</p>
+                <p class="text-app-text-muted">
                     Try adjusting your search or filters.
                 </p>
                 <button
@@ -171,7 +167,7 @@
                         searchQuery = "";
                         activeFilter = "All";
                     }}
-                    class="mt-4 text-action-primary font-bold hover:underline"
+                    class="mt-4 text-app-primary font-bold hover:underline"
                 >
                     Clear All
                 </button>

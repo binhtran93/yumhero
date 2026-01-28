@@ -44,25 +44,25 @@
 <div
   class={twMerge(
     "flex flex-col h-full overflow-y-auto transition-all duration-300",
-    index % 2 !== 0 ? "bg-bg-default/50 md:bg-bg-surface" : "bg-bg-surface",
+    index % 2 !== 0 ? "bg-app-bg/50 md:bg-app-surface" : "bg-app-surface",
     isCompact ? "w-50" : "w-[90vw] md:w-[320px]",
   )}
 >
   <!-- Sticky Header -->
   <div
     class={twMerge(
-      "sticky top-0 z-10 border-b border-border-default bg-bg-surface text-text-primary shadow-sm transition-all duration-300",
+      "sticky top-0 z-10 border-b border-app-border bg-app-surface text-app-text shadow-sm transition-all duration-300",
       isCompact ? "py-2" : "py-4 md:py-6",
     )}
   >
     {#if isToday}
-      <div class="absolute top-0 left-0 right-0 h-1 bg-action-primary"></div>
+      <div class="absolute top-0 left-0 right-0 h-1 bg-app-primary"></div>
     {/if}
     <div class="flex items-center justify-center gap-2">
       <span
         class={twMerge(
           "font-display font-bold transition-all duration-300",
-          isToday && "text-action-primary",
+          isToday && "text-app-primary",
           isCompact ? "text-sm" : "text-lg",
         )}
       >
@@ -71,7 +71,7 @@
       {#if isToday}
         <span
           class={twMerge(
-            "font-bold uppercase tracking-wider text-action-primary/80 bg-action-primary/10 rounded-md transition-all duration-300",
+            "font-bold uppercase tracking-wider text-app-primary/80 bg-app-primary/10 rounded-md transition-all duration-300",
             isCompact ? "text-[8px] px-1 py-0.5" : "text-[10px] px-1.5 py-0.5",
           )}>Today</span
         >
@@ -98,14 +98,14 @@
                 )}
               ></div>
               <span
-                class="text-xs font-bold text-text-primary uppercase tracking-widest"
+                class="text-xs font-bold text-app-text uppercase tracking-widest"
                 >{section.label}</span
               >
             </div>
             {#if dayPlan.meals[section.type].length > 0}
               <button
                 onclick={() => onMealClear(dayPlan.day, section.type)}
-                class="text-text-secondary hover:text-red-600 transition-colors"
+                class="text-app-text-muted hover:text-red-600 transition-colors"
                 title={`Clear ${section.label}`}
               >
                 <X size={14} />

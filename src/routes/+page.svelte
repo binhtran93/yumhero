@@ -222,7 +222,7 @@
     <Header title="Plan Your Meal">
         <div class="flex items-center gap-3">
             <button
-                class="hidden md:block p-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+                class="hidden md:block p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors"
                 onclick={() => (isCompact = !isCompact)}
                 title={isCompact
                     ? "Switch to Detail View"
@@ -236,19 +236,19 @@
             </button>
 
             <div
-                class="flex items-center gap-2 bg-bg-default p-1 rounded-full border border-border-default shadow-sm"
+                class="flex items-center gap-2 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
             >
                 <button
-                    class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
                     onclick={prevWeek}
                 >
                     <ChevronLeft size={18} />
                 </button>
-                <span class="text-xs font-bold text-center text-text-primary">
+                <span class="text-xs font-bold text-center text-app-text">
                     {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
                 </span>
                 <button
-                    class="p-1.5 hover:bg-bg-surface-hover rounded-full text-text-secondary transition-colors"
+                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
                     onclick={nextWeek}
                 >
                     <ChevronRight size={18} />
@@ -259,10 +259,10 @@
 
     <div
         bind:this={scrollContainer}
-        class="flex-1 w-full overflow-x-auto bg-bg-default snap-x snap-mandatory"
+        class="flex-1 w-full overflow-x-auto bg-app-bg snap-x snap-mandatory"
     >
         <div
-            class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-border-default"
+            class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-app-border"
         >
             {#each plan as dayPlan, i (dayPlan.day)}
                 <div
@@ -294,11 +294,11 @@
 
 {#if isScrollable}
     <div
-        class="fixed bottom-24 md:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-bg-surface/90 backdrop-blur-md border border-border-default shadow-md transition-opacity duration-300"
+        class="fixed bottom-24 md:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-app-surface/90 backdrop-blur-md border border-app-border shadow-md transition-opacity duration-300"
     >
         {#each DAYS as day, i}
             <button
-                class="w-auto px-3 h-9 rounded-full flex items-center justify-center text-[11px] font-bold transition-all hover:bg-bg-surface-hover active:scale-95 text-text-secondary"
+                class="w-auto px-3 h-9 rounded-full flex items-center justify-center text-[11px] font-bold transition-all hover:bg-app-surface-hover active:scale-95 text-app-text-muted"
                 onclick={() => scrollToDay(i)}
                 aria-label="Scroll to {day}"
             >

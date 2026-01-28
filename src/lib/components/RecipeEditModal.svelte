@@ -305,14 +305,14 @@
     <!-- Header -->
     {#snippet header()}
         <div
-            class="flex items-center justify-between px-6 py-4 border-b border-border-default bg-bg-surface sticky top-0 z-20 shadow-sm"
+            class="flex items-center justify-between px-6 py-4 border-b border-app-border bg-app-surface sticky top-0 z-20 shadow-sm"
         >
             <div class="flex items-center gap-3">
                 <div class="bg-primary-100 p-2 rounded-xl text-primary-600">
                     <ChefHat size={24} />
                 </div>
                 <h2
-                    class="text-xl font-display font-bold text-text-primary tracking-tight"
+                    class="text-xl font-display font-bold text-app-text tracking-tight"
                 >
                     {initialRecipe ? "Edit Recipe" : "Create New Recipe"}
                 </h2>
@@ -320,13 +320,13 @@
             <div class="flex items-center gap-3">
                 <button
                     onclick={onClose}
-                    class="px-5 py-2.5 text-text-secondary font-bold hover:bg-bg-surface-hover rounded-xl transition-all text-sm"
+                    class="px-5 py-2.5 text-app-text-muted font-bold hover:bg-app-surface-hover rounded-xl transition-all text-sm"
                 >
                     Cancel
                 </button>
                 <button
                     onclick={handleSave}
-                    class="px-6 py-2.5 bg-action-primary text-white font-bold rounded-xl hover:bg-action-primary/90 transition-all text-sm shadow-md hover:shadow-lg active:scale-95"
+                    class="px-6 py-2.5 bg-app-primary text-white font-bold rounded-xl hover:bg-app-primary/90 transition-all text-sm shadow-md hover:shadow-lg active:scale-95"
                 >
                     Save Recipe
                 </button>
@@ -335,7 +335,7 @@
     {/snippet}
 
     <!-- Content -->
-    <div class="p-6 md:p-8 space-y-10 bg-bg-default/30 min-h-full">
+    <div class="p-6 md:p-8 space-y-10 bg-app-bg/30 min-h-full">
         <!-- Alerts -->
         {#if isExtracting}
             <div
@@ -392,7 +392,7 @@
             <!-- Left: Photo Upload -->
             <div class="lg:col-span-4 space-y-4">
                 <div
-                    class="aspect-square w-full rounded-3xl bg-bg-surface border-2 border-dashed border-border-default flex flex-col items-center justify-center relative overflow-hidden group hover:border-action-primary/50 transition-all shadow-sm"
+                    class="aspect-square w-full rounded-3xl bg-app-surface border-2 border-dashed border-app-border flex flex-col items-center justify-center relative overflow-hidden group hover:border-app-primary/50 transition-all shadow-sm"
                 >
                     {#if image}
                         <img
@@ -407,21 +407,21 @@
                                 onclick={() => {
                                     /* TODO: File Upload logic */
                                 }}
-                                class="px-5 py-2.5 bg-white text-text-primary rounded-xl shadow-lg font-bold text-xs uppercase tracking-wide transform translate-y-2 group-hover:translate-y-0 transition-transform"
+                                class="px-5 py-2.5 bg-white text-app-text rounded-xl shadow-lg font-bold text-xs uppercase tracking-wide transform translate-y-2 group-hover:translate-y-0 transition-transform"
                                 >Change Photo</button
                             >
                         </div>
                     {:else}
                         <div
-                            class="w-20 h-20 rounded-full bg-bg-accent-subtle flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-text-secondary/50 group-hover:text-action-primary/50"
+                            class="w-20 h-20 rounded-full bg-app-surface-deep flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-app-text-muted/50 group-hover:text-app-primary/50"
                         >
                             <ImageIcon size={40} />
                         </div>
                         <span
-                            class="text-sm text-text-secondary font-bold group-hover:text-action-primary transition-colors"
+                            class="text-sm text-app-text-muted font-bold group-hover:text-app-primary transition-colors"
                             >Upload Photo</span
                         >
-                        <span class="text-xs text-text-secondary/50 mt-1"
+                        <span class="text-xs text-app-text-muted/50 mt-1"
                             >or drag and drop</span
                         >
                     {/if}
@@ -429,14 +429,14 @@
                 <!-- Quick URL Input used to import image (as placeholder logic) -->
                 <div class="relative">
                     <Link
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary/50"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted/50"
                         size={14}
                     />
                     <input
                         type="text"
                         bind:value={image}
                         placeholder="Or paste image URL"
-                        class="w-full pl-9 pr-3 py-2 bg-bg-surface border border-border-default rounded-lg text-xs focus:border-action-primary outline-none transition-all"
+                        class="w-full pl-9 pr-3 py-2 bg-app-surface border border-app-border rounded-lg text-xs focus:border-app-primary outline-none transition-all"
                     />
                 </div>
             </div>
@@ -446,7 +446,7 @@
                 <!-- Title -->
                 <div class="space-y-1.5">
                     <label
-                        class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                        class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                         for="title"
                         >Title <span class="text-red-500">*</span></label
                     >
@@ -454,7 +454,7 @@
                         id="title"
                         type="text"
                         bind:value={title}
-                        class="w-full px-5 py-3.5 bg-bg-surface border border-border-default rounded-2xl focus:border-action-primary focus:ring-4 focus:ring-action-primary/10 outline-none transition-all font-display font-bold text-xl placeholder:text-text-secondary/30 shadow-sm"
+                        class="w-full px-5 py-3.5 bg-app-surface border border-app-border rounded-2xl focus:border-app-primary focus:ring-4 focus:ring-app-primary/10 outline-none transition-all font-display font-bold text-xl placeholder:text-app-text-muted/30 shadow-sm"
                         placeholder="e.g. Grandma's Famous Apple Pie"
                         autoFocus
                     />
@@ -463,14 +463,14 @@
                 <!-- Description -->
                 <div class="space-y-1.5">
                     <label
-                        class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                        class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                         for="desc">Description</label
                     >
                     <textarea
                         id="desc"
                         rows="3"
                         bind:value={description}
-                        class="w-full px-5 py-3.5 bg-bg-surface border border-border-default rounded-2xl focus:border-action-primary focus:ring-4 focus:ring-action-primary/10 outline-none transition-all resize-none text-sm placeholder:text-text-secondary/30 shadow-sm leading-relaxed"
+                        class="w-full px-5 py-3.5 bg-app-surface border border-app-border rounded-2xl focus:border-app-primary focus:ring-4 focus:ring-app-primary/10 outline-none transition-all resize-none text-sm placeholder:text-app-text-muted/30 shadow-sm leading-relaxed"
                         placeholder="Briefly describe what makes this dish special..."
                     ></textarea>
                 </div>
@@ -479,29 +479,29 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div class="space-y-1.5">
                         <label
-                            class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                            class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                             for="servings">Servings</label
                         >
                         <div class="relative">
                             <Utensils
-                                class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted/50"
                                 size={16}
                             />
                             <input
                                 id="servings"
                                 type="number"
                                 bind:value={servings}
-                                class="w-full pl-11 pr-4 py-3 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 outline-none transition-all font-bold text-sm shadow-sm"
+                                class="w-full pl-11 pr-4 py-3 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-2 focus:ring-app-primary/10 outline-none transition-all font-bold text-sm shadow-sm"
                                 placeholder="4"
                             />
                         </div>
                     </div>
                     <div class="space-y-1.5">
                         <label
-                            class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                            class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                             for="yields"
                             >Yields <span
-                                class="font-normal text-text-secondary/50 lowercase"
+                                class="font-normal text-app-text-muted/50 lowercase"
                                 >(optional)</span
                             ></label
                         >
@@ -509,7 +509,7 @@
                             id="yields"
                             type="text"
                             bind:value={yields}
-                            class="w-full px-4 py-3 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 outline-none transition-all font-medium text-sm shadow-sm"
+                            class="w-full px-4 py-3 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-2 focus:ring-app-primary/10 outline-none transition-all font-medium text-sm shadow-sm"
                             placeholder="e.g. 12 cookies"
                         />
                     </div>
@@ -517,7 +517,7 @@
             </div>
         </div>
 
-        <hr class="border-border-default/50" />
+        <hr class="border-app-border/50" />
 
         <!-- Ingredients Section -->
         <div class="space-y-5">
@@ -527,7 +527,7 @@
                         <Check size={18} strokeWidth={3} />
                     </div>
                     <h3
-                        class="text-lg font-display font-bold text-text-primary"
+                        class="text-lg font-display font-bold text-app-text"
                     >
                         Ingredients
                     </h3>
@@ -536,7 +536,7 @@
 
             <!-- List Header -->
             <div
-                class="hidden md:flex items-center gap-4 px-4 py-2 bg-bg-accent-subtle rounded-lg border border-border-default/50 text-[10px] uppercase font-bold text-text-secondary tracking-wider"
+                class="hidden md:flex items-center gap-4 px-4 py-2 bg-app-surface-deep rounded-lg border border-app-border/50 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
             >
                 <span class="w-16">Qty</span>
                 <span class="w-20">Unit</span>
@@ -548,20 +548,20 @@
             <div class="space-y-3">
                 {#each ingredients as ing, i}
                     <div
-                        class="flex flex-col md:flex-row items-start md:items-center gap-2 group bg-bg-surface md:bg-transparent p-3 md:p-0 rounded-xl border border-border-default md:border-none shadow-sm md:shadow-none hover:bg-bg-surface/50 transition-colors"
+                        class="flex flex-col md:flex-row items-start md:items-center gap-2 group bg-app-surface md:bg-transparent p-3 md:p-0 rounded-xl border border-app-border md:border-none shadow-sm md:shadow-none hover:bg-app-surface/50 transition-colors"
                     >
                         <div class="flex gap-2 w-full md:w-auto">
                             <input
                                 type="text"
                                 bind:value={ing.amount}
-                                class="w-full md:w-16 px-3 py-2.5 bg-bg-surface border border-border-default rounded-xl md:rounded-lg text-sm font-bold focus:border-action-primary outline-none shadow-sm focus:ring-2 focus:ring-action-primary/10 placeholder:font-normal"
+                                class="w-full md:w-16 px-3 py-2.5 bg-app-surface border border-app-border rounded-xl md:rounded-lg text-sm font-bold focus:border-app-primary outline-none shadow-sm focus:ring-2 focus:ring-app-primary/10 placeholder:font-normal"
                                 placeholder="1"
                             />
                             <input
                                 type="text"
                                 list="units"
                                 bind:value={ing.unit}
-                                class="w-full md:w-20 px-3 py-2.5 bg-bg-surface border border-border-default rounded-xl md:rounded-lg text-sm focus:border-action-primary outline-none shadow-sm focus:ring-2 focus:ring-action-primary/10"
+                                class="w-full md:w-20 px-3 py-2.5 bg-app-surface border border-app-border rounded-xl md:rounded-lg text-sm focus:border-app-primary outline-none shadow-sm focus:ring-2 focus:ring-app-primary/10"
                                 placeholder="cup"
                             />
                             <datalist id="units">
@@ -574,7 +574,7 @@
                         <input
                             type="text"
                             bind:value={ing.name}
-                            class="w-full flex-1 px-3 py-2.5 bg-bg-surface border border-border-default rounded-xl md:rounded-lg text-sm font-medium focus:border-action-primary outline-none shadow-sm focus:ring-2 focus:ring-action-primary/10"
+                            class="w-full flex-1 px-3 py-2.5 bg-app-surface border border-app-border rounded-xl md:rounded-lg text-sm font-medium focus:border-app-primary outline-none shadow-sm focus:ring-2 focus:ring-app-primary/10"
                             placeholder="Ingredient name (e.g. Flour)"
                         />
 
@@ -582,13 +582,13 @@
                             <input
                                 type="text"
                                 bind:value={ing.notes}
-                                class="w-full px-3 py-2.5 bg-bg-surface border border-border-default rounded-xl md:rounded-lg text-sm text-text-secondary focus:text-text-primary focus:border-action-primary outline-none shadow-sm focus:ring-2 focus:ring-action-primary/10"
+                                class="w-full px-3 py-2.5 bg-app-surface border border-app-border rounded-xl md:rounded-lg text-sm text-app-text-muted focus:text-app-text focus:border-app-primary outline-none shadow-sm focus:ring-2 focus:ring-app-primary/10"
                                 placeholder="Notes (e.g. sifted)"
                             />
 
                             <button
                                 onclick={() => removeIngredient(i)}
-                                class="w-10 md:w-6 flex items-center justify-center text-text-secondary hover:text-red-500 bg-bg-accent-subtle md:bg-transparent rounded-lg md:rounded-none h-10 md:h-auto transition-colors"
+                                class="w-10 md:w-6 flex items-center justify-center text-app-text-muted hover:text-red-500 bg-app-surface-deep md:bg-transparent rounded-lg md:rounded-none h-10 md:h-auto transition-colors"
                             >
                                 <Trash2 size={16} />
                             </button>
@@ -599,13 +599,13 @@
 
             <button
                 onclick={addIngredient}
-                class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white border border-border-default hover:border-action-primary/50 hover:bg-bg-surface-hover text-text-primary hover:text-action-primary font-bold text-sm rounded-xl border-dashed transition-all shadow-sm"
+                class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white border border-app-border hover:border-app-primary/50 hover:bg-app-surface-hover text-app-text hover:text-app-primary font-bold text-sm rounded-xl border-dashed transition-all shadow-sm"
             >
                 <Plus size={16} /> Add Ingredient
             </button>
         </div>
 
-        <hr class="border-border-default/50" />
+        <hr class="border-app-border/50" />
 
         <!-- Instructions Section -->
         <div class="space-y-4">
@@ -613,7 +613,7 @@
                 <div class="p-1.5 bg-amber-100 text-amber-700 rounded-lg">
                     <AlignLeft size={18} strokeWidth={3} />
                 </div>
-                <h3 class="text-lg font-display font-bold text-text-primary">
+                <h3 class="text-lg font-display font-bold text-app-text">
                     Instructions
                 </h3>
             </div>
@@ -622,11 +622,11 @@
                 <textarea
                     bind:value={directions}
                     rows="8"
-                    class="w-full px-6 py-5 bg-bg-surface border border-border-default rounded-2xl focus:border-action-primary focus:ring-4 focus:ring-action-primary/10 outline-none transition-all text-sm leading-relaxed shadow-sm font-medium text-text-primary placeholder:text-text-secondary/30 resize-y"
+                    class="w-full px-6 py-5 bg-app-surface border border-app-border rounded-2xl focus:border-app-primary focus:ring-4 focus:ring-app-primary/10 outline-none transition-all text-sm leading-relaxed shadow-sm font-medium text-app-text placeholder:text-app-text-muted/30 resize-y"
                     placeholder="Step 1: Preheat your oven to 350°F...&#10;&#10;Step 2: Mix the dry ingredients..."
                 ></textarea>
                 <div
-                    class="absolute right-4 bottom-4 text-[10px] font-bold uppercase tracking-wider text-text-secondary/30 pointer-events-none group-focus-within:text-action-primary/50 transition-colors"
+                    class="absolute right-4 bottom-4 text-[10px] font-bold uppercase tracking-wider text-app-text-muted/30 pointer-events-none group-focus-within:text-app-primary/50 transition-colors"
                 >
                     Markdown Supported
                 </div>
@@ -635,11 +635,11 @@
 
         <!-- ADVANCED SECTION: Collapsible -->
         <div
-            class="rounded-2xl border border-border-default overflow-hidden bg-bg-surface/50"
+            class="rounded-2xl border border-app-border overflow-hidden bg-app-surface/50"
         >
             <button
                 onclick={() => (showAdvanced = !showAdvanced)}
-                class="w-full flex items-center justify-between px-6 py-4 bg-bg-surface hover:bg-bg-surface-hover transition-colors text-left"
+                class="w-full flex items-center justify-between px-6 py-4 bg-app-surface hover:bg-app-surface-hover transition-colors text-left"
             >
                 <div class="flex items-center gap-2">
                     <div class="p-1.5 bg-purple-100 text-purple-700 rounded-lg">
@@ -653,11 +653,11 @@
                     </div>
                     <div>
                         <h3
-                            class="font-display font-bold text-text-primary text-base"
+                            class="font-display font-bold text-app-text text-base"
                         >
                             Advanced Options
                         </h3>
-                        <p class="text-xs text-text-secondary font-medium">
+                        <p class="text-xs text-app-text-muted font-medium">
                             Import from URL, detailed times, categories, and
                             prep notes
                         </p>
@@ -665,7 +665,7 @@
                 </div>
 
                 <span
-                    class="text-xs font-bold text-action-primary uppercase tracking-wider bg-action-primary/10 px-3 py-1 rounded-full"
+                    class="text-xs font-bold text-app-primary uppercase tracking-wider bg-app-primary/10 px-3 py-1 rounded-full"
                 >
                     {showAdvanced ? "Hide" : "Show"}
                 </span>
@@ -673,26 +673,26 @@
 
             {#if showAdvanced}
                 <div
-                    class="p-6 md:p-8 space-y-8 border-t border-border-default bg-bg-surface/30"
+                    class="p-6 md:p-8 space-y-8 border-t border-app-border bg-app-surface/30"
                     transition:slide
                 >
                     <!-- Import from URL -->
                     <div class="space-y-2">
                         <label
-                            class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                            class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                             for="url">Import from Web</label
                         >
                         <div class="relative flex gap-2">
                             <div class="relative flex-1">
                                 <Link
-                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50"
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted/50"
                                     size={16}
                                 />
                                 <input
                                     id="url"
                                     type="text"
                                     bind:value={url}
-                                    class="w-full pl-11 pr-4 py-3 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-2 focus:ring-action-primary/10 outline-none transition-all text-sm shadow-sm"
+                                    class="w-full pl-11 pr-4 py-3 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-2 focus:ring-app-primary/10 outline-none transition-all text-sm shadow-sm"
                                     placeholder="Paste a recipe URL to automatically extract details..."
                                     onkeydown={(e) =>
                                         e.key === "Enter" && handleExtract()}
@@ -706,7 +706,7 @@
                                 {isExtracting ? "Importing..." : "Import"}
                             </button>
                         </div>
-                        <p class="text-xs text-text-secondary ml-1">
+                        <p class="text-xs text-app-text-muted ml-1">
                             Paste a URL from a recipe site to autofill the form.
                         </p>
                     </div>
@@ -717,7 +717,7 @@
                             <!-- Time -->
                             <div class="space-y-3">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1 flex items-center gap-1.5"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1 flex items-center gap-1.5"
                                     ><Clock size={12} /> Time Estimates</label
                                 >
 
@@ -725,7 +725,7 @@
                                     <!-- Prep -->
                                     <div class="space-y-2">
                                         <span
-                                            class="text-xs font-bold text-text-secondary"
+                                            class="text-xs font-bold text-app-text-muted"
                                             >Prep Time</span
                                         >
                                         <div class="flex gap-2">
@@ -735,10 +735,10 @@
                                                     min="0"
                                                     bind:value={prepHours}
                                                     placeholder="0"
-                                                    class="w-full px-3 py-2 bg-bg-surface border border-border-default rounded-lg text-center font-bold text-sm focus:border-action-primary outline-none"
+                                                    class="w-full px-3 py-2 bg-app-surface border border-app-border rounded-lg text-center font-bold text-sm focus:border-app-primary outline-none"
                                                 />
                                                 <span
-                                                    class="absolute right-1 top-1 text-[10px] text-text-secondary font-medium"
+                                                    class="absolute right-1 top-1 text-[10px] text-app-text-muted font-medium"
                                                     >hr</span
                                                 >
                                             </div>
@@ -748,10 +748,10 @@
                                                     min="0"
                                                     bind:value={prepMinutes}
                                                     placeholder="0"
-                                                    class="w-full px-3 py-2 bg-bg-surface border border-border-default rounded-lg text-center font-bold text-sm focus:border-action-primary outline-none"
+                                                    class="w-full px-3 py-2 bg-app-surface border border-app-border rounded-lg text-center font-bold text-sm focus:border-app-primary outline-none"
                                                 />
                                                 <span
-                                                    class="absolute right-1 top-1 text-[10px] text-text-secondary font-medium"
+                                                    class="absolute right-1 top-1 text-[10px] text-app-text-muted font-medium"
                                                     >min</span
                                                 >
                                             </div>
@@ -760,7 +760,7 @@
                                     <!-- Cook -->
                                     <div class="space-y-2">
                                         <span
-                                            class="text-xs font-bold text-text-secondary"
+                                            class="text-xs font-bold text-app-text-muted"
                                             >Cook Time</span
                                         >
                                         <div class="flex gap-2">
@@ -770,10 +770,10 @@
                                                     min="0"
                                                     bind:value={cookHours}
                                                     placeholder="0"
-                                                    class="w-full px-3 py-2 bg-bg-surface border border-border-default rounded-lg text-center font-bold text-sm focus:border-action-primary outline-none"
+                                                    class="w-full px-3 py-2 bg-app-surface border border-app-border rounded-lg text-center font-bold text-sm focus:border-app-primary outline-none"
                                                 />
                                                 <span
-                                                    class="absolute right-1 top-1 text-[10px] text-text-secondary font-medium"
+                                                    class="absolute right-1 top-1 text-[10px] text-app-text-muted font-medium"
                                                     >hr</span
                                                 >
                                             </div>
@@ -783,10 +783,10 @@
                                                     min="0"
                                                     bind:value={cookMinutes}
                                                     placeholder="0"
-                                                    class="w-full px-3 py-2 bg-bg-surface border border-border-default rounded-lg text-center font-bold text-sm focus:border-action-primary outline-none"
+                                                    class="w-full px-3 py-2 bg-app-surface border border-app-border rounded-lg text-center font-bold text-sm focus:border-app-primary outline-none"
                                                 />
                                                 <span
-                                                    class="absolute right-1 top-1 text-[10px] text-text-secondary font-medium"
+                                                    class="absolute right-1 top-1 text-[10px] text-app-text-muted font-medium"
                                                     >min</span
                                                 >
                                             </div>
@@ -798,14 +798,14 @@
                             <!-- Prep Notes -->
                             <div class="space-y-2">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                                     for="prep">Prep Notes</label
                                 >
                                 <textarea
                                     id="prep"
                                     bind:value={prepNotes}
                                     rows="3"
-                                    class="w-full px-4 py-3 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 outline-none transition-all text-sm leading-relaxed shadow-sm"
+                                    class="w-full px-4 py-3 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 outline-none transition-all text-sm leading-relaxed shadow-sm"
                                     placeholder="e.g. Marinate chicken overnight..."
                                 ></textarea>
                             </div>
@@ -815,7 +815,7 @@
                         <div class="space-y-6">
                             <div class="space-y-2">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                                     for="course">Course</label
                                 >
                                 <input
@@ -824,7 +824,7 @@
                                     bind:value={course}
                                     list="courses"
                                     placeholder="Breakfast, Dinner..."
-                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 outline-none transition-all text-sm shadow-sm"
+                                    class="w-full px-4 py-2.5 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 outline-none transition-all text-sm shadow-sm"
                                 />
                                 <datalist id="courses">
                                     <option value="Breakfast"></option>
@@ -837,7 +837,7 @@
 
                             <div class="space-y-2">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                                     for="cuisine">Cuisine</label
                                 >
                                 <input
@@ -845,13 +845,13 @@
                                     type="text"
                                     bind:value={cuisine}
                                     placeholder="Italian, Mexican..."
-                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 outline-none transition-all text-sm shadow-sm"
+                                    class="w-full px-4 py-2.5 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 outline-none transition-all text-sm shadow-sm"
                                 />
                             </div>
 
                             <div class="space-y-2">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                                     for="main">Main Ingredient</label
                                 >
                                 <input
@@ -859,17 +859,17 @@
                                     type="text"
                                     bind:value={mainIngredient}
                                     placeholder="Chicken, Beef..."
-                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 outline-none transition-all text-sm shadow-sm"
+                                    class="w-full px-4 py-2.5 bg-app-surface border border-app-border rounded-xl focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 outline-none transition-all text-sm shadow-sm"
                                 />
                             </div>
 
                             <div class="space-y-2">
                                 <label
-                                    class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider block ml-1"
                                     for="tags">Tags</label
                                 >
                                 <div
-                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus-within:border-action-primary focus-within:ring-1 focus-within:ring-action-primary/10 transition-all text-sm shadow-sm flex flex-wrap gap-2 min-h-[46px] items-center"
+                                    class="w-full px-4 py-2.5 bg-app-surface border border-app-border rounded-xl focus-within:border-app-primary focus-within:ring-1 focus-within:ring-app-primary/10 transition-all text-sm shadow-sm flex flex-wrap gap-2 min-h-[46px] items-center"
                                 >
                                     {#each selectedTags as tagId}
                                         <span

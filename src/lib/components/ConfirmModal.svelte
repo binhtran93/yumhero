@@ -34,20 +34,20 @@
                 </div>
             {/if}
             <div>
-                <h3 class="text-lg font-bold text-text-primary leading-tight">
+                <h3 class="text-lg font-bold text-app-text leading-tight">
                     {title}
                 </h3>
             </div>
         </div>
 
-        <p class="text-text-secondary leading-relaxed mb-6">
+        <p class="text-app-text-muted leading-relaxed mb-6">
             {message}
         </p>
 
         <div class="flex items-center justify-end gap-3">
             <button
                 onclick={onClose}
-                class="px-4 py-2 text-sm font-bold text-text-secondary hover:text-text-primary hover:bg-bg-default rounded-xl transition-colors"
+                class="px-4 py-2 text-sm font-bold text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-xl transition-colors"
             >
                 {cancelText}
             </button>
@@ -55,7 +55,7 @@
                 onclick={onConfirm}
                 class="px-4 py-2 text-sm font-bold text-white rounded-xl shadow-sm transition-all active:scale-95 {isDestructive
                     ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
-                    : 'bg-action-primary hover:bg-action-primary/90 shadow-action-primary/20'}"
+                    : 'bg-app-primary hover:bg-app-primary/90 shadow-action-primary/20'}"
             >
                 {confirmText}
             </button>

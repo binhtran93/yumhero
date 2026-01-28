@@ -53,7 +53,7 @@
         <!-- Modal Content -->
         <div
             class={twMerge(
-                "relative z-10 w-full bg-bg-surface border border-border-strong shadow-2xl flex flex-col rounded-3xl overflow-hidden max-h-[85vh]",
+                "relative z-10 w-full bg-app-surface border border-app-border shadow-2xl flex flex-col rounded-3xl overflow-hidden max-h-[85vh]",
                 className,
             )}
             transition:scale={{ duration: 300, easing: quintOut, start: 0.95 }}
@@ -73,13 +73,13 @@
                     <div>
                         {#if title}
                             <h2
-                                class="text-2xl font-display font-bold text-text-primary"
+                                class="text-2xl font-display font-bold text-app-text"
                             >
                                 {title}
                             </h2>
                         {/if}
                         {#if description}
-                            <p class="text-text-secondary text-sm mt-1">
+                            <p class="text-app-text-muted text-sm mt-1">
                                 {description}
                             </p>
                         {/if}
@@ -87,7 +87,7 @@
                     {#if showCloseButton}
                         <button
                             onclick={onClose}
-                            class="p-2 -mr-2 -mt-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+                            class="p-2 -mr-2 -mt-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors"
                             aria-label="Close"
                         >
                             <X size={20} />

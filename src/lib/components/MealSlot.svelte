@@ -66,7 +66,7 @@
                 <!-- Friendly Card -->
                 <div
                     class={twMerge(
-                        "bg-bg-surface border border-border-default shadow-sm relative group cursor-pointer transition-all hover:-translate-y-0.5 overflow-hidden",
+                        "bg-app-surface border border-app-border shadow-sm relative group cursor-pointer transition-all hover:-translate-y-0.5 overflow-hidden",
                         "border-l-[3px]",
                         type === "breakfast"
                             ? "border-l-accent-breakfast hover:border-l-accent-breakfast"
@@ -82,7 +82,7 @@
                     {#if onRemove}
                         <button
                             class={twMerge(
-                                "absolute text-text-secondary hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all shadow-sm",
+                                "absolute text-app-text-muted hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all shadow-sm",
                                 isCompact
                                     ? "top-0.5 right-0.5 p-0.5 opacity-0 group-hover:opacity-100"
                                     : "top-2 right-2 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
@@ -99,7 +99,7 @@
 
                     <h4
                         class={twMerge(
-                            "font-bold text-text-primary leading-snug font-display text-sm",
+                            "font-bold text-app-text leading-snug font-display text-sm",
                             isCompact
                                 ? "pl-1.5"
                                 : "",
@@ -110,9 +110,9 @@
 
                     {#if !isCompact}
                             <span
-                                class="text-xs text-text-secondary font-medium"
+                                class="text-xs text-app-text-muted font-medium"
                             >
-                                Servings: <span class="font-bold text-text-primary">{recipe.servings || 1}</span
+                                Servings: <span class="font-bold text-app-text">{recipe.servings || 1}</span
                             >
                             </span>
                     {/if}
@@ -122,7 +122,7 @@
             <!-- Friendly Add Button -->
             <button
                 class={twMerge(
-                    "w-full rounded-lg border border-dashed border-border-strong text-text-secondary hover:border-action-primary hover:bg-bg-surface-hover hover:text-action-primary font-bold transition-all flex items-center justify-center gap-2",
+                    "w-full rounded-lg border border-dashed border-app-border text-app-text-muted hover:border-app-primary hover:bg-app-surface-hover hover:text-app-primary font-bold transition-all flex items-center justify-center gap-2",
                     isCompact ? "py-1.5 text-[10px]" : "py-2.5 md:py-3 text-xs",
                 )}
                 onclick={(e) => {
@@ -135,7 +135,7 @@
                     <div class="flex items-center justify-center h-3.5">
                         <Loader
                             size={14}
-                            class="animate-spin text-text-secondary/50"
+                            class="animate-spin text-app-text-muted/50"
                         />
                     </div>
                 {:else}
@@ -152,18 +152,18 @@
             onclick={() => !isLoading && onClick()}
             onkeydown={(e) => e.key === "Enter" && !isLoading && onClick()}
             class={twMerge(
-                "w-full rounded-xl border border-dashed border-border-strong hover:border-action-primary hover:bg-bg-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-bg-surface",
+                "w-full rounded-xl border border-dashed border-app-border hover:border-app-primary hover:bg-app-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-app-surface",
                 isCompact ? "py-3" : "py-8",
             )}
         >
             <div
-                class="text-text-secondary group-hover:text-action-primary group-hover:scale-110 transition-all"
+                class="text-app-text-muted group-hover:text-app-primary group-hover:scale-110 transition-all"
             >
                 {#if isLoading}
                     <div class="flex items-center justify-center">
                         <Loader
                             size={isCompact ? 16 : 24}
-                            class="animate-spin text-text-secondary/50"
+                            class="animate-spin text-app-text-muted/50"
                         />
                     </div>
                 {:else}

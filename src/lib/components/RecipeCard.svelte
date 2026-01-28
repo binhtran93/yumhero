@@ -34,7 +34,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-    class="group relative bg-white rounded-xl border border-border-default shadow-sm hover:shadow-md transition-all duration-200 overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
+    class="group relative bg-app-surface rounded-xl border border-app-border shadow-sm hover:shadow-md transition-all duration-200 overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
     onclick={handleCardClick}
 >
     <!-- Image -->
@@ -49,7 +49,7 @@
         <div class="flex items-start justify-between gap-4 mb-1">
             <!-- Title -->
             <h3
-                class="text-sm md:text-base font-bold text-text-primary line-clamp-2 group-hover:text-action-primary transition-colors pr-8"
+                class="text-sm md:text-base font-bold text-app-text line-clamp-2 group-hover:text-app-primary transition-colors pr-8"
             >
                 {title}
             </h3>
@@ -59,14 +59,14 @@
         <div class="flex flex-wrap gap-1 mb-1.5 md:mb-2">
             {#each tags.slice(0, 3) as tag}
                 <span
-                    class="px-1.5 py-0.5 bg-bg-default border border-border-default text-text-secondary text-[10px] font-medium rounded-md"
+                    class="px-1.5 py-0.5 bg-app-bg border border-app-border text-app-text-muted text-[10px] font-medium rounded-md"
                 >
                     {getTagName(tag)}
                 </span>
             {/each}
             {#if tags.length > 3}
                 <span
-                    class="px-1.5 py-0.5 text-text-secondary text-[10px] font-medium"
+                    class="px-1.5 py-0.5 text-app-text-muted text-[10px] font-medium"
                 >
                     +{tags.length - 3}
                 </span>
@@ -75,7 +75,7 @@
 
         <!-- Meta -->
         <div
-            class="flex items-center gap-3 md:gap-4 text-xs font-medium text-text-secondary"
+            class="flex items-center gap-3 md:gap-4 text-xs font-medium text-app-text-muted"
         >
             <div class="flex items-center gap-1">
                 <Clock size={12} class="md:w-3.5 md:h-3.5 text-accent-lunch" />

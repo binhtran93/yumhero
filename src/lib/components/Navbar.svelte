@@ -45,7 +45,7 @@
 
 <aside
     class="
-    flex shrink-0 z-30 bg-bg-surface border-border-default transition-all duration-300
+    flex shrink-0 z-30 bg-app-surface border-app-border transition-all duration-300
     w-full h-16 border-t border-r-0 flex-row justify-around order-last
     md:h-full md:border-r md:border-t-0 md:flex-col md:justify-start md:pt-6 md:order-first
     {isExpanded ? 'md:w-64 lg:w-64' : 'md:w-20 lg:w-20'}
@@ -60,13 +60,13 @@
             : 'md:justify-center lg:justify-center'} mb-8 lg:gap-3"
     >
         <div
-            class="p-2 bg-action-primary/10 rounded-xl text-action-primary shrink-0"
+            class="p-2 bg-app-primary/10 rounded-xl text-app-primary shrink-0"
         >
             <ChefHat size={28} strokeWidth={2.5} />
         </div>
         {#if isExpanded}
             <span
-                class="text-xl font-bold tracking-tight text-text-primary font-display hidden md:block lg:block"
+                class="text-xl font-bold tracking-tight text-app-text font-display hidden md:block lg:block"
                 transition:fade={{ duration: 100 }}
             >
                 YumHero
@@ -88,12 +88,12 @@
                     ? 'md:justify-start md:gap-3 lg:justify-start lg:gap-3'
                     : 'md:justify-center lg:justify-center'} px-1 py-1 md:px-2 md:py-3 rounded-xl transition-all duration-200 group relative overflow-hidden w-full
         {active
-                    ? 'text-action-primary font-bold bg-transparent md:bg-bg-surface-hover shadow-none md:shadow-sm'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover/50'}"
+                    ? 'text-app-primary font-bold bg-transparent md:bg-app-surface-hover shadow-none md:shadow-sm'
+                    : 'text-app-text-muted hover:text-app-text hover:bg-app-surface-hover/50'}"
             >
                 {#if active}
                     <div
-                        class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-action-primary"
+                        class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-app-primary"
                         in:fade={{ duration: 200 }}
                     ></div>
                 {/if}
@@ -101,8 +101,8 @@
                 <item.icon
                     size={24}
                     class="{active
-                        ? 'text-action-primary'
-                        : 'text-text-secondary group-hover:text-text-primary transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
+                        ? 'text-app-primary'
+                        : 'text-app-text-muted group-hover:text-app-text transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
                 />
                 {#if isExpanded}
                     <span
@@ -122,7 +122,7 @@
     >
         <button
             on:click={toggleSidebar}
-            class="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover transition-colors"
+            class="p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
             aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
             {#if isExpanded}

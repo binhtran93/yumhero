@@ -23,11 +23,11 @@
     }
 </script>
 
-<div class="relative overflow-hidden bg-bg-surface-hover shrink-0 {className}">
+<div class="relative overflow-hidden bg-app-surface-hover shrink-0 {className}">
     <!-- Placeholder / Skeleton (Always present until loaded) -->
     {#if !loaded && !error && src}
         <div
-            class="absolute inset-0 bg-bg-surface-hover animate-pulse flex items-center justify-center text-text-secondary/20"
+            class="absolute inset-0 bg-app-surface-hover animate-pulse flex items-center justify-center text-app-text-muted/20"
         >
             <ImageIcon size={24} />
         </div>
