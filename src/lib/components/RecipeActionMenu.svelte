@@ -77,7 +77,7 @@
         onclick={toggleMenu}
         class="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-bg-default rounded-full transition-colors"
     >
-        <EllipsisVertical size={24} />
+        <EllipsisVertical size={20} />
     </button>
 
     {#if isMenuOpen}
