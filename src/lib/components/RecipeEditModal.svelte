@@ -32,9 +32,15 @@
         isOpen: boolean;
         onClose: () => void;
         initialRecipe?: Partial<Recipe>; // For editing existing recipe
+        initialShowAdvanced?: boolean;
     }
 
-    let { isOpen, onClose, initialRecipe }: Props = $props();
+    let {
+        isOpen,
+        onClose,
+        initialRecipe,
+        initialShowAdvanced = false,
+    }: Props = $props();
 
     // Form State
     let title = $state("");
@@ -136,7 +142,7 @@
         course = "";
         cuisine = "";
         mainIngredient = "";
-        showAdvanced = false;
+        showAdvanced = initialShowAdvanced;
         isExtracting = false;
         extractionError = null;
         extractionSuccess = false;

@@ -34,7 +34,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-    class="group relative bg-white rounded-xl border border-border-default shadow-sm hover:shadow-md transition-all duration-200 hover:bg-bg-surface-hover overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
+    class="group relative bg-white rounded-xl border border-border-default shadow-sm hover:shadow-md transition-all duration-200 overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
     onclick={handleCardClick}
 >
     <!-- Image -->
@@ -49,7 +49,7 @@
         <div class="flex items-start justify-between gap-4 mb-1">
             <!-- Title -->
             <h3
-                class="text-sm md:text-base font-bold text-text-primary line-clamp-1 group-hover:text-action-primary transition-colors pr-8"
+                class="text-sm md:text-base font-bold text-text-primary line-clamp-2 group-hover:text-action-primary transition-colors pr-8"
             >
                 {title}
             </h3>

@@ -3,13 +3,15 @@
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import RecipeFilterDropdown from "$lib/components/RecipeFilterDropdown.svelte";
-    import { Search, Plus, Loader2 } from "lucide-svelte";
+    import { Search, Plus, Loader2, ChevronDown, Link } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { userRecipes, userTags } from "$lib/stores/userData";
 
     let searchQuery = $state("");
     let activeFilter = $state("All");
     let showAddModal = $state(false);
+    let showAddDropdown = $state(false);
+    let initiallyShowAdvanced = $state(false);
 
     // Reactive filtering
     let filteredRecipes = $derived(
@@ -46,19 +48,66 @@
         <!-- Filter -->
         <RecipeFilterDropdown bind:activeFilter tags={$userTags.data} />
 
-        <!-- Add Button -->
-        <button
-            onclick={() => (showAddModal = true)}
-            class="p-2 bg-action-primary text-white rounded-lg shadow-sm hover:bg-action-primary/90 transition-all active:scale-95 shrink-0"
-            aria-label="Add Recipe"
-            title="Add Recipe"
-        >
-            <Plus size={20} />
-        </button>
+        <!-- Add Button & Dropdown -->
+        <div class="relative">
+            <button
+                onclick={() => (showAddDropdown = !showAddDropdown)}
+                class="flex items-center gap-2 p-2 md:px-4 bg-action-primary text-white rounded-lg shadow-sm hover:bg-action-primary/90 transition-all active:scale-95 shrink-0"
+                aria-label="Add Recipe"
+                title="Add Recipe"
+            >
+                <Plus size={20} />
+                <span class="hidden md:inline font-bold whitespace-nowrap"
+                    >Add Recipe</span
+                >
+                <ChevronDown size={16} class="hidden md:block opacity-70" />
+            </button>
+
+            {#if showAddDropdown}
+                <div
+                    transition:fade={{ duration: 100 }}
+                    class="absolute right-0 top-full mt-2 w-48 bg-bg-surface rounded-xl border border-border-default shadow-lg overflow-hidden z-50 py-1"
+                >
+                    <button
+                        onclick={() => {
+                            showAddDropdown = false;
+                            initiallyShowAdvanced = false;
+                            showAddModal = true;
+                        }}
+                        class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-2 transition-colors"
+                    >
+                        <Plus size={16} />
+                        Add Manually
+                    </button>
+                    <button
+                        onclick={() => {
+                            showAddDropdown = false;
+                            initiallyShowAdvanced = true;
+                            showAddModal = true;
+                        }}
+                        class="w-full text-left px-4 py-3 text-sm font-medium text-text-primary hover:bg-bg-surface-hover flex items-center gap-2 transition-colors"
+                    >
+                        <Link size={16} />
+                        Import from URL
+                    </button>
+                </div>
+
+                <!-- Backdrop to close dropdown -->
+                <div
+                    class="fixed inset-0 z-40"
+                    onclick={() => (showAddDropdown = false)}
+                    aria-hidden="true"
+                ></div>
+            {/if}
+        </div>
     </div>
 </Header>
 
-<RecipeEditModal isOpen={showAddModal} onClose={() => (showAddModal = false)} />
+<RecipeEditModal
+    isOpen={showAddModal}
+    onClose={() => (showAddModal = false)}
+    initialShowAdvanced={initiallyShowAdvanced}
+/>
 
 <div class="h-full flex flex-col overflow-hidden relative">
     <!-- Mobile Search (Visible only on small screens) -->
