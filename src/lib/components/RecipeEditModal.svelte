@@ -8,7 +8,11 @@
         AlignLeft,
         List,
         Type,
+        ChevronDown,
+        ChevronUp,
     } from "lucide-svelte";
+    // ... existing imports ... (keeping them as context in replacement if needed, but tool replaces exact block)
+
     import type { Recipe, Ingredient } from "$lib/types";
     import { addRecipe } from "$lib/stores/userData";
     import { slide } from "svelte/transition";
@@ -270,17 +274,27 @@
             </div>
 
             <!-- Advanced Toggle -->
-            <div>
-                <button
-                    onclick={() => (showAdvanced = !showAdvanced)}
-                    class="text-sm font-bold text-app-text-muted hover:text-app-primary flex items-center gap-1 transition-colors"
+            <div class="relative py-2">
+                <div
+                    class="absolute inset-0 flex items-center"
+                    aria-hidden="true"
                 >
-                    {#if showAdvanced}
-                        Hide Advanced Details
-                    {:else}
-                        Show Advanced Details (Description, Times)
-                    {/if}
-                </button>
+                    <div class="w-full border-t border-app-border"></div>
+                </div>
+                <div class="relative flex justify-center">
+                    <button
+                        onclick={() => (showAdvanced = !showAdvanced)}
+                        class="bg-app-surface px-4 py-1 text-xs font-bold uppercase tracking-wider text-app-text-muted hover:text-app-primary flex items-center gap-2 transition-colors rounded-full border border-app-border hover:border-app-primary/30"
+                    >
+                        {#if showAdvanced}
+                            <span>Hide Details</span>
+                            <ChevronUp size={14} />
+                        {:else}
+                            <span>Advanced Details</span>
+                            <ChevronDown size={14} />
+                        {/if}
+                    </button>
+                </div>
             </div>
 
             {#if showAdvanced}
@@ -369,8 +383,6 @@
                 </div>
             {/if}
         </div>
-
-        <div class="h-px bg-app-border w-full"></div>
 
         <!-- Ingredients Header & Toggle -->
         <div class="space-y-4">
@@ -496,8 +508,6 @@
                 ></textarea>
             {/if}
         </div>
-
-        <div class="h-px bg-app-border w-full"></div>
 
         <!-- Instructions -->
         <div class="space-y-4 pb-8">
