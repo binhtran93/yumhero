@@ -1,53 +1,55 @@
 @import "tailwindcss";
 
 :root {
-    --app-primary: #b45309;
+    --app-primary: #c2410c;
 
-    --app-bg: #fffbf8;
-    --app-surface-deep: #f9f8f6;
+    --app-bg: #fffdfc;
     --app-surface: #ffffff;
-    --app-surface-hover: #fff3e6;
-    --app-surface-accent: #f9f8f6;
+    --app-surface-deep: #f5f2f0;
+    --app-surface-hover: #fcf6f2;
+    --app-surface-accent: #f8f5f2;
 
-    --app-text: #292524;
+    --app-text: #1c1917;
     --app-text-muted: #57534e;
 
-    --app-underline: rgba(87, 83, 78, 0.08);
-    /* Derived from stone-500 */
+    --app-underline: rgba(120, 113, 108, 0.1);
     --app-border: #e7e5e4;
 
     --color-accent-breakfast: #d97706;
     --color-accent-breakfast-bg: #fffbeb;
 
-    --color-accent-lunch: #65a30d;
-    --color-accent-lunch-bg: #f7fee7;
+    --color-accent-lunch: #16a34a;
+    --color-accent-lunch-bg: #f0fdf4;
 
-    --color-accent-dinner: #dc2626;
-    --color-accent-dinner-bg: #fef2f2;
+    --color-accent-dinner: #e11d48;
+    --color-accent-dinner-bg: #fff1f2;
 }
 
 .dark {
-    --app-primary: #fbbf24;
+    --app-primary: #c2410c;
 
-    --app-bg: #1c1917;
-    --app-surface-deep: #44403c;
-    --app-surface: #292524;
-    --app-surface-hover: #44403c;
-    --app-surface-accent: #44403c;
+    /* Lightened the background slightly from pure black to a deep charcoal */
+    /* This reduces the "swallow" effect on dark orange/reds */
+    --app-bg: #161412;
+    --app-surface: #221f1d;
+    --app-surface-deep: #110f0e;
+    --app-surface-hover: #2d2926;
+    --app-surface-accent: #221f1d;
 
-    --app-text: #fafaf9;
-    --app-text-muted: #d6d3d1;
+    --app-text: #f5f5f4;
+    --app-text-muted: #a8a29e;
 
-    --app-underline: rgba(214, 211, 209, 0.1);
-    /* Derived from stone-300 */
-    --app-border: #57534e;
+    --app-underline: rgba(168, 162, 158, 0.2);
+    --app-border: #36312e;
 
-    --color-accent-breakfast: #fcd34d;
-    --color-accent-breakfast-bg: #451a03;
-    --color-accent-lunch: #bef264;
-    --color-accent-lunch-bg: #1a2e05;
-    --color-accent-dinner: #fca5a5;
-    --color-accent-dinner-bg: #450a0a;
+    --color-accent-breakfast: #d97706;
+    --color-accent-breakfast-bg: #2d1a05;
+
+    --color-accent-lunch: #16a34a;
+    --color-accent-lunch-bg: #052e16;
+
+    --color-accent-dinner: #e11d48;
+    --color-accent-dinner-bg: #4c0519;
 }
 
 @theme {
