@@ -30,7 +30,7 @@ const RecipeSchema = z.object({
     tags: z.array(z.string()).describe('List of smart tags for the recipe, e.g. "Healthy", "Weeknight Dinner", "Quick", "Vegan", "Gluten-Free", "Kid-Friendly"')
 });
 
-import { scrapeText } from '$lib/server/scraper';
+import { scrapeText } from '$lib/server/curlScraper';
 import { uploadImageToR2 } from '$lib/server/r2';
 
 export async function POST({ request }) {
