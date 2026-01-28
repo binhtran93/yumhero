@@ -10,6 +10,7 @@
         Type,
         ChevronDown,
         ChevronUp,
+        Camera,
     } from "lucide-svelte";
     // ... existing imports ... (keeping them as context in replacement if needed, but tool replaces exact block)
 
@@ -29,6 +30,8 @@
     let title = $state("");
     let source = $state(""); // Mapped to sourceUrl
     let description = $state("");
+    let imageUrl = $state("");
+    let imageFile = $state<File | null>(null);
 
     // Time State (Minutes)
     let prepTime = $state<number | null>(null);
@@ -44,11 +47,10 @@
     let bulkIngredients = $state("");
 
     // Instructions
-    // We'll keep instructions simple per screenshot flow, but ensures it saves correctly.
-    // The screenshot doesn't show instructions, but we need them for a valid recipe.
-    // I will add an Instructions section at the bottom similar to the style.
     let instructions = $state("");
     let showAdvanced = $state(false);
+
+    let fileInput: HTMLInputElement;
 
     // Initializer
     $effect(() => {
@@ -64,6 +66,8 @@
         title = "";
         source = "";
         description = "";
+        imageUrl = "";
+        imageFile = null;
         prepTime = null;
         cookTime = null;
         servings = 1;
@@ -78,6 +82,7 @@
         title = data.title || "";
         source = data.sourceUrl || "";
         description = data.description || "";
+        imageUrl = data.image || "";
         prepTime = data.prepTime || null;
         cookTime = data.cookTime || null;
         servings = data.servings || 1;
@@ -87,7 +92,6 @@
             ? [...data.ingredients]
             : [{ amount: "", unit: "", name: "" }];
 
-        // Populate bulk text automatically
         bulkIngredients = ingredients.map(formatIngredientToString).join("\n");
 
         instructions = Array.isArray(data.instructions)
@@ -144,6 +148,18 @@
         return `${i.amount} ${i.unit} ${i.name}`.trim();
     };
 
+    const handleImageUpload = (e: Event) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+            imageFile = file;
+            imageUrl = URL.createObjectURL(file);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInput.click();
+    };
+
     // Switch Handlers
     const switchToBulk = () => {
         bulkIngredients = ingredients.map(formatIngredientToString).join("\n");
@@ -177,9 +193,12 @@
         const cMin = cookTime || 0;
         const totalTime = pMin + cMin;
 
+        // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
+        const finalImage = imageUrl || "/placeholder-recipe.jpg";
+
         const newRecipe: Omit<Recipe, "id"> = {
             title,
-            image: "/placeholder-recipe.jpg", // Placeholder for now as per screenshot layout focus
+            image: finalImage,
             description,
             sourceUrl: source,
             prepTime: pMin,
@@ -189,7 +208,7 @@
             yields,
             ingredients: finalIngredients,
             instructions: instructions.split("\n").filter((l) => l.trim()),
-            tags: [], // Not in screenshot, hidden for now
+            tags: [],
         };
 
         try {
@@ -211,6 +230,7 @@
 </script>
 
 {#snippet headerContent()}
+    <!-- ... (keep existing header) ... -->
     <div
         class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
     >
@@ -241,119 +261,162 @@
 >
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        <!-- Basic Info -->
-        <div class="space-y-4">
-            <div class="space-y-2">
-                <input
-                    type="text"
-                    bind:value={title}
-                    placeholder="Title"
-                    class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
-                />
+        <!-- Basic Info Wrapper -->
+        <div class="flex flex-row gap-4 md:gap-6">
+            <!-- Left Column - Inputs -->
+            <div class="flex-1 space-y-4">
+                <div class="space-y-2">
+                    <input
+                        type="text"
+                        bind:value={title}
+                        placeholder="Title"
+                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
+                    />
+                </div>
+
+                <div class="space-y-2">
+                    <input
+                        type="text"
+                        bind:value={source}
+                        placeholder="Source"
+                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors"
+                    />
+                </div>
             </div>
 
-            <div class="space-y-2">
-                <input
-                    type="text"
-                    bind:value={source}
-                    placeholder="Source"
-                    class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors"
-                />
-            </div>
-
-            <!-- Advanced Toggle -->
-            <div class="relative py-2">
-                <div
-                    class="absolute inset-0 flex items-center"
-                    aria-hidden="true"
+            <!-- Right Column - Image Upload -->
+            <div class="w-24 md:w-32 shrink-0">
+                <button
+                    onclick={triggerFileInput}
+                    class="group relative w-full aspect-square md:aspect-[4/3] md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2"
                 >
-                    <div class="w-full border-t border-app-border"></div>
+                    {#if imageUrl}
+                        <img
+                            src={imageUrl}
+                            alt="Preview"
+                            class="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <div
+                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        >
+                            <span class="text-white text-xs font-bold"
+                                >Change</span
+                            >
+                        </div>
+                    {:else}
+                        <div
+                            class="p-2 md:p-3 bg-white dark:bg-gray-800 rounded-full shadow-sm group-hover:scale-110 transition-transform"
+                        >
+                            <Camera
+                                size={20}
+                                class="text-app-text-muted group-hover:text-app-primary transition-colors"
+                            />
+                        </div>
+                        <span
+                            class="text-[10px] md:text-xs text-app-text-muted font-medium text-center leading-tight"
+                            >Add Photo</span
+                        >
+                    {/if}
+                </button>
+                <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    bind:this={fileInput}
+                    onchange={handleImageUpload}
+                />
+            </div>
+        </div>
+
+        <!-- Advanced Toggle -->
+        <div class="relative py-2">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-app-border"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <button
+                    onclick={() => (showAdvanced = !showAdvanced)}
+                    class="bg-app-surface px-4 py-1 text-xs font-bold uppercase tracking-wider text-app-text-muted hover:text-app-primary flex items-center gap-2 transition-colors rounded-full border border-app-border hover:border-app-primary/30"
+                >
+                    {#if showAdvanced}
+                        <span>Hide Details</span>
+                        <ChevronUp size={14} />
+                    {:else}
+                        <span>Advanced Details</span>
+                        <ChevronDown size={14} />
+                    {/if}
+                </button>
+            </div>
+        </div>
+
+        {#if showAdvanced}
+            <div transition:slide class="space-y-6 pt-2">
+                <div class="space-y-2">
+                    <textarea
+                        bind:value={description}
+                        rows="4"
+                        placeholder="Description"
+                        class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors"
+                    ></textarea>
                 </div>
-                <div class="relative flex justify-center">
-                    <button
-                        onclick={() => (showAdvanced = !showAdvanced)}
-                        class="bg-app-surface px-4 py-1 text-xs font-bold uppercase tracking-wider text-app-text-muted hover:text-app-primary flex items-center gap-2 transition-colors rounded-full border border-app-border hover:border-app-primary/30"
-                    >
-                        {#if showAdvanced}
-                            <span>Hide Details</span>
-                            <ChevronUp size={14} />
-                        {:else}
-                            <span>Advanced Details</span>
-                            <ChevronDown size={14} />
-                        {/if}
-                    </button>
+
+                <!-- Metadata Row (Prep, Cook, Serves, Yields) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="space-y-2">
+                        <label
+                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                            for="prep">Prep Time</label
+                        >
+                        <input
+                            id="prep"
+                            type="text"
+                            bind:value={prepTime}
+                            placeholder="e.g. 15 mins"
+                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <label
+                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                            for="cook">Cook Time</label
+                        >
+                        <input
+                            id="cook"
+                            type="text"
+                            bind:value={cookTime}
+                            placeholder="e.g. 30 mins"
+                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <label
+                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                            for="serves">Serves</label
+                        >
+                        <input
+                            id="serves"
+                            type="text"
+                            bind:value={servings}
+                            placeholder="e.g. 4"
+                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <label
+                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                            for="yields">Yields</label
+                        >
+                        <input
+                            id="yields"
+                            type="text"
+                            bind:value={yields}
+                            placeholder="e.g. 12"
+                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                        />
+                    </div>
                 </div>
             </div>
-
-            {#if showAdvanced}
-                <div transition:slide class="space-y-6 pt-2">
-                    <div class="space-y-2">
-                        <textarea
-                            bind:value={description}
-                            rows="4"
-                            placeholder="Description"
-                            class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors"
-                        ></textarea>
-                    </div>
-
-                    <!-- Metadata Row (Prep, Cook, Serves, Yields) -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="space-y-2">
-                            <label
-                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                                for="prep">Prep Time</label
-                            >
-                            <input
-                                id="prep"
-                                type="text"
-                                bind:value={prepTime}
-                                placeholder="e.g. 15 mins"
-                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
-                            />
-                        </div>
-                        <div class="space-y-2">
-                            <label
-                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                                for="cook">Cook Time</label
-                            >
-                            <input
-                                id="cook"
-                                type="text"
-                                bind:value={cookTime}
-                                placeholder="e.g. 30 mins"
-                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
-                            />
-                        </div>
-                        <div class="space-y-2">
-                            <label
-                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                                for="serves">Serves</label
-                            >
-                            <input
-                                id="serves"
-                                type="text"
-                                bind:value={servings}
-                                placeholder="e.g. 4"
-                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
-                            />
-                        </div>
-                        <div class="space-y-2">
-                            <label
-                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                                for="yields">Yields</label
-                            >
-                            <input
-                                id="yields"
-                                type="text"
-                                bind:value={yields}
-                                placeholder="e.g. 12"
-                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
-                            />
-                        </div>
-                    </div>
-                </div>
-            {/if}
-        </div>
+        {/if}
 
         <!-- Ingredients Header & Toggle -->
         <div class="space-y-4">
