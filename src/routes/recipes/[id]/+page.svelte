@@ -68,14 +68,16 @@
         {:else if recipe}
             <div
                 in:fade={{ duration: 300 }}
-                class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24"
+                class="max-w-6xl mx-auto p-4 lg:p-8"
             >
                 <!-- COMPACT HEADER SECTION -->
-                <div class="flex flex-col md:flex-row gap-6 md:gap-10 mb-10">
+                <div
+                    class="flex flex-col md:flex-row gap-6 md:gap-8 bg-app-surface rounded-3xl p-6 shadow-sm border border-app-border mb-4 md:mb-8"
+                >
                     <!-- Image (Compact & Rounded) -->
                     <div class="w-full md:w-[320px] shrink-0">
                         <div
-                            class="h-48 md:h-auto aspect-video md:aspect-[4/3] relative rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-app-border/50 group"
+                            class="h-48 md:h-auto aspect-video md:aspect-4/3 relative rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-app-border/50 group"
                         >
                             <RecipeThumbnail
                                 src={recipe.image}
@@ -94,7 +96,7 @@
                             >
                                 {#each recipe.tags as tag}
                                     <span
-                                        class="px-2 py-1 rounded-md bg-app-surface border border-app-border"
+                                        class="px-2 py-1 rounded-md bg-app-surface-hover border border-app-border"
                                     >
                                         {getTagName(tag)}
                                     </span>
@@ -216,74 +218,81 @@
                     </div>
 
                     <!-- RIGHT: Instructions (8 cols) -->
-                    <div class="lg:col-span-8 space-y-8">
-                        {#if recipe.prepNotes}
-                            <div
-                                class="bg-amber-50 rounded-2xl p-5 border border-amber-100 flex gap-4 text-amber-900"
-                            >
-                                <ChefHat
-                                    size={20}
-                                    class="shrink-0 mt-0.5 text-amber-600"
-                                />
+                    <div class="lg:col-span-8">
+                        <div
+                            class="bg-app-surface rounded-3xl p-6 shadow-sm border border-app-border space-y-8"
+                        >
+                            {#if recipe.prepNotes}
                                 <div
-                                    class="text-sm md:text-base leading-relaxed font-medium"
+                                    class="bg-amber-50 rounded-2xl p-5 border border-amber-100 flex gap-4 text-amber-900"
                                 >
-                                    <span
-                                        class="block font-bold text-xs uppercase tracking-wide text-amber-700 mb-1"
-                                        >Chef's Note</span
+                                    <ChefHat
+                                        size={20}
+                                        class="shrink-0 mt-0.5 text-amber-600"
+                                    />
+                                    <div
+                                        class="text-sm md:text-base leading-relaxed font-medium"
                                     >
-                                    {recipe.prepNotes}
+                                        <span
+                                            class="block font-bold text-xs uppercase tracking-wide text-amber-700 mb-1"
+                                            >Chef's Note</span
+                                        >
+                                        {recipe.prepNotes}
+                                    </div>
+                                </div>
+                            {/if}
+
+                            <div>
+                                <h2
+                                    class="font-display text-2xl font-bold text-app-text mb-6 flex items-center gap-2"
+                                >
+                                    <ChefHat
+                                        size={24}
+                                        class="text-app-primary"
+                                    />
+                                    Instructions
+                                </h2>
+                                <div class="space-y-0">
+                                    {#each recipe.instructions as step, i}
+                                        <div
+                                            class="relative pl-10 md:pl-12 py-2 group"
+                                        >
+                                            <!-- Timeline Line (connects to next, hidden on last) -->
+                                            {#if i !== recipe.instructions.length - 1}
+                                                <div
+                                                    class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-app-primary/30 transition-colors"
+                                                ></div>
+                                            {/if}
+
+                                            <!-- Timeline Node -->
+                                            <div
+                                                class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-app-surface border border-app-border text-sm font-bold flex items-center justify-center text-app-text-muted group-hover:border-app-primary group-hover:text-app-primary group-hover:bg-app-primary/5 transition-all z-10"
+                                            >
+                                                {i + 1}
+                                            </div>
+
+                                            <!-- Content -->
+                                            <div class="pb-8">
+                                                <p
+                                                    class="text-lg text-app-text leading-relaxed pt-0.5 group-hover:text-app-text/80 transition-colors"
+                                                >
+                                                    {step}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    {/each}
                                 </div>
                             </div>
-                        {/if}
 
-                        <div>
-                            <h2
-                                class="font-display text-2xl font-bold text-app-text mb-6 flex items-center gap-2"
+                            <div
+                                class="py-10 flex flex-col items-center justify-center text-center opacity-40"
                             >
-                                <ChefHat size={24} class="text-app-primary" />
-                                Instructions
-                            </h2>
-                            <div class="space-y-0">
-                                {#each recipe.instructions as step, i}
-                                    <div
-                                        class="relative pl-10 md:pl-12 py-2 group"
-                                    >
-                                        <!-- Timeline Line (connects to next, hidden on last) -->
-                                        {#if i !== recipe.instructions.length - 1}
-                                            <div
-                                                class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-app-primary/30 transition-colors"
-                                            ></div>
-                                        {/if}
-
-                                        <!-- Timeline Node -->
-                                        <div
-                                            class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-app-surface border border-app-border text-sm font-bold flex items-center justify-center text-app-text-muted group-hover:border-app-primary group-hover:text-app-primary group-hover:bg-app-primary/5 transition-all z-10"
-                                        >
-                                            {i + 1}
-                                        </div>
-
-                                        <!-- Content -->
-                                        <div class="pb-8">
-                                            <p
-                                                class="text-lg text-app-text leading-relaxed pt-0.5 group-hover:text-app-text/80 transition-colors"
-                                            >
-                                                {step}
-                                            </p>
-                                        </div>
-                                    </div>
-                                {/each}
+                                <div class="w-16 h-px bg-app-border mb-4"></div>
+                                <span
+                                    class="font-display font-medium text-lg italic"
+                                    >Bon Appétit!</span
+                                >
                             </div>
-                        </div>
-
-                        <div
-                            class="py-10 flex flex-col items-center justify-center text-center opacity-40"
-                        >
-                            <div class="w-16 h-px bg-app-border mb-4"></div>
-                            <span
-                                class="font-display font-medium text-lg italic"
-                                >Bon Appétit!</span
-                            >
                         </div>
                     </div>
                 </div>
