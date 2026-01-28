@@ -46,6 +46,7 @@
     // The screenshot doesn't show instructions, but we need them for a valid recipe.
     // I will add an Instructions section at the bottom similar to the style.
     let instructions = $state("");
+    let showAdvanced = $state(false);
 
     // Initializer
     $effect(() => {
@@ -220,12 +221,12 @@
 <Modal
     {isOpen}
     {onClose}
-    class="max-w-2xl h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col"
+    class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
     showCloseButton={false}
 >
     <!-- Header -->
     <div
-        class="px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
+        class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
     >
         <button
             onclick={onClose}
@@ -238,14 +239,14 @@
         </h2>
         <button
             onclick={handleSave}
-            class="px-6 py-2 bg-app-primary hover:bg-app-primary/90 text-white font-bold rounded-lg text-sm transition-all shadow-sm active:scale-95"
+            class="px-5 py-2 bg-app-primary hover:bg-app-primary/90 text-white font-bold rounded-lg text-sm transition-all shadow-sm active:scale-95"
         >
             Save
         </button>
     </div>
 
     <!-- Scroll Content -->
-    <div class="flex-1 overflow-y-auto p-6 space-y-8">
+    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         <!-- Basic Info -->
         <div class="space-y-4">
             <div class="space-y-2">
@@ -266,87 +267,105 @@
                 />
             </div>
 
-            <div class="space-y-2">
-                <textarea
-                    bind:value={description}
-                    rows="4"
-                    placeholder="Description"
-                    class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors"
-                ></textarea>
-            </div>
-        </div>
-
-        <!-- Times & Servings Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Prep Time -->
-            <div class="space-y-3">
-                <h3
-                    class="text-app-text font-bold text-sm uppercase tracking-wide"
+            <!-- Advanced Toggle -->
+            <div>
+                <button
+                    onclick={() => (showAdvanced = !showAdvanced)}
+                    class="text-sm font-bold text-app-text-muted hover:text-app-primary flex items-center gap-1 transition-colors"
                 >
-                    Prep Time
-                </h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="relative">
-                        <input
-                            type="number"
-                            bind:value={prepHours}
-                            placeholder="0"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                        />
-                        <span
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                            >hrs</span
-                        >
-                    </div>
-                    <div class="relative">
-                        <input
-                            type="number"
-                            bind:value={prepMinutes}
-                            placeholder="0"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                        />
-                        <span
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                            >min</span
-                        >
-                    </div>
-                </div>
+                    {#if showAdvanced}
+                        Hide Advanced Details
+                    {:else}
+                        Show Advanced Details (Description, Times)
+                    {/if}
+                </button>
             </div>
 
-            <!-- Cook Time -->
-            <div class="space-y-3">
-                <h3
-                    class="text-app-text font-bold text-sm uppercase tracking-wide"
-                >
-                    Cook Time
-                </h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="relative">
-                        <input
-                            type="number"
-                            bind:value={cookHours}
-                            placeholder="0"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                        />
-                        <span
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                            >hrs</span
-                        >
+            {#if showAdvanced}
+                <div transition:slide class="space-y-6 pt-2">
+                    <div class="space-y-2">
+                        <textarea
+                            bind:value={description}
+                            rows="4"
+                            placeholder="Description"
+                            class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors"
+                        ></textarea>
                     </div>
-                    <div class="relative">
-                        <input
-                            type="number"
-                            bind:value={cookMinutes}
-                            placeholder="0"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                        />
-                        <span
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                            >min</span
-                        >
+
+                    <!-- Times & Servings Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <!-- Prep Time -->
+                        <div class="space-y-3">
+                            <h3
+                                class="text-app-text font-bold text-sm uppercase tracking-wide"
+                            >
+                                Prep Time
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="relative">
+                                    <input
+                                        type="number"
+                                        bind:value={prepHours}
+                                        placeholder="0"
+                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
+                                    />
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
+                                        >hrs</span
+                                    >
+                                </div>
+                                <div class="relative">
+                                    <input
+                                        type="number"
+                                        bind:value={prepMinutes}
+                                        placeholder="0"
+                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
+                                    />
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
+                                        >min</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cook Time -->
+                        <div class="space-y-3">
+                            <h3
+                                class="text-app-text font-bold text-sm uppercase tracking-wide"
+                            >
+                                Cook Time
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="relative">
+                                    <input
+                                        type="number"
+                                        bind:value={cookHours}
+                                        placeholder="0"
+                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
+                                    />
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
+                                        >hrs</span
+                                    >
+                                </div>
+                                <div class="relative">
+                                    <input
+                                        type="number"
+                                        bind:value={cookMinutes}
+                                        placeholder="0"
+                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
+                                    />
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
+                                        >min</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {/if}
         </div>
 
         <div class="h-px bg-app-border w-full"></div>
@@ -387,23 +406,23 @@
 
             <!-- Toggle -->
             <div
-                class="flex border border-app-primary rounded-xl overflow-hidden mt-4"
+                class="flex gap-1 p-1 bg-app-surface-deep border border-app-border rounded-xl mt-4"
             >
                 <button
                     onclick={switchToLine}
-                    class="flex-1 py-2.5 text-sm font-bold transition-all {ingredientMode ===
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent {ingredientMode ===
                     'line'
-                        ? 'bg-white dark:bg-gray-800 text-app-primary'
-                        : 'bg-app-primary text-white hover:bg-app-primary/90'}"
+                        ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
+                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
                 >
                     Line-item Input
                 </button>
                 <button
                     onclick={switchToBulk}
-                    class="flex-1 py-2.5 text-sm font-bold transition-all {ingredientMode ===
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent {ingredientMode ===
                     'bulk'
-                        ? 'bg-white dark:bg-gray-800 text-app-primary'
-                        : 'bg-app-primary text-white hover:bg-app-primary/90'}"
+                        ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
+                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
                 >
                     Bulk Input
                 </button>
@@ -418,39 +437,42 @@
             <!-- Inputs -->
             {#if ingredientMode === "line"}
                 <div
-                    class="space-y-3 bg-app-surface-deep p-4 rounded-2xl border border-app-border"
+                    class="space-y-3 bg-app-surface-deep p-3 md:p-4 rounded-2xl border border-app-border"
                 >
+                    <!-- Header (Hide on mobile for space) -->
                     <div
-                        class="flex items-center gap-3 px-1 text-[10px] uppercase font-bold text-app-text-muted"
+                        class="hidden md:flex items-center gap-3 px-1 text-[10px] uppercase font-bold text-app-text-muted"
                     >
-                        <span class="w-20 pl-1">Qty</span>
-                        <span class="w-20 pl-1">Unit</span>
+                        <span class="w-16 md:w-20 pl-1">Qty</span>
+                        <span class="w-16 md:w-20 pl-1">Unit</span>
                         <span class="flex-1 pl-1">Ingredient</span>
                         <span class="w-8"></span>
                     </div>
                     {#each ingredients as ing, i}
-                        <div class="flex gap-3">
+                        <div class="flex gap-2 w-full min-w-0">
                             <input
                                 type="text"
                                 bind:value={ing.amount}
-                                placeholder="1"
-                                class="w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors"
+                                placeholder="Qty"
+                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
                             />
                             <input
                                 type="text"
                                 bind:value={ing.unit}
-                                placeholder="cup"
-                                class="w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors"
+                                placeholder="Unit"
+                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
                             />
-                            <input
-                                type="text"
-                                bind:value={ing.name}
-                                placeholder="Ingredient name"
-                                class="flex-1 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors"
-                            />
+                            <div class="flex-1 min-w-0">
+                                <input
+                                    type="text"
+                                    bind:value={ing.name}
+                                    placeholder="Ingredient"
+                                    class="w-full h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors"
+                                />
+                            </div>
                             <button
                                 onclick={() => removeIngredientRow(i)}
-                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all shrink-0"
                             >
                                 <X size={16} />
                             </button>
