@@ -1,109 +1,56 @@
 @import "tailwindcss";
 
 :root {
-    /* --- Light Mode (Warm Family Theme) --- */
-
-    /* Backgrounds: Warm & Cozy Cream */
     --color-bg-default: #fffaf5;
-    /* very light warm cream */
     --color-bg-surface: #ffffff;
-    /* white */
     --color-bg-surface-hover: #fff3e6;
-    /* very light peach tint */
     --color-bg-accent-subtle: #f9f8f6;
-    /* soft off-white */
 
-    /* Text: Warmer & Higher Contrast Charcoal/Stone */
     --color-text-primary: #292524;
-    /* stone-800 */
     --color-text-secondary: #57534e;
-    /* stone-600 */
     --color-text-inverse: #ffffff;
 
-    /* Borders: More defined */
     --color-border-default: #e7e5e4;
-    /* stone-200 */
     --color-border-strong: #d6d3d1;
-    /* stone-300 */
 
-    /* Semantic Accents (Higher Contrast Pastels) */
-    /* Breakfast: Peach/Apricot */
     --color-accent-breakfast: #d97706;
-    /* amber-600 */
     --color-accent-breakfast-bg: #fffbeb;
-    /* amber-50 */
 
-    /* Lunch: Sage/Green */
     --color-accent-lunch: #65a30d;
-    /* lime-600 */
     --color-accent-lunch-bg: #f7fee7;
-    /* lime-50 */
 
-    /* Dinner: Rose/Coral */
     --color-accent-dinner: #dc2626;
-    /* red-600 */
     --color-accent-dinner-bg: #fef2f2;
-    /* red-50 */
 
-    /* Action/Brand: Deep Warm Terracotta */
     --color-action-primary: #b45309;
-    /* amber-700 */
     --color-action-hover: #92400e;
-    /* amber-800 */
 }
 
 :root.dark {
-    /* --- Dark Mode (Cozy Evening) --- */
-
-    /* Backgrounds: Deep Warm Cocoa/Stone */
     --color-bg-default: #1c1917;
-    /* stone-900 */
     --color-bg-surface: #292524;
-    /* stone-800 */
     --color-bg-surface-hover: #44403c;
-    /* stone-700 */
     --color-bg-accent-subtle: #44403c;
 
-    /* Text */
     --color-text-primary: #fafaf9;
-    /* stone-50 */
     --color-text-secondary: #d6d3d1;
-    /* stone-300 */
     --color-text-inverse: #1c1917;
 
-    /* Borders: More defined */
     --color-border-default: #57534e;
-    /* stone-600 */
     --color-border-strong: #78716c;
-    /* stone-500 */
 
-    /* Semantic Accents (Softer Glow) */
-    /* Breakfast */
     --color-accent-breakfast: #fcd34d;
-    /* amber-300 */
     --color-accent-breakfast-bg: #451a03;
-    /* amber-950 */
-    /* Lunch */
     --color-accent-lunch: #bef264;
-    /* lime-300 */
     --color-accent-lunch-bg: #1a2e05;
-    /* lime-950 */
-    /* Dinner */
     --color-accent-dinner: #fca5a5;
-    /* red-300 */
     --color-accent-dinner-bg: #450a0a;
-    /* red-950 */
 
-    /* Action */
     --color-action-primary: #fbbf24;
     --color-action-hover: #fcd34d;
 }
 
 @theme {
-    /* Mapping Semantic Variables to Tailwind Utilities */
-
-    /* Usage: bg-default, text-primary, border-strong, etc. */
-
     --color-bg-default: var(--color-bg-default);
     --color-bg-surface: var(--color-bg-surface);
     --color-bg-surface-hover: var(--color-bg-surface-hover);
@@ -132,8 +79,6 @@
 }
 
 @layer utilities {
-
-    /* Mobile-like Scrollbar for Webkit */
     ::-webkit-scrollbar {
         width: 4px;
         height: 4px;
