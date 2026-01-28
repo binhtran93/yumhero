@@ -30,11 +30,9 @@
     let source = $state(""); // Mapped to sourceUrl
     let description = $state("");
 
-    // Time State
-    let prepHours = $state<number | null>(null);
-    let prepMinutes = $state<number | null>(null);
-    let cookHours = $state<number | null>(null);
-    let cookMinutes = $state<number | null>(null);
+    // Time State (Minutes)
+    let prepTime = $state<number | null>(null);
+    let cookTime = $state<number | null>(null);
 
     // Servings
     let servings = $state<number | null>(1);
@@ -66,10 +64,8 @@
         title = "";
         source = "";
         description = "";
-        prepHours = null;
-        prepMinutes = null;
-        cookHours = null;
-        cookMinutes = null;
+        prepTime = null;
+        cookTime = null;
         servings = 1;
         yields = "";
         ingredients = [{ amount: "", unit: "", name: "" }];
@@ -82,16 +78,8 @@
         title = data.title || "";
         source = data.sourceUrl || "";
         description = data.description || "";
-
-        if (data.prepTime) {
-            prepHours = Math.floor(data.prepTime / 60) || null;
-            prepMinutes = data.prepTime % 60 || null;
-        }
-        if (data.cookTime) {
-            cookHours = Math.floor(data.cookTime / 60) || null;
-            cookMinutes = data.cookTime % 60 || null;
-        }
-
+        prepTime = data.prepTime || null;
+        cookTime = data.cookTime || null;
         servings = data.servings || 1;
         yields = data.yields || "";
 
@@ -185,8 +173,8 @@
         }
 
         // Calculate minutes
-        const pMin = (prepHours || 0) * 60 + (prepMinutes || 0);
-        const cMin = (cookHours || 0) * 60 + (cookMinutes || 0);
+        const pMin = prepTime || 0;
+        const cMin = cookTime || 0;
         const totalTime = pMin + cMin;
 
         const newRecipe: Omit<Recipe, "id"> = {
@@ -308,76 +296,59 @@
                         ></textarea>
                     </div>
 
-                    <!-- Times & Servings Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                        <!-- Prep Time -->
-                        <div class="space-y-3">
-                            <h3
-                                class="text-app-text font-bold text-sm uppercase tracking-wide"
+                    <!-- Metadata Row (Prep, Cook, Serves, Yields) -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                                for="prep">Prep Time</label
                             >
-                                Prep Time
-                            </h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="relative">
-                                    <input
-                                        type="number"
-                                        bind:value={prepHours}
-                                        placeholder="0"
-                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                                    />
-                                    <span
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                                        >hrs</span
-                                    >
-                                </div>
-                                <div class="relative">
-                                    <input
-                                        type="number"
-                                        bind:value={prepMinutes}
-                                        placeholder="0"
-                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                                    />
-                                    <span
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                                        >min</span
-                                    >
-                                </div>
-                            </div>
+                            <input
+                                id="prep"
+                                type="text"
+                                bind:value={prepTime}
+                                placeholder="e.g. 15 mins"
+                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            />
                         </div>
-
-                        <!-- Cook Time -->
-                        <div class="space-y-3">
-                            <h3
-                                class="text-app-text font-bold text-sm uppercase tracking-wide"
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                                for="cook">Cook Time</label
                             >
-                                Cook Time
-                            </h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="relative">
-                                    <input
-                                        type="number"
-                                        bind:value={cookHours}
-                                        placeholder="0"
-                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                                    />
-                                    <span
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                                        >hrs</span
-                                    >
-                                </div>
-                                <div class="relative">
-                                    <input
-                                        type="number"
-                                        bind:value={cookMinutes}
-                                        placeholder="0"
-                                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center"
-                                    />
-                                    <span
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-text-muted font-bold pointer-events-none"
-                                        >min</span
-                                    >
-                                </div>
-                            </div>
+                            <input
+                                id="cook"
+                                type="text"
+                                bind:value={cookTime}
+                                placeholder="e.g. 30 mins"
+                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                                for="serves">Serves</label
+                            >
+                            <input
+                                id="serves"
+                                type="text"
+                                bind:value={servings}
+                                placeholder="e.g. 4"
+                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                                for="yields">Yields</label
+                            >
+                            <input
+                                id="yields"
+                                type="text"
+                                bind:value={yields}
+                                placeholder="e.g. 12"
+                                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            />
                         </div>
                     </div>
                 </div>
@@ -387,36 +358,6 @@
         <!-- Ingredients Header & Toggle -->
         <div class="space-y-4">
             <h3 class="text-app-text font-bold text-lg">Ingredients</h3>
-
-            <!-- Serves / Yields -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="space-y-2">
-                    <label
-                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                        for="serves">Serves</label
-                    >
-                    <input
-                        id="serves"
-                        type="number"
-                        bind:value={servings}
-                        placeholder="1"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors font-medium"
-                    />
-                </div>
-                <div class="space-y-2">
-                    <label
-                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                        for="yields">Yields</label
-                    >
-                    <input
-                        id="yields"
-                        type="text"
-                        bind:value={yields}
-                        placeholder="e.g. 12 cookies"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors"
-                    />
-                </div>
-            </div>
 
             <!-- Toggle -->
             <div
