@@ -145,23 +145,19 @@
                                 <!-- Content -->
                                 <div class="flex-1 min-w-0">
                                     <div
-                                        class="text-base font-bold text-app-text {checkedItems[
+                                        class="text-base text-app-text {checkedItems[
                                             i
                                         ]
-                                            ? 'line-through'
+                                            ? 'line-through opacity-50'
                                             : ''}"
                                     >
-                                        {ingredient.amount}
-                                        {ingredient.unit}
-                                    </div>
-                                    <div
-                                        class="text-base text-app-text mt-0.5 {checkedItems[
-                                            i
-                                        ]
-                                            ? 'line-through'
-                                            : ''}"
-                                    >
-                                        {ingredient.name}
+                                        <span class="font-bold"
+                                            >{ingredient.amount}
+                                            {ingredient.unit}</span
+                                        >
+                                        <span class="ml-1"
+                                            >{ingredient.name}</span
+                                        >
                                     </div>
                                     {#if ingredient.notes}
                                         <div
