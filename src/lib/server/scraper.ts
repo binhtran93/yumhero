@@ -67,11 +67,8 @@ async function getBrowser() {
  */
 export async function scrapeText(url: string): Promise<{ text: string; jsonLds: string[]; mainImage: string | null }> {
     const browser = await getBrowser();
-    const proxyUrl = process.env.PROXY_URL;
 
-    // Create isolated context with proxy
-    // Note: 'proxyServer' option on createBrowserContext is supported in recent Puppeteer versions
-    // We must handle auth separately as Chrome doesn't support auth in proxyServer URL
+    const proxyUrl = process.env.PROXY_URL;
     let proxyServerArg: string | undefined;
     let proxyAuth: { username: string; password: string } | undefined;
 
