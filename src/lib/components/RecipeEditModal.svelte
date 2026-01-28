@@ -218,13 +218,7 @@
     };
 </script>
 
-<Modal
-    {isOpen}
-    {onClose}
-    class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
-    showCloseButton={false}
->
-    <!-- Header -->
+{#snippet headerContent()}
     <div
         class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
     >
@@ -244,7 +238,15 @@
             Save
         </button>
     </div>
+{/snippet}
 
+<Modal
+    {isOpen}
+    {onClose}
+    class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
+    showCloseButton={false}
+    header={headerContent}
+>
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         <!-- Basic Info -->
