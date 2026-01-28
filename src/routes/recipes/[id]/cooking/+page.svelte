@@ -112,32 +112,6 @@
                 ></div>
             </div>
         {:else if recipe}
-            <!-- Progress Bar Top -->
-            <div class="w-full bg-app-bg px-4 py-2 border-b border-app-border">
-                <div class="max-w-3xl mx-auto">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span
-                            class="text-xs font-bold uppercase tracking-wider text-app-text-muted"
-                        >
-                            Total Progress
-                        </span>
-                        <span class="text-xs font-bold text-app-text">
-                            {completedCount} / {recipe.instructions.length} steps
-                        </span>
-                    </div>
-                    <div
-                        class="w-full h-1.5 bg-app-border rounded-full overflow-hidden"
-                    >
-                        <div
-                            class="h-full bg-app-primary transition-all duration-500 ease-out"
-                            style="width: {(completedCount /
-                                recipe.instructions.length) *
-                                100}%"
-                        ></div>
-                    </div>
-                </div>
-            </div>
-
             <div
                 class="flex-1 flex flex-col p-4 md:p-8 overflow-hidden relative"
                 ontouchstart={handleTouchStart}
@@ -198,7 +172,7 @@
                                                 </div>
                                             {:else}
                                                 <div
-                                                    class="w-14 h-14 rounded-full border-2 border-app-border bg-app-surface-hover flex items-center justify-center text-2xl font-black text-app-text-muted"
+                                                    class="w-10 h-10 rounded-full border-2 border-app-border bg-app-surface-hover flex items-center justify-center text-lg font-black text-app-text-muted"
                                                 >
                                                     {currentStepIndex + 1}
                                                 </div>
