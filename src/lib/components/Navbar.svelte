@@ -8,9 +8,12 @@
         User,
         PanelLeftClose,
         PanelLeftOpen,
+        Sun,
+        Moon,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
+    import { theme } from "$lib/stores/theme";
 
     // Navigation Items
     const navItems = [
@@ -59,9 +62,7 @@
             ? 'md:justify-start md:px-6 lg:justify-start lg:px-6'
             : 'md:justify-center lg:justify-center'} mb-8 lg:gap-3"
     >
-        <div
-            class="p-2 bg-app-primary/10 rounded-xl text-app-primary shrink-0"
-        >
+        <div class="p-2 bg-app-primary/10 rounded-xl text-app-primary shrink-0">
             <ChefHat size={28} strokeWidth={2.5} />
         </div>
         {#if isExpanded}
@@ -120,6 +121,20 @@
             ? 'items-start px-6'
             : 'items-center justify-center'}"
     >
+        <button
+            on:click={() => ($theme = $theme === "dark" ? "light" : "dark")}
+            class="p-2 mb-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
+            aria-label={$theme === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"}
+        >
+            {#if $theme === "dark"}
+                <Sun size={20} />
+            {:else}
+                <Moon size={20} />
+            {/if}
+        </button>
+
         <button
             on:click={toggleSidebar}
             class="p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
