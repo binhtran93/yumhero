@@ -16,7 +16,6 @@
     const navItems = [
         { href: "/", label: "Plan", icon: Calendar },
         { href: "/recipes", label: "Recipes", icon: Book },
-        { href: "/setup", label: "Setup", icon: Sliders },
         { href: "/profile", label: "Profile", icon: User },
     ];
 

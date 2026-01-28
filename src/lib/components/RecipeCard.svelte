@@ -2,6 +2,7 @@
     import { Clock, Users } from "lucide-svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
+    import { userTags } from "$lib/stores/userData";
     import { goto } from "$app/navigation";
 
     interface Props {
@@ -14,6 +15,10 @@
     }
 
     let { id, title, image, totalTime, servings, tags }: Props = $props();
+
+    function getTagName(tagId: string) {
+        return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
+    }
 
     function handleCardClick(e: MouseEvent) {
         // Prevent navigation if selecting text
@@ -56,7 +61,7 @@
                 <span
                     class="px-1.5 py-0.5 bg-bg-default border border-border-default text-text-secondary text-[10px] font-medium rounded-md"
                 >
-                    {tag}
+                    {getTagName(tag)}
                 </span>
             {/each}
             {#if tags.length > 3}

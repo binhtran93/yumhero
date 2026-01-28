@@ -1,5 +1,10 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner';
 
+export interface Tag {
+    id: string;
+    label: string;
+}
+
 export interface Ingredient {
     amount: string;
     unit: string;

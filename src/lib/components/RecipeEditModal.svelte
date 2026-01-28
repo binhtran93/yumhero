@@ -19,8 +19,13 @@
     } from "lucide-svelte";
     import { twMerge } from "tailwind-merge";
     import type { Recipe, Ingredient } from "$lib/types";
-    import { addRecipe, userTags, userUnits } from "$lib/stores/userData";
-    import { DEFAULT_CATEGORIES, DEFAULT_UNITS } from "$lib/constants";
+    import {
+        addRecipe,
+        userTags,
+        userRecipes,
+        addTag,
+    } from "$lib/stores/userData";
+    import { DEFAULT_UNITS } from "$lib/constants";
     import { fade, slide } from "svelte/transition";
 
     interface Props {
@@ -57,6 +62,45 @@
 
     // UI State
     let showAdvanced = $state(false);
+    let tagNameInput = $state("");
+
+    // Helpers
+    const ensureTagId = async (label: string): Promise<string> => {
+        const normalized = label.trim();
+        if (!normalized) return "";
+
+        const existing = $userTags.data.find(
+            (t) => t.label.toLowerCase() === normalized.toLowerCase(),
+        );
+        if (existing) return existing.id;
+
+        return await addTag(normalized);
+    };
+
+    const handleTagKeydown = async (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (!tagNameInput.trim()) return;
+
+            try {
+                const id = await ensureTagId(tagNameInput);
+                if (!selectedTags.includes(id)) {
+                    selectedTags = [...selectedTags, id];
+                }
+                tagNameInput = "";
+            } catch (err) {
+                console.error("Failed to add tag", err);
+            }
+        }
+    };
+
+    const removeTag = (id: string) => {
+        selectedTags = selectedTags.filter((t) => t !== id);
+    };
+
+    function getTagName(tagId: string) {
+        return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
+    }
 
     // Extraction State
     let isExtracting = $state(false);
@@ -139,7 +183,6 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     url,
-                    availableTags: $userTags.data.map((t) => t.label),
                 }),
             });
 
@@ -149,6 +192,21 @@
             }
 
             const { recipe } = await res.json();
+
+            // Process tags from extraction
+            const extractedTagIds: string[] = [];
+            if (recipe.tags && Array.isArray(recipe.tags)) {
+                for (const tagLabel of recipe.tags) {
+                    try {
+                        const id = await ensureTagId(tagLabel);
+                        extractedTagIds.push(id);
+                    } catch (e) {
+                        console.error("Failed to create tag", tagLabel, e);
+                    }
+                }
+            }
+            recipe.tags = extractedTagIds;
+
             populateForm({ ...recipe, sourceUrl: url }); // Update form with extracted data
             extractionSuccess = true;
         } catch (e: any) {
@@ -168,6 +226,31 @@
 
         const totalTime =
             prepHours * 60 + prepMinutes + (cookHours * 60 + cookMinutes);
+        // Convert metadata to tags
+        const extraTags = [course, cuisine, mainIngredient];
+        const extraTagIds = [];
+        for (const label of extraTags) {
+            if (label && label.trim()) {
+                extraTagIds.push(await ensureTagId(label));
+            }
+        }
+
+        // Ensure all selectedTags are IDs (migrate legacy strings)
+        const processedSelectedTags = [];
+        for (const tag of selectedTags) {
+            // Check if it's already a valid ID in our store
+            const isId = $userTags.data.some((t) => t.id === tag);
+            if (isId) {
+                processedSelectedTags.push(tag);
+            } else {
+                // If not an ID, treat as label and ensure it exists
+                processedSelectedTags.push(await ensureTagId(tag));
+            }
+        }
+
+        const finalTags = [
+            ...new Set([...processedSelectedTags, ...extraTagIds]),
+        ];
 
         const newRecipe: Omit<Recipe, "id"> = {
             title,
@@ -184,10 +267,7 @@
                 .split("\n")
                 .filter((line) => line.trim().length > 0),
             prepNotes,
-            // Combine course, cuisine, and main ingredient into tags + selectedTags
-            tags: [...selectedTags, course, cuisine, mainIngredient].filter(
-                (t) => t && t.trim().length > 0,
-            ),
+            tags: finalTags,
             course,
             cuisine,
             mainIngredient,
@@ -782,12 +862,40 @@
                                     class="text-xs font-bold text-text-secondary uppercase tracking-wider block ml-1"
                                     for="tags">Tags</label
                                 >
-                                <input
-                                    id="tags"
-                                    type="text"
-                                    placeholder="Healthy, Quick, Kids..."
-                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:border-action-primary focus:ring-1 focus:ring-action-primary/10 outline-none transition-all text-sm shadow-sm"
-                                />
+                                <div
+                                    class="w-full px-4 py-2.5 bg-bg-surface border border-border-default rounded-xl focus-within:border-action-primary focus-within:ring-1 focus-within:ring-action-primary/10 transition-all text-sm shadow-sm flex flex-wrap gap-2 min-h-[46px] items-center"
+                                >
+                                    {#each selectedTags as tagId}
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 text-primary-700 rounded-lg text-xs font-bold"
+                                        >
+                                            {getTagName(tagId)}
+                                            <button
+                                                onclick={() => removeTag(tagId)}
+                                                class="hover:text-primary-900"
+                                                ><X size={12} /></button
+                                            >
+                                        </span>
+                                    {/each}
+                                    <input
+                                        id="tags"
+                                        type="text"
+                                        bind:value={tagNameInput}
+                                        onkeydown={handleTagKeydown}
+                                        list="existing-tags"
+                                        placeholder={selectedTags.length === 0
+                                            ? "Healthy, Quick..."
+                                            : "Add tag..."}
+                                        class="flex-1 bg-transparent outline-none min-w-[80px]"
+                                    />
+                                    <datalist id="existing-tags">
+                                        {#each $userTags.data as tag}
+                                            <option value={tag.label}
+                                                >{tag.label}</option
+                                            >
+                                        {/each}
+                                    </datalist>
+                                </div>
                             </div>
                         </div>
                     </div>

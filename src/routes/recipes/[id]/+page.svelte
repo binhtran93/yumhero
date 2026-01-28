@@ -1,6 +1,7 @@
 <script lang="ts">
     import { type PageData } from "./$types";
     import { documentStore, type DocumentState } from "$lib/stores/firestore";
+    import { userTags } from "$lib/stores/userData";
     import { user } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
@@ -42,6 +43,10 @@
 
     let recipe = $derived($recipeStore.data);
     let loading = $derived($recipeStore.loading);
+
+    function getTagName(tagId: string) {
+        return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
+    }
 </script>
 
 <div class="h-full flex flex-col bg-bg-default overflow-hidden">
@@ -91,7 +96,7 @@
                                     <span
                                         class="px-2 py-1 rounded-md bg-bg-surface border border-border-default"
                                     >
-                                        {tag}
+                                        {getTagName(tag)}
                                     </span>
                                 {/each}
                             </div>

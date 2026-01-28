@@ -3,15 +3,13 @@ import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
-import { DEFAULT_UNITS, DEFAULT_CATEGORIES } from '$lib/constants';
 
 // Define the schema for the recipe using Zod
 const IngredientSchema = z.object({
     amount: z.string().describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
-    unit: z.string().describe('The unit of measurement. Map to one of the provided units if possible, otherwise use the original unit.'),
+    unit: z.string().describe('The unit of measurement. Use standard abbreviations (e.g. tbsp, tsp, g, oz) or the full unit name.'),
     name: z.string().describe('The name of the ingredient'),
-    notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"'),
-    category: z.string().optional().describe('The category of the ingredient. Map to one of the provided categories if possible.')
+    notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"')
 });
 
 const RecipeSchema = z.object({
@@ -29,7 +27,7 @@ const RecipeSchema = z.object({
     course: z.string().optional().describe('Course type, e.g. Breakfast, Lunch, Dinner'),
     cuisine: z.string().optional().describe('Cuisine type, e.g. Italian, Mexican'),
     mainIngredient: z.string().optional().describe('The main ingredient of the dish'),
-    tags: z.array(z.string()).describe('List of tags describing the recipe, including course, cuisine, or dietary info')
+    tags: z.array(z.string()).describe('List of smart tags for the recipe, e.g. "Healthy", "Weeknight Dinner", "Quick", "Vegan", "Gluten-Free", "Kid-Friendly"')
 });
 
 import { scrapeText } from '$lib/server/scraper';
@@ -101,17 +99,10 @@ export async function POST({ request }) {
 
         const prompt = `
             You are an expert recipe extractor. extracting recipe information from the provided ${contentType}.
-            
-            Here is the list of existing UNITS in our system:
-            ${DEFAULT_UNITS.join(', ')}
-            
-            Here is the list of existing CATEGORIES in our system:
-            ${DEFAULT_CATEGORIES.join(', ')}
-            
-            For the 'unit' field, try to normalize to one of our existing units if it's a direct match or common abbreviation (e.g. 'tbsp' -> 'Tablespoon'). If it doesn't match effectively, keep the original unit.
-            
-            For the 'category' field in ingredients, try to assign one of our existing categories based on the ingredient name.
 
+            Generate relevant tags based on the recipe's characteristics such as meal type, main ingredient, dietary restrictions, and cuisine.
+            For ingredients, extract the unit exactly as it appears or use standard abbreviations.
+            
             CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.
             
             Extract the recipe details as accurately as possible.

@@ -1,27 +1,14 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { collectionStore, documentStore, type CollectionState, type DocumentState } from './firestore';
-import type { Recipe, WeeklyPlan } from '$lib/types';
+import type { Recipe, WeeklyPlan, Tag } from '$lib/types';
 import { doc, setDoc, deleteDoc, collection, addDoc, updateDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '$lib/firebase';
-import { DEFAULT_UNITS, DEFAULT_CATEGORIES } from '$lib/constants';
-
-// Interfaces
-export interface Unit {
-    id: string;
-    label: string;
-}
-
-export interface FoodTag {
-    id: string;
-    label: string;
-}
 
 // Stores
 
-// 1. Units
-// 1. Units
-export const userUnits = derived<[Readable<any>, Readable<boolean>], CollectionState<Unit>>(
+// 1. Tags
+export const userTags = derived<[Readable<any>, Readable<boolean>], CollectionState<Tag>>(
     [user, authLoading],
     ([$user, $authLoading], set) => {
         if ($authLoading) {
@@ -33,32 +20,13 @@ export const userUnits = derived<[Readable<any>, Readable<boolean>], CollectionS
             return;
         }
 
-        const store = collectionStore<Unit>(`users/${$user.uid}/units`);
+        const store = collectionStore<Tag>(`users/${$user.uid}/tags`);
         return store.subscribe(set);
     },
     { data: [], loading: true }
 );
 
-// 2. Food Tags (Categories)
-export const userTags = derived<[Readable<any>, Readable<boolean>], CollectionState<FoodTag>>(
-    [user, authLoading],
-    ([$user, $authLoading], set) => {
-        if ($authLoading) {
-            set({ data: [], loading: true });
-            return;
-        }
-        if (!$user) {
-            set({ data: [], loading: false });
-            return;
-        }
-
-        const store = collectionStore<FoodTag>(`users/${$user.uid}/food-categories`);
-        return store.subscribe(set);
-    },
-    { data: [], loading: true }
-);
-
-// 3. Recipes
+// 2. Recipes
 export const userRecipes = derived<[Readable<any>, Readable<boolean>], CollectionState<Recipe>>(
     [user, authLoading],
     ([$user, $authLoading], set) => {
@@ -77,75 +45,41 @@ export const userRecipes = derived<[Readable<any>, Readable<boolean>], Collectio
     { data: [], loading: true }
 );
 
-// Actions - Units
-export const addUnit = async (label: string) => {
+// Actions - Tags
+export const addTag = async (label: string): Promise<string> => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
-    await setDoc(doc(db, `users/${$user.uid}/units`, label), {
-        id: label,
-        label
+    // Check if tag already exists (case-insensitive check handled by caller usually, but good practice here too if we could)
+    // For now, we rely on the caller or just create a new ID.
+    // However, clean ID creation is better.
+
+    const docRef = await addDoc(collection(db, `users/${$user.uid}/tags`), {
+        label,
+        createdAt: new Date()
     });
+
+    // Store the ID in the document itself as well if needed, but the doc.id is usually enough.
+    // Our collectionStore maps doc.id to the 'id' field, so we just need to ensure consistency if we want it stored explicitly.
+    await updateDoc(docRef, { id: docRef.id });
+
+    return docRef.id;
 };
 
-export const deleteUnit = async (id: string) => {
+export const deleteTag = async (id: string) => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
-    await deleteDoc(doc(db, `users/${$user.uid}/units`, id));
-    await deleteDoc(doc(db, `users/${$user.uid}/units`, id));
+    await deleteDoc(doc(db, `users/${$user.uid}/tags`, id));
 }
 
-export const updateUnit = async (oldLabel: string, newLabel: string) => {
+export const updateTag = async (id: string, label: string) => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
-    if (oldLabel === newLabel) return;
-
-    const batch = writeBatch(db);
-    const newRef = doc(db, `users/${$user.uid}/units`, newLabel);
-    batch.set(newRef, { id: newLabel, label: newLabel });
-
-    const oldRef = doc(db, `users/${$user.uid}/units`, oldLabel);
-    batch.delete(oldRef);
-
-    await batch.commit();
+    await updateDoc(doc(db, `users/${$user.uid}/tags`, id), { label });
 };
 
-// Actions - Categories
-export const addCategory = async (label: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    await setDoc(doc(db, `users/${$user.uid}/food-categories`, label), {
-        id: label,
-        label
-    });
-};
-
-export const deleteCategory = async (id: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    await deleteDoc(doc(db, `users/${$user.uid}/food-categories`, id));
-    await deleteDoc(doc(db, `users/${$user.uid}/food-categories`, id));
-}
-
-export const updateCategory = async (oldLabel: string, newLabel: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    if (oldLabel === newLabel) return;
-
-    const batch = writeBatch(db);
-    const newRef = doc(db, `users/${$user.uid}/food-categories`, newLabel);
-    batch.set(newRef, { id: newLabel, label: newLabel });
-
-    const oldRef = doc(db, `users/${$user.uid}/food-categories`, oldLabel);
-    batch.delete(oldRef);
-
-    await batch.commit();
-};
 
 // Actions - Recipes
 export const addRecipe = async (recipe: Omit<Recipe, 'id'>) => {
@@ -221,66 +155,8 @@ export const initializeDefaults = async () => {
     const settingsSnap = await getDoc(settingsRef);
 
     if (!settingsSnap.exists()) {
-        const batch = writeBatch(db);
-
-        // Add Units
-        for (const u of DEFAULT_UNITS) {
-            const ref = doc(db, `users/${$user.uid}/units`, u);
-            batch.set(ref, { id: u, label: u });
-        }
-
-        // Add Categories
-        for (const c of DEFAULT_CATEGORIES) {
-            const ref = doc(db, `users/${$user.uid}/food-categories`, c);
-            batch.set(ref, { id: c, label: c });
-        }
-
-        // Mark initialized
-        batch.set(settingsRef, { initialized: true });
-
-        await batch.commit();
-        console.log("Initialized default data for user");
+        await setDoc(settingsRef, { initialized: true });
+        console.log("Initialized default settings for user");
     }
 };
 
-export const resetUnitsToDefaults = async () => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const batch = writeBatch(db);
-
-    // 1. Delete existing
-    const snapshot = await getDocs(collection(db, `users/${$user.uid}/units`));
-    snapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-    });
-
-    // 2. Add defaults
-    for (const u of DEFAULT_UNITS) {
-        const ref = doc(db, `users/${$user.uid}/units`, u);
-        batch.set(ref, { id: u, label: u });
-    }
-
-    await batch.commit();
-};
-
-export const resetCategoriesToDefaults = async () => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const batch = writeBatch(db);
-
-    // 1. Delete existing
-    const snapshot = await getDocs(collection(db, `users/${$user.uid}/food-categories`));
-    snapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-    });
-
-    // 2. Add defaults
-    for (const c of DEFAULT_CATEGORIES) {
-        const ref = doc(db, `users/${$user.uid}/food-categories`, c);
-        batch.set(ref, { id: c, label: c });
-    }
-
-    await batch.commit();
-};
