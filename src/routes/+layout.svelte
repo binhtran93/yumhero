@@ -15,7 +15,7 @@
 </script>
 
 <div
-	class="h-screen w-screen bg-canvas text-app-text overflow-hidden flex flex-col md:flex-row font-display transition-all duration-300"
+	class="h-screen w-screen bg-app-bg text-app-text overflow-hidden flex flex-col md:flex-row font-display transition-all duration-300"
 >
 	<Navbar />
 	<main class="flex-1 overflow-hidden h-full order-first md:order-last">
