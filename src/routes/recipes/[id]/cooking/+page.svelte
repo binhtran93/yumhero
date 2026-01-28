@@ -163,10 +163,10 @@
                                         >
                                             {#if completedSteps[currentStepIndex]}
                                                 <div
-                                                    class="w-14 h-14 rounded-full bg-app-primary flex items-center justify-center shadow-lg transform scale-110 transition-transform duration-300"
+                                                    class="w-8 h-8 rounded-full bg-app-primary flex items-center justify-center shadow-lg transform scale-110 transition-transform duration-300"
                                                 >
                                                     <Check
-                                                        size={32}
+                                                        size={20}
                                                         class="text-white"
                                                     />
                                                 </div>
