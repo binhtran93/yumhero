@@ -222,7 +222,7 @@
     <Header title="Plan Your Meal">
         <div class="flex items-center gap-3">
             <button
-                class="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
+                class="hidden md:block p-2 text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover rounded-full transition-colors"
                 onclick={() => (isCompact = !isCompact)}
                 title={isCompact
                     ? "Switch to Detail View"

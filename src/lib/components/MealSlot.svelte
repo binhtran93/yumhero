@@ -99,10 +99,10 @@
 
                     <h4
                         class={twMerge(
-                            "font-bold text-text-primary leading-snug font-display",
+                            "font-bold text-text-primary leading-snug font-display text-sm",
                             isCompact
-                                ? "text-[10px] pl-1.5"
-                                : "text-xs md:text-sm",
+                                ? "pl-1.5"
+                                : "",
                         )}
                     >
                         {recipe.title}
