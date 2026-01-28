@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 :root {
-    --color-bg-default: #fffaf5;
+    --color-bg-default: #fcfcfc;
     --color-bg-surface: #ffffff;
-    --color-bg-surface-hover: #fff3e6;
-    --color-bg-accent-subtle: #f9f8f6;
+    --color-bg-surface-hover: #f3f4f6;
+    --color-bg-accent-subtle: #f9fafb;
 
-    --color-text-primary: #292524;
-    --color-text-secondary: #57534e;
+    --color-text-primary: #111827;
+    --color-text-secondary: #4b5563;
     --color-text-inverse: #ffffff;
 
-    --color-border-default: #e7e5e4;
-    --color-border-strong: #d6d3d1;
+    --color-border-default: #e5e7eb;
+    --color-border-strong: #d1d5db;
 
-    --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #fffbeb;
+    --color-accent-breakfast: #f59e0b;
+    --color-accent-breakfast-bg: #fff7ed;
 
-    --color-accent-lunch: #65a30d;
-    --color-accent-lunch-bg: #f7fee7;
+    --color-accent-lunch: #06b6d4;
+    --color-accent-lunch-bg: #ecfeff;
 
-    --color-accent-dinner: #dc2626;
-    --color-accent-dinner-bg: #fef2f2;
+    --color-accent-dinner: #f43f5e;
+    --color-accent-dinner-bg: #fff1f2;
 
-    --color-action-primary: #b45309;
-    --color-action-hover: #92400e;
+    --color-action-primary: #0d9488;
+    --color-action-hover: #0f766e;
 }
 
 :root.dark {

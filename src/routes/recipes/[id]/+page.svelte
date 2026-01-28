@@ -181,10 +181,10 @@
                             <div class="space-y-3">
                                 {#each recipe.ingredients as ingredient}
                                     <label
-                                        class="flex items-start gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-bg-surface-hover transition-colors"
+                                        class="flex items-center gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-bg-surface-hover transition-colors"
                                     >
                                         <div
-                                            class="relative flex items-center pt-1"
+                                            class="relative flex items-center"
                                         >
                                             <input
                                                 type="checkbox"
