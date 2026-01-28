@@ -180,24 +180,16 @@
                                 </span>
                             </div>
 
-                            <div class="space-y-3">
+                            <ul class="space-y-3">
                                 {#each recipe.ingredients as ingredient}
-                                    <label
-                                        class="flex items-center gap-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-app-surface-hover transition-colors"
+                                    <li
+                                        class="flex items-start gap-3 p-2 -mx-2 rounded-lg"
                                     >
-                                        <div class="relative flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                class="peer appearance-none w-5 h-5 border-2 border-app-border rounded transition-colors checked:bg-app-primary checked:border-app-primary"
-                                            />
-                                            <Check
-                                                size={14}
-                                                class="absolute text-white pointer-events-none opacity-0 peer-checked:opacity-100 top-[6px] left-[3px] transition-opacity"
-                                                strokeWidth={3}
-                                            />
-                                        </div>
                                         <div
-                                            class="text-[15px] text-app-text leading-snug flex-1 peer-checked:line-through peer-checked:text-app-text-muted/60"
+                                            class="mt-2 w-1.5 h-1.5 rounded-full bg-app-primary shrink-0"
+                                        ></div>
+                                        <div
+                                            class="text-[15px] text-app-text leading-snug flex-1"
                                         >
                                             <span class="font-bold"
                                                 >{ingredient.amount}
@@ -211,9 +203,9 @@
                                                 >
                                             {/if}
                                         </div>
-                                    </label>
+                                    </li>
                                 {/each}
-                            </div>
+                            </ul>
                         </div>
                     </div>
 
@@ -260,13 +252,13 @@
                                             <!-- Timeline Line (connects to next, hidden on last) -->
                                             {#if i !== recipe.instructions.length - 1}
                                                 <div
-                                                    class="absolute left-[15.5px] md:left-[19.5px] top-10 bottom-[-8px] w-px bg-border-default group-hover:bg-app-primary/30 transition-colors"
+                                                    class="absolute left-[15.5px] md:left-[19.5px] top-10 -bottom-2 w-px bg-app-border group-hover:bg-app-primary/30 transition-colors"
                                                 ></div>
                                             {/if}
 
                                             <!-- Timeline Node -->
                                             <div
-                                                class="absolute left-0 md:left-[4px] top-2 w-8 h-8 rounded-full bg-app-surface border border-app-border text-sm font-bold flex items-center justify-center text-app-text-muted group-hover:border-app-primary group-hover:text-app-primary group-hover:bg-app-primary/5 transition-all z-10"
+                                                class="absolute left-0 md:left-1 top-2 w-8 h-8 rounded-full bg-app-surface border border-app-border text-sm font-bold flex items-center justify-center text-app-text-muted group-hover:border-app-primary group-hover:text-app-primary group-hover:bg-app-primary/5 transition-all z-10"
                                             >
                                                 {i + 1}
                                             </div>
