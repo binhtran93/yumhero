@@ -144,7 +144,7 @@
                             <div
                                 in:fly={{ x: 100, duration: 300, delay: 200 }}
                                 out:fly={{ x: -100, duration: 300 }}
-                                class="absolute inset-0 flex flex-col"
+                                class="stepper-transition-container inset-0 flex flex-col"
                             >
                                 <button
                                     onclick={() => toggleStep(currentStepIndex)}
@@ -296,8 +296,9 @@
 </div>
 
 <style>
-    /* Small adjustments for the fly transition layout */
-    :global(.absolute) {
+    /* Ensure the absolute container used for transitions fills its parent */
+    .stepper-transition-container {
+        position: absolute;
         width: 100%;
     }
 </style>
