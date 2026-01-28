@@ -109,16 +109,12 @@
                     </h4>
 
                     {#if !isCompact}
-                        <div class="">
                             <span
-                                class="text-[10px] md:text-[11px] text-text-secondary font-medium"
+                                class="text-xs text-text-secondary font-medium"
                             >
-                                Servings: <span
-                                    class="font-bold text-text-primary"
-                                    >{recipe.servings || 1}</span
-                                >
+                                Servings: <span class="font-bold text-text-primary">{recipe.servings || 1}</span
+                            >
                             </span>
-                        </div>
                     {/if}
                 </div>
             {/each}
