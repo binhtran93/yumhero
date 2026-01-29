@@ -198,7 +198,7 @@
 
     <!-- Cell Content -->
     <div
-        class="pointer-events-none z-10 flex-1 p-2 flex flex-col gap-2 overflow-y-auto relative"
+        class="pointer-events-none z-10 flex-1 px-2 pb-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
