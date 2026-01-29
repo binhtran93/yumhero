@@ -93,7 +93,7 @@
     );
 </script>
 
-<div class="h-svh flex flex-col bg-app-bg overflow-hidden select-none">
+<div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
     <!-- Header with Toolbar -->
     <div class="shrink-0 z-20 bg-app-bg border-b border-app-border">
         <Header
@@ -146,9 +146,8 @@
                                 out:fly={{ x: -100, duration: 300 }}
                                 class="stepper-transition-container inset-0 flex flex-col"
                             >
-                                <button
-                                    onclick={() => toggleStep(currentStepIndex)}
-                                    class="flex-1 bg-app-surface border rounded-3xl p-6 md:p-12 text-left transition-all shadow-sm flex flex-col items-center justify-center gap-8 group active:scale-[0.98] border-app-border"
+                                <div
+                                    class="flex-1 bg-app-surface border rounded-3xl p-4 md:p-12 text-left shadow-sm flex flex-col items-center justify-center gap-8 border-app-border"
                                 >
                                     <div
                                         class="flex flex-col items-center text-center gap-6"
@@ -157,27 +156,12 @@
                                         <div
                                             class="flex items-center justify-center gap-2"
                                         >
-                                            {#if completedSteps[currentStepIndex]}
-                                                <div
-                                                    class="w-8 h-8 rounded-full bg-app-primary flex items-center justify-center shadow-lg transform scale-110 transition-transform duration-300"
-                                                >
-                                                    <Check
-                                                        size={20}
-                                                        class="text-white"
-                                                    />
-                                                </div>
-                                            {:else}
-                                                <div
-                                                    class="w-10 h-10 rounded-full border-2 border-app-border bg-app-surface-hover flex items-center justify-center text-lg font-black text-app-text-muted"
-                                                >
-                                                    {currentStepIndex + 1}
-                                                </div>
-                                            {/if}
                                             <span
-                                                class="text-lg font-bold text-app-text-muted"
-                                                >/ {recipe.instructions
-                                                    .length}</span
+                                                class="text-sm font-black tracking-widest uppercase text-app-text-muted"
                                             >
+                                                Step {currentStepIndex + 1} / {recipe
+                                                    .instructions.length}
+                                            </span>
                                         </div>
 
                                         <!-- Instruction Content -->
@@ -185,32 +169,15 @@
                                             class="max-h-[30vh] md:max-h-[40vh] overflow-y-auto px-2"
                                         >
                                             <p
-                                                class="text-xl md:text-3xl font-medium text-app-text leading-relaxed {completedSteps[
-                                                    currentStepIndex
-                                                ]
-                                                    ? 'line-through opacity-50'
-                                                    : ''}"
+                                                class="text-xl md:text-3xl font-medium text-app-text leading-relaxed"
                                             >
                                                 {recipe.instructions[
                                                     currentStepIndex
                                                 ]}
                                             </p>
                                         </div>
-
-                                        <!-- Tap to Complete Hint -->
-                                        <div
-                                            class="mt-4 text-sm font-bold uppercase tracking-widest {completedSteps[
-                                                currentStepIndex
-                                            ]
-                                                ? 'text-app-primary'
-                                                : 'text-app-text-muted group-hover:text-app-primary'} transition-colors"
-                                        >
-                                            {completedSteps[currentStepIndex]
-                                                ? "Completed"
-                                                : "Tap to Mark Complete"}
-                                        </div>
                                     </div>
-                                </button>
+                                </div>
                             </div>
                         {/key}
                     </div>
@@ -232,7 +199,7 @@
                             onclick={nextStep}
                             disabled={currentStepIndex ===
                                 recipe.instructions.length - 1}
-                            class="flex-1 h-14 bg-app-primary text-white rounded-2xl flex items-center justify-center gap-2 font-bold transition-all shadow-md active:scale-95 disabled:bg-app-surface disabled:border-app-border disabled:text-app-text-muted disabled:shadow-none hover:bg-app-primary/90"
+                            class="flex-1 h-14 bg-app-primary text-white rounded-2xl flex items-center justify-center gap-2 font-bold transition-all shadow-md active:scale-95 disabled:bg-app-surface disabled:border disabled:border-app-border disabled:text-app-text disabled:opacity-30 disabled:pointer-events-none disabled:shadow-none hover:bg-app-primary/90"
                         >
                             <span class="hidden sm:inline">Next Step</span>
                             <ChevronRight size={24} />
