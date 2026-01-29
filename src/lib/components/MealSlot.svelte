@@ -114,7 +114,7 @@
                 {#if onRemove}
                     <button
                         class={twMerge(
-                            "flex items-center justify-center w-8 h-8 -mr-1 -mt-1 rounded-full opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all hover:bg-black/5",
+                            "flex items-center justify-center w-6 h-6 -mr-1 rounded-full opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all hover:bg-black/5",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
@@ -140,7 +140,7 @@
             <div class="flex-1 flex items-center justify-center">
                 <Plus
                     size={16}
-                    class="text-app-text-muted/20 group-hover:text-app-text-muted/80 transition-colors"
+                    class="text-app-text-muted/50 group-hover:text-app-text-muted/80 transition-colors"
                 />
             </div>
         {:else}
