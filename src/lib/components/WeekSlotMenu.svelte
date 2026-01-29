@@ -6,6 +6,7 @@
         Plus,
         Snowflake,
         Ellipsis,
+        X as XIcon,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -85,6 +86,12 @@
     }
 </script>
 
+<svelte:window
+    onkeydown={(e) => {
+        if (e.key === "Escape") onClose();
+    }}
+/>
+
 <div
     class="w-48 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
     transition:fade={{ duration: 100 }}
@@ -156,5 +163,18 @@
     >
         <Snowflake size={14} />
         Add to freezer
+    </button>
+
+    <div class="border-t border-app-border my-1"></div>
+
+    <button
+        class="w-full text-left px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors"
+        onclick={(e) => {
+            e.stopPropagation();
+            onClose();
+        }}
+    >
+        <XIcon size={14} />
+        Close
     </button>
 </div>
