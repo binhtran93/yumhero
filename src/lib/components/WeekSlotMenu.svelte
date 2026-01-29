@@ -43,12 +43,12 @@
 
         // Defer attachment to avoid immediate trigger from the opening click
         setTimeout(() => {
-            document.addEventListener("click", handleClick, true);
+            document.addEventListener("click", handleClick);
         }, 0);
 
         return {
             destroy() {
-                document.removeEventListener("click", handleClick, true);
+                document.removeEventListener("click", handleClick);
             },
         };
     }

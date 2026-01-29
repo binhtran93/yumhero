@@ -6,9 +6,7 @@
         ChevronRight,
         X,
     } from "lucide-svelte";
-    import { fade } from "svelte/transition";
     import type { Recipe } from "$lib/types";
-    import Header from "$lib/components/Header.svelte";
 
     interface Props {
         recipe: Recipe;
@@ -66,12 +64,6 @@
         }
     }
 
-    let completedCount = $derived(completedSteps.filter(Boolean).length);
-    let allDone = $derived(
-        recipe &&
-            completedSteps.length === recipe.instructions.length &&
-            currentStepIndex === recipe.instructions.length - 1, // Simple checks might differ from original but let's stick to logic
-    );
     // Original Logic: let allDone = $derived(recipe && completedCount === recipe.instructions.length);
     // But original logic didn't seem to have a "check step" UI in the code I saw, only navigation.
     // Wait, I saw toggleStep but it wasn't used in the template.
@@ -127,7 +119,7 @@
             ontouchstart={handleTouchStart}
             ontouchend={handleTouchEnd}
         >
-            <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col gap-6">
+            <div class="mx-auto w-full flex-1 flex flex-col gap-6">
                 <!-- Chef's Note (Mini) -->
                 {#if recipe.prepNotes}
                     <div
