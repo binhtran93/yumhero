@@ -13,7 +13,7 @@
         ChevronRight,
         X,
     } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+    import { fade } from "svelte/transition";
 
     let recipeId = $derived($page.params.id);
 
@@ -139,47 +139,37 @@
                     {/if}
 
                     <!-- Card Stepper -->
-                    <div class="flex-1 relative min-h-0">
-                        {#key currentStepIndex}
+                    <div class="flex-1 relative min-h-0 flex flex-col">
+                        <div
+                            class="flex-1 bg-app-surface border rounded-3xl p-4 md:p-12 text-left shadow-sm flex flex-col items-center justify-center gap-8 border-app-border"
+                        >
                             <div
-                                in:fly={{ x: 100, duration: 300, delay: 200 }}
-                                out:fly={{ x: -100, duration: 300 }}
-                                class="stepper-transition-container inset-0 flex flex-col"
+                                class="flex flex-col items-center text-center gap-6"
                             >
+                                <!-- Step Indicator -->
                                 <div
-                                    class="flex-1 bg-app-surface border rounded-3xl p-4 md:p-12 text-left shadow-sm flex flex-col items-center justify-center gap-8 border-app-border"
+                                    class="flex items-center justify-center gap-2"
                                 >
-                                    <div
-                                        class="flex flex-col items-center text-center gap-6"
+                                    <span
+                                        class="text-sm font-black tracking-widest uppercase text-app-text-muted"
                                     >
-                                        <!-- Step Indicator -->
-                                        <div
-                                            class="flex items-center justify-center gap-2"
-                                        >
-                                            <span
-                                                class="text-sm font-black tracking-widest uppercase text-app-text-muted"
-                                            >
-                                                Step {currentStepIndex + 1} / {recipe
-                                                    .instructions.length}
-                                            </span>
-                                        </div>
+                                        Step {currentStepIndex + 1} / {recipe
+                                            .instructions.length}
+                                    </span>
+                                </div>
 
-                                        <!-- Instruction Content -->
-                                        <div
-                                            class="max-h-[30vh] md:max-h-[40vh] overflow-y-auto px-2"
-                                        >
-                                            <p
-                                                class="text-xl md:text-3xl font-medium text-app-text leading-relaxed"
-                                            >
-                                                {recipe.instructions[
-                                                    currentStepIndex
-                                                ]}
-                                            </p>
-                                        </div>
-                                    </div>
+                                <!-- Instruction Content -->
+                                <div
+                                    class="max-h-[30vh] md:max-h-[40vh] overflow-y-auto px-2"
+                                >
+                                    <p
+                                        class="text-xl md:text-3xl font-medium text-app-text leading-relaxed"
+                                    >
+                                        {recipe.instructions[currentStepIndex]}
+                                    </p>
                                 </div>
                             </div>
-                        {/key}
+                        </div>
                     </div>
 
                     <!-- Navigation Controls -->
