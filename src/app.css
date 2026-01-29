@@ -16,36 +16,36 @@
     --app-border: #e7e5e4;
 
     --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #fef3c7;
-    --color-accent-breakfast-hover: #fde68a;
+    --color-accent-breakfast-bg: #fde68a;
+    --color-accent-breakfast-hover: #fcd34d;
     --color-accent-breakfast-text: #451a03;
-    --color-accent-breakfast-border: #fde68a;
+    --color-accent-breakfast-border: #fbbf24;
 
     --color-accent-lunch: #16a34a;
-    --color-accent-lunch-bg: #dcfce7;
-    --color-accent-lunch-hover: #bbf7d0;
+    --color-accent-lunch-bg: #bbf7d0;
+    --color-accent-lunch-hover: #86efac;
     --color-accent-lunch-text: #052e16;
-    --color-accent-lunch-border: #bbf7d0;
+    --color-accent-lunch-border: #4ade80;
 
     --color-accent-dinner: #e11d48;
-    --color-accent-dinner-bg: #ffe4e6;
-    --color-accent-dinner-hover: #fecdd3;
+    --color-accent-dinner-bg: #fecdd3;
+    --color-accent-dinner-hover: #fda4af;
     --color-accent-dinner-text: #4c0519;
-    --color-accent-dinner-border: #fecdd3;
+    --color-accent-dinner-border: #fb7185;
 
     /* Snack - Purple */
     --color-accent-snack: #9333ea;
-    --color-accent-snack-bg: #f3e8ff;
-    --color-accent-snack-hover: #e9d5ff;
+    --color-accent-snack-bg: #e9d5ff;
+    --color-accent-snack-hover: #d8b4fe;
     --color-accent-snack-text: #3b0764;
-    --color-accent-snack-border: #e9d5ff;
+    --color-accent-snack-border: #c084fc;
 
     /* Note - Blue/Gray */
     --color-accent-note: #2563eb;
-    --color-accent-note-bg: #eff6ff;
-    --color-accent-note-hover: #dbeafe;
-    --color-accent-note-text: #1e3a8a;
-    --color-accent-note-border: #dbeafe;
+    --color-accent-note-bg: #bfdbfe;
+    --color-accent-note-hover: #93c5fd;
+    --color-accent-note-text: #172554;
+    --color-accent-note-border: #60a5fa;
 }
 
 .dark {
@@ -66,36 +66,36 @@
     --app-border: #36312e;
 
     --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #2d1a05;
-    --color-accent-breakfast-hover: #451a03;
+    --color-accent-breakfast-bg: #451a03;
+    --color-accent-breakfast-hover: #78350f;
     --color-accent-breakfast-text: #fffbeb;
-    --color-accent-breakfast-border: #451a03;
+    --color-accent-breakfast-border: #92400e;
 
     --color-accent-lunch: #16a34a;
-    --color-accent-lunch-bg: #052e16;
-    --color-accent-lunch-hover: #14532d;
+    --color-accent-lunch-bg: #14532d;
+    --color-accent-lunch-hover: #166534;
     --color-accent-lunch-text: #f0fdf4;
-    --color-accent-lunch-border: #052e16;
+    --color-accent-lunch-border: #166534;
 
     --color-accent-dinner: #e11d48;
-    --color-accent-dinner-bg: #4c0519;
-    --color-accent-dinner-hover: #881337;
+    --color-accent-dinner-bg: #881337;
+    --color-accent-dinner-hover: #9f1239;
     --color-accent-dinner-text: #fff1f2;
-    --color-accent-dinner-border: #4c0519;
+    --color-accent-dinner-border: #9f1239;
 
     /* Snack - Purple */
     --color-accent-snack: #9333ea;
-    --color-accent-snack-bg: #3b0764;
-    --color-accent-snack-hover: #581c87;
+    --color-accent-snack-bg: #581c87;
+    --color-accent-snack-hover: #6b21a8;
     --color-accent-snack-text: #f3e8ff;
-    --color-accent-snack-border: #3b0764;
+    --color-accent-snack-border: #6b21a8;
 
     /* Note - Blue/Gray */
     --color-accent-note: #2563eb;
-    --color-accent-note-bg: #172554;
-    --color-accent-note-hover: #1e3a8a;
+    --color-accent-note-bg: #1e3a8a;
+    --color-accent-note-hover: #1e40af;
     --color-accent-note-text: #eff6ff;
-    --color-accent-note-border: #172554;
+    --color-accent-note-border: #1e40af;
 }
 
 @theme {

@@ -64,16 +64,16 @@
         {#each items as item, i}
             <div
                 class={twMerge(
-                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all",
+                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all border",
                     type === "breakfast"
-                        ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover"
+                        ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
-                          ? "bg-accent-lunch-bg hover:bg-accent-lunch-hover"
+                          ? "bg-accent-lunch-bg hover:bg-accent-lunch-hover border-accent-lunch-border"
                           : type === "dinner"
-                            ? "bg-accent-dinner-bg hover:bg-accent-dinner-hover"
+                            ? "bg-accent-dinner-bg hover:bg-accent-dinner-hover border-accent-dinner-border"
                             : type === "snack"
-                              ? "bg-accent-snack-bg hover:bg-accent-snack-hover"
-                              : "bg-accent-note-bg hover:bg-accent-note-hover",
+                              ? "bg-accent-snack-bg hover:bg-accent-snack-hover border-accent-snack-border"
+                              : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
                 )}
             >
                 <div class="flex-1 min-w-0 pt-0.5">

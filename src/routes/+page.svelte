@@ -328,7 +328,7 @@
             bind:this={scrollContainer}
         >
             <div
-                class="grid divide-app-text/20 border-r border-app-text/20 w-fit md:w-full grid-cols-[repeat(7,100vw)] md:grid-cols-[repeat(7,minmax(0,1fr))]"
+                class="grid divide-app-text/30 border-r border-app-text/30 w-fit md:w-full grid-cols-[repeat(7,100vw)] md:grid-cols-[repeat(7,minmax(0,1fr))]"
             >
                 <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
@@ -371,7 +371,7 @@
                 {#each mealSections as section}
                     {#each plan as dayPlan, i (dayPlan.day + section.type)}
                         <div
-                            class="flex flex-col border-r border-b border-app-text/10 bg-app-bg relative"
+                            class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
                         >
                             <MealSlot
                                 type={section.type}
