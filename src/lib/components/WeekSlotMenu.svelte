@@ -19,10 +19,17 @@
         triggerRect: DOMRect;
         onUpdate: (newServings: number) => void;
         onClose: () => void;
+        onAction: (action: "cooking") => void;
     }
 
-    let { recipeId, servings, triggerRect, onUpdate, onClose }: Props =
-        $props();
+    let {
+        recipeId,
+        servings,
+        triggerRect,
+        onUpdate,
+        onClose,
+        onAction,
+    }: Props = $props();
 
     function clickOutside(node: HTMLElement) {
         const handleClick = (event: MouseEvent) => {
@@ -73,12 +80,8 @@
 
     function handleCookingView() {
         onClose();
-        goto(`/recipes/${recipeId}/cooking`);
-    }
-
-    function handleShoppingView() {
-        onClose();
-        goto(`/recipes/${recipeId}/shopping`);
+        // goto(`/recipes/${recipeId}/cooking`);
+        onAction("cooking");
     }
 
     function handleQuantityChange(delta: number) {
@@ -103,27 +106,16 @@
     tabindex="-1"
     onclick={(e) => e.stopPropagation()}
 >
-    <button
-        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-        onclick={(e) => {
-            e.stopPropagation();
-            handleCookingView();
-        }}
-    >
-        <ChefHat size={18} />
-        Cooking view
-    </button>
-
-    <button
-        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-        onclick={(e) => {
-            e.stopPropagation();
-            handleShoppingView();
-        }}
-    >
-        <ShoppingCart size={18} />
-        Shopping view
-    </button>
+    <!-- Menu Items -->
+    <div class="py-1">
+        <button
+            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+            onclick={handleCookingView}
+        >
+            <ChefHat size={18} />
+            <span class="font-medium">Cooking view</span>
+        </button>
+    </div>
 
     <div
         class="px-4 py-2.5 text-sm font-medium text-app-text flex items-center justify-between hover:bg-app-surface-hover select-none"

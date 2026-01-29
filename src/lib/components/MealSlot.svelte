@@ -13,6 +13,7 @@
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newServings: number) => void;
+        onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
         isLoading?: boolean;
     }
 
@@ -25,6 +26,7 @@
         onRemove,
         onDrop,
         onUpdate,
+        onOpenRecipeMode,
         isLoading = false,
     }: Props = $props();
 
@@ -214,7 +216,9 @@
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
             >
-                <div class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3">
+                <div
+                    class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3"
+                >
                     <p
                         class={twMerge(
                             "font-bold leading-tight text-sm",
@@ -245,6 +249,11 @@
                         triggerRect={activeTriggerRect}
                         onUpdate={(newServings) => onUpdate(i, newServings)}
                         onClose={handleMenuClose}
+                        onAction={(action) => {
+                            if (onOpenRecipeMode && "id" in item) {
+                                onOpenRecipeMode(action, item.id);
+                            }
+                        }}
                     />
                 {/if}
 

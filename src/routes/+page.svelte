@@ -7,12 +7,17 @@
         userRecipes,
     } from "$lib/stores/userData";
     import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
+    import { fade, scale } from "svelte/transition";
     import { ChevronLeft, ChevronRight } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
+    import CookingView from "$lib/components/CookingView.svelte";
     import { twMerge } from "tailwind-merge";
+    import { documentStore, type DocumentState } from "$lib/stores/firestore";
+    import { user } from "$lib/stores/auth";
+    import { derived } from "svelte/store";
+    import { X } from "lucide-svelte";
 
     const DAYS = [
         "Monday",
@@ -73,6 +78,44 @@
         day: null,
         position: { x: 0, y: 0 },
     });
+
+    // Recipe Mode Modal State (Cooking/Shopping)
+    let recipeModeModal = $state<{
+        isOpen: boolean;
+        mode: "cooking";
+        recipeId: string | null;
+    }>({
+        isOpen: false,
+        mode: "cooking",
+        recipeId: null,
+    });
+
+    // Derived store to fetch the specific recipe for the mode modal
+    // We need to bridge Runes state to Store for documentStore
+    import { writable } from "svelte/store";
+    let activeRecipeIdStore = writable<string | null>(null);
+
+    $effect(() => {
+        activeRecipeIdStore.set(recipeModeModal.recipeId);
+    });
+
+    let modeRecipeStore = derived(
+        [user, activeRecipeIdStore],
+        ([$user, $recipeId], set) => {
+            if (!$user || !$recipeId) {
+                set({ data: null, loading: false });
+                return;
+            }
+            const store = documentStore<Recipe>(
+                `users/${$user.uid}/recipes/${$recipeId}`,
+            );
+            return store.subscribe(set);
+        },
+        { data: null, loading: false } as DocumentState<Recipe>,
+    );
+
+    let modeRecipe = $derived($modeRecipeStore.data);
+    let modeLoading = $derived($modeRecipeStore.loading);
 
     // Week Navigation logic
     let currentDate = $state(new Date());
@@ -235,6 +278,22 @@
     const closeModal = () => {
         modal.isOpen = false;
     };
+
+    function handleOpenRecipeMode(mode: "cooking", recipeId: string) {
+        recipeModeModal = {
+            isOpen: true,
+            mode,
+            recipeId,
+        };
+    }
+
+    function handleCloseRecipeMode() {
+        recipeModeModal = {
+            ...recipeModeModal,
+            isOpen: false,
+            recipeId: null,
+        };
+    }
 
     const currentDayName =
         DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
@@ -525,6 +584,7 @@
                                             idx,
                                             newServings,
                                         )}
+                                    onOpenRecipeMode={handleOpenRecipeMode}
                                     onDrop={handleDrop}
                                     {isLoading}
                                 />
@@ -577,3 +637,53 @@
     onClose={() => (noteModal.isOpen = false)}
     onSave={handleNoteSave}
 />
+
+<!-- Recipe Mode Modal (Cooking/Shopping) -->
+{#if recipeModeModal.isOpen}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        transition:fade={{ duration: 200 }}
+        onclick={handleCloseRecipeMode}
+        role="dialog"
+        aria-modal="true"
+    >
+        <div
+            class="bg-app-bg w-full max-w-5xl h-full md:h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
+            onclick={(e) => e.stopPropagation()}
+            transition:scale={{ start: 0.95, duration: 200 }}
+        >
+            <button
+                class="absolute idx-50 top-4 right-4 z-50 p-2 bg-black/10 hover:bg-black/20 rounded-full transition-colors hidden md:block"
+                onclick={handleCloseRecipeMode}
+            >
+                <X size={20} />
+            </button>
+
+            {#if modeLoading}
+                <div class="flex items-center justify-center h-full">
+                    <div
+                        class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
+                    ></div>
+                </div>
+            {:else if modeRecipe}
+                <CookingView
+                    recipe={modeRecipe}
+                    onBack={handleCloseRecipeMode}
+                    onDone={handleCloseRecipeMode}
+                />
+            {:else}
+                <div
+                    class="flex flex-col items-center justify-center h-full text-center"
+                >
+                    <p class="text-lg font-medium text-app-text-muted">
+                        Recipe not found
+                    </p>
+                    <button
+                        class="mt-4 text-app-primary font-bold"
+                        onclick={handleCloseRecipeMode}>Close</button
+                    >
+                </div>
+            {/if}
+        </div>
+    </div>
+{/if}
