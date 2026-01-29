@@ -16,20 +16,20 @@
     --app-border: #e7e5e4;
 
     --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #fffbeb;
-    --color-accent-breakfast-hover: #fef3c7;
+    --color-accent-breakfast-bg: #fef3c7;
+    --color-accent-breakfast-hover: #fde68a;
     --color-accent-breakfast-text: #451a03;
     --color-accent-breakfast-border: #fde68a;
 
     --color-accent-lunch: #16a34a;
-    --color-accent-lunch-bg: #f0fdf4;
-    --color-accent-lunch-hover: #dcfce7;
+    --color-accent-lunch-bg: #dcfce7;
+    --color-accent-lunch-hover: #bbf7d0;
     --color-accent-lunch-text: #052e16;
     --color-accent-lunch-border: #bbf7d0;
 
     --color-accent-dinner: #e11d48;
-    --color-accent-dinner-bg: #fff1f2;
-    --color-accent-dinner-hover: #ffe4e6;
+    --color-accent-dinner-bg: #ffe4e6;
+    --color-accent-dinner-hover: #fecdd3;
     --color-accent-dinner-text: #4c0519;
     --color-accent-dinner-border: #fecdd3;
 }
