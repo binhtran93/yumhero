@@ -13,7 +13,6 @@
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newServings: number) => void;
-        onUpdate?: (index: number, newServings: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
         isLoading?: boolean;
         activeDropdown?: {
@@ -288,7 +287,7 @@
             </div>
         {/each}
 
-        {#if items.length === 0}
+        {#if items.length === 0 && !isLoading}
             <div class="flex-1 flex items-center justify-center -mt-4">
                 <Plus
                     size={16}
@@ -310,7 +309,7 @@
             <div
                 class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 flex items-center justify-center z-20"
             >
-                <Loader size={16} class="animate-spin text-app-primary/50" />
+                <Loader size={16} class="animate-spin text-app-primary" />
             </div>
         {/if}
     </div>
