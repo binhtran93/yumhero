@@ -54,7 +54,7 @@
 
     <!-- Cell Content -->
     <div
-        class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto"
+        class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative"
         onclick={() => recipes.length === 0 && onClick()}
         onkeydown={(e) =>
             e.key === "Enter" && recipes.length === 0 && onClick()}
@@ -121,14 +121,14 @@
                 />
             </div>
         {/if}
-    </div>
 
-    <!-- Loading Overlay -->
-    {#if isLoading}
-        <div
-            class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 flex items-center justify-center z-20"
-        >
-            <Loader size={16} class="animate-spin text-app-primary/50" />
-        </div>
-    {/if}
+        <!-- Loading Overlay -->
+        {#if isLoading}
+            <div
+                class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 flex items-center justify-center z-20"
+            >
+                <Loader size={16} class="animate-spin text-app-primary/50" />
+            </div>
+        {/if}
+    </div>
 </div>
