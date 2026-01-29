@@ -171,24 +171,26 @@
 
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            const currentMeals = plan[dayIndex].meals[mealType];
-
+            // Replace the entire list for this slot with the new selection
+            // Consolidate duplicates by summing servings
+            const newMeals: Recipe[] = [];
             recipes.forEach((newRecipe) => {
-                const existingRecipe = currentMeals.find(
+                const existingIndex = newMeals.findIndex(
                     (r) => r.id === newRecipe.id,
                 );
-                if (existingRecipe) {
-                    existingRecipe.servings =
-                        (existingRecipe.servings || 1) +
+                if (existingIndex !== -1) {
+                    newMeals[existingIndex].servings =
+                        (newMeals[existingIndex].servings || 0) +
                         (newRecipe.servings || 1);
                 } else {
-                    currentMeals.push({
+                    newMeals.push({
                         ...newRecipe,
                         servings: newRecipe.servings || 1,
                     });
                 }
             });
 
+            plan[dayIndex].meals[mealType] = newMeals;
             saveWeekPlan(weekId, plan);
         }
     };

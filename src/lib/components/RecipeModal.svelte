@@ -108,7 +108,7 @@
       const result: Recipe[] = [];
       for (const { recipe, count } of selection.values()) {
         for (let i = 0; i < count; i++) {
-          result.push(recipe);
+          result.push({ ...recipe, servings: 1 });
         }
       }
       onSelect(result);
