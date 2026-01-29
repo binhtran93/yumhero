@@ -335,19 +335,34 @@
                     <div class="w-screen flex flex-col md:contents snap-start">
                         <!-- Header -->
                         <div
-                            class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 shadow-sm"
+                            class="sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-[2.5rem] md:h-15 shadow-sm py-1 md:py-0"
                             bind:this={dayRefs[i]}
                         >
-                            <div class="flex items-center gap-2">
+                            <!-- Mobile View: Horizontal Layout -->
+                            <div
+                                class="flex md:hidden items-center justify-center gap-1.5"
+                            >
                                 <span
-                                    class="hidden md:block font-display font-black transition-all text-app-text text-base"
-                                >
-                                    {dayPlan.day.slice(0, 3)}
-                                </span>
-                                <span
-                                    class="md:hidden font-display font-black transition-all text-app-text text-base"
+                                    class="font-display font-black text-app-text text-sm"
                                 >
                                     {dayPlan.day}
+                                    {getDayDate(i).split(" ")[1]}
+                                </span>
+                                {#if isToday(dayPlan.day)}
+                                    <span
+                                        class="px-2 py-0.5 bg-[#c2410c] text-white text-[10px] font-bold uppercase rounded-full leading-none shadow-sm"
+                                    >
+                                        Today
+                                    </span>
+                                {/if}
+                            </div>
+
+                            <!-- Desktop View: Existing Layout -->
+                            <div class="hidden md:flex items-center gap-2">
+                                <span
+                                    class="font-display font-black transition-all text-app-text text-base"
+                                >
+                                    {dayPlan.day.slice(0, 3)}
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
@@ -359,7 +374,7 @@
                             </div>
 
                             <span
-                                class="text-xs text-app-text font-bold opacity-70"
+                                class="hidden md:block text-xs text-app-text font-bold opacity-70"
                             >
                                 {getDayDate(i).split(" ")[1]}
                             </span>
