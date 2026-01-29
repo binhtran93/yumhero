@@ -683,13 +683,18 @@
     <div
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
         transition:fade={{ duration: 200 }}
-        onclick={handleCloseRecipeMode}
+        onclick={(e) => {
+            if (e.target === e.currentTarget) handleCloseRecipeMode();
+        }}
+        onkeydown={(e) => {
+            if (e.key === "Escape") handleCloseRecipeMode();
+        }}
         role="dialog"
         aria-modal="true"
+        tabindex="-1"
     >
         <div
             class="bg-app-bg w-full max-w-3xl h-full md:h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
-            onclick={(e) => e.stopPropagation()}
             transition:scale={{ start: 0.95, duration: 200 }}
         >
             <button
