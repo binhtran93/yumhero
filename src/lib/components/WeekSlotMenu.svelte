@@ -94,7 +94,7 @@
 />
 
 <div
-    class="w-48 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
+    class="w-56 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
     transition:fade={{ duration: 100 }}
     use:portal
     use:clickOutside
@@ -104,34 +104,34 @@
     onclick={(e) => e.stopPropagation()}
 >
     <button
-        class="w-full text-left px-3 py-2 text-xs font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
         onclick={(e) => {
             e.stopPropagation();
             handleCookingView();
         }}
     >
-        <ChefHat size={14} class="text-app-primary" />
+        <ChefHat size={18} />
         Cooking view
     </button>
 
     <button
-        class="w-full text-left px-3 py-2 text-xs font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
         onclick={(e) => {
             e.stopPropagation();
             handleShoppingView();
         }}
     >
-        <ShoppingCart size={14} class="text-accent-lunch" />
+        <ShoppingCart size={18} />
         Shopping view
     </button>
 
     <div
-        class="px-3 py-2 text-xs font-medium text-app-text flex items-center justify-between hover:bg-app-surface-hover select-none"
+        class="px-4 py-2.5 text-sm font-medium text-app-text flex items-center justify-between hover:bg-app-surface-hover select-none"
         onclick={(e) => e.stopPropagation()}
         role="separator"
     >
-        <div class="flex items-center gap-2">
-            <Users size={14} class="text-app-text-muted" />
+        <div class="flex items-center gap-3">
+            <Users size={18} class="text-app-text-muted" />
             <span class="text-app-text-muted">Quantity:</span>
         </div>
         <div class="flex items-center gap-1">
@@ -144,7 +144,7 @@
                 disabled={servings <= 1}
                 aria-label="Decrease quantity"
             >
-                <Minus size={14} />
+                <Minus size={16} />
             </button>
             <span class="font-bold min-w-[1.5rem] text-center">{servings}</span>
             <button
@@ -155,30 +155,30 @@
                 }}
                 aria-label="Increase quantity"
             >
-                <Plus size={14} />
+                <Plus size={16} />
             </button>
         </div>
     </div>
 
     <button
-        class="w-full text-left px-3 py-2 text-xs font-medium text-app-text-muted hover:bg-app-surface-hover flex items-center gap-2 transition-colors opacity-50 cursor-not-allowed"
+        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text-muted hover:bg-app-surface-hover flex items-center gap-3 transition-colors opacity-50 cursor-not-allowed"
         disabled
         onclick={(e) => e.stopPropagation()}
     >
-        <Snowflake size={14} />
+        <Snowflake size={18} />
         Add to freezer
     </button>
 
     <div class="border-t border-app-border my-1"></div>
 
     <button
-        class="w-full text-left px-3 py-2 text-xs font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
         onclick={(e) => {
             e.stopPropagation();
             onClose();
         }}
     >
-        <XIcon size={14} />
+        <XIcon size={18} />
         Close
     </button>
 </div>
