@@ -524,13 +524,13 @@
             bind:this={scrollContainer}
         >
             <div
-                class="flex w-fit md:w-full md:grid md:grid-cols-7 md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
+                class="flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div class="w-screen flex flex-col md:contents snap-start">
                         <!-- Header -->
                         <div
-                            class="sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-[2.5rem] md:h-15 shadow-sm py-1 md:py-0"
+                            class="sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0"
                             bind:this={dayRefs[i]}
                         >
                             <!-- Mobile View: Horizontal Layout -->
