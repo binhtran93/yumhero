@@ -54,6 +54,7 @@
         onclick={(e) => items.length === 0 && onClick(e)}
         onkeydown={(e) => {
             if (e.key === "Enter" && items.length === 0) {
+                // @ts-ignore
                 onClick(e);
             }
         }}
