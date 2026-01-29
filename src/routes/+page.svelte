@@ -328,12 +328,12 @@
             bind:this={scrollContainer}
         >
             <div
-                class="grid divide-app-text/30 border-r border-app-text/30 w-fit md:w-full grid-cols-[repeat(7,100vw)] md:grid-cols-[repeat(7,minmax(0,1fr))]"
+                class="grid divide-app-text/30 border-r border-app-text/30 w-fit md:w-full grid-cols-[repeat(7,100vw)] md:grid-cols-7"
             >
                 <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div
-                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-[60px] snap-start"
+                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 snap-start"
                         bind:this={dayRefs[i]}
                     >
                         <div class="flex items-center gap-2">
@@ -352,7 +352,7 @@
                         </div>
 
                         <span
-                            class="text-xs text-app-text font-bold opacity-70 hidden md:block"
+                            class="text-xs text-app-text font-bold opacity-70"
                         >
                             {getDayDate(i)}
                         </span>
