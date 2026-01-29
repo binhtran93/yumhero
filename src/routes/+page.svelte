@@ -390,7 +390,7 @@
 
                         {#each mealSections as section (section.type)}
                             <div
-                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative px-2"
+                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
                             >
                                 <MealSlot
                                     type={section.type}

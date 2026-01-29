@@ -68,7 +68,7 @@
     </div>
 
     <!-- Cell Content -->
-    <div class="flex-1 p-1.5 flex flex-col gap-2 overflow-y-auto relative">
+    <div class="flex-1 p-2 flex flex-col gap-2 overflow-y-auto relative">
         {#each items as item, i}
             <div
                 class={twMerge(
