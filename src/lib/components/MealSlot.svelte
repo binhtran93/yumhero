@@ -189,7 +189,7 @@
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
                         class={twMerge(
-                            "font-bold leading-tight",
+                            "font-bold leading-tight text-sm",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"

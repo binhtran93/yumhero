@@ -10,6 +10,7 @@
         PanelLeftOpen,
         Sun,
         Moon,
+        Search,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
@@ -35,6 +36,13 @@
     };
 
     let availableRecipes = $state<Recipe[]>([]);
+    let searchQuery = $state("");
+
+    let filteredRecipes = $derived(
+        availableRecipes.filter((r) =>
+            r.title.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
+    );
 
     $effect(() => {
         const unsubscribe = userRecipes.subscribe((state) => {
@@ -131,16 +139,23 @@
     <!-- Draggable Recipes List (Only when expanded) -->
     {#if $sidebarExpanded}
         <div class="hidden md:flex flex-col flex-1 min-h-0 mt-6 px-4 pb-2">
-            <h3
+            <div
+                class="flex items-center gap-2 mb-3 bg-app-surface-hover/50 rounded-lg px-2 py-1.5 focus-within:ring-2 focus-within:ring-app-primary/20 transition-all border border-transparent focus-within:border-app-primary/50"
                 transition:fade={{ duration: 200 }}
-                class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
             >
-                Recipes
-            </h3>
+                <Search size={14} class="text-app-text-muted shrink-0" />
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    bind:value={searchQuery}
+                    class="bg-transparent border-0 outline-none text-xs w-full text-app-text placeholder:text-app-text-muted/70 p-0"
+                />
+            </div>
+
             <div
                 class="flex-1 overflow-y-auto pr-1 space-y-2 pb-4 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
             >
-                {#each availableRecipes as recipe}
+                {#each filteredRecipes as recipe}
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div
                         class="flex items-center gap-3 p-2 rounded-xl bg-app-bg/50 hover:bg-app-bg border border-transparent hover:border-app-border cursor-grab active:cursor-grabbing transition-all group"
