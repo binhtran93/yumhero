@@ -485,6 +485,7 @@
 
         saveWeekPlan(weekId, plan);
     };
+    import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -492,25 +493,33 @@
 <div class="h-full flex flex-col">
     <!-- Header -->
     <!-- Header -->
-    <Header title="Plan Your Meal">
-        <div
-            class="flex items-center gap-1 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
-        >
-            <button
-                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                onclick={prevWeek}
+    <Header title="Plan Your Meal" mobileTitle="Plan">
+        <div class="flex items-center gap-2">
+            <div
+                class="flex items-center gap-1 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
             >
-                <ChevronLeft size={18} />
-            </button>
-            <span class="text-xs font-bold text-center text-app-text">
-                {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
-            </span>
-            <button
-                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                onclick={nextWeek}
-            >
-                <ChevronRight size={18} />
-            </button>
+                <button
+                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                    onclick={prevWeek}
+                >
+                    <ChevronLeft size={18} />
+                </button>
+                <span
+                    class="text-xs font-bold text-center text-app-text min-w-[90px]"
+                >
+                    {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+                </span>
+                <button
+                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                    onclick={nextWeek}
+                >
+                    <ChevronRight size={18} />
+                </button>
+            </div>
+
+            <div class="w-px h-6 bg-app-border mx-1"></div>
+
+            <ShoppingCartButton onclick={() => console.log("Toggle cart")} />
         </div>
     </Header>
 

@@ -5,16 +5,23 @@
 
     interface Props {
         title: string;
+        mobileTitle?: string;
         showBack?: boolean;
         backUrl?: string;
         children?: Snippet;
     }
 
-    let { title, showBack = false, backUrl = "/", children }: Props = $props();
+    let {
+        title,
+        mobileTitle,
+        showBack = false,
+        backUrl = "/",
+        children,
+    }: Props = $props();
 </script>
 
 <header
-    class="h-16 border-b border-app-border bg-app-surface flex items-center justify-between px-6 shrink-0 z-20 relative"
+    class="h-16 border-b border-app-border bg-app-surface flex items-center justify-between px-4 md:px-6 shrink-0 z-20 relative"
 >
     <div class="flex items-center gap-4">
         {#if showBack}
@@ -29,7 +36,12 @@
         <h1
             class="text-xl font-bold tracking-tight text-app-primary font-display"
         >
-            {title}
+            {#if mobileTitle}
+                <span class="md:hidden">{mobileTitle}</span>
+                <span class="hidden md:block">{title}</span>
+            {:else}
+                {title}
+            {/if}
         </h1>
     </div>
 
