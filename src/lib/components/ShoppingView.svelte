@@ -81,18 +81,18 @@
                             {#if checkedIngredients[i]}
                                 <SquareCheck
                                     size={24}
-                                    class="text-app-primary fill-app-primary/10"
+                                    class="text-app-text-muted"
                                 />
                             {:else}
                                 <Square
                                     size={24}
-                                    class="text-app-text-muted group-hover:text-app-primary transition-colors"
+                                    class="text-app-text-muted transition-colors"
                                 />
                             {/if}
                         </div>
                         <div
                             class="{checkedIngredients[i]
-                                ? 'opacity-40 line-through decoration-app-text-muted'
+                                ? 'opacity-50 line-through'
                                 : ''} transition-opacity flex-1"
                         >
                             <span class="font-bold text-app-text mr-1"
