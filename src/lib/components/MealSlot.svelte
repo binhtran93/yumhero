@@ -54,25 +54,25 @@
                 )}
             ></div>
             <span
-                class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
+                class="text-[10px] font-semibold capitalize tracking-widest text-app-text-muted transition-colors"
             >
                 {type}
             </span>
         </div>
         <div
-            class="p-0.5 text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-110"
+            class="flex items-center justify-center w-11 h-11 -mr-2 -my-2 cursor-pointer text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-105"
             title={`Add to ${type}`}
         >
-            <Plus size={12} />
+            <Plus size={14} />
         </div>
     </div>
 
     <!-- Cell Content -->
-    <div class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative">
+    <div class="flex-1 p-1.5 flex flex-col gap-2 overflow-y-auto relative">
         {#each items as item, i}
             <div
                 class={twMerge(
-                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all border",
+                    "group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -104,7 +104,7 @@
                     >
                         {getLabel(item)}
                         {#if "servings" in item && item.servings}
-                            <span class="opacity-40 font-medium ml-1 text-xs"
+                            <span class="opacity-60 font-medium ml-1 text-xs"
                                 >x{item.servings}</span
                             >
                         {/if}
@@ -114,7 +114,7 @@
                 {#if onRemove}
                     <button
                         class={twMerge(
-                            "p-0.5 opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all hover:text-red-600",
+                            "flex items-center justify-center w-8 h-8 -mr-1 -mt-1 rounded-full opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all hover:bg-black/5",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
@@ -130,7 +130,7 @@
                             onRemove(i);
                         }}
                     >
-                        <X size={10} />
+                        <X size={14} />
                     </button>
                 {/if}
             </div>
