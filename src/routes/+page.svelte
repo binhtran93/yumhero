@@ -299,7 +299,7 @@
     <!-- Header -->
     <Header title="Plan Your Meal">
         <div
-            class="flex items-center gap-2 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
+            class="flex items-center gap-1 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
         >
             <button
                 class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
