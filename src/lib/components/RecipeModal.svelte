@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Search, Plus, Minus, X, Check } from "lucide-svelte";
+  import { Search, Plus, Minus, X } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
 
   import { twMerge } from "tailwind-merge";
-  import { fade, scale } from "svelte/transition";
+  import { fade } from "svelte/transition";
   import Modal from "$lib/components/Modal.svelte";
 
   interface Props {
@@ -56,6 +56,16 @@
 
   const getCount = (recipeId: string) => {
     return selection.get(recipeId)?.count || 0;
+  };
+
+  const toggleSelection = (recipe: Recipe) => {
+    if (selection.has(recipe.id)) {
+      const newMap = new Map(selection);
+      newMap.delete(recipe.id);
+      selection = newMap;
+    } else {
+      selection = new Map(selection.set(recipe.id, { recipe, count: 1 }));
+    }
   };
 
   const increment = (recipe: Recipe) => {
@@ -196,21 +206,13 @@
             ? "bg-app-primary/5 border-app-primary/20"
             : "bg-transparent border-transparent hover:bg-app-surface-hover",
         )}
-        onclick={() => increment(recipe)}
-        onkeydown={(e) => e.key === "Enter" && increment(recipe)}
+        onclick={() => toggleSelection(recipe)}
+        onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
         role="button"
         tabindex="0"
       >
         <!-- Info area -->
         <div class="flex-1 flex items-center gap-2">
-          {#if count > 0}
-            <div
-              class="flex items-center justify-center w-5 h-5 rounded-full bg-app-primary text-white shrink-0"
-              transition:scale
-            >
-              <Check size={12} strokeWidth={3} />
-            </div>
-          {/if}
           <h3
             class={twMerge(
               "font-display font-bold transition-colors text-sm",
@@ -260,7 +262,10 @@
           {:else}
             <!-- Initial Add Button -->
             <button
-              onclick={() => increment(recipe)}
+              onclick={(e) => {
+                e.stopPropagation();
+                increment(recipe);
+              }}
               class="p-2 rounded-full bg-app-surface text-app-text-muted hover:bg-app-primary hover:text-white transition-all shadow-sm border border-app-border hover:border-app-primary"
             >
               <Plus size={16} strokeWidth={3} />
