@@ -59,8 +59,7 @@
         onclick={(e) => items.length === 0 && onClick(e)}
         onkeydown={(e) => {
             if (e.key === "Enter" && items.length === 0) {
-                // @ts-ignore
-                onClick(e as unknown as MouseEvent);
+                onClick(e);
             }
         }}
         role="button"
