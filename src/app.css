@@ -15,30 +15,33 @@
     --app-underline: rgba(120, 113, 108, 0.1);
     --app-border: #e7e5e4;
 
+    /* Breakfast - Sunrise (Soft Orange) */
     --color-accent-breakfast: #c2410c;
     --color-accent-breakfast-bg: #ffedd5;
     --color-accent-breakfast-hover: #fed7aa;
     --color-accent-breakfast-text: #431407;
     --color-accent-breakfast-border: #fed7aa;
 
+    /* Lunch - High Noon (Fresh Green) */
     --color-accent-lunch: #15803d;
     --color-accent-lunch-bg: #dcfce7;
     --color-accent-lunch-hover: #bbf7d0;
     --color-accent-lunch-text: #14532d;
     --color-accent-lunch-border: #bbf7d0;
 
-    --color-accent-dinner: #1d4ed8;
-    --color-accent-dinner-bg: #dbeafe;
-    --color-accent-dinner-hover: #bfdbfe;
-    --color-accent-dinner-text: #1e3a8a;
-    --color-accent-dinner-border: #bfdbfe;
+    /* Dinner - Twilight (Soft Purple) */
+    --color-accent-dinner: #7c3aed;
+    --color-accent-dinner-bg: #f3e8ff;
+    --color-accent-dinner-hover: #e9d5ff;
+    --color-accent-dinner-text: #581c87;
+    --color-accent-dinner-border: #e9d5ff;
 
-    /* Snack - Purple */
-    --color-accent-snack: #9333ea;
-    --color-accent-snack-bg: #f3e8ff;
-    --color-accent-snack-hover: #e9d5ff;
-    --color-accent-snack-text: #581c87;
-    --color-accent-snack-border: #e9d5ff;
+    /* Snack - Cool Blue (Distinct) */
+    --color-accent-snack: #1d4ed8;
+    --color-accent-snack-bg: #dbeafe;
+    --color-accent-snack-hover: #bfdbfe;
+    --color-accent-snack-text: #1e3a8a;
+    --color-accent-snack-border: #bfdbfe;
 
     /* Note - Gray/Slate */
     --color-accent-note: #64748b;
@@ -66,30 +69,33 @@
     --app-border: #36312e;
 
     /* Dark Mode - Deep Tints */
+    /* Breakfast - Deep Orange */
     --color-accent-breakfast: #fb923c;
     --color-accent-breakfast-bg: #431407;
     --color-accent-breakfast-hover: #7c2d12;
     --color-accent-breakfast-text: #ffedd5;
     --color-accent-breakfast-border: #7c2d12;
 
+    /* Lunch - Deep Green */
     --color-accent-lunch: #4ade80;
     --color-accent-lunch-bg: #14532d;
     --color-accent-lunch-hover: #166534;
     --color-accent-lunch-text: #dcfce7;
     --color-accent-lunch-border: #166534;
 
-    --color-accent-dinner: #60a5fa;
-    --color-accent-dinner-bg: #172554;
-    --color-accent-dinner-hover: #1e3a8a;
-    --color-accent-dinner-text: #dbeafe;
-    --color-accent-dinner-border: #1e3a8a;
+    /* Dinner - Deep Purple */
+    --color-accent-dinner: #a78bfa;
+    --color-accent-dinner-bg: #2e1065;
+    --color-accent-dinner-hover: #4c1d95;
+    --color-accent-dinner-text: #f3e8ff;
+    --color-accent-dinner-border: #4c1d95;
 
-    /* Snack - Purple */
-    --color-accent-snack: #c084fc;
-    --color-accent-snack-bg: #581c87;
-    --color-accent-snack-hover: #6b21a8;
-    --color-accent-snack-text: #f3e8ff;
-    --color-accent-snack-border: #6b21a8;
+    /* Snack - Deep Blue */
+    --color-accent-snack: #60a5fa;
+    --color-accent-snack-bg: #172554;
+    --color-accent-snack-hover: #1e3a8a;
+    --color-accent-snack-text: #dbeafe;
+    --color-accent-snack-border: #1e3a8a;
 
     /* Note - Gray/Slate */
     --color-accent-note: #94a3b8;
