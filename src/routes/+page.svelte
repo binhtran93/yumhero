@@ -328,72 +328,37 @@
             bind:this={scrollContainer}
         >
             <div
-                class="grid divide-app-text/30 border-r border-app-text/30 w-fit md:w-full grid-cols-[repeat(7,100vw)] md:grid-cols-7"
+                class="flex w-fit md:w-full md:grid md:grid-cols-7 md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
             >
-                <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
-                    <div
-                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 snap-start shadow-sm"
-                        bind:this={dayRefs[i]}
-                    >
-                        <div class="flex items-center gap-2">
-                            <span
-                                class="font-display font-black transition-all text-app-text text-base"
-                            >
-                                {dayPlan.day}
-                            </span>
-                            {#if isToday(dayPlan.day)}
-                                <span
-                                    class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
-                                >
-                                    Today
-                                </span>
-                            {/if}
-                        </div>
-
-                        <span
-                            class="text-xs text-app-text font-bold opacity-70"
-                        >
-                            {getDayDate(i)}
-                        </span>
-
-                        <!-- Today Flash Overlay -->
-                        {#if flashingIndex === i}
-                            <div
-                                transition:fade={{ duration: 300 }}
-                                class="absolute inset-0 bg-app-primary/5 pointer-events-none z-10"
-                            ></div>
-                        {/if}
-                    </div>
-                {/each}
-
-                <!-- Meal Sections Rows -->
-                {#each mealSections as section}
-                    {#each plan as dayPlan, i (dayPlan.day + section.type)}
+                    <div class="w-[100vw] flex flex-col md:contents snap-start">
+                        <!-- Header -->
                         <div
-                            class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
+                            class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 shadow-sm"
+                            bind:this={dayRefs[i]}
                         >
-                            <MealSlot
-                                type={section.type}
-                                items={dayPlan.meals[section.type]}
-                                onClick={(e) =>
-                                    handleMealClick(
-                                        dayPlan.day,
-                                        section.type,
-                                        e,
-                                    )}
-                                onClear={() =>
-                                    handleClearMeal(dayPlan.day, section.type)}
-                                onRemove={(idx) =>
-                                    handleRemoveRecipe(
-                                        dayPlan.day,
-                                        section.type,
-                                        idx,
-                                    )}
-                                {isLoading}
-                            />
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="font-display font-black transition-all text-app-text text-base"
+                                >
+                                    {dayPlan.day}
+                                </span>
+                                {#if isToday(dayPlan.day)}
+                                    <span
+                                        class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
+                                    >
+                                        Today
+                                    </span>
+                                {/if}
+                            </div>
 
-                            <!-- Today Flash Overlay for each cell -->
+                            <span
+                                class="text-xs text-app-text font-bold opacity-70"
+                            >
+                                {getDayDate(i)}
+                            </span>
+
+                            <!-- Today Flash Overlay -->
                             {#if flashingIndex === i}
                                 <div
                                     transition:fade={{ duration: 300 }}
@@ -401,7 +366,44 @@
                                 ></div>
                             {/if}
                         </div>
-                    {/each}
+
+                        {#each mealSections as section (section.type)}
+                            <div
+                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
+                            >
+                                <MealSlot
+                                    type={section.type}
+                                    items={dayPlan.meals[section.type]}
+                                    onClick={(e) =>
+                                        handleMealClick(
+                                            dayPlan.day,
+                                            section.type,
+                                            e,
+                                        )}
+                                    onClear={() =>
+                                        handleClearMeal(
+                                            dayPlan.day,
+                                            section.type,
+                                        )}
+                                    onRemove={(idx) =>
+                                        handleRemoveRecipe(
+                                            dayPlan.day,
+                                            section.type,
+                                            idx,
+                                        )}
+                                    {isLoading}
+                                />
+
+                                <!-- Today Flash Overlay for each cell -->
+                                {#if flashingIndex === i}
+                                    <div
+                                        transition:fade={{ duration: 300 }}
+                                        class="absolute inset-0 bg-app-primary/5 pointer-events-none z-10"
+                                    ></div>
+                                {/if}
+                            </div>
+                        {/each}
+                    </div>
                 {/each}
             </div>
         </div>
