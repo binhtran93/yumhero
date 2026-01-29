@@ -688,7 +688,7 @@
         aria-modal="true"
     >
         <div
-            class="bg-app-bg w-full max-w-5xl h-full md:h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
+            class="bg-app-bg w-full max-w-3xl h-full md:h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
             onclick={(e) => e.stopPropagation()}
             transition:scale={{ start: 0.95, duration: 200 }}
         >

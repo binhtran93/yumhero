@@ -60,7 +60,7 @@
                         initiallyShowAdvanced = false;
                         showAddDropdown = false;
                     }}
-                    class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/10 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
+                    class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/20 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
                     aria-label="Add Recipe Manually"
                 >
                     <Plus size={20} />

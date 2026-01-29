@@ -119,7 +119,7 @@
             ontouchstart={handleTouchStart}
             ontouchend={handleTouchEnd}
         >
-            <div class="mx-auto w-full flex-1 flex flex-col gap-6">
+            <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col gap-6">
                 <!-- Chef's Note (Mini) -->
                 {#if recipe.prepNotes}
                     <div
