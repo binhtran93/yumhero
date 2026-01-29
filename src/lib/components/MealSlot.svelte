@@ -289,7 +289,7 @@
         {/each}
 
         {#if items.length === 0}
-            <div class="flex-1 flex items-center justify-center">
+            <div class="flex-1 flex items-center justify-center -mt-4">
                 <Plus
                     size={16}
                     class="text-app-text-muted/50 group-hover:text-app-text-muted/80 transition-colors"
