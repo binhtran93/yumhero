@@ -12,13 +12,20 @@
 	});
 
 	let { children } = $props();
+	let mounted = $state(false);
+
+	$effect(() => {
+		mounted = true;
+	});
 </script>
 
-<div
-	class="h-screen w-screen bg-app-bg text-app-text overflow-hidden flex flex-col md:flex-row font-display transition-all duration-300"
->
-	<Navbar />
-	<main class="flex-1 overflow-hidden h-full order-first md:order-last">
-		{@render children()}
-	</main>
-</div>
+{#if mounted}
+	<div
+		class="h-screen w-screen bg-app-bg text-app-text overflow-hidden flex flex-col md:flex-row font-display transition-all duration-300"
+	>
+		<Navbar />
+		<main class="flex-1 overflow-hidden h-full order-first md:order-last">
+			{@render children()}
+		</main>
+	</div>
+{/if}

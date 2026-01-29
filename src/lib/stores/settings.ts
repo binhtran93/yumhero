@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 // Helper to create a persisted store
-function createPersistedStore<T>(key: string, initialValue: T) {
+export function createPersistedStore<T>(key: string, initialValue: T) {
     // If we're on the server, just return a regular writable
     if (!browser) {
         return writable(initialValue);

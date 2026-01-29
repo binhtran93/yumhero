@@ -14,6 +14,7 @@
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
     import { theme } from "$lib/stores/theme";
+    import { sidebarExpanded } from "$lib/stores/ui";
 
     // Navigation Items
     const navItems = [
@@ -29,20 +30,11 @@
         return false;
     };
 
-    let isExpanded = true;
-    let mounted = false;
-
-    onMount(() => {
-        const stored = localStorage.getItem("sidebarExpanded");
-        if (stored !== null) {
-            isExpanded = stored === "true";
-        }
-        mounted = true;
-    });
+    // Local mounted state is no longer needed for visibility handling here,
+    // but the layout will handle the global mounting check.
 
     const toggleSidebar = () => {
-        isExpanded = !isExpanded;
-        localStorage.setItem("sidebarExpanded", String(isExpanded));
+        $sidebarExpanded = !$sidebarExpanded;
     };
 </script>
 
@@ -51,21 +43,20 @@
     flex shrink-0 z-30 bg-app-surface border-app-border transition-all duration-300
     w-full h-16 border-t border-r-0 flex-row justify-around order-last
     md:h-full md:border-r md:border-t-0 md:flex-col md:justify-start md:pt-6 md:order-first
-    {isExpanded ? 'md:w-64 lg:w-64' : 'md:w-20 lg:w-20'}
+    {$sidebarExpanded ? 'md:w-64 lg:w-64' : 'md:w-20 lg:w-20'}
     lg:pt-6
-    {!mounted ? 'invisible' : ''}
     "
 >
     <!-- Logo / Brand -->
     <div
-        class="hidden md:flex flex-col lg:flex-row items-center justify-center {isExpanded
+        class="hidden md:flex flex-col lg:flex-row items-center justify-center {$sidebarExpanded
             ? 'md:justify-start md:px-6 lg:justify-start lg:px-6'
             : 'md:justify-center lg:justify-center'} mb-8 lg:gap-3"
     >
         <div class="p-2 bg-app-primary/10 rounded-xl text-app-primary shrink-0">
             <ChefHat size={28} strokeWidth={2.5} />
         </div>
-        {#if isExpanded}
+        {#if $sidebarExpanded}
             <span
                 class="text-xl font-bold tracking-tight text-app-text font-display hidden md:block lg:block"
                 transition:fade={{ duration: 100 }}
@@ -77,7 +68,7 @@
 
     <!-- Navigation Links -->
     <nav
-        class="flex-1 px-2 md:px-2 {isExpanded
+        class="flex-1 px-2 md:px-2 {$sidebarExpanded
             ? 'md:px-4 lg:px-4'
             : 'md:px-2 lg:px-2'} flex flex-row md:flex-col items-center justify-around md:justify-start md:space-y-2 w-full"
     >
@@ -85,7 +76,7 @@
             {@const active = isActive(item.href)}
             <a
                 href={item.href}
-                class="flex flex-col md:flex-row items-center justify-center {isExpanded
+                class="flex flex-col md:flex-row items-center justify-center {$sidebarExpanded
                     ? 'md:justify-start md:gap-3 lg:justify-start lg:gap-3'
                     : 'md:justify-center lg:justify-center'} px-1 py-1 md:px-2 md:py-3 rounded-xl transition-all duration-200 group relative overflow-hidden w-full
         {active
@@ -105,7 +96,7 @@
                         ? 'text-app-primary'
                         : 'text-app-text-muted group-hover:text-app-text transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
                 />
-                {#if isExpanded}
+                {#if $sidebarExpanded}
                     <span
                         class="text-[10px] md:block lg:block lg:text-sm whitespace-nowrap"
                         transition:fade={{ duration: 100 }}>{item.label}</span
@@ -117,7 +108,7 @@
 
     <!-- Collapse Toggle -->
     <div
-        class="hidden md:flex flex-col pb-4 mt-auto w-full {isExpanded
+        class="hidden md:flex flex-col pb-4 mt-auto w-full {$sidebarExpanded
             ? 'items-start px-6'
             : 'items-center justify-center'}"
     >
@@ -138,9 +129,11 @@
         <button
             on:click={toggleSidebar}
             class="p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
-            aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+            aria-label={$sidebarExpanded
+                ? "Collapse sidebar"
+                : "Expand sidebar"}
         >
-            {#if isExpanded}
+            {#if $sidebarExpanded}
                 <PanelLeftClose size={20} />
             {:else}
                 <PanelLeftOpen size={20} />
