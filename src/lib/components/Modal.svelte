@@ -55,7 +55,7 @@
         <!-- Modal Content -->
         <div
             class={twMerge(
-                "relative z-10 w-full bg-app-surface border border-app-border shadow-2xl flex flex-col rounded-3xl overflow-hidden max-h-[85vh]",
+                "relative z-10 w-full bg-app-surface border border-app-border shadow-2xl flex flex-col rounded-3xl overflow-hidden max-h-[90vh]",
                 className,
             )}
             transition:scale={{ duration: 300, easing: quintOut, start: 0.95 }}
