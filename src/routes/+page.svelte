@@ -353,80 +353,42 @@
         >
             <div
                 class={twMerge(
-                    "grid h-full divide-x divide-app-text/20 border-r border-app-text/20 min-w-max",
+                    "grid divide-app-text/20 border-r border-app-text/20 min-w-max",
                     isCompact
                         ? "grid-cols-7"
                         : "grid-cols-[repeat(7,320px)] md:grid-cols-[repeat(7,minmax(300px,1fr))]",
                 )}
             >
+                <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div
-                        class="flex flex-col h-full snap-start relative group"
+                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-[60px]"
+                        class:h-[50px]={isCompact}
                         bind:this={dayRefs[i]}
                     >
-                        <!-- Sticky Day Header -->
-                        <div
-                            class={twMerge(
-                                "sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-app-border transition-all duration-300",
-                                isCompact ? "py-2 h-[50px]" : "py-4 h-[60px]",
-                            )}
-                        >
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class={twMerge(
-                                        "font-display font-black transition-all text-app-text",
-                                        isCompact
-                                            ? "text-sm px-1"
-                                            : "text-base",
-                                    )}
-                                >
-                                    {dayPlan.day}
-                                </span>
-                                {#if isToday(dayPlan.day)}
-                                    <span
-                                        class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
-                                        >Today</span
-                                    >
-                                {/if}
-                            </div>
-
+                        <div class="flex items-center gap-2">
                             <span
-                                class="text-xs text-app-text font-bold opacity-70"
+                                class={twMerge(
+                                    "font-display font-black transition-all text-app-text",
+                                    isCompact ? "text-sm px-1" : "text-base",
+                                )}
                             >
-                                {getDayDate(i)}
+                                {dayPlan.day}
                             </span>
+                            {#if isToday(dayPlan.day)}
+                                <span
+                                    class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
+                                >
+                                    Today
+                                </span>
+                            {/if}
                         </div>
 
-                        <!-- Meal Slots -->
-                        <div
-                            class="flex-1 flex flex-col divide-y divide-app-text/10"
+                        <span
+                            class="text-xs text-app-text font-bold opacity-70"
                         >
-                            {#each mealSections as section}
-                                <MealSlot
-                                    type={section.type}
-                                    items={dayPlan.meals[section.type]}
-                                    onClick={(e) =>
-                                        handleMealClick(
-                                            dayPlan.day,
-                                            section.type,
-                                            e,
-                                        )}
-                                    onClear={() =>
-                                        handleClearMeal(
-                                            dayPlan.day,
-                                            section.type,
-                                        )}
-                                    onRemove={(idx) =>
-                                        handleRemoveRecipe(
-                                            dayPlan.day,
-                                            section.type,
-                                            idx,
-                                        )}
-                                    {isLoading}
-                                    {isCompact}
-                                />
-                            {/each}
-                        </div>
+                            {getDayDate(i)}
+                        </span>
 
                         <!-- Today Flash Overlay -->
                         {#if flashingIndex === i}
@@ -436,6 +398,44 @@
                             ></div>
                         {/if}
                     </div>
+                {/each}
+
+                <!-- Meal Sections Rows -->
+                {#each mealSections as section}
+                    {#each plan as dayPlan, i (dayPlan.day + section.type)}
+                        <div
+                            class="flex flex-col border-r border-b border-app-text/10 bg-app-bg relative"
+                        >
+                            <MealSlot
+                                type={section.type}
+                                items={dayPlan.meals[section.type]}
+                                onClick={(e) =>
+                                    handleMealClick(
+                                        dayPlan.day,
+                                        section.type,
+                                        e,
+                                    )}
+                                onClear={() =>
+                                    handleClearMeal(dayPlan.day, section.type)}
+                                onRemove={(idx) =>
+                                    handleRemoveRecipe(
+                                        dayPlan.day,
+                                        section.type,
+                                        idx,
+                                    )}
+                                {isLoading}
+                                {isCompact}
+                            />
+
+                            <!-- Today Flash Overlay for each cell -->
+                            {#if flashingIndex === i}
+                                <div
+                                    transition:fade={{ duration: 300 }}
+                                    class="absolute inset-0 bg-app-primary/5 pointer-events-none z-10"
+                                ></div>
+                            {/if}
+                        </div>
+                    {/each}
                 {/each}
             </div>
         </div>
