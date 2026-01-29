@@ -28,15 +28,15 @@
 </script>
 
 <div
-    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24"
+    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer"
+    onclick={onClick}
+    onkeydown={(e) => e.key === "Enter" && onClick(e as unknown as MouseEvent)}
+    role="button"
+    tabindex="0"
 >
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10 cursor-pointer hover:bg-app-bg/20 transition-colors"
-        onclick={onClick}
-        onkeydown={(e) => e.key === "Enter" && onClick(e)}
-        role="button"
-        tabindex="0"
+        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
     >
         <span
             class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
@@ -52,18 +52,7 @@
     </div>
 
     <!-- Cell Content -->
-    <div
-        class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative"
-        onclick={(e) => items.length === 0 && onClick(e)}
-        onkeydown={(e) => {
-            if (e.key === "Enter" && items.length === 0) {
-                // @ts-ignore
-                onClick(e);
-            }
-        }}
-        role="button"
-        tabindex="0"
-    >
+    <div class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative">
         {#each items as item, i}
             <div
                 class={twMerge(
