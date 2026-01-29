@@ -36,7 +36,7 @@
 >
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
+        class="p-2 py-1.5 flex items-center justify-between bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
     >
         <div class="flex items-center">
             <div
@@ -141,6 +141,14 @@
                 <Plus
                     size={16}
                     class="text-app-text-muted/20 group-hover:text-app-text-muted/80 transition-colors"
+                />
+            </div>
+        {:else}
+            <!-- Filling the remaining space with a subtle interactive area -->
+            <div class="flex-1 flex items-center justify-center min-h-8">
+                <Plus
+                    size={12}
+                    class="text-app-text-muted/0 group-hover:text-app-text-muted/30 transition-all duration-200"
                 />
             </div>
         {/if}

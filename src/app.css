@@ -31,10 +31,10 @@
 
     /* Dinner - Twilight (Deeper Indigo) */
     --color-accent-dinner: #4338ca;
-    --color-accent-dinner-bg: #e0e7ff;
-    --color-accent-dinner-hover: #c7d2fe;
+    --color-accent-dinner-bg: #c7d2fe;
+    --color-accent-dinner-hover: #a5b4fc;
     --color-accent-dinner-text: #312e81;
-    --color-accent-dinner-border: #c7d2fe;
+    --color-accent-dinner-border: #a5b4fc;
 
     /* Snack - Soft Purple */
     --color-accent-snack: #7c3aed;
