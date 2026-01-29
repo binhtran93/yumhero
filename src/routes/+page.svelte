@@ -203,6 +203,27 @@
         }
     };
 
+    const handleRecipeUpdate = (
+        day: string,
+        type: MealType,
+        index: number,
+        newServings: number,
+    ) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex !== -1) {
+            // @ts-ignore
+            const item = plan[dayIndex].meals[type][index];
+            if (item && "servings" in item) {
+                // @ts-ignore
+                plan[dayIndex].meals[type][index] = {
+                    ...item,
+                    servings: newServings,
+                };
+                saveWeekPlan(weekId, plan);
+            }
+        }
+    };
+
     const handleClearMeal = (day: string, type: MealType) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
@@ -496,6 +517,13 @@
                                             dayPlan.day,
                                             section.type,
                                             idx,
+                                        )}
+                                    onUpdate={(idx, newServings) =>
+                                        handleRecipeUpdate(
+                                            dayPlan.day,
+                                            section.type,
+                                            idx,
+                                            newServings,
                                         )}
                                     onDrop={handleDrop}
                                     {isLoading}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Plus, X, Loader } from "lucide-svelte";
+    import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
     import type { Recipe, MealType, Note } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
@@ -11,6 +12,7 @@
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
+        onUpdate?: (index: number, newServings: number) => void;
         isLoading?: boolean;
     }
 
@@ -22,6 +24,7 @@
         onClear,
         onRemove,
         onDrop,
+        onUpdate,
         isLoading = false,
     }: Props = $props();
 
@@ -32,6 +35,29 @@
 
     let isDragOver = $state(false);
     let draggingIndex = $state<number | null>(null);
+    let openMenuIndex = $state<number | null>(null);
+    let activeTriggerRect = $state<DOMRect | null>(null);
+
+    const handleCardClick = (e: MouseEvent, index: number) => {
+        // Stop propagation to prevent opening the recipe modal (if any parent handler exists)
+        // Note: The main card click is handled here.
+        e.stopPropagation();
+
+        if (openMenuIndex === index) {
+            openMenuIndex = null;
+            activeTriggerRect = null;
+        } else {
+            openMenuIndex = index;
+            // Get the element rect
+            const target = e.currentTarget as HTMLElement;
+            activeTriggerRect = target.getBoundingClientRect();
+        }
+    };
+
+    const handleMenuClose = () => {
+        openMenuIndex = null;
+        activeTriggerRect = null;
+    };
 
     const handleDragEnd = () => {
         draggingIndex = null;
@@ -168,9 +194,10 @@
     >
         {#each items as item, i}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border cursor-grab active:cursor-grabbing",
+                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -185,8 +212,9 @@
                 draggable="true"
                 ondragstart={(e) => handleDragStart(e, i, item)}
                 ondragend={handleDragEnd}
+                onclick={(e) => handleCardClick(e, i)}
             >
-                <div class="flex-1 min-w-0 pt-0.5">
+                <div class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3">
                     <p
                         class={twMerge(
                             "font-bold leading-tight text-sm",
@@ -209,6 +237,16 @@
                         {/if}
                     </p>
                 </div>
+
+                {#if onUpdate && "servings" in item && openMenuIndex === i && activeTriggerRect}
+                    <WeekSlotMenu
+                        recipeId={item.id}
+                        servings={item.servings || 1}
+                        triggerRect={activeTriggerRect}
+                        onUpdate={(newServings) => onUpdate(i, newServings)}
+                        onClose={handleMenuClose}
+                    />
+                {/if}
 
                 {#if onRemove}
                     <button
