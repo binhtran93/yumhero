@@ -79,6 +79,13 @@
         position: { x: 0, y: 0 },
     });
 
+    // Global Active Dropdown State
+    let activeDropdown = $state<{
+        day: string;
+        type: MealType;
+        index: number;
+    } | null>(null);
+
     // Recipe Mode Modal State (Cooking/Shopping)
     let recipeModeModal = $state<{
         isOpen: boolean;
@@ -277,6 +284,30 @@
 
     const closeModal = () => {
         modal.isOpen = false;
+    };
+
+    const handleToggleDropdown = (
+        day: string,
+        type: MealType,
+        index: number,
+        rect: DOMRect,
+    ) => {
+        if (
+            activeDropdown &&
+            activeDropdown.day === day &&
+            activeDropdown.type === type &&
+            activeDropdown.index === index
+        ) {
+            // Close if clicking the same one
+            activeDropdown = null;
+        } else {
+            // Open new one
+            activeDropdown = { day, type, index };
+        }
+    };
+
+    const handleCloseDropdown = () => {
+        activeDropdown = null;
     };
 
     function handleOpenRecipeMode(mode: "cooking", recipeId: string) {
@@ -587,6 +618,15 @@
                                     onOpenRecipeMode={handleOpenRecipeMode}
                                     onDrop={handleDrop}
                                     {isLoading}
+                                    {activeDropdown}
+                                    onToggleDropdown={(idx, rect) =>
+                                        handleToggleDropdown(
+                                            dayPlan.day,
+                                            section.type,
+                                            idx,
+                                            rect,
+                                        )}
+                                    onCloseDropdown={handleCloseDropdown}
                                 />
 
                                 <!-- Today Flash Overlay for each cell -->

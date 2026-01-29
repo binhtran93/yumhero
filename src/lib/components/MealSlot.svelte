@@ -13,8 +13,16 @@
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newServings: number) => void;
+        onUpdate?: (index: number, newServings: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
         isLoading?: boolean;
+        activeDropdown?: {
+            day: string;
+            type: MealType;
+            index: number;
+        } | null;
+        onToggleDropdown?: (index: number, rect: DOMRect) => void;
+        onCloseDropdown?: () => void;
     }
 
     let {
@@ -28,6 +36,9 @@
         onUpdate,
         onOpenRecipeMode,
         isLoading = false,
+        activeDropdown = null,
+        onToggleDropdown,
+        onCloseDropdown,
     }: Props = $props();
 
     const getLabel = (item: Recipe | Note) => {
@@ -37,7 +48,7 @@
 
     let isDragOver = $state(false);
     let draggingIndex = $state<number | null>(null);
-    let openMenuIndex = $state<number | null>(null);
+    // Remove local openMenuIndex logic, use activeDropdown prop
     let activeTriggerRect = $state<DOMRect | null>(null);
 
     const handleCardClick = (e: MouseEvent, index: number) => {
@@ -45,20 +56,15 @@
         // Note: The main card click is handled here.
         e.stopPropagation();
 
-        if (openMenuIndex === index) {
-            openMenuIndex = null;
-            activeTriggerRect = null;
-        } else {
-            openMenuIndex = index;
-            // Get the element rect
-            const target = e.currentTarget as HTMLElement;
-            activeTriggerRect = target.getBoundingClientRect();
-        }
+        const target = e.currentTarget as HTMLElement;
+        activeTriggerRect = target.getBoundingClientRect();
+
+        // Notify parent to toggle
+        onToggleDropdown?.(index, activeTriggerRect);
     };
 
     const handleMenuClose = () => {
-        openMenuIndex = null;
-        activeTriggerRect = null;
+        onCloseDropdown?.();
     };
 
     const handleDragEnd = () => {
@@ -242,7 +248,7 @@
                     </p>
                 </div>
 
-                {#if onUpdate && "servings" in item && openMenuIndex === i && activeTriggerRect}
+                {#if onUpdate && "servings" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
                     <WeekSlotMenu
                         recipeId={item.id}
                         servings={item.servings || 1}
