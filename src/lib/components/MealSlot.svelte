@@ -28,7 +28,7 @@
 </script>
 
 <div
-    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-[140px]"
+    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24"
 >
     <!-- Cell Header (Subtle Label) -->
     <div
@@ -128,8 +128,8 @@
         {#if items.length === 0}
             <div class="flex-1 flex items-center justify-center">
                 <Plus
-                    size={14}
-                    class="text-app-text-muted/10 group-hover:text-app-text-muted/30 transition-colors"
+                    size={16}
+                    class="text-app-text-muted/20 group-hover:text-app-text-muted/80 transition-colors"
                 />
             </div>
         {/if}
