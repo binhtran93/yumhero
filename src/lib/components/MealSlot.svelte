@@ -38,11 +38,27 @@
     <div
         class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
     >
-        <span
-            class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
-        >
-            {type}
-        </span>
+        <div class="flex items-center">
+            <div
+                class={twMerge(
+                    "w-2 h-2 rounded-full mr-2",
+                    type === "breakfast"
+                        ? "bg-accent-breakfast"
+                        : type === "lunch"
+                          ? "bg-accent-lunch"
+                          : type === "dinner"
+                            ? "bg-accent-dinner"
+                            : type === "snack"
+                              ? "bg-accent-snack"
+                              : "bg-accent-note",
+                )}
+            ></div>
+            <span
+                class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
+            >
+                {type}
+            </span>
+        </div>
         <div
             class="p-0.5 text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-110"
             title={`Add to ${type}`}
