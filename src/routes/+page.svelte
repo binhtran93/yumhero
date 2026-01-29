@@ -4,12 +4,7 @@
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/userData";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import {
-        ChevronLeft,
-        ChevronRight,
-        Maximize2,
-        Minimize2,
-    } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
@@ -41,9 +36,6 @@
     // State: Weekly Plan
     let plan = $state<WeeklyPlan>(createEmptyPlan("Monday"));
     let isLoading = $state(true);
-
-    // State: View Mode
-    let isCompact = $state(false);
 
     // State: Modal
     let modal = $state<{
@@ -305,40 +297,24 @@
     <!-- Header -->
     <!-- Header -->
     <Header title="Plan Your Meal">
-        <div class="flex items-center gap-3">
+        <div
+            class="flex items-center gap-2 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
+        >
             <button
-                class="hidden md:block p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors"
-                onclick={() => (isCompact = !isCompact)}
-                title={isCompact
-                    ? "Switch to Detail View"
-                    : "Switch to Compact View"}
+                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                onclick={prevWeek}
             >
-                {#if isCompact}
-                    <Maximize2 size={20} />
-                {:else}
-                    <Minimize2 size={20} />
-                {/if}
+                <ChevronLeft size={18} />
             </button>
-
-            <div
-                class="flex items-center gap-2 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
+            <span class="text-xs font-bold text-center text-app-text">
+                {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+            </span>
+            <button
+                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                onclick={nextWeek}
             >
-                <button
-                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                    onclick={prevWeek}
-                >
-                    <ChevronLeft size={18} />
-                </button>
-                <span class="text-xs font-bold text-center text-app-text">
-                    {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
-                </span>
-                <button
-                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                    onclick={nextWeek}
-                >
-                    <ChevronRight size={18} />
-                </button>
-            </div>
+                <ChevronRight size={18} />
+            </button>
         </div>
     </Header>
 
@@ -352,26 +328,17 @@
             bind:this={scrollContainer}
         >
             <div
-                class={twMerge(
-                    "grid divide-app-text/20 border-r border-app-text/20 min-w-max",
-                    isCompact
-                        ? "grid-cols-7"
-                        : "grid-cols-[repeat(7,320px)] md:grid-cols-[repeat(7,minmax(300px,1fr))]",
-                )}
+                class="grid divide-app-text/20 border-r border-app-text/20 min-w-max grid-cols-[repeat(7,320px)] md:grid-cols-[repeat(7,minmax(300px,1fr))]"
             >
                 <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div
                         class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-[60px]"
-                        class:h-[50px]={isCompact}
                         bind:this={dayRefs[i]}
                     >
                         <div class="flex items-center gap-2">
                             <span
-                                class={twMerge(
-                                    "font-display font-black transition-all text-app-text",
-                                    isCompact ? "text-sm px-1" : "text-base",
-                                )}
+                                class="font-display font-black transition-all text-app-text text-base"
                             >
                                 {dayPlan.day}
                             </span>
@@ -424,7 +391,6 @@
                                         idx,
                                     )}
                                 {isLoading}
-                                {isCompact}
                             />
 
                             <!-- Today Flash Overlay for each cell -->

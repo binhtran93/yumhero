@@ -10,7 +10,6 @@
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         isLoading?: boolean;
-        isCompact?: boolean;
     }
 
     let {
@@ -20,7 +19,6 @@
         onClear,
         onRemove,
         isLoading = false,
-        isCompact = false,
     }: Props = $props();
 
     const getLabel = (item: Recipe | Note) => {
@@ -30,10 +28,7 @@
 </script>
 
 <div
-    class={twMerge(
-        "group relative flex flex-col bg-app-surface transition-all duration-200 h-full",
-        isCompact ? "min-h-[80px]" : "min-h-[140px]",
-    )}
+    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-[140px]"
 >
     <!-- Cell Header (Subtle Label) -->
     <div
