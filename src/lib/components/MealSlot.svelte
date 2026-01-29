@@ -31,12 +31,22 @@
     };
 
     let isDragOver = $state(false);
+    let draggingIndex = $state<number | null>(null);
+
+    const handleDragEnd = () => {
+        draggingIndex = null;
+    };
 
     const handleDragStart = (
         e: DragEvent,
         index: number,
         item: Recipe | Note,
     ) => {
+        // Defer hiding the element so the browser has time to create the ghost image from the visible element
+        setTimeout(() => {
+            draggingIndex = index;
+        }, 0);
+
         if (!e.dataTransfer) return;
         const isRecipe = "title" in item;
         e.dataTransfer.effectAllowed = "move";
@@ -170,9 +180,11 @@
                             : type === "snack"
                               ? "bg-accent-snack-bg hover:bg-accent-snack-hover border-accent-snack-border"
                               : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
+                    draggingIndex === i && "invisible",
                 )}
                 draggable="true"
                 ondragstart={(e) => handleDragStart(e, i, item)}
+                ondragend={handleDragEnd}
             >
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
