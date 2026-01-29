@@ -155,8 +155,8 @@
             <!-- Filling the remaining space with a subtle interactive area -->
             <div class="flex-1 flex items-center justify-center min-h-8">
                 <Plus
-                    size={12}
-                    class="text-app-text-muted/0 group-hover:text-app-text-muted/30 transition-all duration-200"
+                    size={16}
+                    class="text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-all duration-200"
                 />
             </div>
         {/if}
