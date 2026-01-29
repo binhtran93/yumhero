@@ -332,7 +332,7 @@
                 class="flex w-fit md:w-full md:grid md:grid-cols-7 md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
-                    <div class="w-[100vw] flex flex-col md:contents snap-start">
+                    <div class="w-screen flex flex-col md:contents snap-start">
                         <!-- Header -->
                         <div
                             class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 shadow-sm"
@@ -340,9 +340,14 @@
                         >
                             <div class="flex items-center gap-2">
                                 <span
-                                    class="font-display font-black transition-all text-app-text text-base"
+                                    class="hidden md:block font-display font-black transition-all text-app-text text-base"
                                 >
                                     {dayPlan.day.slice(0, 3)}
+                                </span>
+                                <span
+                                    class="md:hidden font-display font-black transition-all text-app-text text-base"
+                                >
+                                    {dayPlan.day}
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
@@ -370,7 +375,7 @@
 
                         {#each mealSections as section (section.type)}
                             <div
-                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
+                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative px-2"
                             >
                                 <MealSlot
                                     type={section.type}
