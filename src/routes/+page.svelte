@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { MealType, Recipe, WeeklyPlan, DayPlan } from "$lib/types";
-    import DayColumn from "$lib/components/DayColumn.svelte";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/userData";
     import { onMount } from "svelte";
@@ -12,6 +11,8 @@
         Minimize2,
     } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
+    import MealSlot from "$lib/components/MealSlot.svelte";
+    import { twMerge } from "tailwind-merge";
 
     const DAYS = [
         "Monday",
@@ -212,6 +213,23 @@
         d.setDate(d.getDate() + 7);
         currentDate = d;
     };
+
+    const mealSections = [
+        { type: "breakfast" as const, label: "Breakfast" },
+        { type: "lunch" as const, label: "Lunch" },
+        { type: "dinner" as const, label: "Dinner" },
+    ];
+
+    const isToday = (dayName: string) => dayName === currentDayName;
+
+    const getDayDate = (dayIndex: number) => {
+        const date = new Date(weekRange.start);
+        date.setDate(date.getDate() + dayIndex);
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+        });
+    };
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -259,35 +277,124 @@
 
     <div
         bind:this={scrollContainer}
-        class="flex-1 w-full overflow-x-auto bg-app-bg snap-x snap-mandatory"
+        class="flex-1 w-full overflow-hidden flex flex-row bg-app-bg"
     >
+        <!-- Static Row Labels (Hidden on Mobile) -->
         <div
-            class="min-w-full w-max h-full flex flex-row items-start justify-center divide-x divide-app-border"
+            class="hidden md:flex flex-col border-r border-app-border bg-app-surface/50 z-30 pt-[60px] w-12 xl:w-16"
         >
-            {#each plan as dayPlan, i (dayPlan.day)}
+            {#each mealSections as section}
                 <div
-                    class="h-full shrink-0 snap-start relative"
-                    bind:this={dayRefs[i]}
+                    class="flex-1 flex items-center justify-center border-b border-app-border/30"
                 >
-                    <DayColumn
-                        {dayPlan}
-                        isToday={dayPlan.day === currentDayName}
-                        index={i}
-                        onMealClick={handleMealClick}
-                        onMealClear={handleClearMeal}
-                        onRemoveRecipe={(type, index) =>
-                            handleRemoveRecipe(dayPlan.day, type, index)}
-                        {isLoading}
-                        {isCompact}
-                    />
-                    {#if flashingIndex === i}
-                        <div
-                            transition:fade={{ duration: 300 }}
-                            class="absolute inset-0 bg-yellow-400/20 pointer-events-none z-20 mix-blend-multiply dark:mix-blend-overlay dark:bg-yellow-600/30"
-                        ></div>
-                    {/if}
+                    <span
+                        class="text-[10px] xl:text-xs font-bold uppercase tracking-widest -rotate-90 text-app-text-muted/30 whitespace-nowrap"
+                    >
+                        {section.label}
+                    </span>
                 </div>
             {/each}
+        </div>
+
+        <!-- Scrollable Grid -->
+        <div
+            class="flex-1 overflow-auto snap-x snap-mandatory scroll-smooth"
+            bind:this={scrollContainer}
+        >
+            <div
+                class={twMerge(
+                    "grid h-full divide-x divide-app-border border-r border-app-border min-w-max",
+                    isCompact
+                        ? "grid-cols-7"
+                        : "grid-cols-[repeat(7,320px)] md:grid-cols-[repeat(7,minmax(300px,1fr))]",
+                )}
+            >
+                {#each plan as dayPlan, i (dayPlan.day)}
+                    <div
+                        class="flex flex-col h-full snap-start relative group"
+                        bind:this={dayRefs[i]}
+                    >
+                        <!-- Sticky Day Header -->
+                        <div
+                            class={twMerge(
+                                "sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-app-border transition-all duration-300",
+                                isToday(dayPlan.day) ? "bg-app-primary/5" : "",
+                                isCompact ? "py-2 h-[50px]" : "py-4 h-[60px]",
+                            )}
+                        >
+                            {#if isToday(dayPlan.day)}
+                                <div
+                                    class="absolute top-0 left-0 right-0 h-1 bg-app-primary"
+                                ></div>
+                            {/if}
+
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class={twMerge(
+                                        "font-display font-bold transition-all",
+                                        isToday(dayPlan.day)
+                                            ? "text-app-primary"
+                                            : "text-app-text",
+                                        isCompact ? "text-xs" : "text-sm",
+                                    )}
+                                >
+                                    {dayPlan.day}
+                                </span>
+                                {#if isToday(dayPlan.day)}
+                                    <span
+                                        class="px-1 py-0.5 bg-app-primary/10 text-app-primary text-[8px] font-bold uppercase rounded leading-none"
+                                        >Today</span
+                                    >
+                                {/if}
+                            </div>
+
+                            <span
+                                class="text-[10px] text-app-text-muted/60 font-medium"
+                            >
+                                {getDayDate(i)}
+                            </span>
+                        </div>
+
+                        <!-- Meal Slots -->
+                        <div
+                            class="flex-1 flex flex-col divide-y divide-app-border"
+                        >
+                            {#each mealSections as section}
+                                <MealSlot
+                                    type={section.type}
+                                    recipes={dayPlan.meals[section.type]}
+                                    onClick={() =>
+                                        handleMealClick(
+                                            dayPlan.day,
+                                            section.type,
+                                        )}
+                                    onClear={() =>
+                                        handleClearMeal(
+                                            dayPlan.day,
+                                            section.type,
+                                        )}
+                                    onRemove={(idx) =>
+                                        handleRemoveRecipe(
+                                            dayPlan.day,
+                                            section.type,
+                                            idx,
+                                        )}
+                                    {isLoading}
+                                    {isCompact}
+                                />
+                            {/each}
+                        </div>
+
+                        <!-- Today Flash Overlay -->
+                        {#if flashingIndex === i}
+                            <div
+                                transition:fade={{ duration: 300 }}
+                                class="absolute inset-0 bg-app-primary/5 pointer-events-none z-10"
+                            ></div>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
         </div>
     </div>
 </div>

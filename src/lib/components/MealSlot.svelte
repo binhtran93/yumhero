@@ -22,154 +22,120 @@
         isLoading = false,
         isCompact = false,
     }: Props = $props();
-
-    // "Warm Family" Theme Colors
-    // Friendly, soft, natural tones.
-    const colorMap = {
-        breakfast: {
-            label: "text-amber-800",
-            card: "bg-amber-50 hover:bg-amber-100",
-            border: "border-amber-200",
-            accent: "bg-amber-600",
-            emptyBg: "bg-amber-50/50 hover:bg-amber-100",
-            emptyIcon: "text-amber-600",
-        },
-        lunch: {
-            label: "text-lime-800",
-            card: "bg-lime-50 hover:bg-lime-100",
-            border: "border-lime-200",
-            accent: "bg-lime-600",
-            emptyBg: "bg-lime-50/50 hover:bg-lime-100",
-            emptyIcon: "text-lime-600",
-        },
-        dinner: {
-            label: "text-orange-800",
-            card: "bg-orange-50 hover:bg-orange-100",
-            border: "border-orange-200",
-            accent: "bg-orange-600",
-            emptyBg: "bg-orange-50/50 hover:bg-orange-100",
-            emptyIcon: "text-orange-600",
-        },
-    };
-
-    const colors = $derived(colorMap[type]);
 </script>
 
-<!-- The Slot Container -->
-<!-- The Slot Container -->
-<div class="flex flex-col gap-2 w-full">
-    {#if recipes.length > 0}
-        <!-- Header is now handled by DayColumn for better structure -->
+<div
+    class={twMerge(
+        "group relative flex flex-col bg-app-surface transition-all duration-200",
+        "hover:z-10 hover:shadow-sm hover:bg-app-primary/[0.02]",
+        isCompact ? "min-h-[80px]" : "min-h-[140px]",
+    )}
+>
+    <!-- Cell Header (Subtle Label) -->
+    <div
+        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border/30 bg-app-bg/10"
+    >
+        <span
+            class="text-[9px] font-bold uppercase tracking-widest text-app-text-muted/60 group-hover:text-app-primary/70 transition-colors"
+        >
+            {type}
+        </span>
+        <button
+            onclick={onClick}
+            class="p-0.5 text-app-text-muted hover:text-app-primary opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110"
+            title={`Add to ${type}`}
+        >
+            <Plus size={12} />
+        </button>
+    </div>
 
-        <div class="flex flex-col gap-2">
-            {#each recipes as recipe, i}
-                <!-- Friendly Card -->
-                <div
-                    class={twMerge(
-                        "bg-app-surface border border-app-border shadow-sm relative group cursor-pointer transition-all hover:-translate-y-0.5 overflow-hidden",
-                        "border-l-[3px]",
-                        type === "breakfast"
-                            ? "border-l-accent-breakfast hover:border-l-accent-breakfast"
-                            : type === "lunch"
-                              ? "border-l-accent-lunch hover:border-l-accent-lunch"
-                              : "border-l-accent-dinner hover:border-l-accent-dinner",
-                        isCompact
-                            ? "px-2 py-1.5 rounded-md border-l-2"
-                            : "px-3 py-2 md:px-4 rounded-lg",
-                    )}
-                >
-                    <!-- Remove Button (Top Right) -->
-                    {#if onRemove}
-                        <button
-                            class={twMerge(
-                                "absolute text-app-text-muted hover:text-red-600 bg-white/60 hover:bg-white rounded-full transition-all shadow-sm",
-                                isCompact
-                                    ? "top-0.5 right-0.5 p-0.5 opacity-0 group-hover:opacity-100"
-                                    : "top-2 right-2 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100",
-                            )}
-                            onclick={(e) => {
-                                e.stopPropagation();
-                                onRemove(i);
-                            }}
-                            title="Remove"
-                        >
-                            <X size={isCompact ? 12 : 14} />
-                        </button>
-                    {/if}
-
-                    <h4
+    <!-- Cell Content -->
+    <div
+        class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto"
+        onclick={() => recipes.length === 0 && onClick()}
+        onkeydown={(e) =>
+            e.key === "Enter" && recipes.length === 0 && onClick()}
+        role="button"
+        tabindex="0"
+    >
+        {#each recipes as recipe, i}
+            <div
+                class={twMerge(
+                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-xs transition-all",
+                    type === "breakfast"
+                        ? "bg-accent-breakfast-bg dark:bg-accent-breakfast/10 border border-accent-breakfast/20 hover:bg-accent-breakfast/10"
+                        : type === "lunch"
+                          ? "bg-accent-lunch-bg dark:bg-accent-lunch/10 border border-accent-lunch/20 hover:bg-accent-lunch/10"
+                          : "bg-accent-dinner-bg dark:bg-accent-dinner/10 border border-accent-dinner/20 hover:bg-accent-dinner/10",
+                )}
+            >
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <p
                         class={twMerge(
-                            "font-bold text-app-text leading-snug font-display text-sm",
-                            isCompact
-                                ? "pl-1.5"
-                                : "",
+                            "font-medium leading-tight",
+                            type === "breakfast"
+                                ? "text-amber-900 dark:text-amber-100"
+                                : type === "lunch"
+                                  ? "text-green-900 dark:text-green-100"
+                                  : "text-rose-900 dark:text-rose-100",
                         )}
                     >
                         {recipe.title}
-                    </h4>
-
-                    {#if !isCompact}
-                            <span
-                                class="text-xs text-app-text-muted font-medium"
-                            >
-                                Servings: <span class="font-bold text-app-text">{recipe.servings || 1}</span
-                            >
-                            </span>
+                    </p>
+                    {#if !isCompact && recipe.servings}
+                        <p
+                            class={twMerge(
+                                "text-[9px] mt-0.5 opacity-60",
+                                type === "breakfast"
+                                    ? "text-amber-700 dark:text-amber-400"
+                                    : type === "lunch"
+                                      ? "text-green-700 dark:text-green-400"
+                                      : "text-rose-700 dark:text-rose-400",
+                            )}
+                        >
+                            {recipe.servings}
+                            {recipe.servings === 1 ? "serving" : "servings"}
+                        </p>
                     {/if}
                 </div>
-            {/each}
 
-            <!-- Friendly Add Button -->
-            <button
-                class={twMerge(
-                    "w-full rounded-lg border border-dashed border-app-border text-app-text-muted hover:border-app-primary hover:bg-app-surface-hover hover:text-app-primary font-bold transition-all flex items-center justify-center gap-2",
-                    isCompact ? "py-1.5 text-[10px]" : "py-2.5 md:py-3 text-xs",
-                )}
-                onclick={(e) => {
-                    e.stopPropagation();
-                    if (!isLoading) onClick();
-                }}
-                disabled={isLoading}
-            >
-                {#if isLoading}
-                    <div class="flex items-center justify-center h-3.5">
-                        <Loader
-                            size={14}
-                            class="animate-spin text-app-text-muted/50"
-                        />
-                    </div>
-                {:else}
-                    <Plus size={isCompact ? 12 : 14} />
-                    {#if !isCompact}Add Item{/if}
-                {/if}
-            </button>
-        </div>
-    {:else}
-        <!-- Empty State: Friendly -->
-        <div
-            role="button"
-            tabindex="0"
-            onclick={() => !isLoading && onClick()}
-            onkeydown={(e) => e.key === "Enter" && !isLoading && onClick()}
-            class={twMerge(
-                "w-full rounded-xl border border-dashed border-app-border hover:border-app-primary hover:bg-app-surface-hover transition-all cursor-pointer flex items-center justify-center group bg-app-surface",
-                isCompact ? "py-3" : "py-8",
-            )}
-        >
-            <div
-                class="text-app-text-muted group-hover:text-app-primary group-hover:scale-110 transition-all"
-            >
-                {#if isLoading}
-                    <div class="flex items-center justify-center">
-                        <Loader
-                            size={isCompact ? 16 : 24}
-                            class="animate-spin text-app-text-muted/50"
-                        />
-                    </div>
-                {:else}
-                    <Plus size={isCompact ? 16 : 20} />
+                {#if onRemove}
+                    <button
+                        class={twMerge(
+                            "p-0.5 opacity-0 group-hover/item:opacity-100 transition-all hover:text-red-500",
+                            type === "breakfast"
+                                ? "text-amber-600/50"
+                                : type === "lunch"
+                                  ? "text-green-600/50"
+                                  : "text-rose-600/50",
+                        )}
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            onRemove(i);
+                        }}
+                    >
+                        <X size={10} />
+                    </button>
                 {/if}
             </div>
+        {/each}
+
+        {#if recipes.length === 0}
+            <div class="flex-1 flex items-center justify-center">
+                <Plus
+                    size={14}
+                    class="text-app-text-muted/10 group-hover:text-app-text-muted/30 transition-colors"
+                />
+            </div>
+        {/if}
+    </div>
+
+    <!-- Loading Overlay -->
+    {#if isLoading}
+        <div
+            class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 backdrop-blur-[1px] flex items-center justify-center z-20"
+        >
+            <Loader size={16} class="animate-spin text-app-primary/50" />
         </div>
     {/if}
 </div>
