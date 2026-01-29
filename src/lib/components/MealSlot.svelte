@@ -32,20 +32,23 @@
 >
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10"
+        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10 cursor-pointer hover:bg-app-bg/20 transition-colors"
+        onclick={onClick}
+        onkeydown={(e) => e.key === "Enter" && onClick(e)}
+        role="button"
+        tabindex="0"
     >
         <span
             class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
         >
             {type}
         </span>
-        <button
-            onclick={onClick}
+        <div
             class="p-0.5 text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-110"
             title={`Add to ${type}`}
         >
             <Plus size={12} />
-        </button>
+        </div>
     </div>
 
     <!-- Cell Content -->
