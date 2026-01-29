@@ -7,6 +7,7 @@
         Snowflake,
         Ellipsis,
         X as XIcon,
+        Users,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -130,28 +131,31 @@
         role="separator"
     >
         <div class="flex items-center gap-2">
-            <span class="text-app-text-muted">Servings:</span>
+            <Users size={14} class="text-app-text-muted" />
+            <span class="text-app-text-muted">Quantity:</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1">
             <button
-                class="p-0.5 hover:bg-black/10 rounded disabled:opacity-30 transition-colors"
+                class="p-1.5 hover:bg-black/10 rounded disabled:opacity-30 transition-colors"
                 onclick={(e) => {
                     e.stopPropagation();
                     handleQuantityChange(-1);
                 }}
                 disabled={servings <= 1}
+                aria-label="Decrease quantity"
             >
-                <Minus size={12} />
+                <Minus size={14} />
             </button>
-            <span class="font-bold min-w-[1rem] text-center">{servings}</span>
+            <span class="font-bold min-w-[1.5rem] text-center">{servings}</span>
             <button
-                class="p-0.5 hover:bg-black/10 rounded transition-colors"
+                class="p-1.5 hover:bg-black/10 rounded transition-colors"
                 onclick={(e) => {
                     e.stopPropagation();
                     handleQuantityChange(1);
                 }}
+                aria-label="Increase quantity"
             >
-                <Plus size={12} />
+                <Plus size={14} />
             </button>
         </div>
     </div>
@@ -168,7 +172,7 @@
     <div class="border-t border-app-border my-1"></div>
 
     <button
-        class="w-full text-left px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors"
+        class="w-full text-left px-3 py-2 text-xs font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
         onclick={(e) => {
             e.stopPropagation();
             onClose();
