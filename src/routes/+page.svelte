@@ -304,6 +304,52 @@
             saveWeekPlan(weekId, plan);
         }
     };
+
+    const handleDrop = (
+        source: {
+            day: string;
+            type: MealType;
+            index: number;
+            isRecipe: boolean;
+        },
+        target: { day: string; type: MealType },
+    ) => {
+        // Prevent dropping note into meal or recipe into note
+        if (
+            (source.type === "note" && target.type !== "note") ||
+            (source.type !== "note" && target.type === "note")
+        ) {
+            return;
+        }
+
+        const sourceDayIndex = plan.findIndex((d) => d.day === source.day);
+        const targetDayIndex = plan.findIndex((d) => d.day === target.day);
+
+        if (sourceDayIndex === -1 || targetDayIndex === -1) return;
+
+        const sourceList = plan[sourceDayIndex].meals[source.type];
+        const targetList = plan[targetDayIndex].meals[target.type];
+
+        // Access the item safely
+        // @ts-ignore
+        const item = sourceList[source.index];
+
+        if (!item) return;
+
+        // Remove from source
+        // @ts-ignore
+        sourceList.splice(source.index, 1);
+
+        // Add to target
+        // @ts-ignore
+        targetList.push(item);
+
+        // Trigger reactivity updates (Svelte 5 state proxy handles fine-grained, but re-assignment ensures structural updates if needed)
+        // In nested state, sometimes we need to ensure the specific array is mutated or the state object is touched.
+        // With $state, mutation is fine.
+
+        saveWeekPlan(weekId, plan);
+    };
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -380,7 +426,7 @@
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
-                                        class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
+                                        class="px-1.5 py-1 bg-app-primary text-white font-black rounded leading-none shadow-sm scale-75 origin-left"
                                     >
                                         Today
                                     </span>
@@ -407,6 +453,7 @@
                                 class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
                             >
                                 <MealSlot
+                                    day={dayPlan.day}
                                     type={section.type}
                                     items={dayPlan.meals[section.type]}
                                     onClick={(e) =>
@@ -426,6 +473,7 @@
                                             section.type,
                                             idx,
                                         )}
+                                    onDrop={handleDrop}
                                     {isLoading}
                                 />
 

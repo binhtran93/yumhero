@@ -176,7 +176,7 @@
       {@const count = getCount(recipe.id)}
       <div
         class={twMerge(
-          "flex items-center justify-between px-4 py-3 rounded-2xl transition-all border cursor-pointer",
+          "flex items-center justify-between px-4 py-3 rounded-2xl transition-all border cursor-pointer gap-2",
           count > 0
             ? "bg-app-primary/5 border-app-primary/20"
             : "bg-transparent border-transparent hover:bg-app-surface-hover",

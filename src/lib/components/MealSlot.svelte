@@ -4,20 +4,24 @@
     import { twMerge } from "tailwind-merge";
 
     interface Props {
+        day: string;
         type: MealType;
         items: (Recipe | Note)[];
         onClick: (e: MouseEvent) => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
+        onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         isLoading?: boolean;
     }
 
     let {
+        day,
         type,
         items,
         onClick,
         onClear,
         onRemove,
+        onDrop,
         isLoading = false,
     }: Props = $props();
 
@@ -25,10 +29,61 @@
         if ("title" in item) return item.title;
         return item.text;
     };
+
+    let isDragOver = $state(false);
+
+    const handleDragStart = (
+        e: DragEvent,
+        index: number,
+        item: Recipe | Note,
+    ) => {
+        if (!e.dataTransfer) return;
+        const isRecipe = "title" in item;
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({
+                day,
+                type,
+                index,
+                isRecipe,
+            }),
+        );
+    };
+
+    const handleDragOver = (e: DragEvent) => {
+        e.preventDefault();
+        e.dataTransfer!.dropEffect = "move";
+        isDragOver = true;
+    };
+
+    const handleDragLeave = (e: DragEvent) => {
+        isDragOver = false;
+    };
+
+    const handleDrop = (e: DragEvent) => {
+        e.preventDefault();
+        isDragOver = false;
+        if (!onDrop || !e.dataTransfer) return;
+
+        try {
+            const data = JSON.parse(e.dataTransfer.getData("application/json"));
+            onDrop(data, { day, type });
+        } catch (err) {
+            console.error("Failed to parse drag data", err);
+        }
+    };
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-    class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer"
+    class={twMerge(
+        "group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer",
+        isDragOver && "ring-2 ring-primary bg-primary/5 z-20",
+    )}
+    ondragover={handleDragOver}
+    ondrop={handleDrop}
+    ondragleave={handleDragLeave}
 >
     <!-- Hidden button for accessibility and click handling -->
     <button
@@ -81,9 +136,10 @@
         class="pointer-events-none z-10 flex-1 p-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border",
+                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border cursor-grab active:cursor-grabbing",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -94,6 +150,8 @@
                               ? "bg-accent-snack-bg hover:bg-accent-snack-hover border-accent-snack-border"
                               : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
                 )}
+                draggable="true"
+                ondragstart={(e) => handleDragStart(e, i, item)}
             >
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
