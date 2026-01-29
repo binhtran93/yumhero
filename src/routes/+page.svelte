@@ -308,21 +308,23 @@
                                 <span
                                     class={twMerge(
                                         "font-display font-black transition-all text-app-text",
-                                        isCompact ? "text-xs px-1" : "text-sm",
+                                        isCompact
+                                            ? "text-sm px-1"
+                                            : "text-base",
                                     )}
                                 >
                                     {dayPlan.day}
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
-                                        class="px-1.5 py-0.5 bg-app-primary text-white text-[8px] font-black uppercase rounded leading-none shadow-sm"
+                                        class="px-1.5 py-0.5 bg-app-primary text-white text-xs font-black uppercase rounded leading-none shadow-sm scale-75 origin-left"
                                         >Today</span
                                     >
                                 {/if}
                             </div>
 
                             <span
-                                class="text-[10px] text-app-text font-bold opacity-70"
+                                class="text-xs text-app-text font-bold opacity-70"
                             >
                                 {getDayDate(i)}
                             </span>

@@ -36,7 +36,7 @@
         class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10"
     >
         <span
-            class="text-[9px] font-bold uppercase tracking-widest text-app-text-muted group-hover:text-app-primary transition-colors"
+            class="text-xs font-bold uppercase tracking-widest text-app-text-muted group-hover:text-app-primary transition-colors"
         >
             {type}
         </span>
@@ -61,12 +61,12 @@
         {#each recipes as recipe, i}
             <div
                 class={twMerge(
-                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-xs transition-all",
+                    "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all",
                     type === "breakfast"
-                        ? "bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 hover:bg-amber-100"
+                        ? "bg-accent-breakfast-bg border border-accent-breakfast-border hover:bg-accent-breakfast/10"
                         : type === "lunch"
-                          ? "bg-green-100/50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 hover:bg-green-100"
-                          : "bg-rose-100/50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 hover:bg-rose-100",
+                          ? "bg-accent-lunch-bg border border-accent-lunch-border hover:bg-accent-lunch/10"
+                          : "bg-accent-dinner-bg border border-accent-dinner-border hover:bg-accent-dinner/10",
                 )}
             >
                 <div class="flex-1 min-w-0 pt-0.5">
@@ -74,10 +74,10 @@
                         class={twMerge(
                             "font-bold leading-tight",
                             type === "breakfast"
-                                ? "text-amber-950 dark:text-amber-50"
+                                ? "text-accent-breakfast-text"
                                 : type === "lunch"
-                                  ? "text-green-950 dark:text-green-50"
-                                  : "text-rose-950 dark:text-rose-50",
+                                  ? "text-accent-lunch-text"
+                                  : "text-accent-dinner-text",
                         )}
                     >
                         {recipe.title}
@@ -85,12 +85,12 @@
                     {#if !isCompact && recipe.servings}
                         <p
                             class={twMerge(
-                                "text-[9px] mt-0.5 font-medium",
+                                "text-xs mt-0.5 font-medium opacity-70",
                                 type === "breakfast"
-                                    ? "text-amber-800/70 dark:text-amber-300/70"
+                                    ? "text-accent-breakfast-text"
                                     : type === "lunch"
-                                      ? "text-green-800/70 dark:text-green-300/70"
-                                      : "text-rose-800/70 dark:text-rose-300/70",
+                                      ? "text-accent-lunch-text"
+                                      : "text-accent-dinner-text",
                             )}
                         >
                             {recipe.servings}
@@ -104,10 +104,10 @@
                         class={twMerge(
                             "p-0.5 opacity-0 group-hover/item:opacity-100 transition-all hover:text-red-600",
                             type === "breakfast"
-                                ? "text-amber-800"
+                                ? "text-accent-breakfast-text"
                                 : type === "lunch"
-                                  ? "text-green-800"
-                                  : "text-rose-800",
+                                  ? "text-accent-lunch-text"
+                                  : "text-accent-dinner-text",
                         )}
                         onclick={(e) => {
                             e.stopPropagation();
