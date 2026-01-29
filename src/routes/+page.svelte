@@ -486,6 +486,10 @@
         saveWeekPlan(weekId, plan);
     };
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
+    import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
+
+    // Shopping List Modal State
+    let isShoppingListOpen = $state(false);
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -519,7 +523,7 @@
 
             <div class="w-px h-6 bg-app-border mx-1"></div>
 
-            <ShoppingCartButton onclick={() => console.log("Toggle cart")} />
+            <ShoppingCartButton onclick={() => (isShoppingListOpen = true)} />
         </div>
     </Header>
 
@@ -685,6 +689,13 @@
     position={noteModal.position}
     onClose={() => (noteModal.isOpen = false)}
     onSave={handleNoteSave}
+/>
+
+<ShoppingListModal
+    isOpen={isShoppingListOpen}
+    {plan}
+    {availableRecipes}
+    onClose={() => (isShoppingListOpen = false)}
 />
 
 <!-- Recipe Mode Modal (Cooking/Shopping) -->
