@@ -40,10 +40,7 @@
         class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10"
     >
         <span
-            class={twMerge(
-                "text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors",
-                !isLoading && "group-hover:text-app-primary",
-            )}
+            class="text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors"
         >
             {type}
         </span>
