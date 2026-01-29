@@ -341,7 +341,7 @@
                                 <span
                                     class="font-display font-black transition-all text-app-text text-base"
                                 >
-                                    {dayPlan.day}
+                                    {dayPlan.day.slice(0, 3)}
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
@@ -355,7 +355,7 @@
                             <span
                                 class="text-xs text-app-text font-bold opacity-70"
                             >
-                                {getDayDate(i)}
+                                {getDayDate(i).split(" ")[1]}
                             </span>
 
                             <!-- Today Flash Overlay -->
