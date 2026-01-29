@@ -132,7 +132,24 @@
   </div>
 {/snippet}
 
-<Modal {isOpen} {onClose} class="max-w-lg" header={customHeader}>
+{#snippet footerContent()}
+  <div class="p-4 border-t border-app-border bg-app-surface shrink-0">
+    <button
+      onclick={handleDone}
+      class="w-full py-3 rounded-xl bg-app-primary text-white font-bold text-sm shadow-sm hover:bg-app-primary/90 transition-colors"
+    >
+      Done
+    </button>
+  </div>
+{/snippet}
+
+<Modal
+  {isOpen}
+  {onClose}
+  class="max-w-lg"
+  header={customHeader}
+  footer={footerContent}
+>
   <!-- Search & Selected -->
   <div class="flex flex-col border-b border-app-border bg-app-surface shrink-0">
     <div class="p-4">
@@ -169,14 +186,12 @@
   </div>
 
   <!-- List -->
-  <div
-    class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-2 h-96"
-  >
+  <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-2">
     {#each filteredRecipes as recipe (recipe.id)}
       {@const count = getCount(recipe.id)}
       <div
         class={twMerge(
-          "flex items-center justify-between px-4 py-3 rounded-2xl transition-all border cursor-pointer gap-2",
+          "flex items-center justify-between px-4 py-3 rounded-2xl border cursor-pointer gap-2",
           count > 0
             ? "bg-app-primary/5 border-app-primary/20"
             : "bg-transparent border-transparent hover:bg-app-surface-hover",
@@ -254,15 +269,5 @@
         </div>
       </div>
     {/each}
-  </div>
-
-  <!-- Done Button Footer -->
-  <div class="p-4 border-t border-app-border bg-app-surface shrink-0">
-    <button
-      onclick={handleDone}
-      class="w-full py-3 rounded-xl bg-app-primary text-white font-bold text-sm shadow-sm hover:bg-app-primary/90 transition-colors"
-    >
-      Done
-    </button>
   </div>
 </Modal>
