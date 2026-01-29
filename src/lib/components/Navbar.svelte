@@ -136,11 +136,19 @@
         {/each}
     </nav>
 
-    <!-- Draggable Recipes List (Only when expanded) -->
-    {#if $sidebarExpanded}
-        <div class="hidden md:flex flex-col flex-1 min-h-0 mt-6 px-4 pb-2">
+    <!-- Draggable Recipes List (Only when expanded AND on Plan page) -->
+    {#if $sidebarExpanded && $page.url.pathname === "/"}
+        <div
+            class="hidden md:flex flex-col flex-1 min-h-0 mt-4 px-4 pb-2 border-t border-app-border pt-4"
+        >
+            <h3
+                transition:fade={{ duration: 200 }}
+                class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
+            >
+                Quick Recipes
+            </h3>
             <div
-                class="flex items-center gap-2 mb-3 bg-app-surface-hover/50 rounded-lg px-2 py-1.5 focus-within:ring-2 focus-within:ring-app-primary/20 transition-all border border-transparent focus-within:border-app-primary/50"
+                class="flex items-center gap-2 mb-3 bg-app-surface-hover/50 rounded-lg px-2 py-1.5 focus-within:ring-2 focus-within:ring-app-primary/20 transition-all border border-app-border focus-within:border-app-primary/50"
                 transition:fade={{ duration: 200 }}
             >
                 <Search size={14} class="text-app-text-muted shrink-0" />
