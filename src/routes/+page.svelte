@@ -12,7 +12,7 @@
     } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
-    import NoteModal from "$lib/components/NoteModal.svelte";
+    import NotePopover from "$lib/components/NotePopover.svelte";
     import { twMerge } from "tailwind-merge";
 
     const DAYS = [
@@ -61,9 +61,11 @@
     let noteModal = $state<{
         isOpen: boolean;
         day: string | null;
+        position: { x: number; y: number };
     }>({
         isOpen: false,
         day: null,
+        position: { x: 0, y: 0 },
     });
 
     // Week Navigation logic
@@ -116,10 +118,33 @@
     });
 
     // Handlers
-    const handleMealClick = (day: string, type: MealType) => {
+    const handleMealClick = (day: string, type: MealType, e: MouseEvent) => {
         if (type === "note") {
+            const rect = (
+                e.currentTarget as HTMLElement
+            ).getBoundingClientRect();
+
+            // Popover width is w-72 (288px) + padding/margin ~ 300px
+            const POPOVER_WIDTH = 300;
+            const windowWidth = window.innerWidth;
+
+            let x = rect.right + 10;
+            // If it goes off screen to the right, position it to the left of the trigger
+            if (x + POPOVER_WIDTH > windowWidth) {
+                x = rect.left - POPOVER_WIDTH - 10;
+            }
+
+            // If it goes off screen to the left (very small screen), just stick to the right edge with some padding
+            if (x < 10) {
+                x = windowWidth - POPOVER_WIDTH - 10;
+            }
+
             noteModal.isOpen = true;
             noteModal.day = day;
+            noteModal.position = {
+                x: x,
+                y: rect.top,
+            };
             return;
         }
 
@@ -380,10 +405,11 @@
                                 <MealSlot
                                     type={section.type}
                                     items={dayPlan.meals[section.type]}
-                                    onClick={() =>
+                                    onClick={(e) =>
                                         handleMealClick(
                                             dayPlan.day,
                                             section.type,
+                                            e,
                                         )}
                                     onClear={() =>
                                         handleClearMeal(
@@ -441,8 +467,9 @@
     onSelect={handleRecipeSelect}
 />
 
-<NoteModal
+<NotePopover
     isOpen={noteModal.isOpen}
+    position={noteModal.position}
     onClose={() => (noteModal.isOpen = false)}
     onSave={handleNoteSave}
 />

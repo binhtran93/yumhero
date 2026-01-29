@@ -6,7 +6,7 @@
     interface Props {
         type: MealType;
         items: (Recipe | Note)[];
-        onClick: () => void;
+        onClick: (e: MouseEvent) => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         isLoading?: boolean;
@@ -59,8 +59,13 @@
     <!-- Cell Content -->
     <div
         class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative"
-        onclick={() => items.length === 0 && onClick()}
-        onkeydown={(e) => e.key === "Enter" && items.length === 0 && onClick()}
+        onclick={(e) => items.length === 0 && onClick(e)}
+        onkeydown={(e) => {
+            if (e.key === "Enter" && items.length === 0) {
+                // @ts-ignore
+                onClick(e as unknown as MouseEvent);
+            }
+        }}
         role="button"
         tabindex="0"
     >
