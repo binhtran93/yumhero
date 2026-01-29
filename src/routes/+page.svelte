@@ -152,11 +152,12 @@
     };
 
     const handleRecipeSelect = (recipes: Recipe[]) => {
-        if (!modal.day || !modal.mealType) return;
+        const { day, mealType } = modal;
+        if (!day || !mealType || mealType === "note") return;
 
-        const dayIndex = plan.findIndex((d) => d.day === modal.day);
+        const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            const currentMeals = plan[dayIndex].meals[modal.mealType];
+            const currentMeals = plan[dayIndex].meals[mealType];
 
             recipes.forEach((newRecipe) => {
                 const existingRecipe = currentMeals.find(
