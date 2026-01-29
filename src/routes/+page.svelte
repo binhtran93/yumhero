@@ -286,7 +286,7 @@
         >
             <div
                 class={twMerge(
-                    "grid h-full divide-x divide-app-border border-r border-app-border min-w-max",
+                    "grid h-full divide-x divide-app-text/20 border-r border-app-text/20 min-w-max",
                     isCompact
                         ? "grid-cols-7"
                         : "grid-cols-[repeat(7,320px)] md:grid-cols-[repeat(7,minmax(300px,1fr))]",
@@ -314,25 +314,25 @@
                             <div class="flex items-center gap-2">
                                 <span
                                     class={twMerge(
-                                        "font-display font-bold transition-all",
+                                        "font-display font-black transition-all",
                                         isToday(dayPlan.day)
                                             ? "text-app-primary"
                                             : "text-app-text",
-                                        isCompact ? "text-xs" : "text-sm",
+                                        isCompact ? "text-xs px-1" : "text-sm",
                                     )}
                                 >
                                     {dayPlan.day}
                                 </span>
                                 {#if isToday(dayPlan.day)}
                                     <span
-                                        class="px-1 py-0.5 bg-app-primary/10 text-app-primary text-[8px] font-bold uppercase rounded leading-none"
+                                        class="px-1.5 py-0.5 bg-app-primary text-white text-[8px] font-black uppercase rounded leading-none shadow-sm"
                                         >Today</span
                                     >
                                 {/if}
                             </div>
 
                             <span
-                                class="text-[10px] text-app-text-muted/60 font-medium"
+                                class="text-[10px] text-app-text font-bold opacity-70"
                             >
                                 {getDayDate(i)}
                             </span>
@@ -340,7 +340,7 @@
 
                         <!-- Meal Slots -->
                         <div
-                            class="flex-1 flex flex-col divide-y divide-app-border"
+                            class="flex-1 flex flex-col divide-y divide-app-text/10"
                         >
                             {#each mealSections as section}
                                 <MealSlot

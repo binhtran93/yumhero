@@ -33,10 +33,10 @@
 >
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border/30 bg-app-bg/10"
+        class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10"
     >
         <span
-            class="text-[9px] font-bold uppercase tracking-widest text-app-text-muted/60 group-hover:text-app-primary/70 transition-colors"
+            class="text-[9px] font-bold uppercase tracking-widest text-app-text-muted group-hover:text-app-primary transition-colors"
         >
             {type}
         </span>
@@ -63,21 +63,21 @@
                 class={twMerge(
                     "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-xs transition-all",
                     type === "breakfast"
-                        ? "bg-accent-breakfast-bg dark:bg-accent-breakfast/10 border border-accent-breakfast/20 hover:bg-accent-breakfast/10"
+                        ? "bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 hover:bg-amber-100"
                         : type === "lunch"
-                          ? "bg-accent-lunch-bg dark:bg-accent-lunch/10 border border-accent-lunch/20 hover:bg-accent-lunch/10"
-                          : "bg-accent-dinner-bg dark:bg-accent-dinner/10 border border-accent-dinner/20 hover:bg-accent-dinner/10",
+                          ? "bg-green-100/50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 hover:bg-green-100"
+                          : "bg-rose-100/50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 hover:bg-rose-100",
                 )}
             >
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
                         class={twMerge(
-                            "font-medium leading-tight",
+                            "font-bold leading-tight",
                             type === "breakfast"
-                                ? "text-amber-900 dark:text-amber-100"
+                                ? "text-amber-950 dark:text-amber-50"
                                 : type === "lunch"
-                                  ? "text-green-900 dark:text-green-100"
-                                  : "text-rose-900 dark:text-rose-100",
+                                  ? "text-green-950 dark:text-green-50"
+                                  : "text-rose-950 dark:text-rose-50",
                         )}
                     >
                         {recipe.title}
@@ -85,12 +85,12 @@
                     {#if !isCompact && recipe.servings}
                         <p
                             class={twMerge(
-                                "text-[9px] mt-0.5 opacity-60",
+                                "text-[9px] mt-0.5 font-medium",
                                 type === "breakfast"
-                                    ? "text-amber-700 dark:text-amber-400"
+                                    ? "text-amber-800/70 dark:text-amber-300/70"
                                     : type === "lunch"
-                                      ? "text-green-700 dark:text-green-400"
-                                      : "text-rose-700 dark:text-rose-400",
+                                      ? "text-green-800/70 dark:text-green-300/70"
+                                      : "text-rose-800/70 dark:text-rose-300/70",
                             )}
                         >
                             {recipe.servings}
@@ -102,12 +102,12 @@
                 {#if onRemove}
                     <button
                         class={twMerge(
-                            "p-0.5 opacity-0 group-hover/item:opacity-100 transition-all hover:text-red-500",
+                            "p-0.5 opacity-0 group-hover/item:opacity-100 transition-all hover:text-red-600",
                             type === "breakfast"
-                                ? "text-amber-600/50"
+                                ? "text-amber-800"
                                 : type === "lunch"
-                                  ? "text-green-600/50"
-                                  : "text-rose-600/50",
+                                  ? "text-green-800"
+                                  : "text-rose-800",
                         )}
                         onclick={(e) => {
                             e.stopPropagation();
