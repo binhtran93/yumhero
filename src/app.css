@@ -15,37 +15,37 @@
     --app-underline: rgba(120, 113, 108, 0.1);
     --app-border: #e7e5e4;
 
-    --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #fde68a;
-    --color-accent-breakfast-hover: #fcd34d;
-    --color-accent-breakfast-text: #451a03;
-    --color-accent-breakfast-border: #fbbf24;
+    --color-accent-breakfast: #c2410c;
+    --color-accent-breakfast-bg: #ffedd5;
+    --color-accent-breakfast-hover: #fed7aa;
+    --color-accent-breakfast-text: #431407;
+    --color-accent-breakfast-border: #fed7aa;
 
-    --color-accent-lunch: #16a34a;
-    --color-accent-lunch-bg: #bbf7d0;
-    --color-accent-lunch-hover: #86efac;
-    --color-accent-lunch-text: #052e16;
-    --color-accent-lunch-border: #4ade80;
+    --color-accent-lunch: #15803d;
+    --color-accent-lunch-bg: #dcfce7;
+    --color-accent-lunch-hover: #bbf7d0;
+    --color-accent-lunch-text: #14532d;
+    --color-accent-lunch-border: #bbf7d0;
 
-    --color-accent-dinner: #e11d48;
-    --color-accent-dinner-bg: #fecdd3;
-    --color-accent-dinner-hover: #fda4af;
-    --color-accent-dinner-text: #4c0519;
-    --color-accent-dinner-border: #fb7185;
+    --color-accent-dinner: #1d4ed8;
+    --color-accent-dinner-bg: #dbeafe;
+    --color-accent-dinner-hover: #bfdbfe;
+    --color-accent-dinner-text: #1e3a8a;
+    --color-accent-dinner-border: #bfdbfe;
 
     /* Snack - Purple */
     --color-accent-snack: #9333ea;
-    --color-accent-snack-bg: #e9d5ff;
-    --color-accent-snack-hover: #d8b4fe;
-    --color-accent-snack-text: #3b0764;
-    --color-accent-snack-border: #c084fc;
+    --color-accent-snack-bg: #f3e8ff;
+    --color-accent-snack-hover: #e9d5ff;
+    --color-accent-snack-text: #581c87;
+    --color-accent-snack-border: #e9d5ff;
 
-    /* Note - Blue/Gray */
-    --color-accent-note: #2563eb;
-    --color-accent-note-bg: #bfdbfe;
-    --color-accent-note-hover: #93c5fd;
-    --color-accent-note-text: #172554;
-    --color-accent-note-border: #60a5fa;
+    /* Note - Gray/Slate */
+    --color-accent-note: #64748b;
+    --color-accent-note-bg: #f1f5f9;
+    --color-accent-note-hover: #e2e8f0;
+    --color-accent-note-text: #0f172a;
+    --color-accent-note-border: #e2e8f0;
 }
 
 .dark {
@@ -65,37 +65,38 @@
     --app-underline: rgba(168, 162, 158, 0.2);
     --app-border: #36312e;
 
-    --color-accent-breakfast: #d97706;
-    --color-accent-breakfast-bg: #451a03;
-    --color-accent-breakfast-hover: #78350f;
-    --color-accent-breakfast-text: #fffbeb;
-    --color-accent-breakfast-border: #92400e;
+    /* Dark Mode - Deep Tints */
+    --color-accent-breakfast: #fb923c;
+    --color-accent-breakfast-bg: #431407;
+    --color-accent-breakfast-hover: #7c2d12;
+    --color-accent-breakfast-text: #ffedd5;
+    --color-accent-breakfast-border: #7c2d12;
 
-    --color-accent-lunch: #16a34a;
+    --color-accent-lunch: #4ade80;
     --color-accent-lunch-bg: #14532d;
     --color-accent-lunch-hover: #166534;
-    --color-accent-lunch-text: #f0fdf4;
+    --color-accent-lunch-text: #dcfce7;
     --color-accent-lunch-border: #166534;
 
-    --color-accent-dinner: #e11d48;
-    --color-accent-dinner-bg: #881337;
-    --color-accent-dinner-hover: #9f1239;
-    --color-accent-dinner-text: #fff1f2;
-    --color-accent-dinner-border: #9f1239;
+    --color-accent-dinner: #60a5fa;
+    --color-accent-dinner-bg: #172554;
+    --color-accent-dinner-hover: #1e3a8a;
+    --color-accent-dinner-text: #dbeafe;
+    --color-accent-dinner-border: #1e3a8a;
 
     /* Snack - Purple */
-    --color-accent-snack: #9333ea;
+    --color-accent-snack: #c084fc;
     --color-accent-snack-bg: #581c87;
     --color-accent-snack-hover: #6b21a8;
     --color-accent-snack-text: #f3e8ff;
     --color-accent-snack-border: #6b21a8;
 
-    /* Note - Blue/Gray */
-    --color-accent-note: #2563eb;
-    --color-accent-note-bg: #1e3a8a;
-    --color-accent-note-hover: #1e40af;
-    --color-accent-note-text: #eff6ff;
-    --color-accent-note-border: #1e40af;
+    /* Note - Gray/Slate */
+    --color-accent-note: #94a3b8;
+    --color-accent-note-bg: #0f172a;
+    --color-accent-note-hover: #1e293b;
+    --color-accent-note-text: #f1f5f9;
+    --color-accent-note-border: #1e293b;
 }
 
 @theme {
