@@ -79,7 +79,17 @@
 <div
     class={twMerge(
         "group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer",
-        isDragOver && "ring-2 ring-primary bg-primary/5 z-20",
+        isDragOver &&
+            "ring-2 z-20 " +
+                (type === "breakfast"
+                    ? "ring-accent-breakfast bg-accent-breakfast/5"
+                    : type === "lunch"
+                      ? "ring-accent-lunch bg-accent-lunch/5"
+                      : type === "dinner"
+                        ? "ring-accent-dinner bg-accent-dinner/5"
+                        : type === "snack"
+                          ? "ring-accent-snack bg-accent-snack/5"
+                          : "ring-accent-note bg-accent-note/5"),
     )}
     ondragover={handleDragOver}
     ondrop={handleDrop}
