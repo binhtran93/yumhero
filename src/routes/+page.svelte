@@ -333,7 +333,7 @@
                 <!-- Headers Row -->
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div
-                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 snap-start"
+                        class="sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 h-15 snap-start shadow-sm"
                         bind:this={dayRefs[i]}
                     >
                         <div class="flex items-center gap-2">
