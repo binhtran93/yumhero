@@ -66,10 +66,10 @@
                 class={twMerge(
                     "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all",
                     type === "breakfast"
-                        ? "bg-accent-breakfast-bg hover:bg-accent-breakfast/10"
+                        ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover"
                         : type === "lunch"
-                          ? "bg-accent-lunch-bg hover:bg-accent-lunch/10"
-                          : "bg-accent-dinner-bg hover:bg-accent-dinner/10",
+                          ? "bg-accent-lunch-bg hover:bg-accent-lunch-hover"
+                          : "bg-accent-dinner-bg hover:bg-accent-dinner-hover",
                 )}
             >
                 <div class="flex-1 min-w-0 pt-0.5">

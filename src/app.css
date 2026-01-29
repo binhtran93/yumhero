@@ -17,16 +17,19 @@
 
     --color-accent-breakfast: #d97706;
     --color-accent-breakfast-bg: #fffbeb;
+    --color-accent-breakfast-hover: #fef3c7;
     --color-accent-breakfast-text: #451a03;
     --color-accent-breakfast-border: #fde68a;
 
     --color-accent-lunch: #16a34a;
     --color-accent-lunch-bg: #f0fdf4;
+    --color-accent-lunch-hover: #dcfce7;
     --color-accent-lunch-text: #052e16;
     --color-accent-lunch-border: #bbf7d0;
 
     --color-accent-dinner: #e11d48;
     --color-accent-dinner-bg: #fff1f2;
+    --color-accent-dinner-hover: #ffe4e6;
     --color-accent-dinner-text: #4c0519;
     --color-accent-dinner-border: #fecdd3;
 }
@@ -50,16 +53,19 @@
 
     --color-accent-breakfast: #d97706;
     --color-accent-breakfast-bg: #2d1a05;
+    --color-accent-breakfast-hover: #451a03;
     --color-accent-breakfast-text: #fffbeb;
     --color-accent-breakfast-border: #451a03;
 
     --color-accent-lunch: #16a34a;
     --color-accent-lunch-bg: #052e16;
+    --color-accent-lunch-hover: #14532d;
     --color-accent-lunch-text: #f0fdf4;
     --color-accent-lunch-border: #052e16;
 
     --color-accent-dinner: #e11d48;
     --color-accent-dinner-bg: #4c0519;
+    --color-accent-dinner-hover: #881337;
     --color-accent-dinner-text: #fff1f2;
     --color-accent-dinner-border: #4c0519;
 }
@@ -78,16 +84,19 @@
 
     --color-accent-breakfast: var(--color-accent-breakfast);
     --color-accent-breakfast-bg: var(--color-accent-breakfast-bg);
+    --color-accent-breakfast-hover: var(--color-accent-breakfast-hover);
     --color-accent-breakfast-text: var(--color-accent-breakfast-text);
     --color-accent-breakfast-border: var(--color-accent-breakfast-border);
 
     --color-accent-lunch: var(--color-accent-lunch);
     --color-accent-lunch-bg: var(--color-accent-lunch-bg);
+    --color-accent-lunch-hover: var(--color-accent-lunch-hover);
     --color-accent-lunch-text: var(--color-accent-lunch-text);
     --color-accent-lunch-border: var(--color-accent-lunch-border);
 
     --color-accent-dinner: var(--color-accent-dinner);
     --color-accent-dinner-bg: var(--color-accent-dinner-bg);
+    --color-accent-dinner-hover: var(--color-accent-dinner-hover);
     --color-accent-dinner-text: var(--color-accent-dinner-text);
     --color-accent-dinner-border: var(--color-accent-dinner-border);
 
