@@ -41,7 +41,7 @@
         </span>
         <button
             onclick={onClick}
-            class="p-0.5 text-app-text-muted hover:text-app-primary opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110"
+            class="p-0.5 text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-110"
             title={`Add to ${type}`}
         >
             <Plus size={12} />
@@ -103,7 +103,7 @@
                 {#if onRemove}
                     <button
                         class={twMerge(
-                            "p-0.5 opacity-0 group-hover/item:opacity-100 transition-all hover:text-red-600",
+                            "p-0.5 opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all hover:text-red-600",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
