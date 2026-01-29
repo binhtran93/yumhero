@@ -53,7 +53,18 @@
 
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-        e.dataTransfer!.dropEffect = "move";
+        if (e.dataTransfer) {
+            // If the source explicitly allows copy (like sidebar), prefer copy.
+            // Otherwise default to move (internal DnD).
+            if (
+                e.dataTransfer.effectAllowed === "copy" ||
+                e.dataTransfer.effectAllowed === "all"
+            ) {
+                e.dataTransfer.dropEffect = "copy";
+            } else {
+                e.dataTransfer.dropEffect = "move";
+            }
+        }
         isDragOver = true;
     };
 

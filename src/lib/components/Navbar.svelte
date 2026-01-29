@@ -16,6 +16,9 @@
     import { theme } from "$lib/stores/theme";
     import { sidebarExpanded } from "$lib/stores/ui";
 
+    import { userRecipes } from "$lib/stores/userData";
+    import type { Recipe } from "$lib/types";
+
     // Navigation Items
     const navItems = [
         { href: "/", label: "Plan", icon: Calendar },
@@ -30,11 +33,29 @@
         return false;
     };
 
-    // Local mounted state is no longer needed for visibility handling here,
-    // but the layout will handle the global mounting check.
+    let availableRecipes = $state<Recipe[]>([]);
+
+    $effect(() => {
+        const unsubscribe = userRecipes.subscribe((state) => {
+            availableRecipes = state.data;
+        });
+        return unsubscribe;
+    });
 
     const toggleSidebar = () => {
         $sidebarExpanded = !$sidebarExpanded;
+    };
+
+    const handleDragStart = (e: DragEvent, recipe: Recipe) => {
+        if (!e.dataTransfer) return;
+        e.dataTransfer.effectAllowed = "all";
+        e.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({
+                type: "sidebar-recipe",
+                recipeId: recipe.id,
+            }),
+        );
     };
 </script>
 
@@ -68,7 +89,7 @@
 
     <!-- Navigation Links -->
     <nav
-        class="flex-1 px-2 md:px-2 {$sidebarExpanded
+        class="flex-none px-2 md:px-2 {$sidebarExpanded
             ? 'md:px-4 lg:px-4'
             : 'md:px-2 lg:px-2'} flex flex-row md:flex-col items-center justify-around md:justify-start md:space-y-2 w-full"
     >
@@ -106,6 +127,50 @@
         {/each}
     </nav>
 
+    <!-- Draggable Recipes List (Only when expanded) -->
+    {#if $sidebarExpanded}
+        <div class="hidden md:flex flex-col flex-1 min-h-0 mt-6 px-4 pb-2">
+            <h3
+                transition:fade={{ duration: 200 }}
+                class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
+            >
+                Recipes
+            </h3>
+            <div
+                class="flex-1 overflow-y-auto pr-1 space-y-2 pb-4 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
+            >
+                {#each availableRecipes as recipe}
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div
+                        class="flex items-center gap-3 p-2 rounded-xl bg-app-bg/50 hover:bg-app-bg border border-transparent hover:border-app-border cursor-grab active:cursor-grabbing transition-all group"
+                        draggable="true"
+                        ondragstart={(e) => handleDragStart(e, recipe)}
+                        transition:fade={{ duration: 100 }}
+                    >
+                        <div
+                            class="w-8 h-8 rounded-lg bg-app-surface shadow-sm overflow-hidden shrink-0 flex items-center justify-center text-app-text-muted"
+                        >
+                            {#if recipe.image}
+                                <img
+                                    src={recipe.image}
+                                    alt={recipe.title}
+                                    class="w-full h-full object-cover"
+                                />
+                            {:else}
+                                <ChefHat size={14} />
+                            {/if}
+                        </div>
+                        <span
+                            class="text-xs font-medium text-app-text line-clamp-2 group-hover:text-app-primary transition-colors"
+                        >
+                            {recipe.title}
+                        </span>
+                    </div>
+                {/each}
+            </div>
+        </div>
+    {/if}
+
     <!-- Collapse Toggle -->
     <div
         class="hidden md:flex flex-col pb-4 mt-auto w-full {$sidebarExpanded
@@ -113,7 +178,7 @@
             : 'items-center justify-center'}"
     >
         <button
-            on:click={() => ($theme = $theme === "dark" ? "light" : "dark")}
+            onclick={() => ($theme = $theme === "dark" ? "light" : "dark")}
             class="p-2 mb-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
             aria-label={$theme === "dark"
                 ? "Switch to light theme"
@@ -127,7 +192,7 @@
         </button>
 
         <button
-            on:click={toggleSidebar}
+            onclick={toggleSidebar}
             class="p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
             aria-label={$sidebarExpanded
                 ? "Collapse sidebar"

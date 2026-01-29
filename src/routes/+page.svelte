@@ -307,18 +307,42 @@
 
     const handleDrop = (
         source: {
-            day: string;
-            type: MealType;
-            index: number;
-            isRecipe: boolean;
+            day?: string;
+            type: MealType | "sidebar-recipe";
+            index?: number;
+            isRecipe?: boolean;
+            recipeId?: string;
         },
         target: { day: string; type: MealType },
     ) => {
         // Prevent dropping note into meal or recipe into note
+        if (source.type === "note" && target.type !== "note") return;
         if (
-            (source.type === "note" && target.type !== "note") ||
-            (source.type !== "note" && target.type === "note")
-        ) {
+            source.type !== "note" &&
+            source.type !== "sidebar-recipe" &&
+            target.type === "note"
+        )
+            return;
+        if (source.type === "sidebar-recipe" && target.type === "note") return;
+
+        // Handle Sidebar Drop
+        if (source.type === "sidebar-recipe" && source.recipeId) {
+            const targetDayIndex = plan.findIndex((d) => d.day === target.day);
+            if (targetDayIndex === -1) return;
+
+            const recipe = availableRecipes.find(
+                (r) => r.id === source.recipeId,
+            );
+            if (!recipe) return;
+
+            const targetList = plan[targetDayIndex].meals[target.type];
+            // @ts-ignore
+            targetList.push({
+                ...recipe,
+                servings: recipe.servings || 1,
+            });
+
+            saveWeekPlan(weekId, plan);
             return;
         }
 
@@ -327,7 +351,9 @@
 
         if (sourceDayIndex === -1 || targetDayIndex === -1) return;
 
+        // @ts-ignore
         const sourceList = plan[sourceDayIndex].meals[source.type];
+        // @ts-ignore
         const targetList = plan[targetDayIndex].meals[target.type];
 
         // Access the item safely
@@ -343,10 +369,6 @@
         // Add to target
         // @ts-ignore
         targetList.push(item);
-
-        // Trigger reactivity updates (Svelte 5 state proxy handles fine-grained, but re-assignment ensures structural updates if needed)
-        // In nested state, sometimes we need to ensure the specific array is mutated or the state object is touched.
-        // With $state, mutation is fine.
 
         saveWeekPlan(weekId, plan);
     };
