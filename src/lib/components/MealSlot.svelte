@@ -29,14 +29,18 @@
 
 <div
     class="group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer"
-    onclick={onClick}
-    onkeydown={(e) => e.key === "Enter" && onClick(e as unknown as MouseEvent)}
-    role="button"
-    tabindex="0"
 >
+    <!-- Hidden button for accessibility and click handling -->
+    <button
+        type="button"
+        class="absolute inset-0 w-full h-full p-0 m-0 border-0 bg-transparent z-0 opacity-0 cursor-pointer disabled:cursor-default"
+        onclick={onClick}
+        disabled={isLoading}
+        aria-label={`Add to ${type}`}
+    ></button>
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="p-2 py-1.5 flex items-center justify-between bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
+        class="relative z-10 pointer-events-none p-2 py-1.5 flex items-center justify-between bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
     >
         <div class="flex items-center">
             <div
@@ -59,20 +63,27 @@
                 {type}
             </span>
         </div>
-        <div
-            class="flex items-center justify-center w-11 h-11 -mr-2 -my-2 cursor-pointer text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-105"
+        <button
+            type="button"
+            class="pointer-events-auto flex items-center justify-center w-11 h-11 -mr-2 -my-2 cursor-pointer text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-105"
             title={`Add to ${type}`}
+            onclick={(e) => {
+                e.stopPropagation();
+                onClick(e);
+            }}
         >
             <Plus size={14} />
-        </div>
+        </button>
     </div>
 
     <!-- Cell Content -->
-    <div class="flex-1 p-2 flex flex-col gap-2 overflow-y-auto relative">
+    <div
+        class="pointer-events-none z-10 flex-1 p-2 flex flex-col gap-2 overflow-y-auto relative"
+    >
         {#each items as item, i}
             <div
                 class={twMerge(
-                    "group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border",
+                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -83,9 +94,6 @@
                               ? "bg-accent-snack-bg hover:bg-accent-snack-hover border-accent-snack-border"
                               : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
                 )}
-                onclick={(e) => e.stopPropagation()}
-                onkeydown={(e) => e.key === "Enter" && e.stopPropagation()}
-                role="group"
             >
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
