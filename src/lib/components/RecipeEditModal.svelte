@@ -532,7 +532,7 @@
                                 type="text"
                                 bind:value={ing.unit}
                                 placeholder="Unit"
-                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
+                                class="w-14 md:w-24 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
                             />
                             <div class="flex-1 min-w-0">
                                 <input
