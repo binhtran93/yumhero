@@ -279,23 +279,6 @@
         bind:this={scrollContainer}
         class="flex-1 w-full overflow-hidden flex flex-row bg-app-bg"
     >
-        <!-- Static Row Labels (Hidden on Mobile) -->
-        <div
-            class="hidden md:flex flex-col border-r border-app-border bg-app-surface/50 z-30 pt-[60px] w-12 xl:w-16"
-        >
-            {#each mealSections as section}
-                <div
-                    class="flex-1 flex items-center justify-center border-b border-app-border/30"
-                >
-                    <span
-                        class="text-[10px] xl:text-xs font-bold uppercase tracking-widest -rotate-90 text-app-text-muted/30 whitespace-nowrap"
-                    >
-                        {section.label}
-                    </span>
-                </div>
-            {/each}
-        </div>
-
         <!-- Scrollable Grid -->
         <div
             class="flex-1 overflow-auto snap-x snap-mandatory scroll-smooth"
