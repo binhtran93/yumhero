@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { MealType, Recipe, WeeklyPlan, DayPlan } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
-    import { getWeekPlan, saveWeekPlan } from "$lib/stores/userData";
+    import {
+        getWeekPlan,
+        saveWeekPlan,
+        userRecipes,
+    } from "$lib/stores/userData";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { ChevronLeft, ChevronRight } from "lucide-svelte";
@@ -36,6 +40,16 @@
     // State: Weekly Plan
     let plan = $state<WeeklyPlan>(createEmptyPlan("Monday"));
     let isLoading = $state(true);
+
+    // Subscribe to user recipes
+    let availableRecipes = $state<Recipe[]>([]);
+
+    $effect(() => {
+        const unsubscribe = userRecipes.subscribe((state) => {
+            availableRecipes = state.data;
+        });
+        return unsubscribe;
+    });
 
     // State: Modal
     let modal = $state<{
@@ -452,6 +466,7 @@
     isOpen={modal.isOpen}
     mealType={modal.mealType}
     currentRecipes={modal.currentRecipes}
+    {availableRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
 />

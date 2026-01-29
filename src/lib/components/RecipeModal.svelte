@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search, Plus, Minus, X, Check } from "lucide-svelte";
   import type { Recipe, MealType } from "$lib/types";
-  import { mockRecipes } from "$lib/data/mockRecipes";
+
   import { twMerge } from "tailwind-merge";
   import { fade, scale } from "svelte/transition";
   import Modal from "$lib/components/Modal.svelte";
@@ -12,6 +12,7 @@
     currentRecipes?: Recipe[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
+    availableRecipes?: Recipe[];
   }
 
   let {
@@ -20,6 +21,7 @@
     currentRecipes = [],
     onClose,
     onSelect,
+    availableRecipes = [],
   }: Props = $props();
 
   let searchQuery = $state("");
@@ -105,7 +107,7 @@
   };
 
   let filteredRecipes = $derived(
-    mockRecipes.filter((r) =>
+    availableRecipes.filter((r) =>
       r.title.toLowerCase().includes(searchQuery.toLowerCase()),
     ),
   );
@@ -132,9 +134,7 @@
 
 <Modal {isOpen} {onClose} class="max-w-lg" header={customHeader}>
   <!-- Search & Selected -->
-  <div
-    class="flex flex-col border-b border-app-border bg-app-surface shrink-0"
-  >
+  <div class="flex flex-col border-b border-app-border bg-app-surface shrink-0">
     <div class="p-4">
       <div class="relative">
         <Search
