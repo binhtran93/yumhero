@@ -27,7 +27,6 @@
 <div
     class={twMerge(
         "group relative flex flex-col bg-app-surface transition-all duration-200",
-        "hover:z-10 hover:shadow-sm hover:bg-app-primary/[0.02]",
         isCompact ? "min-h-[80px]" : "min-h-[140px]",
     )}
 >
