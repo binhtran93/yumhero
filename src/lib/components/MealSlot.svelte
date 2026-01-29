@@ -67,6 +67,9 @@
                               ? "bg-accent-snack-bg hover:bg-accent-snack-hover border-accent-snack-border"
                               : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
                 )}
+                onclick={(e) => e.stopPropagation()}
+                onkeydown={(e) => e.key === "Enter" && e.stopPropagation()}
+                role="group"
             >
                 <div class="flex-1 min-w-0 pt-0.5">
                     <p
