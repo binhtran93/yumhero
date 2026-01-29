@@ -32,6 +32,20 @@
     --color-accent-dinner-hover: #fecdd3;
     --color-accent-dinner-text: #4c0519;
     --color-accent-dinner-border: #fecdd3;
+
+    /* Snack - Purple */
+    --color-accent-snack: #9333ea;
+    --color-accent-snack-bg: #f3e8ff;
+    --color-accent-snack-hover: #e9d5ff;
+    --color-accent-snack-text: #3b0764;
+    --color-accent-snack-border: #e9d5ff;
+
+    /* Note - Blue/Gray */
+    --color-accent-note: #2563eb;
+    --color-accent-note-bg: #eff6ff;
+    --color-accent-note-hover: #dbeafe;
+    --color-accent-note-text: #1e3a8a;
+    --color-accent-note-border: #dbeafe;
 }
 
 .dark {
@@ -68,6 +82,20 @@
     --color-accent-dinner-hover: #881337;
     --color-accent-dinner-text: #fff1f2;
     --color-accent-dinner-border: #4c0519;
+
+    /* Snack - Purple */
+    --color-accent-snack: #9333ea;
+    --color-accent-snack-bg: #3b0764;
+    --color-accent-snack-hover: #581c87;
+    --color-accent-snack-text: #f3e8ff;
+    --color-accent-snack-border: #3b0764;
+
+    /* Note - Blue/Gray */
+    --color-accent-note: #2563eb;
+    --color-accent-note-bg: #172554;
+    --color-accent-note-hover: #1e3a8a;
+    --color-accent-note-text: #eff6ff;
+    --color-accent-note-border: #172554;
 }
 
 @theme {
@@ -99,6 +127,18 @@
     --color-accent-dinner-hover: var(--color-accent-dinner-hover);
     --color-accent-dinner-text: var(--color-accent-dinner-text);
     --color-accent-dinner-border: var(--color-accent-dinner-border);
+
+    --color-accent-snack: var(--color-accent-snack);
+    --color-accent-snack-bg: var(--color-accent-snack-bg);
+    --color-accent-snack-hover: var(--color-accent-snack-hover);
+    --color-accent-snack-text: var(--color-accent-snack-text);
+    --color-accent-snack-border: var(--color-accent-snack-border);
+
+    --color-accent-note: var(--color-accent-note);
+    --color-accent-note-bg: var(--color-accent-note-bg);
+    --color-accent-note-hover: var(--color-accent-note-hover);
+    --color-accent-note-text: var(--color-accent-note-text);
+    --color-accent-note-border: var(--color-accent-note-border);
 
     --font-display: "Quicksand", "Inter", system-ui, sans-serif;
     --font-body: "Inter", system-ui, sans-serif;

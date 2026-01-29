@@ -31,6 +31,8 @@
                 breakfast: [],
                 lunch: [],
                 dinner: [],
+                snack: [],
+                note: [],
             },
         }));
     };
@@ -87,7 +89,16 @@
         const unsubscribe = store.subscribe((state) => {
             isLoading = state.loading;
             if (state.data) {
-                plan = state.data;
+                plan = state.data.map((day) => ({
+                    ...day,
+                    meals: {
+                        breakfast: day.meals.breakfast || [],
+                        lunch: day.meals.lunch || [],
+                        dinner: day.meals.dinner || [],
+                        snack: day.meals.snack || [],
+                        note: day.meals.note || [],
+                    },
+                }));
             } else {
                 plan = createEmptyPlan(DAYS[0]);
             }
@@ -218,6 +229,8 @@
         { type: "breakfast" as const, label: "Breakfast" },
         { type: "lunch" as const, label: "Lunch" },
         { type: "dinner" as const, label: "Dinner" },
+        { type: "snack" as const, label: "Snack" },
+        { type: "note" as const, label: "Note" },
     ];
 
     const isToday = (dayName: string) => dayName === currentDayName;

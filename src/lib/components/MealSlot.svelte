@@ -68,7 +68,11 @@
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover"
                         : type === "lunch"
                           ? "bg-accent-lunch-bg hover:bg-accent-lunch-hover"
-                          : "bg-accent-dinner-bg hover:bg-accent-dinner-hover",
+                          : type === "dinner"
+                            ? "bg-accent-dinner-bg hover:bg-accent-dinner-hover"
+                            : type === "snack"
+                              ? "bg-accent-snack-bg hover:bg-accent-snack-hover"
+                              : "bg-accent-note-bg hover:bg-accent-note-hover",
                 )}
             >
                 <div class="flex-1 min-w-0 pt-0.5">
@@ -79,7 +83,11 @@
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
                                   ? "text-accent-lunch-text"
-                                  : "text-accent-dinner-text",
+                                  : type === "dinner"
+                                    ? "text-accent-dinner-text"
+                                    : type === "snack"
+                                      ? "text-accent-snack-text"
+                                      : "text-accent-note-text",
                         )}
                     >
                         {recipe.title}
@@ -99,7 +107,11 @@
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
                                   ? "text-accent-lunch-text"
-                                  : "text-accent-dinner-text",
+                                  : type === "dinner"
+                                    ? "text-accent-dinner-text"
+                                    : type === "snack"
+                                      ? "text-accent-snack-text"
+                                      : "text-accent-note-text",
                         )}
                         onclick={(e) => {
                             e.stopPropagation();
