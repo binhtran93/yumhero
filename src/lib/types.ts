@@ -33,6 +33,11 @@ export interface Recipe {
     mainIngredient?: string;
 }
 
+export interface Note {
+    id: string;
+    text: string;
+}
+
 export interface DayPlan {
     day: string; // e.g., "Monday"
     meals: {
@@ -40,7 +45,7 @@ export interface DayPlan {
         lunch: Recipe[];
         dinner: Recipe[];
         snack: Recipe[];
-        note: Recipe[];
+        note: Note[];
     };
 }
 

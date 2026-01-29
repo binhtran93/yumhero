@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Plus, X, Loader } from "lucide-svelte";
-    import type { Recipe, MealType } from "$lib/types";
+    import type { Recipe, MealType, Note } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
     interface Props {
         type: MealType;
-        recipes: Recipe[];
+        items: (Recipe | Note)[];
         onClick: () => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
@@ -15,13 +15,18 @@
 
     let {
         type,
-        recipes,
+        items,
         onClick,
         onClear,
         onRemove,
         isLoading = false,
         isCompact = false,
     }: Props = $props();
+
+    const getLabel = (item: Recipe | Note) => {
+        if ("title" in item) return item.title;
+        return item.text;
+    };
 </script>
 
 <div
@@ -54,13 +59,12 @@
     <!-- Cell Content -->
     <div
         class="flex-1 p-1.5 flex flex-col gap-1 overflow-y-auto relative"
-        onclick={() => recipes.length === 0 && onClick()}
-        onkeydown={(e) =>
-            e.key === "Enter" && recipes.length === 0 && onClick()}
+        onclick={() => items.length === 0 && onClick()}
+        onkeydown={(e) => e.key === "Enter" && items.length === 0 && onClick()}
         role="button"
         tabindex="0"
     >
-        {#each recipes as recipe, i}
+        {#each items as item, i}
             <div
                 class={twMerge(
                     "group/item relative flex items-start gap-2 px-2 py-1.5 rounded shadow-sm text-sm transition-all",
@@ -90,10 +94,10 @@
                                       : "text-accent-note-text",
                         )}
                     >
-                        {recipe.title}
-                        {#if recipe.servings}
+                        {getLabel(item)}
+                        {#if "servings" in item && item.servings}
                             <span class="opacity-40 font-medium ml-1 text-xs"
-                                >x{recipe.servings}</span
+                                >x{item.servings}</span
                             >
                         {/if}
                     </p>
@@ -124,7 +128,7 @@
             </div>
         {/each}
 
-        {#if recipes.length === 0}
+        {#if items.length === 0}
             <div class="flex-1 flex items-center justify-center">
                 <Plus
                     size={14}

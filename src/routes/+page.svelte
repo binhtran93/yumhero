@@ -12,6 +12,7 @@
     } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
+    import NoteModal from "$lib/components/NoteModal.svelte";
     import { twMerge } from "tailwind-merge";
 
     const DAYS = [
@@ -55,6 +56,14 @@
         day: null,
         mealType: null,
         currentRecipes: [],
+    });
+
+    let noteModal = $state<{
+        isOpen: boolean;
+        day: string | null;
+    }>({
+        isOpen: false,
+        day: null,
     });
 
     // Week Navigation logic
@@ -108,8 +117,15 @@
 
     // Handlers
     const handleMealClick = (day: string, type: MealType) => {
+        if (type === "note") {
+            noteModal.isOpen = true;
+            noteModal.day = day;
+            return;
+        }
+
         console.log("Open Modal:", day, type);
         const dayPlan = plan.find((d) => d.day === day);
+        // @ts-ignore
         const currentRecipes = dayPlan ? dayPlan.meals[type] : [];
 
         modal.isOpen = true;
@@ -243,6 +259,19 @@
             day: "numeric",
         });
     };
+
+    const handleNoteSave = (text: string) => {
+        if (!noteModal.day) return;
+
+        const dayIndex = plan.findIndex((d) => d.day === noteModal.day);
+        if (dayIndex !== -1) {
+            plan[dayIndex].meals.note.push({
+                id: crypto.randomUUID(),
+                text: text,
+            });
+            saveWeekPlan(weekId, plan);
+        }
+    };
 </script>
 
 <svelte:window onresize={checkScroll} />
@@ -350,7 +379,7 @@
                             {#each mealSections as section}
                                 <MealSlot
                                     type={section.type}
-                                    recipes={dayPlan.meals[section.type]}
+                                    items={dayPlan.meals[section.type]}
                                     onClick={() =>
                                         handleMealClick(
                                             dayPlan.day,
@@ -410,4 +439,10 @@
     currentRecipes={modal.currentRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
+/>
+
+<NoteModal
+    isOpen={noteModal.isOpen}
+    onClose={() => (noteModal.isOpen = false)}
+    onSave={handleNoteSave}
 />
