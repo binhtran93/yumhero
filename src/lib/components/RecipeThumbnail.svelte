@@ -50,7 +50,7 @@
     <!-- Fallback (No Src or Error) -->
     {#if !src || error}
         <div
-            class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 text-orange-300"
+            class="absolute inset-0 flex items-center justify-center bg-linear-to-br from-orange-50 to-orange-100 text-orange-300 p-1.5"
             transition:fade
         >
             <UtensilsCrossed size={28} />
