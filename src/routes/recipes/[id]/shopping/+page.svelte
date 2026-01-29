@@ -79,7 +79,7 @@
                         </div>
                         <div>
                             <h1
-                                class="text-2xl font-display font-bold text-app-text"
+                                class="text-xl font-display font-bold text-app-text"
                             >
                                 {recipe.title}
                             </h1>
