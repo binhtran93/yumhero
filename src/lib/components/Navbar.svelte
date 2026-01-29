@@ -18,6 +18,7 @@
 
     import { userRecipes } from "$lib/stores/userData";
     import type { Recipe } from "$lib/types";
+    import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
     // Navigation Items
     const navItems = [
@@ -147,19 +148,11 @@
                         ondragstart={(e) => handleDragStart(e, recipe)}
                         transition:fade={{ duration: 100 }}
                     >
-                        <div
-                            class="w-8 h-8 rounded-lg bg-app-surface shadow-sm overflow-hidden shrink-0 flex items-center justify-center text-app-text-muted"
-                        >
-                            {#if recipe.image}
-                                <img
-                                    src={recipe.image}
-                                    alt={recipe.title}
-                                    class="w-full h-full object-cover"
-                                />
-                            {:else}
-                                <ChefHat size={14} />
-                            {/if}
-                        </div>
+                        <RecipeThumbnail
+                            src={recipe.image}
+                            alt={recipe.title}
+                            class="w-8 h-8 rounded-lg shadow-sm"
+                        />
                         <span
                             class="text-xs font-medium text-app-text line-clamp-2 group-hover:text-app-primary transition-colors"
                         >
