@@ -36,7 +36,10 @@
         class="px-2 py-1.5 flex items-center justify-between border-b border-app-border bg-app-bg/10"
     >
         <span
-            class="text-xs font-bold uppercase tracking-widest text-app-text-muted group-hover:text-app-primary transition-colors"
+            class={twMerge(
+                "text-[10px] font-bold uppercase tracking-widest text-app-text-muted transition-colors",
+                !isLoading && "group-hover:text-app-primary",
+            )}
         >
             {type}
         </span>
@@ -81,22 +84,12 @@
                         )}
                     >
                         {recipe.title}
+                        {#if recipe.servings}
+                            <span class="opacity-40 font-medium ml-1 text-xs"
+                                >x{recipe.servings}</span
+                            >
+                        {/if}
                     </p>
-                    {#if !isCompact && recipe.servings}
-                        <p
-                            class={twMerge(
-                                "text-xs mt-0.5 font-medium opacity-70",
-                                type === "breakfast"
-                                    ? "text-accent-breakfast-text"
-                                    : type === "lunch"
-                                      ? "text-accent-lunch-text"
-                                      : "text-accent-dinner-text",
-                            )}
-                        >
-                            {recipe.servings}
-                            {recipe.servings === 1 ? "serving" : "servings"}
-                        </p>
-                    {/if}
                 </div>
 
                 {#if onRemove}
