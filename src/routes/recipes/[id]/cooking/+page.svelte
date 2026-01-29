@@ -148,11 +148,7 @@
                             >
                                 <button
                                     onclick={() => toggleStep(currentStepIndex)}
-                                    class="flex-1 bg-app-surface border-2 rounded-3xl p-6 md:p-12 text-left transition-all shadow-sm flex flex-col items-center justify-center gap-8 group active:scale-[0.98] {completedSteps[
-                                        currentStepIndex
-                                    ]
-                                        ? 'border-app-primary bg-app-primary/[0.02]'
-                                        : 'border-app-border hover:border-app-primary/30'}"
+                                    class="flex-1 bg-app-surface border rounded-3xl p-6 md:p-12 text-left transition-all shadow-sm flex flex-col items-center justify-center gap-8 group active:scale-[0.98] border-app-border"
                                 >
                                     <div
                                         class="flex flex-col items-center text-center gap-6"
