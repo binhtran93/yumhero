@@ -133,7 +133,7 @@
     <!-- Loading Overlay -->
     {#if isLoading}
         <div
-            class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 backdrop-blur-[1px] flex items-center justify-center z-20"
+            class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 flex items-center justify-center z-20"
         >
             <Loader size={16} class="animate-spin text-app-primary/50" />
         </div>

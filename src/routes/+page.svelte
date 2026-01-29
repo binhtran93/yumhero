@@ -301,23 +301,13 @@
                         <div
                             class={twMerge(
                                 "sticky top-0 z-20 flex flex-col items-center justify-center bg-app-surface border-b border-app-border transition-all duration-300",
-                                isToday(dayPlan.day) ? "bg-app-primary/5" : "",
                                 isCompact ? "py-2 h-[50px]" : "py-4 h-[60px]",
                             )}
                         >
-                            {#if isToday(dayPlan.day)}
-                                <div
-                                    class="absolute top-0 left-0 right-0 h-1 bg-app-primary"
-                                ></div>
-                            {/if}
-
                             <div class="flex items-center gap-2">
                                 <span
                                     class={twMerge(
-                                        "font-display font-black transition-all",
-                                        isToday(dayPlan.day)
-                                            ? "text-app-primary"
-                                            : "text-app-text",
+                                        "font-display font-black transition-all text-app-text",
                                         isCompact ? "text-xs px-1" : "text-sm",
                                     )}
                                 >
