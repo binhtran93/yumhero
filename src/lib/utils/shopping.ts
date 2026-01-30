@@ -95,82 +95,6 @@ const normalizeUnit = (unit: string): string => {
     return u; // Return original if not matched
 };
 
-export const generateShoppingList = (
-    plan: WeeklyPlan,
-    filterDay: string | "all" = "all"
-): ShoppingItem[] => {
-    const itemsMap = new Map<string, ShoppingItem>();
-
-    plan.forEach(dayPlan => {
-        if (filterDay !== "all" && dayPlan.day !== filterDay) return;
-
-        Object.entries(dayPlan.meals).forEach(([type, recipes]) => {
-            if (type === 'note') return;
-
-            (recipes as Recipe[]).forEach(recipe => {
-                if (!recipe.ingredients) return;
-
-                // Determine scaling if needed. 
-                // Currently plan recipes usually have `servings` set to the planned servings.
-                // WE ASSUME `recipe.ingredients` amounts correspond to `recipe.servings`.
-                // Wait, if I change servings in the UI, do I update the `ingredients` array in the default store?
-                // Checking `RecipeModal.svelte` logic or `+page.svelte`...
-                // In `+page.svelte`, we do:
-                // `newMeals[existingIndex].servings = ...`
-                // We DO NOT update the ingredients array numbers. We only update the top-level `servings` property on the recipe object in the plan.
-                // The `recipe.ingredients` amounts are legally bound to the ORIGINAL recipe servings?
-                // Actually, the `recipe` object in the plan is a COPY.
-                // But the ingredients inside might be the original string values.
-                // Let's assume the ingredient strings are for the BASE recipe, and we need to scale.
-                // But wait, does the `recipe` object in the plan keep track of "base servings"? 
-                // Usually it just has `servings`. If I change it from 4 to 8, the `servings` prop is 8.
-                // But I don't see "baseServings" in the type. 
-                // RISK: If I don't know the base servings, I can't scale.
-                // FIX: I should assume the `ingredients` lists are static and match some "original" count.
-                // However, without a `baseServings` prop, I have to guess or assume `availableRecipes` has the original.
-                // Let's rely on the property `servings` on the recipe object as the "current target".
-                // BUT what is the base?
-                // Let's scan `availableRecipes` if possible?
-                // For now, I will assume the `recipe.ingredients` correspond to the `recipe.servings` IF `recipe` comes from the DB.
-                // BUT in `+page.svelte`, when we add a recipe, we copy it.
-                // When we update servings, we update `servings`.
-                // So, `ingredients` amounts are for... the ORIGINAL servings.
-                // AND we don't have "originalServings" stored on the plan object explicitly unless we look it up.
-                // Wait, if I add a recipe, it has `servings: 4`. Ingredient "1 cup".
-                // I change plan recipe to `servings: 8`. Ingredient is still "1 cup".
-                // So I need to calculate: amount = parse("1 cup") * (8 / 4).
-                // PROBLEM: The plan recipe object has `servings: 8`. It LOST `4`.
-                // UNLESS `recipe` in the plan is referencing the global recipe? No, it's a full object in Firestore.
-                // We might be losing the original servings count if we overwrite it.
-                // Let's check `+page.svelte` handleRecipeSelect.
-                // `newMeals.push({ ...newRecipe, servings: ... })`
-                // It copies everything.
-                // Does `Recipe` type have a stable field?
-                // If not, we technically can't scale correctly unless we assume the *ingredients* are truthful to *some* number.
-                // For this iter, I will assume I CANNOT fetch the original easily without a lookup.
-                // I will add a `baseServings` logic if I can, OR just use `servings` directly if it's not changed?
-                // Ah, effectively, `availableRecipes` (the source of truth types) should be passed in.
-
-                // REVISION: I will NOT pass `availableRecipes` to this function for simplicity first, 
-                // I will blindly sum them up. 
-                // WAIT, user asked: "if units is the same, make merged."
-                // User didn't explicitly ask for scaling, but it's implied by "shopping list".
-                // I will try to infer scaling if I can.
-                // Actually, let's assume `servings` in the plan IS the amount the ingredients are for?
-                // NO, that makes no sense if user changes it.
-                // Let's assume the `recipe.ingredients` strings are static.
-                // If I modify `servings`, I should scale.
-                // I will assume the `servings` in the plan object is the TARGET.
-                // I will assume `4` (standard) or try to find the recipe in a mapped list if passed.
-
-                // Let's update the signature to accept `originalRecipesMap`.
-            });
-        });
-    });
-
-    return Array.from(itemsMap.values());
-};
-
 // Re-defining with map
 export const aggregatedShoppingList = (
     plan: WeeklyPlan,
@@ -184,19 +108,19 @@ export const aggregatedShoppingList = (
         Object.entries(dayPlan.meals).forEach(([type, meals]) => {
             if (type === 'note') return;
 
-            (meals as Recipe[]).forEach(planRecipe => {
+            (meals as any[]).forEach(planRecipe => {
                 if (!planRecipe.ingredients) return;
 
-                // Treat servings as "Quantity" (multiplier)
-                // If plan says "2", it means 2 batches of the recipe.
-                let ratio = planRecipe.servings || 1;
+                // Use quantity property to scale ingredients
+                // quantity represents how many batches of the recipe to make
+                const quantity = planRecipe.quantity || 1;
 
-                planRecipe.ingredients.forEach(ing => {
+                planRecipe.ingredients.forEach((ing: any) => {
                     if (!ing.name) return;
 
                     const amountVal = parseAmount(ing.amount);
                     const amount = amountVal === null ? 0 : amountVal;
-                    const scaledAmount = amount * ratio;
+                    const scaledAmount = amount * quantity;
                     const unit = normalizeUnit(ing.unit || "");
                     const name = ing.name.trim().toLowerCase();
                     const key = `${name}__${unit}`; // Composite key

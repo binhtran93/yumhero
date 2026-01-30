@@ -1,13 +1,13 @@
 <script lang="ts">
     import { Plus, X, Loader } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
-    import type { Recipe, MealType, Note } from "$lib/types";
+    import type { Recipe, MealType, Note, PlannedRecipe } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
     interface Props {
         day: string;
         type: MealType;
-        items: (Recipe | Note)[];
+        items: (PlannedRecipe | Note)[];
         onClick: (e: MouseEvent) => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
@@ -42,7 +42,7 @@
         availableRecipes = [],
     }: Props = $props();
 
-    const getLabel = (item: Recipe | Note) => {
+    const getLabel = (item: PlannedRecipe | Note) => {
         if ("title" in item) return item.title;
         return item.text;
     };
@@ -75,7 +75,7 @@
     const handleDragStart = (
         e: DragEvent,
         index: number,
-        item: Recipe | Note,
+        item: PlannedRecipe | Note,
     ) => {
         // Defer hiding the element so the browser has time to create the ghost image from the visible element
         setTimeout(() => {
@@ -191,16 +191,6 @@
         class="pointer-events-none z-10 flex-1 px-2 pb-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
-            {@const baseRecipe =
-                "id" in item
-                    ? availableRecipes.find((r) => r.id === item.id)
-                    : null}
-            {@const itemServings = "servings" in item ? item.servings || 1 : 1}
-            {@const baseServings = baseRecipe?.servings || itemServings || 1}
-            {@const multiplier = Math.max(
-                1,
-                Math.round(itemServings / baseServings),
-            )}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
@@ -241,33 +231,25 @@
                     >
                         {getLabel(item)}
 
-                        {#if "servings" in item && multiplier > 1}
+                        {#if "quantity" in item && item.quantity > 1}
                             <span class="opacity-60 font-medium ml-1 text-xs"
-                                >x{multiplier}</span
+                                >x{item.quantity}</span
                             >
                         {/if}
                     </p>
                 </div>
 
-                {#if onUpdate && "servings" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
-                    {@const baseRecipe = availableRecipes.find(
-                        (r) => r.id === item.id,
-                    )}
-                    {@const baseServings =
-                        baseRecipe?.servings || item.servings || 1}
-                    {@const currentServings = item.servings || 1}
-                    {@const multiplier = Math.max(
-                        1,
-                        Math.round(currentServings / baseServings),
-                    )}
+                {#if onUpdate && "quantity" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
+                    {@const quantity = item.quantity || 1}
+                    {@const baseServings = item.servings || undefined}
 
                     <WeekSlotMenu
                         recipeId={item.id}
-                        quantity={multiplier}
+                        {quantity}
                         {baseServings}
                         triggerRect={activeTriggerRect}
-                        onUpdate={(newMultiplier: number) =>
-                            onUpdate(i, newMultiplier * baseServings)}
+                        onUpdate={(newQuantity: number) =>
+                            onUpdate(i, newQuantity)}
                         onClose={handleMenuClose}
                         onAction={(action) => {
                             if (onOpenRecipeMode && "id" in item) {

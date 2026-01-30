@@ -1,5 +1,11 @@
 <script lang="ts">
-    import type { MealType, Recipe, WeeklyPlan, DayPlan } from "$lib/types";
+    import type {
+        MealType,
+        Recipe,
+        WeeklyPlan,
+        DayPlan,
+        PlannedRecipe,
+    } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import {
         getWeekPlan,
@@ -222,20 +228,20 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
             // Replace the entire list for this slot with the new selection
-            // Consolidate duplicates by summing servings
-            const newMeals: Recipe[] = [];
+            // Consolidate duplicates by summing quantity
+            const newMeals: PlannedRecipe[] = [];
             recipes.forEach((newRecipe) => {
                 const existingIndex = newMeals.findIndex(
                     (r) => r.id === newRecipe.id,
                 );
                 if (existingIndex !== -1) {
-                    newMeals[existingIndex].servings =
-                        (newMeals[existingIndex].servings || 0) +
-                        (newRecipe.servings || 1);
+                    // Add to quantity if recipe already exists
+                    newMeals[existingIndex].quantity += 1;
                 } else {
+                    // Add new recipe with quantity = 1
                     newMeals.push({
                         ...newRecipe,
-                        servings: newRecipe.servings || 1,
+                        quantity: 1,
                     });
                 }
             });
@@ -263,11 +269,12 @@
         if (dayIndex !== -1) {
             // @ts-ignore
             const item = plan[dayIndex].meals[type][index];
-            if (item && "servings" in item) {
+            if (item && "quantity" in item) {
+                // Update the quantity (number of batches)
                 // @ts-ignore
                 plan[dayIndex].meals[type][index] = {
                     ...item,
-                    servings: newQuantity,
+                    quantity: newQuantity,
                 };
                 saveWeekPlan(weekId, plan);
             }
@@ -452,7 +459,7 @@
             // @ts-ignore
             targetList.push({
                 ...recipe,
-                servings: 1,
+                quantity: 1, // Default quantity when dragging from sidebar
             });
 
             saveWeekPlan(weekId, plan);

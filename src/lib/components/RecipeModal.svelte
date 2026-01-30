@@ -35,14 +35,10 @@
   $effect(() => {
     if (isOpen) {
       const newSelection = new Map<string, { recipe: Recipe; count: number }>();
-      currentRecipes.forEach((recipe) => {
-        // If the recipe is already in the map (duplicate entries in array), add to count
-        // But typically currentRecipes comes from the plan which merges them.
-        // We act as if currentRecipes is the source of truth.
-        // However, plan structure is array of recipes.
-        // Let's assume unique IDs in the passed currentRecipes for now, or handle duplicates.
+      currentRecipes.forEach((recipe: any) => {
+        // currentRecipes now contains PlannedRecipe with quantity property
         const existing = newSelection.get(recipe.id);
-        const count = recipe.servings || 1;
+        const count = recipe.quantity || 1;
         if (existing) {
           existing.count += count;
         } else {
@@ -105,10 +101,11 @@
   const handleDone = () => {
     if (selection.size > 0) {
       // Flatten the map into a list of recipes based on count
+      // Each recipe will be added 'count' times with its original servings
       const result: Recipe[] = [];
       for (const { recipe, count } of selection.values()) {
         for (let i = 0; i < count; i++) {
-          result.push({ ...recipe, servings: 1 });
+          result.push(recipe);
         }
       }
       onSelect(result);
