@@ -28,15 +28,8 @@
     let manualItemUnit = $state("");
 
     // Subscribe to shopping list
-    let shoppingListState = $state({ data: [], loading: true });
-    $effect(() => {
-        const unsubscribe = userShoppingList.subscribe((state) => {
-            shoppingListState = state;
-        });
-        return unsubscribe;
-    });
-
-    let shoppingList = $derived(shoppingListState.data);
+    let shoppingList = $derived($userShoppingList.data);
+    let isLoading = $derived($userShoppingList.loading);
 
     const handleToggleAll = async (itemId: string, checked: boolean) => {
         try {
@@ -136,7 +129,7 @@
 
             <!-- List -->
             <div class="flex-1 overflow-y-auto px-4 pb-4">
-                {#if shoppingListState.loading}
+                {#if isLoading}
                     <div class="flex items-center justify-center h-full">
                         <div
                             class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
