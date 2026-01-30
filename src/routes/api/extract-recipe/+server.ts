@@ -20,7 +20,7 @@ const RecipeSchema = z.object({
     prepTime: z.number().describe('Preparation time in minutes'),
     cookTime: z.number().describe('Cooking time in minutes'),
     totalTime: z.number().describe('Total time in minutes'),
-    servings: z.number().describe('Number of servings'),
+    servings: z.number().nullable().describe('Number of servings'),
     yields: z.string().optional().describe('Yield text, e.g. "4 servings" or "12 cookies"'),
     ingredients: z.array(IngredientSchema),
     instructions: z.array(z.string()).describe('Step-by-step cooking instructions'),
@@ -125,6 +125,10 @@ export async function POST({ request }) {
             CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.
             
             Extract the recipe details as accurately as possible.
+
+            IMPORTANT FOR SERVINGS:
+            If the servings amount is provided as a range (e.g. "4-6"), you MUST calculate the average and return a SINGLE NUMBER (e.g. 5).
+            Do not return a string or a range. Servings must always be a number.
         `;
 
         const { output } = await generateText({

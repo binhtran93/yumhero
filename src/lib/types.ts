@@ -21,7 +21,7 @@ export interface Recipe {
     cookTime: number; // in minutes
     totalTime: number; // in minutes
     tags: string[];
-    servings: number;
+    servings: number | null;
     yields?: string;
     description?: string;
     sourceUrl?: string;

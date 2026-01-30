@@ -128,7 +128,15 @@
                             <div class="w-px h-4 bg-border-default"></div>
                             <div class="flex items-center gap-2">
                                 <Users size={18} class="text-accent-dinner" />
-                                <span>{recipe.servings} servings</span>
+                                <span>
+                                    {#if recipe.servings === null || recipe.servings === undefined}
+                                        Not sure
+                                    {:else}
+                                        {recipe.servings % 1 !== 0
+                                            ? `${Math.floor(recipe.servings)} - ${Math.ceil(recipe.servings)}`
+                                            : recipe.servings} servings
+                                    {/if}
+                                </span>
                             </div>
                             <div class="w-px h-4 bg-border-default"></div>
                             <div class="flex items-center gap-2">
