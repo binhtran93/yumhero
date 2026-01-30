@@ -148,6 +148,11 @@ export async function POST({ request }) {
         // Upload images to R2 if available
         if (recipes && recipes.length > 0) {
             for (const recipe of recipes) {
+                // Sanitize image field (handle literal "null" string from AI)
+                if (recipe.image && (recipe.image === 'null' || recipe.image === 'undefined' || recipe.image.trim() === '')) {
+                    recipe.image = undefined;
+                }
+
                 // Fallback to main image if variant image is missing
                 if (!recipe.image && mainImage) {
                     console.log(`Variant "${recipe.title}" missing image, using main page image.`);
