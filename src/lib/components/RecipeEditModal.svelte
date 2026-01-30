@@ -671,7 +671,7 @@
                 </div>
                 <!-- Save current buffer to state on click is handled by switchVariant which does it before switch -->
                 <div
-                    class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
+                    class="flex items-center gap-2 overflow-x-auto p-2 scrollbar-none"
                 >
                     {#each recipeVariants as variant, i}
                         <div class="relative group shrink-0 max-w-[150px]">
