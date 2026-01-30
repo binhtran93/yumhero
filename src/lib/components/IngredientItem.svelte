@@ -69,30 +69,39 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-        <div
-            class="leading-none {checked
-                ? 'line-through opacity-80'
-                : ''} transition-all flex items-baseline gap-1"
-        >
-            {#if amount && amount > 0}
-                <span
-                    class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
-                >
-                    {formatAmount(amount)}
-                </span>
-            {/if}
-            {#if unit}
-                <span
-                    class="text-sm font-semibold text-app-primary/80 ml-0.5 mr-1 align-baseline"
-                >
-                    {unit}
-                </span>
-            {/if}
-            <span
-                class="text-base font-bold text-app-text capitalize align-baseline"
+        <div class="relative w-fit max-w-full">
+            <div
+                class="leading-tight transition-all flex flex-wrap items-baseline gap-1 {checked
+                    ? 'opacity-50'
+                    : ''}"
             >
-                {name}
-            </span>
+                {#if amount && amount > 0}
+                    <span
+                        class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
+                    >
+                        {formatAmount(amount)}
+                    </span>
+                {/if}
+                {#if unit}
+                    <span
+                        class="text-sm font-semibold text-app-primary/80 align-baseline"
+                    >
+                        {unit}
+                    </span>
+                {/if}
+                <span
+                    class="text-base font-bold text-app-text capitalize align-baseline"
+                >
+                    {name}
+                </span>
+            </div>
+
+            {#if checked}
+                <div
+                    class="absolute top-[55%] left-0 right-0 h-[1.5px] bg-app-text-muted/60 pointer-events-none"
+                    transition:scale={{ duration: 200, start: 0 }}
+                ></div>
+            {/if}
         </div>
 
         {#if notes && !checked}
