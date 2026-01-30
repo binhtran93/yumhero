@@ -160,18 +160,31 @@ const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
     // Calculate what needs to be updated/deleted
     const { toUpdate, toDelete } = syncShoppingListWithPlan(currentList, plan);
 
-    // Perform deletions
-    for (const itemId of toDelete) {
-        await deleteDoc(doc(db, `users/${userId}/shopping_lists`, itemId));
+    // If no changes needed, skip
+    if (toUpdate.length === 0 && toDelete.length === 0) {
+        return;
     }
 
-    // Perform updates
-    for (const update of toUpdate) {
-        await updateDoc(doc(db, `users/${userId}/shopping_lists`, update.id), {
+    // Use batch writes for optimal performance (max 500 operations per batch)
+    const batch = writeBatch(db);
+
+    // Add deletions to batch
+    toDelete.forEach(itemId => {
+        const docRef = doc(db, `users/${userId}/shopping_lists`, itemId);
+        batch.delete(docRef);
+    });
+
+    // Add updates to batch
+    toUpdate.forEach(update => {
+        const docRef = doc(db, `users/${userId}/shopping_lists`, update.id);
+        batch.update(docRef, {
             sources: update.sources,
             updated_at: new Date()
         });
-    }
+    });
+
+    // Commit all operations atomically
+    await batch.commit();
 };
 
 // 3. Shopping List
