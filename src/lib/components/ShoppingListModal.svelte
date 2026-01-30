@@ -5,13 +5,13 @@
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
     import {
         userShoppingList,
-        toggleShoppingItemCheck,
-        toggleAllShoppingItemChecks,
+        toggleShoppingItemCheck as toggleShoppingSourceCheck,
+        toggleAllShoppingItemChecks as toggleAllShoppingItemChecks,
         addManualShoppingItem,
-    } from "$lib/stores/userData";
+        deleteShoppingItem,
+    } from "$lib/stores/shoppingList";
     import { buildShoppingListFromPlan } from "$lib/utils/shopping";
     import type { WeeklyPlan } from "$lib/types";
-    import { addShoppingItem } from "$lib/stores/userData";
 
     interface Props {
         isOpen: boolean;

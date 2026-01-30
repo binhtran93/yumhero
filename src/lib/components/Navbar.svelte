@@ -17,7 +17,7 @@
     import { theme } from "$lib/stores/theme";
     import { sidebarExpanded } from "$lib/stores/ui";
 
-    import { userRecipes } from "$lib/stores/userData";
+    import { userRecipes } from "$lib/stores/recipes";
     import type { Recipe } from "$lib/types";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 

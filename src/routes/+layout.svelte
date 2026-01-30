@@ -2,15 +2,8 @@
 	import "../app.css";
 	import { theme } from "$lib/stores/theme";
 	import { user } from "$lib/stores/auth";
-	import { initializeDefaults } from "$lib/stores/userData";
 	import Navbar from "$lib/components/Navbar.svelte";
 	import ToastContainer from "$lib/components/ToastContainer.svelte";
-
-	$effect(() => {
-		if ($user) {
-			initializeDefaults();
-		}
-	});
 
 	let { children } = $props();
 	let mounted = $state(false);

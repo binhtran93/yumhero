@@ -3,7 +3,7 @@
     import { formatServings } from "$lib/utils/recipe";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
-    import { userTags } from "$lib/stores/userData";
+    import { userTags } from "$lib/stores/tags";
     import { goto } from "$app/navigation";
 
     interface Props {

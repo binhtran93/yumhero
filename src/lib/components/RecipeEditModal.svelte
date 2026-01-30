@@ -14,7 +14,7 @@
     } from "lucide-svelte";
 
     import type { Recipe, Ingredient } from "$lib/types";
-    import { addRecipe } from "$lib/stores/userData";
+    import { addRecipe } from "$lib/stores/recipes";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
     import { toasts } from "$lib/stores/toasts";

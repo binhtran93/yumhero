@@ -7,11 +7,8 @@
         PlannedRecipe,
     } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
-    import {
-        getWeekPlan,
-        saveWeekPlan,
-        userRecipes,
-    } from "$lib/stores/userData";
+    import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
+    import { userRecipes } from "$lib/stores/recipes";
     import { onMount } from "svelte";
     import { fade, scale } from "svelte/transition";
     import { ChevronLeft, ChevronRight } from "lucide-svelte";

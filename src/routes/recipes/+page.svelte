@@ -12,7 +12,8 @@
         FileText,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
-    import { userRecipes, userTags } from "$lib/stores/userData";
+    import { userRecipes } from "$lib/stores/recipes";
+    import { userTags } from "$lib/stores/tags";
 
     let searchQuery = $state("");
     let activeFilter = $state("All");

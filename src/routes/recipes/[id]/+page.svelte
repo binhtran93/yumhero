@@ -1,7 +1,7 @@
 <script lang="ts">
     import { type PageData } from "./$types";
     import { documentStore, type DocumentState } from "$lib/stores/firestore";
-    import { userTags } from "$lib/stores/userData";
+    import { userTags } from "$lib/stores/tags";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
