@@ -223,24 +223,30 @@
                                     <!-- Content -->
                                     <div class="flex-1 min-w-0">
                                         <div
-                                            class="flex flex-wrap items-baseline gap-x-1.5 {isChecked
-                                                ? 'line-through'
+                                            class="flex items-baseline gap-2 {isChecked
+                                                ? 'line-through opacity-40'
                                                 : ''} transition-all"
                                         >
-                                            {#if item.amount > 0}
-                                                <span
-                                                    class="text-base font-black text-app-text"
-                                                >
-                                                    {formatAmount(item.amount)}
-                                                </span>
-                                            {/if}
-                                            {#if item.unit}
-                                                <span
-                                                    class="text-base font-black text-app-text"
-                                                >
-                                                    {item.unit}
-                                                </span>
-                                            {/if}
+                                            <div
+                                                class="flex items-baseline gap-0.5 shrink-0 min-w-fit"
+                                            >
+                                                {#if item.amount > 0}
+                                                    <span
+                                                        class="text-lg font-black text-app-primary tabular-nums"
+                                                    >
+                                                        {formatAmount(
+                                                            item.amount,
+                                                        )}
+                                                    </span>
+                                                {/if}
+                                                {#if item.unit}
+                                                    <span
+                                                        class="text-sm font-black text-app-primary/80 ml-0.5"
+                                                    >
+                                                        {item.unit}
+                                                    </span>
+                                                {/if}
+                                            </div>
                                             <span
                                                 class="text-base font-bold text-app-text capitalize break-words"
                                             >

@@ -72,28 +72,10 @@ const parseFraction = (frac: string): number => {
 export const formatAmount = (num: number | null | undefined): string => {
     if (num === null || num === undefined || num === 0) return "";
 
-    // Round to avoid floating point errors
-    const rounded = Math.round(num * 1000) / 1000;
-
-    // Check for common fractions
-    const decimal = rounded % 1;
-    const whole = Math.floor(rounded);
-
-    const closeTo = (a: number, b: number) => Math.abs(a - b) < 0.01;
-
-    // If very close to a whole number, just return it
-    if (closeTo(decimal, 0) || closeTo(decimal, 1)) {
-        return whole === 0 ? "1" : String(Math.round(rounded));
-    }
-
-    // Only convert 0.5 to 1/2 as requested
-    if (whole === 0 && closeTo(decimal, 0.5)) {
-        return "1/2";
-    }
-
-    // For all other cases (mixed numbers, other fractions), show decimal
-    // Remove trailing zeros
-    return String(rounded);
+    // Round to max 2 decimal places and remove trailing zeros
+    // e.g. 1.222 -> 1.22, 2.500 -> 2.5, 1.000 -> 1
+    const rounded = Math.round(num * 100) / 100;
+    return parseFloat(rounded.toFixed(2)).toString();
 };
 
 

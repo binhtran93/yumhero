@@ -8,6 +8,7 @@
     } from "lucide-svelte";
     import { fade, slide, scale } from "svelte/transition";
     import type { Recipe } from "$lib/types";
+    import { formatAmount } from "$lib/utils/shopping";
 
     interface Props {
         recipe: Recipe;
@@ -163,26 +164,32 @@
                             <!-- Details -->
                             <div class="flex-1 min-w-0">
                                 <div
-                                    class="flex flex-wrap items-baseline gap-x-1.5 {checkedIngredients[
+                                    class="flex items-baseline gap-2 {checkedIngredients[
                                         i
                                     ]
                                         ? 'opacity-30 line-through grayscale'
                                         : ''} transition-all"
                                 >
-                                    {#if ingredient.amount}
-                                        <span
-                                            class="text-lg font-black text-app-text"
-                                        >
-                                            {ingredient.amount}
-                                        </span>
-                                    {/if}
-                                    {#if ingredient.unit}
-                                        <span
-                                            class="text-lg font-black text-app-text"
-                                        >
-                                            {ingredient.unit}
-                                        </span>
-                                    {/if}
+                                    <div
+                                        class="flex items-baseline gap-0.5 shrink-0 min-w-fit"
+                                    >
+                                        {#if ingredient.amount}
+                                            <span
+                                                class="text-xl font-black text-app-primary tabular-nums"
+                                            >
+                                                {formatAmount(
+                                                    ingredient.amount,
+                                                )}
+                                            </span>
+                                        {/if}
+                                        {#if ingredient.unit}
+                                            <span
+                                                class="text-sm font-black text-app-primary/80 ml-0.5"
+                                            >
+                                                {ingredient.unit}
+                                            </span>
+                                        {/if}
+                                    </div>
                                     <span
                                         class="text-lg font-bold text-app-text break-words"
                                     >

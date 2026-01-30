@@ -207,28 +207,40 @@
                             <ul class="space-y-3">
                                 {#each recipe.ingredients as ingredient}
                                     <li
-                                        class="flex items-start gap-3 p-1 -mx-2 rounded-lg"
+                                        class="flex items-baseline gap-2 p-1 -mx-2 rounded-lg"
                                     >
-                                        <Square
-                                            size={16}
-                                            strokeWidth={2.5}
-                                            class="text-app-border-strong shrink-0 mt-1"
-                                        />
+                                        <div
+                                            class="flex items-baseline gap-0.5 shrink-0 min-w-fit"
+                                        >
+                                            {#if ingredient.amount}
+                                                <span
+                                                    class="text-base font-black text-app-primary tabular-nums"
+                                                >
+                                                    {formatAmount(
+                                                        ingredient.amount,
+                                                    )}
+                                                </span>
+                                            {/if}
+                                            {#if ingredient.unit}
+                                                <span
+                                                    class="text-xs font-black text-app-primary/80 ml-0.5"
+                                                >
+                                                    {ingredient.unit}
+                                                </span>
+                                            {/if}
+                                        </div>
                                         <div
                                             class="text-[15px] text-app-text leading-snug flex-1"
                                         >
                                             <span class="font-bold"
-                                                >{formatAmount(
-                                                    ingredient.amount,
-                                                )}
-                                                {ingredient.unit || ""}</span
+                                                >{ingredient.name}</span
                                             >
-                                            <span>{ingredient.name}</span>
                                             {#if ingredient.notes}
                                                 <span
                                                     class="block text-xs text-app-text-muted italic mt-0.5"
-                                                    >{ingredient.notes}</span
                                                 >
+                                                    {ingredient.notes}
+                                                </span>
                                             {/if}
                                         </div>
                                     </li>
