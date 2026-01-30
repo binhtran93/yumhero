@@ -1,27 +1,35 @@
 <script lang="ts">
-    import {
-        CheckSquare,
-        Square,
-        ChevronDown,
-        ChevronRight,
-    } from "lucide-svelte";
+    import { CheckSquare, Square, Eye, EyeOff } from "lucide-svelte";
     import { formatAmount } from "$lib/utils/shopping";
     import type { Recipe, ShoppingListSource } from "$lib/types";
+    import ShoppingItemMenu from "./ShoppingItemMenu.svelte";
 
     interface Props {
         ingredientName: string;
         sources: ShoppingListSource[];
         recipes: Recipe[];
+        isDeleted?: boolean;
+        hasHistory?: boolean;
         onToggleAll: (checked: boolean) => void;
         onToggleSource: (sourceIndex: number, checked: boolean) => void;
+        onDelete?: () => void;
+        onEdit?: () => void;
+        onReset?: () => void;
+        onRestore?: () => void;
     }
 
     let {
         ingredientName,
         sources,
         recipes,
+        isDeleted = false,
+        hasHistory = false,
         onToggleAll,
         onToggleSource,
+        onDelete,
+        onEdit,
+        onReset,
+        onRestore,
     }: Props = $props();
 
     // Capitalize first letter for display
@@ -72,7 +80,9 @@
 
 <!-- Compact Row Layout with High Contrast -->
 <div
-    class="border-b border-app-border/60 last:border-0 hover:bg-app-surface-hover/30 transition-colors"
+    class="border-b border-app-border/60 last:border-0 transition-colors {isDeleted
+        ? 'bg-red-50/50 dark:bg-red-950/10'
+        : 'hover:bg-app-surface-hover/30'}"
 >
     <div class="flex items-center gap-3 py-3.5 px-2">
         <!-- Master Checkbox - Large tap target -->
@@ -115,23 +125,35 @@
         </button>
 
         <!-- Expand/Collapse Icon -->
-        {#if sources.length > 1}
+        {#if sources.length > 1 && !isDeleted}
             <button
                 class="shrink-0 p-1.5 -m-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
                 onclick={() => (isExpanded = !isExpanded)}
                 aria-label={isExpanded ? "Collapse" : "Expand"}
             >
                 {#if isExpanded}
-                    <ChevronDown size={20} strokeWidth={2.5} />
+                    <EyeOff size={18} strokeWidth={2.5} />
                 {:else}
-                    <ChevronRight size={20} strokeWidth={2.5} />
+                    <Eye size={18} strokeWidth={2.5} />
                 {/if}
             </button>
+        {/if}
+
+        <!-- More Menu -->
+        {#if onDelete && onEdit}
+            <ShoppingItemMenu
+                {hasHistory}
+                {isDeleted}
+                {onDelete}
+                {onEdit}
+                {onReset}
+                {onRestore}
+            />
         {/if}
     </div>
 
     <!-- Collapsible Source Details -->
-    {#if isExpanded && sources.length > 1}
+    {#if isExpanded && sources.length > 1 && !isDeleted}
         <div class="pb-3 pl-8 pr-4 space-y-1.5 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button
