@@ -98,6 +98,8 @@
     }}
 />
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
     class="w-56 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
     transition:fade={{ duration: 100 }}
@@ -153,9 +155,11 @@
             </button>
         </div>
     </div>
-    
+
     <!-- Servings Note -->
-    <div class="px-4 pb-2 text-xs text-app-text-muted/70 text-right -mt-1 font-medium italic">
+    <div
+        class="px-4 pb-2 text-xs text-app-text-muted/70 text-right -mt-1 font-medium italic"
+    >
         {#if baseServings}
             {@const min = Math.floor(baseServings) * quantity}
             {@const max = Math.ceil(baseServings) * quantity}
