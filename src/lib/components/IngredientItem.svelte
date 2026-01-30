@@ -90,7 +90,7 @@
                     </span>
                 {/if}
                 <span
-                    class="text-base font-bold text-app-text capitalize align-baseline"
+                    class="text-base font-semibold text-app-text capitalize align-baseline"
                 >
                     {name}
                 </span>
