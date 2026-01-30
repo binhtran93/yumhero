@@ -1,19 +1,12 @@
 <script lang="ts">
-    import {
-        X,
-        Check,
-        Search,
-        Info,
-        ChevronDown,
-        ChevronUp,
-    } from "lucide-svelte";
+    import { X, Check, Search, ChevronRight } from "lucide-svelte";
     import type { WeeklyPlan, Recipe } from "$lib/types";
     import {
         aggregatedShoppingList,
         formatAmount,
         type ShoppingItem,
     } from "$lib/utils/shopping";
-    import { fade, slide } from "svelte/transition";
+    import { fade, slide, scale } from "svelte/transition";
     import { onMount } from "svelte";
 
     interface Props {
@@ -47,10 +40,6 @@
 
     const toggleCheck = (id: string) => {
         checkedItems[id] = !checkedItems[id];
-        // Create a new object for reactivity if needed, but in runes it should work?
-        // Runes for objects are tricky if deep. let's assign.
-        // Actually, just mutate because it's a proxy?
-        // Let's do a re-assignment to be safe for persistence
         checkedItems = { ...checkedItems };
         localStorage.setItem(
             "shoppingListChecked",
@@ -82,222 +71,231 @@
         "Saturday",
         "Sunday",
     ];
+
+    let checkedCount = $derived(
+        Object.values(checkedItems).filter(Boolean).length,
+    );
+    let totalCount = $derived(filteredList.length);
 </script>
 
 {#if isOpen}
     <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
         transition:fade={{ duration: 200 }}
         role="dialog"
         aria-modal="true"
         onclick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}
+        onkeydown={(e) => {
+            if (e.key === "Escape") onClose();
+        }}
+        tabindex="-1"
     >
         <div
-            class="bg-app-bg w-full max-w-2xl h-[85vh] md:h-[80vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col relative"
-            transition:slide={{ axis: "y", duration: 300 }}
+            class="bg-app-surface w-full max-w-lg h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col relative border border-app-border/20"
+            transition:scale={{ start: 0.95, duration: 250 }}
         >
             <!-- Header -->
-            <div
-                class="p-4 md:p-6 border-b border-app-border bg-app-surface shrink-0 flex items-center justify-between"
-            >
-                <div>
-                    <h2
-                        class="text-2xl font-display font-black text-app-primary"
+            <div class="px-6 pt-6 pb-4 shrink-0">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h2
+                            class="text-2xl font-display font-black text-app-text"
+                        >
+                            Shopping List
+                        </h2>
+                        <p class="text-sm text-app-text-muted mt-1">
+                            {totalCount - checkedCount} of {totalCount} items
+                        </p>
+                    </div>
+                    <button
+                        class="p-2 -mr-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
+                        onclick={onClose}
                     >
-                        Shopping List
-                    </h2>
-                    <p class="text-xs text-app-text-muted font-bold mt-1">
-                        {filteredList.filter((i) => !checkedItems[i.id]).length}
-                        items remaining
-                    </p>
+                        <X size={20} />
+                    </button>
                 </div>
-                <button
-                    class="p-2 hover:bg-app-surface-hover rounded-full text-app-text-muted hover:text-app-text transition-colors"
-                    onclick={onClose}
-                >
-                    <X size={24} />
-                </button>
-            </div>
 
-            <!-- Controls -->
-            <div
-                class="px-4 py-3 border-b border-app-border bg-app-bg shrink-0 space-y-3"
-            >
                 <!-- Day Filter -->
                 <div
-                    class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"
+                    class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1"
                 >
                     <button
-                        class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border {selectedDay ===
+                        class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all {selectedDay ===
                         'all'
-                            ? 'bg-app-primary text-white border-app-primary'
-                            : 'bg-app-surface text-app-text-muted border-app-border hover:bg-app-surface-hover'}"
+                            ? 'bg-app-primary text-white shadow-md'
+                            : 'bg-app-bg text-app-text-muted hover:bg-app-surface-hover'}"
                         onclick={() => (selectedDay = "all")}
                     >
                         All Week
                     </button>
                     {#each days as day}
                         <button
-                            class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border {selectedDay ===
+                            class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all {selectedDay ===
                             day
-                                ? 'bg-app-primary text-white border-app-primary'
-                                : 'bg-app-surface text-app-text-muted border-app-border hover:bg-app-surface-hover'}"
+                                ? 'bg-app-primary text-white shadow-md'
+                                : 'bg-app-bg text-app-text-muted hover:bg-app-surface-hover'}"
                             onclick={() => (selectedDay = day)}
                         >
-                            {day}
+                            {day.slice(0, 3)}
                         </button>
                     {/each}
                 </div>
-
-                <!-- Search -->
-                <!-- Ideally search is less important if list is small, but good to have -->
             </div>
 
             <!-- List -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+            <div class="flex-1 overflow-y-auto px-6 pb-6">
                 {#if filteredList.length === 0}
                     <div
-                        class="flex flex-col items-center justify-center h-full text-app-text-muted py-10 opacity-60"
+                        class="flex flex-col items-center justify-center h-full text-center opacity-60 py-16"
                     >
-                        <div class="bg-app-surface-hover p-4 rounded-full mb-3">
-                            <Search size={32} />
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-app-bg flex items-center justify-center mb-4"
+                        >
+                            <Search size={28} class="text-app-text-muted" />
                         </div>
-                        <p class="font-bold">No ingredients found</p>
-                        <p class="text-xs">
-                            Add recipes to your plan to see items here
+                        <p class="font-bold text-app-text mb-1">
+                            No ingredients
+                        </p>
+                        <p class="text-xs text-app-text-muted max-w-[200px]">
+                            Add recipes to your plan to see shopping items
                         </p>
                     </div>
                 {:else}
-                    {#each filteredList as item (item.id)}
-                        {@const isChecked = checkedItems[item.id] || false}
-                        <div
-                            class="group bg-app-surface border border-app-border rounded-xl transition-all duration-200 overflow-hidden {isChecked
-                                ? 'opacity-60 bg-app-bg'
-                                : 'hover:border-app-primary/30 shadow-sm'}"
-                        >
-                            <!-- Main Row -->
-                            <div class="flex items-center p-3 gap-3">
-                                <!-- Checkbox -->
-                                <button
-                                    class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all {isChecked
-                                        ? 'bg-green-500 border-green-500 text-white'
-                                        : 'border-app-text-muted/40 hover:border-app-primary text-transparent'}"
-                                    onclick={() => toggleCheck(item.id)}
-                                >
-                                    <Check size={14} strokeWidth={4} />
-                                </button>
-
-                                <!-- Content -->
+                    <div class="space-y-1">
+                        {#each filteredList as item (item.id)}
+                            {@const isChecked = checkedItems[item.id] || false}
+                            {@const isExpanded =
+                                expandedItems[item.id] || false}
+                            <div
+                                class="group rounded-xl transition-all duration-200 overflow-hidden"
+                            >
+                                <!-- Main Row -->
                                 <div
-                                    class="flex-1 min-w-0 flex flex-col justify-center"
+                                    class="w-full flex items-center gap-3 p-4 rounded-xl transition-all cursor-pointer {isChecked
+                                        ? 'bg-app-bg/50 opacity-60'
+                                        : 'bg-app-bg hover:bg-app-surface-hover'}"
                                     onclick={() => toggleCheck(item.id)}
+                                    role="button"
+                                    tabindex="0"
+                                    onkeydown={(e) => {
+                                        if (
+                                            e.key === "Enter" ||
+                                            e.key === " "
+                                        ) {
+                                            e.preventDefault();
+                                            toggleCheck(item.id);
+                                        }
+                                    }}
                                 >
-                                    <div class="flex items-baseline gap-1.5">
-                                        <span
-                                            class="font-bold text-sm text-app-text {isChecked
-                                                ? 'line-through text-app-text-muted'
-                                                : ''} capitalize"
+                                    <!-- Checkbox -->
+                                    <div
+                                        class="w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all {isChecked
+                                            ? 'bg-green-500 border-green-500 scale-105'
+                                            : 'border-app-text-muted/30 group-hover:border-app-primary/50'}"
+                                    >
+                                        {#if isChecked}
+                                            <Check
+                                                size={12}
+                                                strokeWidth={3}
+                                                class="text-white"
+                                            />
+                                        {/if}
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <p
+                                            class="font-semibold text-sm text-app-text {isChecked
+                                                ? 'line-through'
+                                                : ''} capitalize leading-tight"
                                         >
                                             {item.name}
-                                        </span>
+                                        </p>
+                                        <p
+                                            class="text-xs text-app-text-muted mt-0.5 font-medium"
+                                        >
+                                            {formatAmount(item.amount)}
+                                            {item.unit}
+                                        </p>
                                     </div>
-                                    <span
-                                        class="text-xs text-app-text-muted font-medium"
-                                    >
-                                        {formatAmount(item.amount)}
-                                        {item.unit}
-                                    </span>
-                                </div>
 
-                                <!-- View Details Action -->
-                                <button
-                                    class="p-2 text-app-text-muted hover:text-app-primary hover:bg-app-surface-hover rounded-lg transition-colors"
-                                    onclick={(e) => {
-                                        e.stopPropagation();
-                                        toggleExpand(item.id);
-                                    }}
-                                    aria-label="View sources"
-                                >
-                                    {#if expandedItems[item.id]}
-                                        <ChevronUp size={18} />
-                                    {:else}
-                                        <Info size={18} />
-                                    {/if}
-                                </button>
-                            </div>
-
-                            <!-- Expanded Details -->
-                            {#if expandedItems[item.id]}
-                                <div
-                                    class="bg-app-surface-hover/50 border-t border-app-border p-3"
-                                    transition:slide={{ duration: 200 }}
-                                >
-                                    <h4
-                                        class="text-[10px] uppercase tracking-wider font-bold text-app-text-muted mb-2"
-                                    >
-                                        Used in:
-                                    </h4>
-                                    <ul class="space-y-1.5">
-                                        {#each item.sources as source}
-                                            <li
-                                                class="flex items-center justify-between text-xs"
+                                    <!-- Sources Badge -->
+                                    {#if item.sources.length > 1}
+                                        <div
+                                            class="px-2 py-1 bg-app-primary/10 rounded-lg"
+                                        >
+                                            <span
+                                                class="text-[10px] font-bold text-app-primary"
                                             >
-                                                <div
-                                                    class="flex items-center gap-2"
-                                                >
-                                                    <span
-                                                        class="w-1.5 h-1.5 rounded-full bg-app-primary/50"
-                                                    ></span>
-                                                    <span
-                                                        class="font-medium text-app-text"
-                                                        >{source.recipeName}</span
-                                                    >
-                                                    <span
-                                                        class="text-app-text-muted"
-                                                        >({source.day})</span
-                                                    >
-                                                </div>
-                                                <span
-                                                    class="font-mono text-app-text-muted opacity-80"
-                                                >
-                                                    {formatAmount(
-                                                        source.originalAmount,
-                                                    )}
-                                                </span>
-                                            </li>
-                                        {/each}
-                                    </ul>
-                                </div>
-                            {/if}
-                        </div>
-                    {/each}
-                {/if}
-            </div>
+                                                {item.sources.length}×
+                                            </span>
+                                        </div>
+                                    {/if}
 
-            <!-- Footer -->
-            <div
-                class="p-4 border-t border-app-border bg-app-surface shrink-0 flex justify-between items-center text-xs"
-            >
-                {#if Object.values(checkedItems).filter(Boolean).length > 0}
-                    <button
-                        class="text-red-500 font-bold hover:underline"
-                        onclick={() => {
-                            if (confirm("Uncheck all items?")) {
-                                checkedItems = {};
-                                localStorage.removeItem("shoppingListChecked");
-                            }
-                        }}
-                    >
-                        Reset Checked
-                    </button>
-                {:else}
-                    <div></div>
+                                    <!-- Expand Button -->
+                                    <button
+                                        class="p-1.5 text-app-text-muted hover:text-app-primary rounded-lg transition-all {isExpanded
+                                            ? 'rotate-90'
+                                            : ''}"
+                                        onclick={(e) => {
+                                            e.stopPropagation();
+                                            toggleExpand(item.id);
+                                        }}
+                                        aria-label="View sources"
+                                    >
+                                        <ChevronRight size={16} />
+                                    </button>
+                                </div>
+
+                                <!-- Expanded Details -->
+                                {#if isExpanded}
+                                    <div
+                                        class="bg-app-surface-hover/30 mx-4 mb-2 rounded-xl p-3 border-l-2 border-app-primary/30"
+                                        transition:slide={{ duration: 200 }}
+                                    >
+                                        <h4
+                                            class="text-[10px] uppercase tracking-widest font-bold text-app-text-muted mb-2 opacity-60"
+                                        >
+                                            Used in {item.sources.length}
+                                            {item.sources.length === 1
+                                                ? "recipe"
+                                                : "recipes"}
+                                        </h4>
+                                        <ul class="space-y-2">
+                                            {#each item.sources as source}
+                                                <li
+                                                    class="flex items-start justify-between gap-2"
+                                                >
+                                                    <div class="flex-1 min-w-0">
+                                                        <p
+                                                            class="font-medium text-xs text-app-text leading-tight truncate"
+                                                        >
+                                                            {source.recipeName}
+                                                        </p>
+                                                        <p
+                                                            class="text-[10px] text-app-text-muted mt-0.5"
+                                                        >
+                                                            {source.day} • {source.mealType}
+                                                        </p>
+                                                    </div>
+                                                    <span
+                                                        class="text-xs font-mono text-app-text-muted shrink-0"
+                                                    >
+                                                        {formatAmount(
+                                                            source.originalAmount,
+                                                        )}
+                                                    </span>
+                                                </li>
+                                            {/each}
+                                        </ul>
+                                    </div>
+                                {/if}
+                            </div>
+                        {/each}
+                    </div>
                 {/if}
-                <span class="text-app-text-muted">
-                    Displaying {filteredList.length} items
-                </span>
             </div>
         </div>
     </div>

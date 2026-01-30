@@ -70,22 +70,38 @@ const parseFraction = (frac: string): number => {
 export const formatAmount = (num: number): string => {
     if (num === 0) return "";
 
-    // Check for common fractions
-    const decimal = num % 1;
-    const whole = Math.floor(num);
+    // Round to avoid floating point errors
+    const rounded = Math.round(num * 1000) / 1000;
 
-    const closeTo = (a: number, b: number) => Math.abs(a - b) < 0.05;
+    // Check for common fractions
+    const decimal = rounded % 1;
+    const whole = Math.floor(rounded);
+
+    const closeTo = (a: number, b: number) => Math.abs(a - b) < 0.01;
+
+    // If very close to a whole number, just return it
+    if (closeTo(decimal, 0) || closeTo(decimal, 1)) {
+        return whole === 0 ? "1" : String(whole);
+    }
 
     let fracStr = "";
-    if (closeTo(decimal, 0.25)) fracStr = "1/4";
+    if (closeTo(decimal, 0.125)) fracStr = "1/8";
+    else if (closeTo(decimal, 0.25)) fracStr = "1/4";
     else if (closeTo(decimal, 0.33)) fracStr = "1/3";
+    else if (closeTo(decimal, 0.375)) fracStr = "3/8";
     else if (closeTo(decimal, 0.5)) fracStr = "1/2";
+    else if (closeTo(decimal, 0.625)) fracStr = "5/8";
     else if (closeTo(decimal, 0.66)) fracStr = "2/3";
     else if (closeTo(decimal, 0.75)) fracStr = "3/4";
-    else if (decimal > 0.05) fracStr = decimal.toFixed(2).replace(/\.00$/, "");
+    else if (closeTo(decimal, 0.875)) fracStr = "7/8";
+    else {
+        // For non-standard fractions, show decimal
+        const cleanDecimal = decimal.toFixed(2).replace(/\.?0+$/, "");
+        if (whole > 0) return `${whole}.${cleanDecimal.split('.')[1] || '0'}`;
+        return cleanDecimal;
+    }
 
-    if (whole > 0 && fracStr) return `${whole} ${fracStr}`;
-    if (whole > 0) return `${whole}`;
+    if (whole > 0) return `${whole} ${fracStr}`;
     return fracStr;
 };
 
