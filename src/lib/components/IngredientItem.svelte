@@ -76,14 +76,14 @@
         >
             {#if amount && amount > 0}
                 <span
-                    class="text-lg font-black text-app-primary tabular-nums align-baseline"
+                    class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
                 >
                     {formatAmount(amount)}
                 </span>
             {/if}
             {#if unit}
                 <span
-                    class="text-sm font-black text-app-primary/80 ml-0.5 mr-1 align-baseline"
+                    class="text-sm font-semibold text-app-primary/80 ml-0.5 mr-1 align-baseline"
                 >
                     {unit}
                 </span>

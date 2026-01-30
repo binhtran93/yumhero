@@ -143,7 +143,7 @@
             </div>
 
             <!-- List -->
-            <div class="flex-1 overflow-y-auto px-6 pb-6">
+            <div class="flex-1 overflow-y-auto px-2 md:px-4 pb-2 md:pb-4">
                 {#if filteredList.length === 0}
                     <div
                         class="flex flex-col items-center justify-center h-full text-center py-16"
@@ -160,7 +160,7 @@
                             No ingredients found
                         </p>
                         <p
-                            class="text-sm font-bold text-app-text-muted max-w-[240px]"
+                            class="text-sm font-bold text-app-text-muted max-w-60"
                         >
                             Try changing your search or adding recipes to your
                             plan.
