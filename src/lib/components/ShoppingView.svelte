@@ -77,7 +77,7 @@
         <div class="max-w-5xl mx-auto px-4 py-8">
             <!-- Summary Header -->
             <div
-                class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6"
+                class="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-6"
             >
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-2">
@@ -91,31 +91,6 @@
                         >
                             {recipe.title}
                         </h2>
-                    </div>
-                    <p class="text-app-text-muted font-bold ml-13">
-                        {totalItems} items to collect
-                    </p>
-                </div>
-
-                <!-- Progress Indicator -->
-                <div
-                    class="w-full md:w-64 bg-app-surface rounded-2xl p-4 border border-app-border shadow-sm"
-                >
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-bold text-app-text"
-                            >Progress</span
-                        >
-                        <span class="text-sm font-bold text-app-primary"
-                            >{completedCount}/{totalItems}</span
-                        >
-                    </div>
-                    <div
-                        class="h-2 w-full bg-app-border rounded-full overflow-hidden"
-                    >
-                        <div
-                            class="h-full bg-app-primary transition-all duration-500 ease-out"
-                            style="width: {progress}%"
-                        ></div>
                     </div>
                 </div>
             </div>
