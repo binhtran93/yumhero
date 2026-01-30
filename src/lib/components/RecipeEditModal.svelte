@@ -1,6 +1,7 @@
 <script lang="ts">
     import Modal from "$lib/components/Modal.svelte";
     import ImportUrlModal from "$lib/components/ImportUrlModal.svelte";
+    import PasteRecipeModal from "$lib/components/PasteRecipeModal.svelte";
     import {
         X,
         ChefHat,
@@ -15,7 +16,6 @@
         Globe,
         FileText,
     } from "lucide-svelte";
-    // ... existing imports ... (keeping them as context in replacement if needed, but tool replaces exact block)
 
     import type { Recipe, Ingredient } from "$lib/types";
     import { addRecipe } from "$lib/stores/userData";
@@ -32,9 +32,15 @@
         isOpen: boolean;
         onClose: () => void;
         initialRecipe?: Partial<Recipe>;
+        initialAction?: "import" | "paste" | null;
     }
 
-    let { isOpen, onClose, initialRecipe }: Props = $props();
+    let {
+        isOpen,
+        onClose,
+        initialRecipe,
+        initialAction = null,
+    }: Props = $props();
 
     // Form State
     let title = $state("");
@@ -62,6 +68,7 @@
 
     // Import Modal State
     let showImportModal = $state(false);
+    let showPasteModal = $state(false);
 
     let fileInput: HTMLInputElement;
 
@@ -71,6 +78,14 @@
             resetForm();
             if (initialRecipe) {
                 populateForm(initialRecipe);
+                showAdvanced = true;
+            }
+
+            // Handle initial actions
+            if (initialAction === "import") {
+                showImportModal = true;
+            } else if (initialAction === "paste") {
+                showPasteModal = true;
             }
         }
     });
@@ -278,6 +293,34 @@
             throw error; // Re-throw to be handled by ImportUrlModal
         }
     };
+
+    const handlePasteText = async (text: string) => {
+        try {
+            const response = await fetch("/api/extract-recipe", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    errorData.error || "Failed to parse recipe text",
+                );
+            }
+
+            const { recipe } = await response.json();
+
+            // Populate form with extracted recipe data
+            populateForm(recipe);
+            showAdvanced = true;
+        } catch (error: any) {
+            console.error("Paste error:", error);
+            throw error;
+        }
+    };
 </script>
 
 {#snippet headerContent()}
@@ -318,15 +361,9 @@
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         <!-- Import Actions -->
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3">
             <button
-                onclick={() => (showImportModal = true)}
-                class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
-            >
-                <Globe size={18} class="text-app-primary" />
-                <span>Import from web</span>
-            </button>
-            <button
+                onclick={() => (showPasteModal = true)}
                 class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
             >
                 <FileText size={18} class="text-app-primary" />
@@ -604,4 +641,11 @@
     isOpen={showImportModal}
     onClose={() => (showImportModal = false)}
     onImport={handleImportFromUrl}
+/>
+
+<!-- Paste Recipe Modal -->
+<PasteRecipeModal
+    isOpen={showPasteModal}
+    onClose={() => (showPasteModal = false)}
+    onImport={handlePasteText}
 />

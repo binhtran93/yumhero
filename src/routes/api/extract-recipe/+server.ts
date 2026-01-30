@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 // Define the schema for the recipe using Zod
 const IngredientSchema = z.object({
-    amount: z.union([z.string(), z.number()]).transform(val => parseAmount(val)).describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
+    amount: z.union([z.string(), z.number()]).transform(val => typeof val === 'number' ? val : parseAmount(val)).describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
     unit: z.string().nullable().optional().describe('The unit of measurement. Use standard abbreviations (e.g. tbsp, tsp, g, oz) or the full unit name.'),
     name: z.string().describe('The name of the ingredient'),
     notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"')
@@ -41,61 +41,69 @@ export async function POST({ request }) {
     });
 
     try {
-        const { url } = await request.json();
+        const { url, text: pastedText } = await request.json();
 
-        if (!url) {
-            return json({ error: 'URL is required' }, { status: 400 });
+        if (!url && !pastedText) {
+            return json({ error: 'URL or text is required' }, { status: 400 });
         }
 
-        // Use the robust scraper to get text content and raw JSON-LD
-        const { text, jsonLds, mainImage } = await scrapeText(url);
+        let contentToProcess = '';
+        let contentType = '';
 
-        let contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
-        if (mainImage) {
-            contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
-        }
-        let contentType = 'web page text content';
+        if (url) {
+            // Use the robust scraper to get text content and raw JSON-LD
+            const { text, jsonLds, mainImage } = await scrapeText(url);
 
-        // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
-        if (jsonLds && jsonLds.length > 0) {
-            for (const rawJson of jsonLds) {
-                try {
-                    const json = JSON.parse(rawJson);
+            contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
+            if (mainImage) {
+                contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
+            }
+            contentType = 'web page text content';
 
-                    // Helper to check object type
-                    const isRecipe = (obj: any): boolean => {
-                        if (!obj || typeof obj !== 'object') return false;
-                        const type = obj['@type'];
-                        if (Array.isArray(type)) {
-                            return type.includes('Recipe');
+            // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
+            if (jsonLds && jsonLds.length > 0) {
+                for (const rawJson of jsonLds) {
+                    try {
+                        const json = JSON.parse(rawJson);
+
+                        // Helper to check object type
+                        const isRecipe = (obj: any): boolean => {
+                            if (!obj || typeof obj !== 'object') return false;
+                            const type = obj['@type'];
+                            if (Array.isArray(type)) {
+                                return type.includes('Recipe');
+                            }
+                            return type === 'Recipe';
+                        };
+
+                        let recipeData = null;
+
+                        if (Array.isArray(json)) {
+                            recipeData = json.find(isRecipe);
+                        } else if (isRecipe(json)) {
+                            recipeData = json;
+                        } else if (json['@graph'] && Array.isArray(json['@graph'])) {
+                            recipeData = json['@graph'].find(isRecipe);
                         }
-                        return type === 'Recipe';
-                    };
 
-                    let recipeData = null;
-
-                    if (Array.isArray(json)) {
-                        recipeData = json.find(isRecipe);
-                    } else if (isRecipe(json)) {
-                        recipeData = json;
-                    } else if (json['@graph'] && Array.isArray(json['@graph'])) {
-                        recipeData = json['@graph'].find(isRecipe);
-                    }
-
-                    if (recipeData) {
-                        console.log('Found valid JSON-LD Recipe, optimizing context.');
-                        // Inject the main image if one wasn't found in the JSON-LD or to reinforce it
-                        if (mainImage && !recipeData.image) {
-                            recipeData.image = mainImage;
+                        if (recipeData) {
+                            console.log('Found valid JSON-LD Recipe, optimizing context.');
+                            // Inject the main image if one wasn't found in the JSON-LD or to reinforce it
+                            if (mainImage && !recipeData.image) {
+                                recipeData.image = mainImage;
+                            }
+                            contentToProcess = JSON.stringify(recipeData);
+                            contentType = 'structured JSON-LD data';
+                            break; // Found one, stop searching
                         }
-                        contentToProcess = JSON.stringify(recipeData);
-                        contentType = 'structured JSON-LD data';
-                        break; // Found one, stop searching
+                    } catch (e) {
+                        // Start parsing next script
                     }
-                } catch (e) {
-                    // Start parsing next script
                 }
             }
+        } else {
+            contentToProcess = pastedText;
+            contentType = 'pasted recipe text';
         }
 
         const prompt = `

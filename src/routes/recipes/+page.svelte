@@ -3,7 +3,14 @@
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import RecipeFilterDropdown from "$lib/components/RecipeFilterDropdown.svelte";
-    import { Search, Plus, Loader2, ChevronDown, Link } from "lucide-svelte";
+    import {
+        Search,
+        Plus,
+        Loader2,
+        ChevronDown,
+        Link,
+        FileText,
+    } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { userRecipes, userTags } from "$lib/stores/userData";
 
@@ -11,7 +18,7 @@
     let activeFilter = $state("All");
     let showAddModal = $state(false);
     let showAddDropdown = $state(false);
-    let initiallyShowAdvanced = $state(false);
+    let creationAction = $state<"import" | "paste" | null>(null);
 
     // Reactive filtering
     let filteredRecipes = $derived(
@@ -57,7 +64,7 @@
                 <button
                     onclick={() => {
                         showAddModal = true;
-                        initiallyShowAdvanced = false;
+                        creationAction = null;
                         showAddDropdown = false;
                     }}
                     class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/20 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
@@ -87,7 +94,7 @@
                     <button
                         onclick={() => {
                             showAddDropdown = false;
-                            initiallyShowAdvanced = false;
+                            creationAction = null;
                             showAddModal = true;
                         }}
                         class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
@@ -98,13 +105,24 @@
                     <button
                         onclick={() => {
                             showAddDropdown = false;
-                            initiallyShowAdvanced = true;
+                            creationAction = "import";
                             showAddModal = true;
                         }}
                         class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
                     >
                         <Link size={16} />
                         Import from URL
+                    </button>
+                    <button
+                        onclick={() => {
+                            showAddDropdown = false;
+                            creationAction = "paste";
+                            showAddModal = true;
+                        }}
+                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                    >
+                        <FileText size={16} />
+                        Paste Recipe Text
                     </button>
                 </div>
 
@@ -122,7 +140,7 @@
 <RecipeEditModal
     isOpen={showAddModal}
     onClose={() => (showAddModal = false)}
-    initialShowAdvanced={initiallyShowAdvanced}
+    initialAction={creationAction}
 />
 
 <div class="h-full flex flex-col overflow-hidden relative">
