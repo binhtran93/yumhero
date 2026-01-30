@@ -174,14 +174,9 @@ export const generateShoppingList = (
 // Re-defining with map
 export const aggregatedShoppingList = (
     plan: WeeklyPlan,
-    allRecipes: Recipe[],
     filterDay: string | "all"
 ): ShoppingItem[] => {
     const itemsMap = new Map<string, ShoppingItem>();
-
-    // Create map of original recipes for base serving lookup
-    const originalRecipeMap = new Map<string, Recipe>();
-    allRecipes.forEach(r => originalRecipeMap.set(r.id, r));
 
     plan.forEach(dayPlan => {
         if (filterDay !== "all" && dayPlan.day !== filterDay) return;
@@ -192,14 +187,9 @@ export const aggregatedShoppingList = (
             (meals as Recipe[]).forEach(planRecipe => {
                 if (!planRecipe.ingredients) return;
 
-                const original = originalRecipeMap.get(planRecipe.id);
-                // If we can't find original, assume ratio is 1 (or assume planRecipe.servings matches ingredients)
-                // If we find original, ratio = planRecipe.servings / original.servings
-
-                let ratio = 1;
-                if (original && original.servings && planRecipe.servings) {
-                    ratio = planRecipe.servings / original.servings;
-                }
+                // Treat servings as "Quantity" (multiplier)
+                // If plan says "2", it means 2 batches of the recipe.
+                let ratio = planRecipe.servings || 1;
 
                 planRecipe.ingredients.forEach(ing => {
                     if (!ing.name) return;

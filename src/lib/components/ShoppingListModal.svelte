@@ -53,9 +53,7 @@
         expandedItems = { ...expandedItems };
     };
 
-    let shoppingList = $derived(
-        aggregatedShoppingList(plan, availableRecipes, selectedDay),
-    );
+    let shoppingList = $derived(aggregatedShoppingList(plan, selectedDay));
 
     let filteredList = $derived(
         shoppingList.filter((item) => {

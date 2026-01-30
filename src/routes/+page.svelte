@@ -452,7 +452,7 @@
             // @ts-ignore
             targetList.push({
                 ...recipe,
-                servings: recipe.servings || 1,
+                servings: 1,
             });
 
             saveWeekPlan(weekId, plan);
