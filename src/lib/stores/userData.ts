@@ -152,16 +152,47 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
 
 // Sync shopping list with meal plan
 const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
-    const { syncShoppingListWithPlan } = await import('$lib/utils/shopping');
+    const { syncShoppingListWithPlan, buildShoppingListFromPlan } = await import('$lib/utils/shopping');
 
     // Get current shopping list
     const currentList = get(userShoppingList).data;
 
-    // Calculate what needs to be updated/deleted
+    // Build expected items from plan
+    const planItems = buildShoppingListFromPlan(plan, []);
+
+    // Calculate what needs to be updated/deleted based on plan
     const { toUpdate, toDelete } = syncShoppingListWithPlan(currentList, plan);
 
+    // Find items that need to be added (exist in plan but not in shopping list)
+    const toAdd: Array<{
+        ingredient_name: string;
+        sources: Array<{ recipe_id: string; amount: number; unit: string | null }>;
+    }> = [];
+
+    planItems.forEach(planItem => {
+        const existing = currentList.find(item => item.ingredient_name === planItem.ingredient_name);
+
+        if (!existing) {
+            // Completely new ingredient
+            toAdd.push(planItem);
+        } else {
+            // Check if we need to add any new sources
+            const newSources = planItem.sources.filter(planSource =>
+                !existing.sources.some(existingSource => existingSource.recipe_id === planSource.recipe_id)
+            );
+
+            if (newSources.length > 0) {
+                // Need to add these sources to existing ingredient
+                toUpdate.push({
+                    id: existing.id,
+                    sources: [...existing.sources, ...newSources.map(s => ({ ...s, is_checked: false }))]
+                });
+            }
+        }
+    });
+
     // If no changes needed, skip
-    if (toUpdate.length === 0 && toDelete.length === 0) {
+    if (toUpdate.length === 0 && toDelete.length === 0 && toAdd.length === 0) {
         return;
     }
 
@@ -179,6 +210,19 @@ const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
         const docRef = doc(db, `users/${userId}/shopping_lists`, update.id);
         batch.update(docRef, {
             sources: update.sources,
+            updated_at: new Date()
+        });
+    });
+
+    // Add new items to batch
+    toAdd.forEach(item => {
+        const docRef = doc(collection(db, `users/${userId}/shopping_lists`));
+        batch.set(docRef, {
+            id: docRef.id,
+            ingredient_name: item.ingredient_name,
+            sources: item.sources.map(s => ({ ...s, is_checked: false })),
+            user_id: userId,
+            created_at: new Date(),
             updated_at: new Date()
         });
     });

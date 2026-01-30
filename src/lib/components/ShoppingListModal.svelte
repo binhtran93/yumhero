@@ -78,61 +78,8 @@
         }
     };
 
-    // Auto-generate shopping list from plan
-    $effect(() => {
-        if (isOpen && plan && availableRecipes.length > 0) {
-            const planItems = buildShoppingListFromPlan(plan, availableRecipes);
-
-            // Add items from plan that don't exist in shopping list
-            planItems.forEach(async (planItem) => {
-                const existing = shoppingList.find(
-                    (item) => item.ingredient_name === planItem.ingredient_name,
-                );
-
-                if (!existing) {
-                    // Add all sources from the plan
-                    for (const source of planItem.sources) {
-                        try {
-                            await addShoppingItem(planItem.ingredient_name, {
-                                recipe_id: source.recipe_id,
-                                amount: source.amount,
-                                unit: source.unit,
-                            });
-                        } catch (error) {
-                            console.error(
-                                "Failed to add shopping item:",
-                                error,
-                            );
-                        }
-                    }
-                } else {
-                    // Check if any sources are missing and add them
-                    for (const planSource of planItem.sources) {
-                        const sourceExists = existing.sources.some(
-                            (s) => s.recipe_id === planSource.recipe_id,
-                        );
-                        if (!sourceExists) {
-                            try {
-                                await addShoppingItem(
-                                    planItem.ingredient_name,
-                                    {
-                                        recipe_id: planSource.recipe_id,
-                                        amount: planSource.amount,
-                                        unit: planSource.unit,
-                                    },
-                                );
-                            } catch (error) {
-                                console.error(
-                                    "Failed to add shopping source:",
-                                    error,
-                                );
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    });
+    // Note: Shopping list is automatically populated via the sync logic in saveWeekPlan
+    // No need to auto-generate here - it would cause race conditions and duplicates
 </script>
 
 {#if isOpen}
