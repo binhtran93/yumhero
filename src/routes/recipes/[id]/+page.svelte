@@ -6,6 +6,7 @@
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
     import { formatAmount } from "$lib/utils/shopping";
+    import { formatServings } from "$lib/utils/recipe";
     import Header from "$lib/components/Header.svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import {
@@ -129,13 +130,7 @@
                             <div class="flex items-center gap-2">
                                 <Users size={18} class="text-accent-dinner" />
                                 <span>
-                                    {#if recipe.servings === null || recipe.servings === undefined}
-                                        Not sure
-                                    {:else}
-                                        {recipe.servings % 1 !== 0
-                                            ? `${Math.floor(recipe.servings)} - ${Math.ceil(recipe.servings)}`
-                                            : recipe.servings} servings
-                                    {/if}
+                                    {formatServings(recipe.servings)} servings
                                 </span>
                             </div>
                             <div class="w-px h-4 bg-border-default"></div>

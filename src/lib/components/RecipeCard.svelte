@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Clock, Users } from "lucide-svelte";
+    import { formatServings } from "$lib/utils/recipe";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
     import { userTags } from "$lib/stores/userData";
@@ -83,7 +84,7 @@
             </div>
             <div class="flex items-center gap-1">
                 <Users size={12} class="md:w-3.5 md:h-3.5 text-accent-dinner" />
-                <span>{servings} ppl</span>
+                <span>{formatServings(servings)} ppl</span>
             </div>
         </div>
     </div>
