@@ -150,7 +150,8 @@
                         </p>
                     </div>
                 {:else}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Single column list for better readability -->
+                    <div class="max-w-2xl mx-auto">
                         {#each shoppingList as item (item.id)}
                             <GroupedIngredientCard
                                 ingredientName={item.ingredient_name}
