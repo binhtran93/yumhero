@@ -8,6 +8,7 @@
     } from "$lib/utils/shopping";
     import { fade, slide, scale } from "svelte/transition";
     import { onMount } from "svelte";
+    import IngredientItem from "./IngredientItem.svelte";
 
     interface Props {
         isOpen: boolean;
@@ -72,10 +73,10 @@
         "Sunday",
     ];
 
-    let checkedCount = $derived(
-        Object.values(checkedItems).filter(Boolean).length,
-    );
     let totalCount = $derived(filteredList.length);
+    let checkedCount = $derived(
+        filteredList.filter((item) => checkedItems[item.id]).length,
+    );
 </script>
 
 {#if isOpen}
@@ -97,7 +98,7 @@
             transition:scale={{ start: 0.95, duration: 250 }}
         >
             <!-- Header -->
-            <div class="px-6 pt-6 pb-4 shrink-0">
+            <div class="px-4 pt-4 pb-2 shrink-0">
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <h2
@@ -105,9 +106,6 @@
                         >
                             Shopping List
                         </h2>
-                        <p class="text-sm text-app-text-muted mt-1">
-                            {totalCount - checkedCount} of {totalCount} items
-                        </p>
                     </div>
                     <button
                         class="p-2 -mr-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
@@ -145,7 +143,7 @@
             </div>
 
             <!-- List -->
-            <div class="flex-1 overflow-y-auto px-6 pb-6 mt-4">
+            <div class="flex-1 overflow-y-auto px-6 pb-6">
                 {#if filteredList.length === 0}
                     <div
                         class="flex flex-col items-center justify-center h-full text-center py-16"
@@ -181,94 +179,16 @@
                                     : 'bg-app-surface hover:bg-app-surface-hover'}"
                             >
                                 <!-- Main Row -->
-                                <div
-                                    class="w-full flex items-center gap-4 p-3 text-left cursor-pointer"
-                                    onclick={() => toggleCheck(item.id)}
-                                    role="button"
-                                    tabindex="0"
-                                    onkeydown={(e) => {
-                                        if (
-                                            e.key === "Enter" ||
-                                            e.key === " "
-                                        ) {
-                                            e.preventDefault();
-                                            toggleCheck(item.id);
-                                        }
-                                    }}
-                                >
-                                    <!-- Custom Checkbox -->
-                                    <div class="shrink-0">
-                                        {#if isChecked}
-                                            <div
-                                                in:scale={{
-                                                    duration: 200,
-                                                    start: 0.8,
-                                                }}
-                                                class="text-app-primary"
-                                            >
-                                                <CheckSquare
-                                                    size={22}
-                                                    fill="currentColor"
-                                                    class="fill-app-primary/10"
-                                                />
-                                            </div>
-                                        {:else}
-                                            <Square
-                                                size={22}
-                                                class="text-app-border-strong group-hover:text-app-primary transition-colors"
-                                            />
-                                        {/if}
-                                    </div>
-
-                                    <!-- Content -->
-                                    <div class="flex-1 min-w-0">
-                                        <div
-                                            class="flex items-baseline gap-2 {isChecked
-                                                ? 'line-through opacity-40'
-                                                : ''} transition-all"
-                                        >
-                                            <div
-                                                class="flex items-baseline gap-0.5 shrink-0 min-w-fit"
-                                            >
-                                                {#if item.amount > 0}
-                                                    <span
-                                                        class="text-lg font-black text-app-primary tabular-nums"
-                                                    >
-                                                        {formatAmount(
-                                                            item.amount,
-                                                        )}
-                                                    </span>
-                                                {/if}
-                                                {#if item.unit}
-                                                    <span
-                                                        class="text-sm font-black text-app-primary/80 ml-0.5"
-                                                    >
-                                                        {item.unit}
-                                                    </span>
-                                                {/if}
-                                            </div>
-                                            <span
-                                                class="text-base font-bold text-app-text capitalize break-words"
-                                            >
-                                                {item.name}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Expand Button -->
-                                    <button
-                                        class="shrink-0 p-1.5 text-app-text-muted hover:text-app-primary hover:bg-app-primary/10 rounded-lg transition-all {isExpanded
-                                            ? 'rotate-90 bg-app-primary/10 text-app-primary'
-                                            : ''}"
-                                        onclick={(e) => {
-                                            e.stopPropagation();
-                                            toggleExpand(item.id);
-                                        }}
-                                        aria-label="View sources"
-                                    >
-                                        <Info size={18} strokeWidth={2.5} />
-                                    </button>
-                                </div>
+                                <IngredientItem
+                                    name={item.name}
+                                    amount={item.amount}
+                                    unit={item.unit}
+                                    checked={isChecked}
+                                    showInfo={true}
+                                    {isExpanded}
+                                    onToggle={() => toggleCheck(item.id)}
+                                    onInfoClick={() => toggleExpand(item.id)}
+                                />
 
                                 <!-- Expanded Details -->
                                 {#if isExpanded}

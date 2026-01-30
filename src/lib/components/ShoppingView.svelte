@@ -9,6 +9,7 @@
     import { fade, slide, scale } from "svelte/transition";
     import type { Recipe } from "$lib/types";
     import { formatAmount } from "$lib/utils/shopping";
+    import IngredientItem from "./IngredientItem.svelte";
 
     interface Props {
         recipe: Recipe;
@@ -122,103 +123,14 @@
             <!-- Ingredients Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {#each recipe.ingredients as ingredient, i}
-                    <div
-                        class="relative group w-full flex flex-col p-3 transition-all duration-200 text-left
-                            {checkedIngredients[i]
-                            ? 'bg-app-surface shadow-inner opacity-60'
-                            : 'bg-app-surface hover:bg-app-surface-hover'}"
-                        onclick={() => toggleIngredient(i)}
-                        role="button"
-                        tabindex="0"
-                        onkeydown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                toggleIngredient(i);
-                            }
-                        }}
-                    >
-                        <div class="flex items-center gap-3">
-                            <!-- Custom Checkbox -->
-                            <div class="shrink-0 mt-0.5">
-                                {#if checkedIngredients[i]}
-                                    <div
-                                        in:scale={{ duration: 200, start: 0.8 }}
-                                        class="text-app-primary"
-                                    >
-                                        <CheckSquare
-                                            size={24}
-                                            strokeWidth={2.5}
-                                            fill="currentColor"
-                                            class="fill-app-primary/20"
-                                        />
-                                    </div>
-                                {:else}
-                                    <Square
-                                        size={24}
-                                        strokeWidth={2.5}
-                                        class="text-app-border-strong group-hover:text-app-primary transition-colors"
-                                    />
-                                {/if}
-                            </div>
-
-                            <!-- Details -->
-                            <div class="flex-1 min-w-0">
-                                <div
-                                    class="flex items-baseline gap-2 {checkedIngredients[
-                                        i
-                                    ]
-                                        ? 'opacity-30 line-through grayscale'
-                                        : ''} transition-all"
-                                >
-                                    <div
-                                        class="flex items-baseline gap-0.5 shrink-0 min-w-fit"
-                                    >
-                                        {#if ingredient.amount}
-                                            <span
-                                                class="text-xl font-black text-app-primary tabular-nums"
-                                            >
-                                                {formatAmount(
-                                                    ingredient.amount,
-                                                )}
-                                            </span>
-                                        {/if}
-                                        {#if ingredient.unit}
-                                            <span
-                                                class="text-sm font-black text-app-primary/80 ml-0.5"
-                                            >
-                                                {ingredient.unit}
-                                            </span>
-                                        {/if}
-                                    </div>
-                                    <span
-                                        class="text-lg font-bold text-app-text break-words"
-                                    >
-                                        {ingredient.name}
-                                    </span>
-                                </div>
-
-                                {#if ingredient.notes}
-                                    <p
-                                        class="text-sm font-bold text-app-text-muted mt-2 pl-3 border-l-2 border-app-primary/20 transition-all {checkedIngredients[
-                                            i
-                                        ]
-                                            ? 'opacity-20'
-                                            : ''}"
-                                    >
-                                        {ingredient.notes}
-                                    </p>
-                                {/if}
-                            </div>
-                        </div>
-
-                        <!-- Sparkle effect or background hint when checked -->
-                        {#if checkedIngredients[i]}
-                            <div
-                                class="absolute inset-0 bg-app-primary/5 rounded-2xl pointer-events-none"
-                                in:fade
-                            ></div>
-                        {/if}
-                    </div>
+                    <IngredientItem
+                        name={ingredient.name}
+                        amount={ingredient.amount}
+                        unit={ingredient.unit}
+                        notes={ingredient.notes}
+                        checked={checkedIngredients[i]}
+                        onToggle={() => toggleIngredient(i)}
+                    />
                 {/each}
             </div>
 
