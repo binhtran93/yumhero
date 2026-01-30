@@ -182,17 +182,6 @@
                 {type}
             </span>
         </div>
-        <button
-            type="button"
-            class="pointer-events-auto flex items-center justify-center w-11 h-11 -mr-2 -my-2 cursor-pointer text-app-text-muted hover:text-app-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform hover:scale-105"
-            title={`Add to ${type}`}
-            onclick={(e) => {
-                e.stopPropagation();
-                onClick(e);
-            }}
-        >
-            <Plus size={14} />
-        </button>
     </div>
 
     <!-- Cell Content -->
@@ -299,7 +288,7 @@
             <div class="flex-1 flex items-center justify-center min-h-8">
                 <Plus
                     size={16}
-                    class="text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-all duration-200"
+                    class="text-app-text-muted/50 group-hover:text-app-text-muted/80 transition-all duration-200"
                 />
             </div>
         {/if}
