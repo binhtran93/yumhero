@@ -4,22 +4,18 @@
     import PasteRecipeModal from "$lib/components/PasteRecipeModal.svelte";
     import {
         X,
-        ChefHat,
         Utensils,
-        Clock,
-        AlignLeft,
-        List,
-        Type,
         ChevronDown,
         ChevronUp,
         Camera,
         Globe,
         FileText,
+        MoreVertical,
     } from "lucide-svelte";
 
     import type { Recipe, Ingredient } from "$lib/types";
     import { addRecipe } from "$lib/stores/userData";
-    import { slide } from "svelte/transition";
+    import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
 
     type FormIngredient = {
@@ -69,6 +65,7 @@
     // Import Modal State
     let showImportModal = $state(false);
     let showPasteModal = $state(false);
+    let showOptionsDropdown = $state(false);
 
     let fileInput: HTMLInputElement;
 
@@ -76,6 +73,7 @@
     $effect(() => {
         if (isOpen) {
             resetForm();
+            showOptionsDropdown = false;
             if (initialRecipe) {
                 populateForm(initialRecipe);
                 showAdvanced = true;
@@ -325,17 +323,66 @@
 
 {#snippet headerContent()}
     <div
-        class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0"
+        class="px-4 md:px-6 py-4 bg-app-surface border-b border-app-border flex items-center justify-between shrink-0 relative"
     >
         <div class="flex items-center gap-2">
             <h2 class="text-xl font-bold text-app-text">Add Recipe</h2>
         </div>
-        <button
-            onclick={onClose}
-            class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all"
-        >
-            <X size={24} />
-        </button>
+        <div class="flex items-center gap-1">
+            <div class="relative">
+                <button
+                    onclick={() => (showOptionsDropdown = !showOptionsDropdown)}
+                    class="p-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all {showOptionsDropdown
+                        ? 'bg-app-surface-hover text-app-text'
+                        : ''}"
+                    aria-label="More options"
+                >
+                    <MoreVertical size={20} />
+                </button>
+
+                {#if showOptionsDropdown}
+                    <div
+                        transition:fade={{ duration: 100 }}
+                        class="absolute right-0 top-full mt-2 w-56 bg-app-surface rounded-xl border border-app-border shadow-xl overflow-hidden z-[100] py-1.5"
+                    >
+                        <button
+                            onclick={() => {
+                                showOptionsDropdown = false;
+                                showImportModal = true;
+                            }}
+                            class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                        >
+                            <Globe size={18} class="text-app-primary" />
+                            <span>Import from web</span>
+                        </button>
+                        <button
+                            onclick={() => {
+                                showOptionsDropdown = false;
+                                showPasteModal = true;
+                            }}
+                            class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                        >
+                            <FileText size={18} class="text-app-primary" />
+                            <span>Paste Recipe text</span>
+                        </button>
+                    </div>
+
+                    <!-- Backdrop to close dropdown -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div
+                        class="fixed inset-0 z-90"
+                        onclick={() => (showOptionsDropdown = false)}
+                    ></div>
+                {/if}
+            </div>
+            <button
+                onclick={onClose}
+                class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all"
+            >
+                <X size={24} />
+            </button>
+        </div>
     </div>
 {/snippet}
 

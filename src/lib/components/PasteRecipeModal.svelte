@@ -14,12 +14,16 @@
     let isLoading = $state(false);
     let error = $state("");
 
-    // Reset form when modal opens
+    let textArea = $state<HTMLTextAreaElement>();
+
+    // Reset form and focus when modal opens
     $effect(() => {
         if (isOpen) {
             recipeText = "";
             error = "";
             isLoading = false;
+            // Focus textarea on next tick to ensure it's rendered
+            setTimeout(() => textArea?.focus(), 50);
         }
     });
 
@@ -92,11 +96,11 @@
             </label>
             <textarea
                 id="recipe-text"
+                bind:this={textArea}
                 bind:value={recipeText}
                 disabled={isLoading}
                 placeholder="Paste recipe here..."
                 class="w-full h-64 p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 resize-none"
-                autofocus
             ></textarea>
             {#if error}
                 <p class="text-sm text-red-500 pl-1">{error}</p>

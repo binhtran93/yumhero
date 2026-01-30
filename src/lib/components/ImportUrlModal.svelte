@@ -118,12 +118,12 @@
             <input
                 id="recipe-url"
                 type="url"
+                bind:this={urlInput}
                 bind:value={url}
                 onkeydown={handleKeydown}
                 disabled={isLoading}
                 placeholder="https://example.com/recipe"
                 class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50"
-                autofocus
             />
             {#if error}
                 <p class="text-sm text-red-500 pl-1">{error}</p>
