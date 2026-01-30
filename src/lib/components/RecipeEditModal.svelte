@@ -40,6 +40,7 @@
     }: Props = $props();
 
     // Form State (Buffer for the active recipe)
+    let isSaving = $state(false);
     let title = $state("");
     let source = $state(""); // Mapped to sourceUrl
     let description = $state("");
@@ -344,96 +345,116 @@
 
     // Save Handler
     const handleSave = async () => {
+        if (isSaving) return;
+
         // Save current buffer first
         saveBufferToVariant(activeVariantIndex);
 
         if (recipeVariants.length === 0) return;
 
+        isSaving = true;
         let successCount = 0;
         let failCount = 0;
 
-        for (const variant of recipeVariants) {
-            if (!variant.title.trim()) {
-                toasts.error("A recipe is missing a title");
-                return; // Stop everything if validation fails
+        try {
+            for (const variant of recipeVariants) {
+                if (!variant.title.trim()) {
+                    toasts.error("A recipe is missing a title");
+                    isSaving = false;
+                    return; // Stop everything if validation fails
+                }
+
+                // Finalize ingredients
+                let finalIngredients: Ingredient[] = [];
+                let sourceIngredients: FormIngredient[] = [];
+
+                if (variant.ingredientMode === "bulk") {
+                    sourceIngredients = parseBulkIngredients(
+                        variant.bulkIngredients,
+                    );
+                } else {
+                    sourceIngredients = variant.ingredients.filter((i) =>
+                        i.name.trim(),
+                    );
+                }
+
+                if (sourceIngredients.length === 0) {
+                    toasts.error(
+                        `Recipe "${variant.title}" has no ingredients`,
+                    );
+                    isSaving = false;
+                    return;
+                }
+
+                const instructionSteps = variant.instructions
+                    .split("\n")
+                    .filter((l) => l.trim());
+                if (instructionSteps.length === 0) {
+                    toasts.error(
+                        `Recipe "${variant.title}" has no instructions`,
+                    );
+                    isSaving = false;
+                    return;
+                }
+
+                finalIngredients = sourceIngredients.map((i) => ({
+                    amount: parseAmount(i.amount),
+                    unit: i.unit.trim() || null,
+                    name: i.name,
+                }));
+
+                // Calculate minutes
+                const pMin = variant.prepTime || 0;
+                const cMin = variant.cookTime || 0;
+                const totalTime = pMin + cMin;
+
+                // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
+                const finalImage = variant.imageUrl || undefined;
+
+                const newRecipe: Omit<Recipe, "id"> = {
+                    title: variant.title,
+                    image: finalImage || "",
+                    description: variant.description,
+                    sourceUrl: variant.source,
+                    prepTime: pMin,
+                    cookTime: cMin,
+                    totalTime,
+                    servings: variant.servings || 1,
+                    yields: variant.yields,
+                    ingredients: finalIngredients,
+                    instructions: instructionSteps,
+                    tags: [],
+                };
+
+                try {
+                    await addRecipe(newRecipe);
+                    successCount++;
+                } catch (e) {
+                    console.error("Failed to save", e);
+                    failCount++;
+                }
             }
 
-            // Finalize ingredients
-            let finalIngredients: Ingredient[] = [];
-            let sourceIngredients: FormIngredient[] = [];
-
-            if (variant.ingredientMode === "bulk") {
-                sourceIngredients = parseBulkIngredients(
-                    variant.bulkIngredients,
+            if (successCount > 0) {
+                toasts.success(
+                    `Saved ${successCount} recipe${successCount > 1 ? "s" : ""}`,
                 );
-            } else {
-                sourceIngredients = variant.ingredients.filter((i) =>
-                    i.name.trim(),
+                onClose();
+            }
+
+            if (failCount > 0) {
+                toasts.error(
+                    `Failed to save ${failCount} recipe${failCount > 1 ? "s" : ""}`,
                 );
             }
-
-            if (sourceIngredients.length === 0) {
-                toasts.error(`Recipe "${variant.title}" has no ingredients`);
-                return;
+        } finally {
+            if (successCount === 0) {
+                isSaving = false;
             }
-
-            const instructionSteps = variant.instructions
-                .split("\n")
-                .filter((l) => l.trim());
-            if (instructionSteps.length === 0) {
-                toasts.error(`Recipe "${variant.title}" has no instructions`);
-                return;
-            }
-
-            finalIngredients = sourceIngredients.map((i) => ({
-                amount: parseAmount(i.amount),
-                unit: i.unit.trim() || null,
-                name: i.name,
-            }));
-
-            // Calculate minutes
-            const pMin = variant.prepTime || 0;
-            const cMin = variant.cookTime || 0;
-            const totalTime = pMin + cMin;
-
-            // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
-            const finalImage = variant.imageUrl || "/placeholder-recipe.jpg";
-
-            const newRecipe: Omit<Recipe, "id"> = {
-                title: variant.title,
-                image: finalImage,
-                description: variant.description,
-                sourceUrl: variant.source,
-                prepTime: pMin,
-                cookTime: cMin,
-                totalTime,
-                servings: variant.servings || 1,
-                yields: variant.yields,
-                ingredients: finalIngredients,
-                instructions: instructionSteps,
-                tags: [],
-            };
-
-            try {
-                await addRecipe(newRecipe);
-                successCount++;
-            } catch (e) {
-                console.error("Failed to save", e);
-                failCount++;
-            }
-        }
-
-        if (successCount > 0) {
-            toasts.success(
-                `Saved ${successCount} recipe${successCount > 1 ? "s" : ""}`,
-            );
-            onClose();
-        }
-
-        if (failCount > 0) {
-            toasts.error(
-                `Failed to save ${failCount} recipe${failCount > 1 ? "s" : ""}`,
-            );
+            // If success > 0, we called onClose(), so component unmounts or modal closes.
+            // If logic keeps modal open on partial failure, we might want isSaving = false.
+            // safely set false here.
+            isSaving = false;
         }
     };
 
@@ -503,9 +524,19 @@
         }
 
         // Map all to variants, injecting sourceUrl if provided
-        const newVariants = extracted.map((r: any) =>
+        let newVariants = extracted.map((r: any) =>
             mapRecipeToVariant({ ...r, sourceUrl: sourceUrl || r.sourceUrl }),
         );
+
+        // Limit to max 5 variants
+        if (newVariants.length > 5) {
+            toasts.success(
+                `Imported 5 of ${newVariants.length} variants found`,
+            );
+            newVariants = newVariants.slice(0, 5);
+        } else if (newVariants.length > 1) {
+            toasts.success(`Found ${newVariants.length} variants!`);
+        }
 
         // Add to state
         recipeVariants = newVariants;
@@ -526,71 +557,94 @@
         <div class="flex items-center gap-2">
             <h2 class="text-xl font-bold text-app-text">Add Recipe</h2>
         </div>
-        <div class="flex items-center gap-1">
-            <div class="relative">
-                <button
-                    onclick={() => (showOptionsDropdown = !showOptionsDropdown)}
-                    class="p-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all {showOptionsDropdown
-                        ? 'bg-app-surface-hover text-app-text'
-                        : ''}"
-                    aria-label="More options"
-                >
-                    <MoreVertical size={20} />
-                </button>
 
-                {#if showOptionsDropdown}
-                    <div
-                        transition:fade={{ duration: 100 }}
-                        class="absolute right-0 top-full mt-2 w-56 bg-app-surface rounded-xl border border-app-border shadow-xl overflow-hidden z-[100] py-1.5"
+        {#if !isSaving}
+            <div class="flex items-center gap-1">
+                <div class="relative">
+                    <button
+                        onclick={() =>
+                            (showOptionsDropdown = !showOptionsDropdown)}
+                        class="p-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all {showOptionsDropdown
+                            ? 'bg-app-surface-hover text-app-text'
+                            : ''}"
+                        aria-label="More options"
                     >
-                        <button
-                            onclick={() => {
-                                showOptionsDropdown = false;
-                                showImportModal = true;
-                            }}
-                            class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                        >
-                            <Globe size={18} class="text-app-primary" />
-                            <span>Import from web</span>
-                        </button>
-                        <button
-                            onclick={() => {
-                                showOptionsDropdown = false;
-                                showPasteModal = true;
-                            }}
-                            class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                        >
-                            <FileText size={18} class="text-app-primary" />
-                            <span>Paste Recipe text</span>
-                        </button>
-                    </div>
+                        <MoreVertical size={20} />
+                    </button>
 
-                    <!-- Backdrop to close dropdown -->
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <div
-                        class="fixed inset-0 z-90"
-                        onclick={() => (showOptionsDropdown = false)}
-                    ></div>
-                {/if}
+                    {#if showOptionsDropdown}
+                        <div
+                            transition:fade={{ duration: 100 }}
+                            class="absolute right-0 top-full mt-2 w-56 bg-app-surface rounded-xl border border-app-border shadow-xl overflow-hidden z-[100] py-1.5"
+                        >
+                            <button
+                                onclick={() => {
+                                    showOptionsDropdown = false;
+                                    showImportModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                            >
+                                <Globe size={18} class="text-app-primary" />
+                                <span>Import from web</span>
+                            </button>
+                            <button
+                                onclick={() => {
+                                    showOptionsDropdown = false;
+                                    showPasteModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                            >
+                                <FileText size={18} class="text-app-primary" />
+                                <span>Paste Recipe text</span>
+                            </button>
+                        </div>
+
+                        <!-- Backdrop to close dropdown -->
+                        <!-- svelte-ignore a11y_click_events_have_key_events -->
+                        <!-- svelte-ignore a11y_no_static_element_interactions -->
+                        <div
+                            class="fixed inset-0 z-90"
+                            onclick={() => (showOptionsDropdown = false)}
+                        ></div>
+                    {/if}
+                </div>
+                <button
+                    onclick={onClose}
+                    class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all"
+                >
+                    <X size={24} />
+                </button>
             </div>
-            <button
-                onclick={onClose}
-                class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all"
-            >
-                <X size={24} />
-            </button>
-        </div>
+        {/if}
     </div>
 {/snippet}
 
 {#snippet footerContent()}
-    <div class="p-4 border-t border-app-border bg-app-surface shrink-0">
+    <div
+        class="p-4 border-t border-app-border bg-app-surface shrink-0 flex gap-3"
+    >
+        <button
+            onclick={onClose}
+            disabled={isSaving}
+            class="flex-1 px-6 py-3 border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            Cancel
+        </button>
         <button
             onclick={handleSave}
-            class="w-full py-3 rounded-xl bg-app-primary text-white font-bold text-sm shadow-sm hover:bg-app-primary/90 transition-colors active:scale-95"
+            disabled={isSaving}
+            class="flex-1 px-6 py-3 bg-app-primary text-white rounded-xl font-bold shadow-lg shadow-app-primary/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
-            Save Recipe
+            {#if isSaving}
+                <div
+                    class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                ></div>
+                Saving...
+            {:else}
+                Save {recipeVariants.length > 1
+                    ? `${recipeVariants.length} Recipes`
+                    : "Recipe"}
+            {/if}
         </button>
     </div>
 {/snippet}
@@ -599,42 +653,52 @@
     {isOpen}
     {onClose}
     class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
-    showCloseButton={false}
+    showCloseButton={!isSaving}
     header={headerContent}
     footer={footerContent}
-    closeOnEsc={!showImportModal && !showPasteModal}
+    closeOnEsc={!showImportModal && !showPasteModal && !isSaving}
+    closeOnClickOutside={!isSaving}
 >
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         <!-- Recipe Variants Tabs -->
         {#if recipeVariants.length > 1}
-            <div
-                class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mb-2"
-            >
-                {#each recipeVariants as variant, i}
-                    <!-- Save current buffer to state on click is handled by switchVariant which does it before switch -->
-                    <div class="relative group shrink-0">
-                        <button
-                            onclick={() => switchVariant(i)}
-                            class="px-4 py-2 rounded-full text-sm font-bold border transition-all whitespace-nowrap {activeVariantIndex ===
-                            i
-                                ? 'bg-app-primary text-white border-app-primary shadow-md'
-                                : 'bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50'}"
-                        >
-                            {variant.title || `Variant ${i + 1}`}
-                        </button>
-
-                        {#if recipeVariants.length > 1}
+            <div class="mb-4">
+                <div
+                    class="text-xs font-semibold text-app-text-muted uppercase tracking-wider mb-2"
+                >
+                    Recipe Variants ({recipeVariants.length})
+                </div>
+                <!-- Save current buffer to state on click is handled by switchVariant which does it before switch -->
+                <div
+                    class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
+                >
+                    {#each recipeVariants as variant, i}
+                        <div class="relative group shrink-0 max-w-[150px]">
                             <button
-                                onclick={(e) => removeVariant(i, e)}
-                                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
-                                aria-label="Remove variant"
+                                onclick={() => switchVariant(i)}
+                                disabled={isSaving}
+                                class="w-full px-4 py-2 rounded-full text-sm font-bold border transition-all truncate {activeVariantIndex ===
+                                i
+                                    ? 'bg-app-primary text-white border-app-primary shadow-md'
+                                    : 'bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50'}"
+                                title={variant.title || `Variant ${i + 1}`}
                             >
-                                <X size={12} />
+                                {variant.title || `Variant ${i + 1}`}
                             </button>
-                        {/if}
-                    </div>
-                {/each}
+
+                            {#if recipeVariants.length > 1 && !isSaving}
+                                <button
+                                    onclick={(e) => removeVariant(i, e)}
+                                    class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+                                    aria-label="Remove variant"
+                                >
+                                    <X size={12} />
+                                </button>
+                            {/if}
+                        </div>
+                    {/each}
+                </div>
             </div>
         {/if}
 
@@ -647,8 +711,9 @@
                         type="text"
                         bind:this={titleInput}
                         bind:value={title}
+                        disabled={isSaving}
                         placeholder="Recipe Name *"
-                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
+                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                 </div>
 
@@ -656,8 +721,9 @@
                     <input
                         type="text"
                         bind:value={source}
+                        disabled={isSaving}
                         placeholder="Source"
-                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors"
+                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                 </div>
             </div>
@@ -666,7 +732,8 @@
             <div class="w-24 md:w-32 shrink-0">
                 <button
                     onclick={triggerFileInput}
-                    class="group relative w-full aspect-square md:aspect-4/3 md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2"
+                    disabled={isSaving}
+                    class="group relative w-full aspect-square md:aspect-4/3 md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2 disabled:opacity-50"
                 >
                     {#if imageUrl}
                         <img
@@ -733,8 +800,9 @@
                     <textarea
                         bind:value={description}
                         rows="4"
+                        disabled={isSaving}
                         placeholder="Description"
-                        class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors"
+                        class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors disabled:opacity-50"
                     ></textarea>
                 </div>
 
@@ -749,8 +817,9 @@
                             id="prep"
                             type="text"
                             bind:value={prepTime}
+                            disabled={isSaving}
                             placeholder="e.g. 15 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -762,8 +831,9 @@
                             id="cook"
                             type="text"
                             bind:value={cookTime}
+                            disabled={isSaving}
                             placeholder="e.g. 30 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -775,8 +845,9 @@
                             id="serves"
                             type="text"
                             bind:value={servings}
+                            disabled={isSaving}
                             placeholder="e.g. 4"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -788,8 +859,9 @@
                             id="yields"
                             type="text"
                             bind:value={yields}
+                            disabled={isSaving}
                             placeholder="e.g. 12"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                 </div>
@@ -808,7 +880,8 @@
             >
                 <button
                     onclick={switchToLine}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent {ingredientMode ===
+                    disabled={isSaving}
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
                     'line'
                         ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
                         : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
@@ -817,7 +890,8 @@
                 </button>
                 <button
                     onclick={switchToBulk}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent {ingredientMode ===
+                    disabled={isSaving}
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
                     'bulk'
                         ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
                         : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
@@ -851,26 +925,30 @@
                             <input
                                 type="text"
                                 bind:value={ing.amount}
+                                disabled={isSaving}
                                 placeholder="Qty"
-                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
+                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
                             />
                             <input
                                 type="text"
                                 bind:value={ing.unit}
+                                disabled={isSaving}
                                 placeholder="Unit"
-                                class="w-14 md:w-24 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0"
+                                class="w-14 md:w-24 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
                             />
                             <div class="flex-1 min-w-0">
                                 <input
                                     type="text"
                                     bind:value={ing.name}
+                                    disabled={isSaving}
                                     placeholder="Ingredient"
-                                    class="w-full h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors"
+                                    class="w-full h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
                                 />
                             </div>
                             <button
                                 onclick={() => removeIngredientRow(i)}
-                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all shrink-0"
+                                disabled={isSaving}
+                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
                             >
                                 <X size={16} />
                             </button>
@@ -878,7 +956,8 @@
                     {/each}
                     <button
                         onclick={addIngredientRow}
-                        class="text-sm text-app-primary font-bold hover:underline pt-2 pl-1 flex items-center gap-1"
+                        disabled={isSaving}
+                        class="text-sm text-app-primary font-bold hover:underline pt-2 pl-1 flex items-center gap-1 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
                     >
                         <Utensils size={14} /> Add Line Item
                     </button>
@@ -887,8 +966,9 @@
                 <textarea
                     bind:value={bulkIngredients}
                     rows="10"
+                    disabled={isSaving}
                     placeholder="1 cup flour&#10;2 eggs&#10;..."
-                    class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed"
+                    class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
                 ></textarea>
             {/if}
         </div>
@@ -901,8 +981,9 @@
             <textarea
                 bind:value={instructions}
                 rows="8"
+                disabled={isSaving}
                 placeholder="Step-by-step directions..."
-                class="w-full p-5 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed"
+                class="w-full p-5 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
             ></textarea>
         </div>
     </div>
