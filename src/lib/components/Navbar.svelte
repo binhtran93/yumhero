@@ -166,7 +166,7 @@
                 {#each filteredRecipes as recipe}
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div
-                        class="flex items-center gap-3 p-2 rounded-xl bg-app-bg/50 hover:bg-app-bg border border-transparent hover:border-app-border cursor-grab active:cursor-grabbing transition-all group"
+                        class="flex items-center gap-3 p-2 rounded-xl bg-app-surface hover:bg-app-surface-hover border border-app-border/40 hover:border-app-primary/30 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-md cursor-grab active:cursor-grabbing transition-all duration-200 group"
                         draggable="true"
                         ondragstart={(e) => handleDragStart(e, recipe)}
                         transition:fade={{ duration: 100 }}
@@ -187,38 +187,62 @@
         </div>
     {/if}
 
-    <!-- Collapse Toggle -->
+    <!-- Bottom Actions -->
     <div
-        class="hidden md:flex flex-col pb-4 mt-auto w-full {$sidebarExpanded
-            ? 'items-start px-6'
-            : 'items-center justify-center'}"
+        class="hidden md:flex flex-col mt-auto w-full border-t border-app-border bg-app-surface/50"
     >
-        <button
-            onclick={() => ($theme = $theme === "dark" ? "light" : "dark")}
-            class="p-2 mb-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
-            aria-label={$theme === "dark"
-                ? "Switch to light theme"
-                : "Switch to dark theme"}
-        >
-            {#if $theme === "dark"}
-                <Sun size={20} />
-            {:else}
-                <Moon size={20} />
-            {/if}
-        </button>
+        <div class="p-3 flex flex-col gap-1">
+            <button
+                onclick={() => ($theme = $theme === "dark" ? "light" : "dark")}
+                class="flex items-center p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all duration-200 {$sidebarExpanded
+                    ? 'px-3 gap-3'
+                    : 'justify-center'}"
+                aria-label={$theme === "dark"
+                    ? "Switch to light theme"
+                    : "Switch to dark theme"}
+            >
+                <div
+                    class="shrink-0 transition-transform group-active:scale-90"
+                >
+                    {#if $theme === "dark"}
+                        <Sun size={18} strokeWidth={2} />
+                    {:else}
+                        <Moon size={18} strokeWidth={2} />
+                    {/if}
+                </div>
+                {#if $sidebarExpanded}
+                    <span
+                        class="text-xs font-medium"
+                        transition:fade={{ duration: 100 }}
+                    >
+                        {$theme === "dark" ? "Light Mode" : "Dark Mode"}
+                    </span>
+                {/if}
+            </button>
 
-        <button
-            onclick={toggleSidebar}
-            class="p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-colors"
-            aria-label={$sidebarExpanded
-                ? "Collapse sidebar"
-                : "Expand sidebar"}
-        >
-            {#if $sidebarExpanded}
-                <PanelLeftClose size={20} />
-            {:else}
-                <PanelLeftOpen size={20} />
-            {/if}
-        </button>
+            <button
+                onclick={toggleSidebar}
+                class="flex items-center p-2 rounded-xl text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all duration-200 {$sidebarExpanded
+                    ? 'px-3 gap-3'
+                    : 'justify-center'}"
+                aria-label={$sidebarExpanded ? "Collapse" : "Expand"}
+            >
+                <div class="shrink-0 transition-transform duration-300">
+                    {#if $sidebarExpanded}
+                        <PanelLeftClose size={18} strokeWidth={2} />
+                    {:else}
+                        <PanelLeftOpen size={18} strokeWidth={2} />
+                    {/if}
+                </div>
+                {#if $sidebarExpanded}
+                    <span
+                        class="text-xs font-medium"
+                        transition:fade={{ duration: 100 }}
+                    >
+                        Collapse
+                    </span>
+                {/if}
+            </button>
+        </div>
     </div>
 </aside>
