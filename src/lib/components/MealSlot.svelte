@@ -12,7 +12,7 @@
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
-        onUpdate?: (index: number, newServings: number) => void;
+        onUpdate?: (index: number, newQuantity: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
         isLoading?: boolean;
         activeDropdown?: {
@@ -239,9 +239,9 @@
                 {#if onUpdate && "servings" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
                     <WeekSlotMenu
                         recipeId={item.id}
-                        servings={item.servings || 1}
+                        quantity={item.servings || 1}
                         triggerRect={activeTriggerRect}
-                        onUpdate={(newServings) => onUpdate(i, newServings)}
+                        onUpdate={(newQuantity) => onUpdate(i, newQuantity)}
                         onClose={handleMenuClose}
                         onAction={(action) => {
                             if (onOpenRecipeMode && "id" in item) {

@@ -257,7 +257,7 @@
         day: string,
         type: MealType,
         index: number,
-        newServings: number,
+        newQuantity: number,
     ) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
@@ -267,7 +267,7 @@
                 // @ts-ignore
                 plan[dayIndex].meals[type][index] = {
                     ...item,
-                    servings: newServings,
+                    servings: newQuantity,
                 };
                 saveWeekPlan(weekId, plan);
             }
@@ -621,12 +621,12 @@
                                             section.type,
                                             idx,
                                         )}
-                                    onUpdate={(idx, newServings) =>
+                                    onUpdate={(idx, newQuantity) =>
                                         handleRecipeUpdate(
                                             dayPlan.day,
                                             section.type,
                                             idx,
-                                            newServings,
+                                            newQuantity,
                                         )}
                                     onOpenRecipeMode={handleOpenRecipeMode}
                                     onDrop={handleDrop}

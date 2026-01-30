@@ -7,7 +7,7 @@
         Snowflake,
         Ellipsis,
         X as XIcon,
-        Users,
+        Hash,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -15,16 +15,16 @@
 
     interface Props {
         recipeId: string;
-        servings: number;
+        quantity: number;
         triggerRect: DOMRect;
-        onUpdate: (newServings: number) => void;
+        onUpdate: (newQuantity: number) => void;
         onClose: () => void;
         onAction: (action: "cooking") => void;
     }
 
     let {
         recipeId,
-        servings,
+        quantity,
         triggerRect,
         onUpdate,
         onClose,
@@ -85,8 +85,8 @@
     }
 
     function handleQuantityChange(delta: number) {
-        const newServings = Math.max(1, servings + delta);
-        onUpdate(newServings);
+        const newQuantity = Math.max(1, quantity + delta);
+        onUpdate(newQuantity);
     }
 </script>
 
@@ -123,7 +123,7 @@
         role="separator"
     >
         <div class="flex items-center gap-3">
-            <Users size={18} class="text-app-text-muted" />
+            <Hash size={18} class="text-app-text-muted" />
             <span class="text-app-text-muted">Quantity:</span>
         </div>
         <div class="flex items-center gap-1">
@@ -133,12 +133,12 @@
                     e.stopPropagation();
                     handleQuantityChange(-1);
                 }}
-                disabled={servings <= 1}
+                disabled={quantity <= 1}
                 aria-label="Decrease quantity"
             >
                 <Minus size={16} />
             </button>
-            <span class="font-bold min-w-[1.5rem] text-center">{servings}</span>
+            <span class="font-bold min-w-[1.5rem] text-center">{quantity}</span>
             <button
                 class="p-1.5 hover:bg-black/10 rounded transition-colors"
                 onclick={(e) => {
