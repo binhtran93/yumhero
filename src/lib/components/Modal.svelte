@@ -15,6 +15,8 @@
         class?: string;
         showCloseButton?: boolean;
         headerClass?: string;
+        closeOnEsc?: boolean;
+        closeOnClickOutside?: boolean;
     }
 
     let {
@@ -28,11 +30,12 @@
         class: className,
         showCloseButton = true,
         headerClass = "",
+        closeOnEsc = true,
+        closeOnClickOutside = true,
     }: Props = $props();
 
     const handleKeydown = (e: KeyboardEvent) => {
-        if (isOpen && e.key === "Escape") {
-            e.stopPropagation(); // Prevent bubbling if multiple modals exist
+        if (isOpen && closeOnEsc && e.key === "Escape") {
             onClose();
         }
     };
@@ -45,7 +48,7 @@
         <!-- Soft Backdrop -->
         <div
             class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity"
-            onclick={onClose}
+            onclick={() => closeOnClickOutside && onClose()}
             role="button"
             tabindex="-1"
             onkeydown={() => {}}

@@ -14,12 +14,16 @@
     let isLoading = $state(false);
     let error = $state("");
 
-    // Reset form when modal opens
+    let urlInput = $state<HTMLInputElement>();
+
+    // Reset form and focus when modal opens
     $effect(() => {
         if (isOpen) {
             url = "";
             error = "";
             isLoading = false;
+            // Focus input on next tick to ensure it's rendered
+            setTimeout(() => urlInput?.focus(), 50);
         }
     });
 
@@ -74,13 +78,18 @@
             </div>
             <h2 class="text-xl font-bold text-app-text">Import from Web</h2>
         </div>
-        <button
-            onclick={onClose}
-            disabled={isLoading}
-            class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all disabled:opacity-50"
-        >
-            <X size={24} />
-        </button>
+        {#if isLoading}
+            <div class="p-2 -mr-2 text-app-primary animate-spin">
+                <Loader2 size={24} />
+            </div>
+        {:else}
+            <button
+                onclick={onClose}
+                class="p-2 -mr-2 text-app-text-muted hover:text-app-text rounded-full hover:bg-app-surface-hover/50 transition-all font-bold"
+            >
+                <X size={24} />
+            </button>
+        {/if}
     </div>
 {/snippet}
 
@@ -90,6 +99,8 @@
     class="w-full md:max-w-lg bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
     showCloseButton={false}
     header={headerContent}
+    closeOnEsc={!isLoading}
+    closeOnClickOutside={!isLoading}
 >
     <div class="p-4 md:p-6 space-y-4">
         <p class="text-sm text-app-text-muted">
