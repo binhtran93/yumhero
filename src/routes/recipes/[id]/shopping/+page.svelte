@@ -2,7 +2,7 @@
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
     import { documentStore, type DocumentState } from "$lib/stores/firestore";
-    import { user } from "$lib/stores/auth";
+    import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
     import ShoppingView from "$lib/components/ShoppingView.svelte";
@@ -11,8 +11,12 @@
 
     // Derived store to fetch the specific recipe
     let recipeStore = derived(
-        user,
-        ($user, set) => {
+        [user, authLoading],
+        ([$user, $authLoading], set) => {
+            if ($authLoading) {
+                set({ data: null, loading: true });
+                return;
+            }
             if (!$user) {
                 set({ data: null, loading: false });
                 return;
