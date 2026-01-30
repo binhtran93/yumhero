@@ -1,11 +1,5 @@
 <script lang="ts">
-    import {
-        EllipsisVertical,
-        Plus,
-        RotateCcw,
-        Eye,
-        EyeOff,
-    } from "lucide-svelte";
+    import { Settings2, Plus, RotateCcw, Eye, EyeOff } from "lucide-svelte";
     import { fade } from "svelte/transition";
 
     interface Props {
@@ -62,7 +56,7 @@
         class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
         aria-label="More options"
     >
-        <EllipsisVertical size={20} />
+        <Settings2 size={20} />
     </button>
 
     {#if isMenuOpen}
