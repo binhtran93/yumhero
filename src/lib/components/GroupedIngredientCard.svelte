@@ -59,9 +59,11 @@
     );
 </script>
 
-<!-- Compact Row Layout -->
-<div class="border-b border-app-border/30 last:border-0">
-    <div class="flex items-center gap-3 py-3 px-1">
+<!-- Compact Row Layout with High Contrast -->
+<div
+    class="border-b border-app-border/60 last:border-0 hover:bg-app-surface-hover/30 transition-colors"
+>
+    <div class="flex items-center gap-3 py-3.5 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
             class="shrink-0 p-2 -m-2 active:scale-95 transition-transform"
@@ -70,22 +72,22 @@
         >
             {#if allChecked}
                 <CheckSquare
-                    size={24}
-                    class="text-emerald-500"
+                    size={26}
+                    class="text-emerald-600"
                     strokeWidth={2.5}
                 />
             {:else if someChecked}
-                <Square size={24} class="text-app-primary" strokeWidth={2.5}>
+                <Square size={26} class="text-app-primary" strokeWidth={2.5}>
                     <rect
-                        x="8"
-                        y="8"
-                        width="8"
-                        height="8"
+                        x="7"
+                        y="7"
+                        width="10"
+                        height="10"
                         fill="currentColor"
                     />
                 </Square>
             {:else}
-                <Square size={24} class="text-app-text-muted" strokeWidth={2} />
+                <Square size={26} class="text-app-text/40" strokeWidth={2.5} />
             {/if}
         </button>
 
@@ -95,14 +97,14 @@
             onclick={() => (isExpanded = !isExpanded)}
         >
             <div
-                class="flex items-baseline gap-2"
+                class="flex items-baseline gap-2 flex-wrap"
                 class:line-through={allChecked}
-                class:opacity-60={allChecked}
+                class:opacity-50={allChecked}
             >
-                <span class="font-bold text-base text-app-text truncate">
+                <span class="font-black text-base text-app-text">
                     {displayName}
                 </span>
-                <span class="text-sm text-app-text-muted font-medium">
+                <span class="text-sm text-app-text/60 font-semibold">
                     — {formattedQuantities}
                 </span>
             </div>
@@ -111,14 +113,14 @@
         <!-- Expand/Collapse Icon -->
         {#if sources.length > 1}
             <button
-                class="shrink-0 p-1 text-app-text-muted hover:text-app-text transition-colors"
+                class="shrink-0 p-1.5 -m-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
                 onclick={() => (isExpanded = !isExpanded)}
                 aria-label={isExpanded ? "Collapse" : "Expand"}
             >
                 {#if isExpanded}
-                    <ChevronDown size={18} strokeWidth={2} />
+                    <ChevronDown size={20} strokeWidth={2.5} />
                 {:else}
-                    <ChevronRight size={18} strokeWidth={2} />
+                    <ChevronRight size={20} strokeWidth={2.5} />
                 {/if}
             </button>
         {/if}
@@ -126,36 +128,37 @@
 
     <!-- Collapsible Source Details -->
     {#if isExpanded && sources.length > 1}
-        <div class="pb-2 pl-12 pr-4 space-y-1">
+        <div class="pb-3 pl-14 pr-4 space-y-1.5 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button
-                    class="flex items-center gap-2 w-full text-left py-1 hover:bg-app-surface-hover/50 rounded transition-colors active:scale-[0.98]"
+                    class="flex items-center gap-2.5 w-full text-left py-1.5 px-2 hover:bg-app-surface-hover/50 rounded-lg transition-colors active:scale-[0.98]"
                     onclick={() => onToggleSource(i, !source.is_checked)}
                 >
-                    <!-- Small dot-style checkbox -->
+                    <!-- Regular checkbox style -->
                     <div class="shrink-0">
                         {#if source.is_checked}
-                            <div
-                                class="w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center"
-                            >
-                                <div
-                                    class="w-1.5 h-1.5 bg-white rounded-full"
-                                />
-                            </div>
+                            <CheckSquare
+                                size={18}
+                                class="text-emerald-600"
+                                strokeWidth={2.5}
+                            />
                         {:else}
-                            <div
-                                class="w-3 h-3 rounded-full border-2 border-app-text-muted/50"
+                            <Square
+                                size={18}
+                                class="text-app-text/40"
+                                strokeWidth={2}
                             />
                         {/if}
                     </div>
 
                     <span
-                        class="text-xs text-app-text-muted font-medium"
+                        class="text-xs text-app-text/70 font-semibold"
                         class:line-through={source.is_checked}
+                        class:opacity-60={source.is_checked}
                     >
                         {formatAmount(source.amount)}
                         {source.unit || ""}
-                        <span class="opacity-60 ml-1">
+                        <span class="text-app-text/40 ml-1.5 font-medium">
                             from {getRecipeName(source.recipe_id)}
                         </span>
                     </span>

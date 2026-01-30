@@ -95,7 +95,7 @@
         >
             <!-- Header -->
             <div class="px-4 pt-4 pb-2 shrink-0">
-                <div class="flex items-start justify-between mb-4">
+                <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <h2
                             class="text-2xl font-display font-black text-app-text"
@@ -150,8 +150,8 @@
                         </p>
                     </div>
                 {:else}
-                    <!-- Single column list for better readability -->
-                    <div class="max-w-2xl mx-auto">
+                    <!-- Full-width list for maximum screen usage -->
+                    <div>
                         {#each shoppingList as item (item.id)}
                             <GroupedIngredientCard
                                 ingredientName={item.ingredient_name}
