@@ -158,7 +158,7 @@
                 type="text"
                 bind:value={manualItemName}
                 class="w-full px-4 py-2 rounded-xl border border-app-border bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
-                placeholder="e.g., Cà Chua"
+                placeholder="e.g., Tomatoes"
             />
         </div>
 
@@ -192,7 +192,7 @@
                     type="text"
                     bind:value={manualItemUnit}
                     class="w-full px-4 py-2 rounded-xl border border-app-border bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
-                    placeholder="trái, kg, etc."
+                    placeholder="pcs, kg, etc."
                 />
             </div>
         </div>
