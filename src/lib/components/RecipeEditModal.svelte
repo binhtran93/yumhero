@@ -39,7 +39,7 @@
         initialAction = null,
     }: Props = $props();
 
-    // Form State
+    // Form State (Buffer for the active recipe)
     let title = $state("");
     let source = $state(""); // Mapped to sourceUrl
     let description = $state("");
@@ -62,6 +62,26 @@
     // Instructions
     let instructions = $state("");
     let showAdvanced = $state(false);
+
+    // Multiple Recipe Management
+    type RecipeVariantState = {
+        title: string;
+        source: string;
+        description: string;
+        imageUrl: string;
+        imageFile: File | null;
+        prepTime: number | null;
+        cookTime: number | null;
+        servings: number | null;
+        yields: string;
+        ingredients: FormIngredient[];
+        ingredientMode: "line" | "bulk"; // Track mode per variant
+        bulkIngredients: string;
+        instructions: string;
+    };
+
+    let recipeVariants = $state<RecipeVariantState[]>([]);
+    let activeVariantIndex = $state(0);
 
     // Import Modal State
     let showImportModal = $state(false);
@@ -95,32 +115,39 @@
     });
 
     const resetForm = () => {
-        title = "";
-        source = "";
-        description = "";
-        imageUrl = "";
-        imageFile = null;
-        prepTime = null;
-        cookTime = null;
-        servings = 1;
-        yields = "";
-        ingredients = [{ amount: "", unit: "", name: "" }];
-        bulkIngredients = "";
-        ingredientMode = "line";
-        instructions = "";
+        // Reset to a single empty variant
+        const emptyVariant = createEmptyVariant();
+        recipeVariants = [emptyVariant];
+        activeVariantIndex = 0;
+        loadVariantToBuffer(emptyVariant);
     };
 
-    const populateForm = (data: Partial<Recipe>) => {
-        title = data.title || "";
-        source = data.sourceUrl || "";
-        description = data.description || "";
-        imageUrl = data.image || "";
-        prepTime = data.prepTime || null;
-        cookTime = data.cookTime || null;
-        servings = data.servings || 1;
-        yields = data.yields || "";
+    const createEmptyVariant = (): RecipeVariantState => ({
+        title: "",
+        source: "",
+        description: "",
+        imageUrl: "",
+        imageFile: null,
+        prepTime: null,
+        cookTime: null,
+        servings: 1,
+        yields: "",
+        ingredients: [{ amount: "", unit: "", name: "" }],
+        ingredientMode: "line",
+        bulkIngredients: "",
+        instructions: "",
+    });
 
-        ingredients = data.ingredients
+    const populateForm = (data: Partial<Recipe>) => {
+        // This is called when editing an EXISTING single recipe from the app
+        const variant = mapRecipeToVariant(data);
+        recipeVariants = [variant];
+        activeVariantIndex = 0;
+        loadVariantToBuffer(variant);
+    };
+
+    const mapRecipeToVariant = (data: Partial<Recipe>): RecipeVariantState => {
+        const ingList = data.ingredients
             ? data.ingredients.map((i) => ({
                   amount: formatAmount(i.amount),
                   unit: i.unit || "",
@@ -128,11 +155,117 @@
               }))
             : [{ amount: "", unit: "", name: "" }];
 
-        bulkIngredients = ingredients.map(formatIngredientToString).join("\n");
+        return {
+            title: data.title || "",
+            source: data.sourceUrl || "",
+            description: data.description || "",
+            imageUrl: data.image || "",
+            imageFile: null,
+            prepTime: data.prepTime || null,
+            cookTime: data.cookTime || null,
+            servings: data.servings || 1,
+            yields: data.yields || "",
+            ingredients: ingList,
+            ingredientMode: "line",
+            bulkIngredients: ingList.map(formatIngredientToString).join("\n"),
+            instructions: Array.isArray(data.instructions)
+                ? data.instructions.join("\n\n")
+                : data.instructions || "",
+        };
+    };
 
-        instructions = Array.isArray(data.instructions)
-            ? data.instructions.join("\n\n")
-            : data.instructions || "";
+    // State Syncing
+    const loadVariantToBuffer = (variant: RecipeVariantState) => {
+        title = variant.title;
+        source = variant.source;
+        description = variant.description;
+        imageUrl = variant.imageUrl;
+        imageFile = variant.imageFile;
+        prepTime = variant.prepTime;
+        cookTime = variant.cookTime;
+        servings = variant.servings;
+        yields = variant.yields;
+        ingredients = JSON.parse(JSON.stringify(variant.ingredients)); // Deep copy to avoid ref issues
+        ingredientMode = variant.ingredientMode;
+        bulkIngredients = variant.bulkIngredients;
+        instructions = variant.instructions;
+    };
+
+    const saveBufferToVariant = (index: number) => {
+        if (index < 0 || index >= recipeVariants.length) return;
+
+        // Sync ingredients text to avoid staleness if mode wasn't switched explicitly
+        let syncedBulk = bulkIngredients;
+        let syncedIngredients = ingredients;
+
+        // If we were in line mode, update bulk string for consistency
+        if (ingredientMode === "line") {
+            syncedBulk = ingredients.map(formatIngredientToString).join("\n");
+        }
+
+        recipeVariants[index] = {
+            title,
+            source,
+            description,
+            imageUrl,
+            imageFile,
+            prepTime,
+            cookTime,
+            servings,
+            yields,
+            ingredients: syncedIngredients,
+            ingredientMode,
+            bulkIngredients: syncedBulk,
+            instructions,
+        };
+    };
+
+    const switchVariant = (newIndex: number) => {
+        if (newIndex === activeVariantIndex) return;
+        saveBufferToVariant(activeVariantIndex);
+        activeVariantIndex = newIndex;
+        loadVariantToBuffer(recipeVariants[newIndex]);
+    };
+
+    const removeVariant = (index: number, e: Event) => {
+        e.stopPropagation();
+        if (recipeVariants.length <= 1) {
+            toasts.error("Cannot remove the last recipe variant.");
+            return;
+        }
+
+        // Helper to remove item
+        const newVariants = recipeVariants.filter((_, i) => i !== index);
+
+        // Adjust active index
+        let newIndex = activeVariantIndex;
+        if (index < activeVariantIndex) {
+            newIndex--;
+        } else if (index === activeVariantIndex) {
+            newIndex = Math.max(0, index - 1);
+        } else {
+            // removing something after current, index stays same
+        }
+
+        // If we are removing the CURRENTLY active one, we need to load the new one.
+        // If we are removing another one, we just update the array and index.
+        // BUT, since we have a "buffer", if we remove the active one, we must discard buffer and load new.
+
+        if (index === activeVariantIndex) {
+            recipeVariants = newVariants;
+            activeVariantIndex = newIndex;
+            loadVariantToBuffer(recipeVariants[newIndex]);
+        } else {
+            // Just update array, keeping valid ref to current buffer?
+            // Actually, simplest is to save current buffer, update array, then reload buffer to be safe.
+            saveBufferToVariant(activeVariantIndex);
+            recipeVariants = newVariants;
+            activeVariantIndex = newIndex;
+            // Ensure index is valid
+            if (activeVariantIndex >= recipeVariants.length)
+                activeVariantIndex = recipeVariants.length - 1;
+            loadVariantToBuffer(recipeVariants[activeVariantIndex]);
+        }
     };
 
     // Helper: Bulk Parsing
@@ -211,69 +344,96 @@
 
     // Save Handler
     const handleSave = async () => {
-        if (!title.trim()) {
-            toasts.error("Recipe title is required");
-            return;
+        // Save current buffer first
+        saveBufferToVariant(activeVariantIndex);
+
+        if (recipeVariants.length === 0) return;
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const variant of recipeVariants) {
+            if (!variant.title.trim()) {
+                toasts.error("A recipe is missing a title");
+                return; // Stop everything if validation fails
+            }
+
+            // Finalize ingredients
+            let finalIngredients: Ingredient[] = [];
+            let sourceIngredients: FormIngredient[] = [];
+
+            if (variant.ingredientMode === "bulk") {
+                sourceIngredients = parseBulkIngredients(
+                    variant.bulkIngredients,
+                );
+            } else {
+                sourceIngredients = variant.ingredients.filter((i) =>
+                    i.name.trim(),
+                );
+            }
+
+            if (sourceIngredients.length === 0) {
+                toasts.error(`Recipe "${variant.title}" has no ingredients`);
+                return;
+            }
+
+            const instructionSteps = variant.instructions
+                .split("\n")
+                .filter((l) => l.trim());
+            if (instructionSteps.length === 0) {
+                toasts.error(`Recipe "${variant.title}" has no instructions`);
+                return;
+            }
+
+            finalIngredients = sourceIngredients.map((i) => ({
+                amount: parseAmount(i.amount),
+                unit: i.unit.trim() || null,
+                name: i.name,
+            }));
+
+            // Calculate minutes
+            const pMin = variant.prepTime || 0;
+            const cMin = variant.cookTime || 0;
+            const totalTime = pMin + cMin;
+
+            // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
+            const finalImage = variant.imageUrl || "/placeholder-recipe.jpg";
+
+            const newRecipe: Omit<Recipe, "id"> = {
+                title: variant.title,
+                image: finalImage,
+                description: variant.description,
+                sourceUrl: variant.source,
+                prepTime: pMin,
+                cookTime: cMin,
+                totalTime,
+                servings: variant.servings || 1,
+                yields: variant.yields,
+                ingredients: finalIngredients,
+                instructions: instructionSteps,
+                tags: [],
+            };
+
+            try {
+                await addRecipe(newRecipe);
+                successCount++;
+            } catch (e) {
+                console.error("Failed to save", e);
+                failCount++;
+            }
         }
 
-        // Finalize ingredients
-        let finalIngredients: Ingredient[] = [];
-        let sourceIngredients: FormIngredient[] = [];
-
-        if (ingredientMode === "bulk") {
-            sourceIngredients = parseBulkIngredients(bulkIngredients);
-        } else {
-            sourceIngredients = ingredients.filter((i) => i.name.trim());
-        }
-
-        if (sourceIngredients.length === 0) {
-            toasts.error("At least one ingredient is required");
-            return;
-        }
-
-        const instructionSteps = instructions
-            .split("\n")
-            .filter((l) => l.trim());
-        if (instructionSteps.length === 0) {
-            toasts.error("Recipe instructions are required");
-            return;
-        }
-
-        finalIngredients = sourceIngredients.map((i) => ({
-            amount: parseAmount(i.amount),
-            unit: i.unit.trim() || null,
-            name: i.name,
-        }));
-
-        // Calculate minutes
-        const pMin = prepTime || 0;
-        const cMin = cookTime || 0;
-        const totalTime = pMin + cMin;
-
-        // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
-        const finalImage = imageUrl || "/placeholder-recipe.jpg";
-
-        const newRecipe: Omit<Recipe, "id"> = {
-            title,
-            image: finalImage,
-            description,
-            sourceUrl: source,
-            prepTime: pMin,
-            cookTime: cMin,
-            totalTime,
-            servings: servings || 1,
-            yields,
-            ingredients: finalIngredients,
-            instructions: instructionSteps,
-            tags: [],
-        };
-
-        try {
-            await addRecipe(newRecipe);
+        if (successCount > 0) {
+            toasts.success(
+                `Saved ${successCount} recipe${successCount > 1 ? "s" : ""}`,
+            );
             onClose();
-        } catch (e) {
-            console.error("Failed to save", e);
-            toasts.error("Failed to save recipe");
+        }
+
+        if (failCount > 0) {
+            toasts.error(
+                `Failed to save ${failCount} recipe${failCount > 1 ? "s" : ""}`,
+            );
         }
     };
 
@@ -300,11 +460,8 @@
                 throw new Error(errorData.error || "Failed to import recipe");
             }
 
-            const { recipe } = await response.json();
-
-            // Populate form with extracted recipe data
-            populateForm(recipe);
-            showAdvanced = true; // Show advanced fields since we have data
+            const data = await response.json();
+            handleExtractedData(data);
         } catch (error: any) {
             console.error("Import error:", error);
             throw error; // Re-throw to be handled by ImportUrlModal
@@ -328,14 +485,34 @@
                 );
             }
 
-            const { recipe } = await response.json();
-
-            // Populate form with extracted recipe data
-            populateForm(recipe);
-            showAdvanced = true;
+            const data = await response.json();
+            handleExtractedData(data);
         } catch (error: any) {
             console.error("Paste error:", error);
             throw error;
+        }
+    };
+
+    const handleExtractedData = (data: any) => {
+        // Support both single 'recipe' and array 'recipes' for resilience
+        const extracted = data.recipes || (data.recipe ? [data.recipe] : []);
+
+        if (extracted.length === 0) {
+            toasts.error("No recipes found");
+            return;
+        }
+
+        // Map all to variants
+        const newVariants = extracted.map(mapRecipeToVariant);
+
+        // Add to state
+        recipeVariants = newVariants;
+        activeVariantIndex = 0;
+        loadVariantToBuffer(newVariants[0]);
+        showAdvanced = true;
+
+        if (newVariants.length > 1) {
+            toasts.success(`Found ${newVariants.length} variants!`);
         }
     };
 </script>
@@ -427,6 +604,38 @@
 >
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        <!-- Recipe Variants Tabs -->
+        {#if recipeVariants.length > 1}
+            <div
+                class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mb-2"
+            >
+                {#each recipeVariants as variant, i}
+                    <!-- Save current buffer to state on click is handled by switchVariant which does it before switch -->
+                    <div class="relative group shrink-0">
+                        <button
+                            onclick={() => switchVariant(i)}
+                            class="px-4 py-2 rounded-full text-sm font-bold border transition-all whitespace-nowrap {activeVariantIndex ===
+                            i
+                                ? 'bg-app-primary text-white border-app-primary shadow-md'
+                                : 'bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50'}"
+                        >
+                            {variant.title || `Variant ${i + 1}`}
+                        </button>
+
+                        {#if recipeVariants.length > 1}
+                            <button
+                                onclick={(e) => removeVariant(i, e)}
+                                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+                                aria-label="Remove variant"
+                            >
+                                <X size={12} />
+                            </button>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+        {/if}
+
         <!-- Basic Info Wrapper -->
         <div class="flex flex-row gap-4 md:gap-6">
             <!-- Left Column - Inputs -->

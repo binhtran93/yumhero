@@ -109,6 +109,11 @@ export async function POST({ request }) {
         const prompt = `
             You are an expert recipe extractor. extracting recipe information from the provided ${contentType}.
 
+            The content might contain ONE or MULTIPLE recipe variants (e.g. "Method 1", "Method 2", or different versions of a dish).
+            YOU MUST EXTRACT ALL DISTINCT RECIPES FOUND IN THE CONTENT.
+            
+            If there are multiple variants, name them distinctively (e.g. "Tofu with Tomato Sauce - Method 1", "Tofu with Tomato Sauce - Fried Version").
+
             Generate relevant tags based on the recipe's characteristics such as meal type, main ingredient, dietary restrictions, and cuisine.
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
             
@@ -117,11 +122,13 @@ export async function POST({ request }) {
             Extract the recipe details as accurately as possible.
         `;
 
-
-
-        const { output: recipe } = await generateText({
+        const { output } = await generateText({
             model: google('gemini-2.0-flash-lite'),
-            experimental_output: Output.object({ schema: RecipeSchema }),
+            experimental_output: Output.object({
+                schema: z.object({
+                    recipes: z.array(RecipeSchema).describe('List of extracted recipes')
+                })
+            }),
             system: prompt,
             messages: [
                 {
@@ -131,21 +138,27 @@ export async function POST({ request }) {
             ]
         });
 
-        // Upload image to R2 if available
-        if (recipe && recipe.image) {
-            try {
-                const uniqueKey = `recipes/${crypto.randomUUID()}.jpg`; // Simple key generation
-                console.log(`Uploading image to R2: ${recipe.image} -> ${uniqueKey}`);
-                const r2Url = await uploadImageToR2(recipe.image, uniqueKey);
-                recipe.image = r2Url;
-                console.log('Image uploaded successfully:', r2Url);
-            } catch (uploadError) {
-                console.error('Failed to upload image to R2, keeping original URL:', uploadError);
-                // Keep the original URL if upload fails
+        const recipes = output.recipes;
+
+        // Upload images to R2 if available
+        if (recipes && recipes.length > 0) {
+            for (const recipe of recipes) {
+                if (recipe.image) {
+                    try {
+                        const uniqueKey = `recipes/${crypto.randomUUID()}.jpg`; // Simple key generation
+                        console.log(`Uploading image to R2: ${recipe.image} -> ${uniqueKey}`);
+                        const r2Url = await uploadImageToR2(recipe.image, uniqueKey);
+                        recipe.image = r2Url;
+                        console.log('Image uploaded successfully:', r2Url);
+                    } catch (uploadError) {
+                        console.error('Failed to upload image to R2, keeping original URL:', uploadError);
+                        // Keep the original URL if upload fails
+                    }
+                }
             }
         }
 
-        return json({ recipe });
+        return json({ recipes });
 
     } catch (error: any) {
         console.error('Error extracting recipe:', error);
