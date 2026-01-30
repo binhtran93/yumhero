@@ -83,28 +83,17 @@ export const formatAmount = (num: number | null | undefined): string => {
 
     // If very close to a whole number, just return it
     if (closeTo(decimal, 0) || closeTo(decimal, 1)) {
-        return whole === 0 ? "1" : String(whole);
+        return whole === 0 ? "1" : String(Math.round(rounded));
     }
 
-    let fracStr = "";
-    if (closeTo(decimal, 0.125)) fracStr = "1/8";
-    else if (closeTo(decimal, 0.25)) fracStr = "1/4";
-    else if (closeTo(decimal, 0.33)) fracStr = "1/3";
-    else if (closeTo(decimal, 0.375)) fracStr = "3/8";
-    else if (closeTo(decimal, 0.5)) fracStr = "1/2";
-    else if (closeTo(decimal, 0.625)) fracStr = "5/8";
-    else if (closeTo(decimal, 0.66)) fracStr = "2/3";
-    else if (closeTo(decimal, 0.75)) fracStr = "3/4";
-    else if (closeTo(decimal, 0.875)) fracStr = "7/8";
-    else {
-        // For non-standard fractions, show decimal
-        const cleanDecimal = decimal.toFixed(2).replace(/\.?0+$/, "");
-        if (whole > 0) return `${whole}.${cleanDecimal.split('.')[1] || '0'}`;
-        return cleanDecimal;
+    // Only convert 0.5 to 1/2 as requested
+    if (whole === 0 && closeTo(decimal, 0.5)) {
+        return "1/2";
     }
 
-    if (whole > 0) return `${whole} ${fracStr}`;
-    return fracStr;
+    // For all other cases (mixed numbers, other fractions), show decimal
+    // Remove trailing zeros
+    return String(rounded);
 };
 
 
