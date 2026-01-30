@@ -1,6 +1,7 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 // @ts-ignore
 const { R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC_URL } = process.env;
+import { getRandomHeaders } from './headers';
 
 const R2 = new S3Client({
     region: 'auto',
@@ -18,7 +19,9 @@ const R2 = new S3Client({
  */
 export async function uploadImageToR2(imageUrl: string, key: string): Promise<string> {
     try {
-        const response = await fetch(imageUrl);
+        const response = await fetch(imageUrl, {
+            headers: getRandomHeaders()
+        });
         if (!response.ok) {
             throw new Error(`Failed to fetch image: ${response.statusText}`);
         }
