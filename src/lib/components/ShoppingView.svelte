@@ -10,6 +10,7 @@
     import type { Recipe } from "$lib/types";
     import { formatAmount } from "$lib/utils/shopping";
     import IngredientItem from "./IngredientItem.svelte";
+    import Header from "./Header.svelte";
 
     interface Props {
         recipe: Recipe;
@@ -45,32 +46,16 @@
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
     <!-- Header -->
-    <div
-        class="shrink-0 z-20 bg-app-bg/80 backdrop-blur-md border-b border-app-border"
-    >
-        <div
-            class="flex items-center justify-between px-4 h-16 max-w-5xl mx-auto w-full"
+    <Header title="Shopping List" showBack={true} {onBack}>
+        <button
+            class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-90 disabled:opacity-0"
+            onclick={clearChecked}
+            disabled={completedCount === 0}
+            title="Clear all checked items"
         >
-            <button
-                class="p-2 -ml-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-all active:scale-90"
-                onclick={onBack}
-            >
-                <ChevronLeft size={24} strokeWidth={2.5} />
-            </button>
-            <h1
-                class="text-xl font-display font-black tracking-tight text-app-text text-center flex-1"
-            >
-                Shopping List
-            </h1>
-            <button
-                class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-90 disabled:opacity-0"
-                onclick={clearChecked}
-                disabled={completedCount === 0}
-            >
-                <Trash2 size={20} />
-            </button>
-        </div>
-    </div>
+            <Trash2 size={20} />
+        </button>
+    </Header>
 
     <!-- Content Area -->
     <div class="flex-1 overflow-y-auto pb-20">

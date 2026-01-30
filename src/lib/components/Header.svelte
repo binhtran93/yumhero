@@ -8,6 +8,7 @@
         mobileTitle?: string;
         showBack?: boolean;
         backUrl?: string;
+        onBack?: () => void;
         children?: Snippet;
     }
 
@@ -16,6 +17,7 @@
         mobileTitle,
         showBack = false,
         backUrl = "/",
+        onBack,
         children,
     }: Props = $props();
 </script>
@@ -25,13 +27,23 @@
 >
     <div class="flex items-center gap-4">
         {#if showBack}
-            <a
-                href={backUrl}
-                class="p-2 -ml-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
-                aria-label="Go back"
-            >
-                <ChevronLeft size={24} />
-            </a>
+            {#if onBack}
+                <button
+                    onclick={onBack}
+                    class="p-2 -ml-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+                    aria-label="Go back"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+            {:else}
+                <a
+                    href={backUrl}
+                    class="p-2 -ml-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+                    aria-label="Go back"
+                >
+                    <ChevronLeft size={24} />
+                </a>
+            {/if}
         {/if}
         <h1
             class="text-xl font-bold tracking-tight text-app-primary font-display"

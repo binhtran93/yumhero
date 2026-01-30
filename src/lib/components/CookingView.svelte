@@ -7,6 +7,7 @@
         X,
     } from "lucide-svelte";
     import type { Recipe } from "$lib/types";
+    import Header from "./Header.svelte";
 
     interface Props {
         recipe: Recipe;
@@ -94,23 +95,8 @@
 </script>
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
-    <!-- Header with Toolbar -->
-    <div class="shrink-0 z-20 bg-app-bg border-b border-app-border">
-        <!-- Custom Header implementation since generic Header uses navigation -->
-        <div class="flex items-center justify-between px-4 h-14 md:h-16">
-            <button
-                class="p-2 -ml-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors"
-                onclick={onBack}
-            >
-                <ChevronLeft size={24} />
-            </button>
-            <h1 class="text-lg font-display font-bold text-app-text">
-                Cooking Mode
-            </h1>
-            <div class="w-10"></div>
-            <!-- Spacer -->
-        </div>
-    </div>
+    <!-- Header -->
+    <Header title="Cooking Mode" showBack={true} {onBack} />
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-h-0 bg-app-bg">
@@ -157,9 +143,7 @@
                             </div>
 
                             <!-- Instruction Content -->
-                            <div
-                                class="max-h-[70vh] overflow-y-auto px-2"
-                            >
+                            <div class="max-h-[70vh] overflow-y-auto px-2">
                                 <p
                                     class="text-xl md:text-3xl font-medium text-app-text leading-relaxed"
                                 >
