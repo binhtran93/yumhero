@@ -49,14 +49,25 @@
         return recipe?.title || "Unknown";
     };
 
-    // Format all quantities for display (e.g., "4 quả, 3 trái")
-    const formattedQuantities = $derived(
-        sources
+    // Format all quantities for display - merge quantities with same unit
+    const formattedQuantities = $derived.by(() => {
+        const unitMap = new Map<string, number>();
+
+        // Group by unit and sum amounts
+        sources.forEach((s) => {
+            const unit = s.unit || "";
+            const current = unitMap.get(unit) || 0;
+            unitMap.set(unit, current + s.amount);
+        });
+
+        // Format as "amount unit, amount unit"
+        return Array.from(unitMap.entries())
             .map(
-                (s) => `${formatAmount(s.amount)}${s.unit ? " " + s.unit : ""}`,
+                ([unit, amount]) =>
+                    `${formatAmount(amount)}${unit ? " " + unit : ""}`,
             )
-            .join(", "),
-    );
+            .join(", ");
+    });
 </script>
 
 <!-- Compact Row Layout with High Contrast -->
@@ -71,10 +82,7 @@
             aria-label={`Toggle ${displayName}`}
         >
             {#if allChecked}
-                <CheckSquare
-                    size={26}
-                    class="text-emerald-600"
-                />
+                <CheckSquare size={26} class="text-emerald-600" />
             {:else if someChecked}
                 <Square size={26} class="text-app-primary">
                     <rect
