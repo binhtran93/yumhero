@@ -175,7 +175,7 @@
                             <div
                                 class="group transition-all duration-200
                                 {isChecked
-                                    ? 'bg-app-surface/50 opacity-50'
+                                    ? 'bg-app-surface/50 opacity-90'
                                     : 'bg-app-surface hover:bg-app-surface-hover'}"
                             >
                                 <!-- Main Row -->

@@ -72,7 +72,7 @@
         <div
             class="leading-none {checked
                 ? 'line-through opacity-80'
-                : ''} transition-all"
+                : ''} transition-all flex items-baseline gap-1"
         >
             {#if amount && amount > 0}
                 <span
