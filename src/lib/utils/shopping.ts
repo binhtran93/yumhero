@@ -15,11 +15,13 @@ export interface ShoppingItem {
 }
 
 // Helper to parse amount strings like "1/2", "1-2", "1.5", "1 1/2"
-export const parseAmount = (amountStr: string): number => {
-    if (!amountStr) return 0;
+export const parseAmount = (amountStr: string | number | null | undefined): number | null => {
+    if (amountStr === null || amountStr === undefined) return null;
+    if (typeof amountStr === 'number') return amountStr;
 
     // Remove non-numeric chars except / . and space and -
     const cleanStr = amountStr.trim();
+    if (!cleanStr) return null;
 
     // Handle range "1-2" -> take average? or max? usually max for shopping. Let's take max.
     if (cleanStr.includes("-")) {
@@ -49,10 +51,10 @@ export const parseAmount = (amountStr: string): number => {
         }
 
         const float = parseFloat(cleanStr);
-        return isNaN(float) ? 0 : float;
+        return isNaN(float) ? null : float;
     } catch (e) {
         console.warn("Failed to parse amount:", amountStr);
-        return 0;
+        return null;
     }
 };
 
@@ -67,8 +69,8 @@ const parseFraction = (frac: string): number => {
 };
 
 // Use this to display back to user if needed, or simple toFixed(2)
-export const formatAmount = (num: number): string => {
-    if (num === 0) return "";
+export const formatAmount = (num: number | null | undefined): string => {
+    if (num === null || num === undefined || num === 0) return "";
 
     // Round to avoid floating point errors
     const rounded = Math.round(num * 1000) / 1000;
@@ -231,7 +233,8 @@ export const aggregatedShoppingList = (
                 planRecipe.ingredients.forEach(ing => {
                     if (!ing.name) return;
 
-                    const amount = parseAmount(ing.amount);
+                    const amountVal = parseAmount(ing.amount);
+                    const amount = amountVal === null ? 0 : amountVal;
                     const scaledAmount = amount * ratio;
                     const unit = normalizeUnit(ing.unit || "");
                     const name = ing.name.trim().toLowerCase();

@@ -5,6 +5,7 @@
     import { user } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
+    import { formatAmount } from "$lib/utils/shopping";
     import Header from "$lib/components/Header.svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import {
@@ -210,8 +211,10 @@
                                             class="text-[15px] text-app-text leading-snug flex-1"
                                         >
                                             <span class="font-bold"
-                                                >{ingredient.amount}
-                                                {ingredient.unit}</span
+                                                >{formatAmount(
+                                                    ingredient.amount,
+                                                )}
+                                                {ingredient.unit || ""}</span
                                             >
                                             <span>{ingredient.name}</span>
                                             {#if ingredient.notes}

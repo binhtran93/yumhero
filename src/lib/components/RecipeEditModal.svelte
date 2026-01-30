@@ -20,6 +20,13 @@
     import type { Recipe, Ingredient } from "$lib/types";
     import { addRecipe } from "$lib/stores/userData";
     import { slide } from "svelte/transition";
+    import { parseAmount, formatAmount } from "$lib/utils/shopping";
+
+    type FormIngredient = {
+        amount: string;
+        unit: string;
+        name: string;
+    };
 
     interface Props {
         isOpen: boolean;
@@ -46,7 +53,7 @@
 
     // Ingredients State
     let ingredientMode = $state<"line" | "bulk">("line");
-    let ingredients = $state<Ingredient[]>([]);
+    let ingredients = $state<FormIngredient[]>([]);
     let bulkIngredients = $state("");
 
     // Instructions
@@ -95,7 +102,11 @@
         yields = data.yields || "";
 
         ingredients = data.ingredients
-            ? [...data.ingredients]
+            ? data.ingredients.map((i) => ({
+                  amount: formatAmount(i.amount),
+                  unit: i.unit || "",
+                  name: i.name,
+              }))
             : [{ amount: "", unit: "", name: "" }];
 
         bulkIngredients = ingredients.map(formatIngredientToString).join("\n");
@@ -106,7 +117,7 @@
     };
 
     // Helper: Bulk Parsing
-    const parseBulkIngredients = (text: string): Ingredient[] => {
+    const parseBulkIngredients = (text: string): FormIngredient[] => {
         return text
             .split("\n")
             .filter((l) => l.trim())
@@ -150,7 +161,7 @@
             });
     };
 
-    const formatIngredientToString = (i: Ingredient) => {
+    const formatIngredientToString = (i: FormIngredient) => {
         return `${i.amount} ${i.unit} ${i.name}`.trim();
     };
 
@@ -188,11 +199,19 @@
 
         // Finalize ingredients
         let finalIngredients: Ingredient[] = [];
+        let sourceIngredients: FormIngredient[] = [];
+
         if (ingredientMode === "bulk") {
-            finalIngredients = parseBulkIngredients(bulkIngredients);
+            sourceIngredients = parseBulkIngredients(bulkIngredients);
         } else {
-            finalIngredients = ingredients.filter((i) => i.name.trim());
+            sourceIngredients = ingredients.filter((i) => i.name.trim());
         }
+
+        finalIngredients = sourceIngredients.map((i) => ({
+            amount: parseAmount(i.amount),
+            unit: i.unit.trim() || null,
+            name: i.name,
+        }));
 
         // Calculate minutes
         const pMin = prepTime || 0;

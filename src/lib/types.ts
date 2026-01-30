@@ -6,8 +6,8 @@ export interface Tag {
 }
 
 export interface Ingredient {
-    amount: string;
-    unit: string;
+    amount: number | null;
+    unit: string | null;
     name: string;
     notes?: string;
 }

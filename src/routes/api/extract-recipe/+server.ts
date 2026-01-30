@@ -2,12 +2,13 @@ import { GOOGLE_GENERATIVE_AI_API_KEY } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
+import { parseAmount } from '$lib/utils/shopping';
 import { z } from 'zod';
 
 // Define the schema for the recipe using Zod
 const IngredientSchema = z.object({
-    amount: z.string().describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
-    unit: z.string().describe('The unit of measurement. Use standard abbreviations (e.g. tbsp, tsp, g, oz) or the full unit name.'),
+    amount: z.union([z.string(), z.number()]).transform(val => parseAmount(val)).describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
+    unit: z.string().nullable().optional().describe('The unit of measurement. Use standard abbreviations (e.g. tbsp, tsp, g, oz) or the full unit name.'),
     name: z.string().describe('The name of the ingredient'),
     notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"')
 });
