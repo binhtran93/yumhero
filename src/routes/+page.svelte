@@ -7,6 +7,7 @@
         PlannedRecipe,
     } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
+    import Modal from "$lib/components/Modal.svelte";
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
     import { onMount } from "svelte";
@@ -362,10 +363,20 @@
         }, 500);
     };
 
+    const handleKeydown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+            if (activeDropdown) {
+                handleCloseDropdown();
+            }
+        }
+    };
+
     onMount(() => {
         checkScroll();
         window.addEventListener("resize", checkScroll);
-        return () => window.removeEventListener("resize", checkScroll);
+        return () => {
+            window.removeEventListener("resize", checkScroll);
+        };
     });
 
     // Format: "Jan 26 - Feb 01"
@@ -496,7 +507,7 @@
     let isShoppingListOpen = $state(false);
 </script>
 
-<svelte:window onresize={checkScroll} />
+<svelte:window onresize={checkScroll} onkeydown={handleKeydown} />
 
 <div class="h-full flex flex-col">
     <!-- Header -->
@@ -704,56 +715,45 @@
 />
 
 <!-- Recipe Mode Modal (Cooking/Shopping) -->
-{#if recipeModeModal.isOpen}
-    <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-        transition:fade={{ duration: 200 }}
-        onclick={(e) => {
-            if (e.target === e.currentTarget) handleCloseRecipeMode();
-        }}
-        onkeydown={(e) => {
-            if (e.key === "Escape") handleCloseRecipeMode();
-        }}
-        role="dialog"
-        aria-modal="true"
-        tabindex="-1"
-    >
-        <div
-            class="bg-app-bg w-full max-w-3xl h-full md:h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col"
-            transition:scale={{ start: 0.95, duration: 200 }}
+<Modal
+    isOpen={recipeModeModal.isOpen}
+    onClose={handleCloseRecipeMode}
+    class="max-w-3xl"
+>
+    <div class="h-[90vh] flex flex-col relative bg-app-bg">
+        <button
+            class="absolute top-4 right-4 z-50 p-2 bg-black/10 hover:bg-black/20 rounded-full transition-colors hidden md:block"
+            onclick={handleCloseRecipeMode}
         >
-            <button
-                class="absolute idx-50 top-4 right-4 z-50 p-2 bg-black/10 hover:bg-black/20 rounded-full transition-colors hidden md:block"
-                onclick={handleCloseRecipeMode}
-            >
-                <X size={20} />
-            </button>
+            <X size={20} />
+        </button>
 
-            {#if modeLoading}
-                <div class="flex items-center justify-center h-full">
-                    <div
-                        class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
-                    ></div>
-                </div>
-            {:else if modeRecipe}
-                <CookingView
-                    recipe={modeRecipe}
-                    onBack={handleCloseRecipeMode}
-                    onDone={handleCloseRecipeMode}
-                />
-            {:else}
+        {#if modeLoading}
+            <div class="flex items-center justify-center h-full">
                 <div
-                    class="flex flex-col items-center justify-center h-full text-center"
+                    class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
+                ></div>
+            </div>
+        {:else if modeRecipe}
+            <CookingView
+                recipe={modeRecipe}
+                onBack={handleCloseRecipeMode}
+                onDone={handleCloseRecipeMode}
+            />
+        {:else}
+            <div
+                class="flex flex-col items-center justify-center h-full text-center"
+            >
+                <p class="text-lg font-medium text-app-text-muted">
+                    Recipe not found
+                </p>
+                <button
+                    class="mt-4 text-app-primary font-bold"
+                    onclick={handleCloseRecipeMode}
                 >
-                    <p class="text-lg font-medium text-app-text-muted">
-                        Recipe not found
-                    </p>
-                    <button
-                        class="mt-4 text-app-primary font-bold"
-                        onclick={handleCloseRecipeMode}>Close</button
-                    >
-                </div>
-            {/if}
-        </div>
+                    Close
+                </button>
+            </div>
+        {/if}
     </div>
-{/if}
+</Modal>
