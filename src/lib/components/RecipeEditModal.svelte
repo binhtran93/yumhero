@@ -461,7 +461,7 @@
             }
 
             const data = await response.json();
-            handleExtractedData(data);
+            handleExtractedData(data, url);
         } catch (error: any) {
             console.error("Import error:", error);
             throw error; // Re-throw to be handled by ImportUrlModal
@@ -493,7 +493,7 @@
         }
     };
 
-    const handleExtractedData = (data: any) => {
+    const handleExtractedData = (data: any, sourceUrl: string = "") => {
         // Support both single 'recipe' and array 'recipes' for resilience
         const extracted = data.recipes || (data.recipe ? [data.recipe] : []);
 
@@ -502,8 +502,10 @@
             return;
         }
 
-        // Map all to variants
-        const newVariants = extracted.map(mapRecipeToVariant);
+        // Map all to variants, injecting sourceUrl if provided
+        const newVariants = extracted.map((r: any) =>
+            mapRecipeToVariant({ ...r, sourceUrl: sourceUrl || r.sourceUrl }),
+        );
 
         // Add to state
         recipeVariants = newVariants;
