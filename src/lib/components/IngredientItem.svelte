@@ -70,26 +70,26 @@
     <!-- Content -->
     <div class="flex-1 min-w-0">
         <div
-            class="flex items-baseline gap-2 {checked
-                ? 'line-through opacity-40'
+            class="leading-none {checked
+                ? 'line-through opacity-80'
                 : ''} transition-all"
         >
-            <div class="flex items-baseline gap-0.5 shrink-0 min-w-fit">
-                {#if amount && amount > 0}
-                    <span
-                        class="text-lg font-black text-app-primary tabular-nums"
-                    >
-                        {formatAmount(amount)}
-                    </span>
-                {/if}
-                {#if unit}
-                    <span class="text-xs font-black text-app-primary/80 ml-0.5">
-                        {unit}
-                    </span>
-                {/if}
-            </div>
+            {#if amount && amount > 0}
+                <span
+                    class="text-lg font-black text-app-primary tabular-nums align-baseline"
+                >
+                    {formatAmount(amount)}
+                </span>
+            {/if}
+            {#if unit}
+                <span
+                    class="text-sm font-black text-app-primary/80 ml-0.5 mr-1 align-baseline"
+                >
+                    {unit}
+                </span>
+            {/if}
             <span
-                class="text-base font-bold text-app-text capitalize break-words"
+                class="text-base font-bold text-app-text capitalize align-baseline"
             >
                 {name}
             </span>
