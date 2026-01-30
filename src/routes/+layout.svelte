@@ -4,6 +4,7 @@
 	import { user } from "$lib/stores/auth";
 	import { initializeDefaults } from "$lib/stores/userData";
 	import Navbar from "$lib/components/Navbar.svelte";
+	import ToastContainer from "$lib/components/ToastContainer.svelte";
 
 	$effect(() => {
 		if ($user) {
@@ -27,5 +28,6 @@
 		<main class="flex-1 overflow-hidden h-full order-first md:order-last">
 			{@render children()}
 		</main>
+		<ToastContainer />
 	</div>
 {/if}

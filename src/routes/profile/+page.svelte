@@ -58,9 +58,10 @@
 
     const handleDeleteAccount = () => {
         // Placeholder for delete account logic
-        alert("Delete account functionality coming soon.");
+        toasts.info("Delete account functionality coming soon.");
     };
     import Header from "$lib/components/Header.svelte";
+    import { toasts } from "$lib/stores/toasts";
 </script>
 
 <!-- Header -->

@@ -17,6 +17,7 @@
     import { addRecipe } from "$lib/stores/userData";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
+    import { toasts } from "$lib/stores/toasts";
 
     type FormIngredient = {
         amount: string;
@@ -68,12 +69,17 @@
     let showOptionsDropdown = $state(false);
 
     let fileInput: HTMLInputElement;
+    let titleInput = $state<HTMLInputElement>();
 
     // Initializer
     $effect(() => {
         if (isOpen) {
             resetForm();
             showOptionsDropdown = false;
+
+            // Focus title input on next tick to ensure it's rendered
+            setTimeout(() => titleInput?.focus(), 50);
+
             if (initialRecipe) {
                 populateForm(initialRecipe);
                 showAdvanced = true;
@@ -206,7 +212,7 @@
     // Save Handler
     const handleSave = async () => {
         if (!title.trim()) {
-            alert("Title is required");
+            toasts.error("Recipe title is required");
             return;
         }
 
@@ -218,6 +224,19 @@
             sourceIngredients = parseBulkIngredients(bulkIngredients);
         } else {
             sourceIngredients = ingredients.filter((i) => i.name.trim());
+        }
+
+        if (sourceIngredients.length === 0) {
+            toasts.error("At least one ingredient is required");
+            return;
+        }
+
+        const instructionSteps = instructions
+            .split("\n")
+            .filter((l) => l.trim());
+        if (instructionSteps.length === 0) {
+            toasts.error("Recipe instructions are required");
+            return;
         }
 
         finalIngredients = sourceIngredients.map((i) => ({
@@ -245,7 +264,7 @@
             servings: servings || 1,
             yields,
             ingredients: finalIngredients,
-            instructions: instructions.split("\n").filter((l) => l.trim()),
+            instructions: instructionSteps,
             tags: [],
         };
 
@@ -254,7 +273,7 @@
             onClose();
         } catch (e) {
             console.error("Failed to save", e);
-            alert("Failed to save recipe");
+            toasts.error("Failed to save recipe");
         }
     };
 
@@ -415,8 +434,9 @@
                 <div class="space-y-2">
                     <input
                         type="text"
+                        bind:this={titleInput}
                         bind:value={title}
-                        placeholder="Name"
+                        placeholder="Recipe Name *"
                         class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
                     />
                 </div>
@@ -489,7 +509,7 @@
                         <span>Hide Details</span>
                         <ChevronUp size={14} />
                     {:else}
-                        <span>Advanced Details</span>
+                        <span>More Details</span>
                         <ChevronDown size={14} />
                     {/if}
                 </button>
@@ -567,7 +587,9 @@
 
         <!-- Ingredients Header & Toggle -->
         <div class="space-y-4">
-            <h3 class="text-app-text font-bold text-lg">Ingredients</h3>
+            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
+                Ingredients <span class="text-red-500">*</span>
+            </h3>
 
             <!-- Toggle -->
             <div
@@ -662,7 +684,9 @@
 
         <!-- Instructions -->
         <div class="space-y-4 pb-8">
-            <h3 class="text-app-text font-bold text-lg">Instructions</h3>
+            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
+                Instructions <span class="text-red-500">*</span>
+            </h3>
             <textarea
                 bind:value={instructions}
                 rows="8"
