@@ -640,6 +640,7 @@
                                             rect,
                                         )}
                                     onCloseDropdown={handleCloseDropdown}
+                                    {availableRecipes}
                                 />
 
                                 <!-- Today Flash Overlay for each cell -->

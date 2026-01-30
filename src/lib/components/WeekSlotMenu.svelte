@@ -16,6 +16,7 @@
     interface Props {
         recipeId: string;
         quantity: number;
+        baseServings?: number;
         triggerRect: DOMRect;
         onUpdate: (newQuantity: number) => void;
         onClose: () => void;
@@ -25,6 +26,7 @@
     let {
         recipeId,
         quantity,
+        baseServings = 1,
         triggerRect,
         onUpdate,
         onClose,
@@ -150,6 +152,15 @@
                 <Plus size={16} />
             </button>
         </div>
+    </div>
+    
+    <!-- Servings Note -->
+    <div class="px-4 pb-2 text-xs text-app-text-muted/70 text-right -mt-1 font-medium italic">
+        {#if baseServings}
+            {@const min = Math.floor(baseServings) * quantity}
+            {@const max = Math.ceil(baseServings) * quantity}
+            Serves {min === max ? min : `${min}-${max}`}
+        {/if}
     </div>
 
     <button

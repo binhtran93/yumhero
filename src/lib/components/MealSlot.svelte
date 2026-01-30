@@ -22,6 +22,7 @@
         } | null;
         onToggleDropdown?: (index: number, rect: DOMRect) => void;
         onCloseDropdown?: () => void;
+        availableRecipes?: Recipe[];
     }
 
     let {
@@ -38,6 +39,7 @@
         activeDropdown = null,
         onToggleDropdown,
         onCloseDropdown,
+        availableRecipes = [],
     }: Props = $props();
 
     const getLabel = (item: Recipe | Note) => {
@@ -189,6 +191,16 @@
         class="pointer-events-none z-10 flex-1 px-2 pb-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
+            {@const baseRecipe =
+                "id" in item
+                    ? availableRecipes.find((r) => r.id === item.id)
+                    : null}
+            {@const itemServings = "servings" in item ? item.servings || 1 : 1}
+            {@const baseServings = baseRecipe?.servings || itemServings || 1}
+            {@const multiplier = Math.max(
+                1,
+                Math.round(itemServings / baseServings),
+            )}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
@@ -228,20 +240,34 @@
                         )}
                     >
                         {getLabel(item)}
-                        {#if "servings" in item && item.servings}
+
+                        {#if "servings" in item && multiplier > 1}
                             <span class="opacity-60 font-medium ml-1 text-xs"
-                                >x{item.servings}</span
+                                >x{multiplier}</span
                             >
                         {/if}
                     </p>
                 </div>
 
                 {#if onUpdate && "servings" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
+                    {@const baseRecipe = availableRecipes.find(
+                        (r) => r.id === item.id,
+                    )}
+                    {@const baseServings =
+                        baseRecipe?.servings || item.servings || 1}
+                    {@const currentServings = item.servings || 1}
+                    {@const multiplier = Math.max(
+                        1,
+                        Math.round(currentServings / baseServings),
+                    )}
+
                     <WeekSlotMenu
                         recipeId={item.id}
-                        quantity={item.servings || 1}
+                        quantity={multiplier}
+                        {baseServings}
                         triggerRect={activeTriggerRect}
-                        onUpdate={(newQuantity) => onUpdate(i, newQuantity)}
+                        onUpdate={(newMultiplier: number) =>
+                            onUpdate(i, newMultiplier * baseServings)}
                         onClose={handleMenuClose}
                         onAction={(action) => {
                             if (onOpenRecipeMode && "id" in item) {
