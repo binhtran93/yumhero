@@ -49,10 +49,12 @@ export async function POST({ request }) {
 
         let contentToProcess = '';
         let contentType = '';
+        let mainImage: string | null = null;
 
         if (url) {
             // Use the robust scraper to get text content and raw JSON-LD
-            const { text, jsonLds, mainImage } = await scrapeText(url);
+            const { text, jsonLds, mainImage: scrapedImage } = await scrapeText(url);
+            mainImage = scrapedImage;
 
             contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
             if (mainImage) {
@@ -113,6 +115,9 @@ export async function POST({ request }) {
             YOU MUST EXTRACT ALL DISTINCT RECIPES FOUND IN THE CONTENT.
             
             If there are multiple variants, name them distinctively (e.g. "Tofu with Tomato Sauce - Method 1", "Tofu with Tomato Sauce - Fried Version").
+            
+            FOR EACH VARIANT, try to find a specific image URL that represents that specific version.
+            If you cannot find a specific image for a variant, leave the image field empty (null/undefined).
 
             Generate relevant tags based on the recipe's characteristics such as meal type, main ingredient, dietary restrictions, and cuisine.
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
@@ -143,6 +148,12 @@ export async function POST({ request }) {
         // Upload images to R2 if available
         if (recipes && recipes.length > 0) {
             for (const recipe of recipes) {
+                // Fallback to main image if variant image is missing
+                if (!recipe.image && mainImage) {
+                    console.log(`Variant "${recipe.title}" missing image, using main page image.`);
+                    recipe.image = mainImage;
+                }
+
                 if (recipe.image) {
                     try {
                         const uniqueKey = `recipes/${crypto.randomUUID()}.jpg`; // Simple key generation
