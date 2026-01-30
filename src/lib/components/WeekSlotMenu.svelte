@@ -8,6 +8,7 @@
         Ellipsis,
         X as XIcon,
         Hash,
+        Users,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -158,12 +159,13 @@
 
     <!-- Servings Note -->
     <div
-        class="px-4 pb-2 text-xs text-app-text-muted/70 text-right -mt-1 font-medium italic"
+        class="px-4 pb-2 text-xs text-app-text-muted/70 text-right font-medium italic flex items-center justify-end gap-1"
     >
         {#if baseServings}
             {@const min = Math.floor(baseServings) * quantity}
             {@const max = Math.ceil(baseServings) * quantity}
-            Serves {min === max ? min : `${min}-${max}`}
+            <span>Serves {min === max ? min : `${min}-${max}`}</span>
+            <Users size={12} fill="currentColor"/>
         {/if}
     </div>
 
