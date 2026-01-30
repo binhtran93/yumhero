@@ -46,7 +46,7 @@
 >
     <!-- Checkbox (Optional) -->
     {#if showCheckbox}
-        <div class="shrink-0 mt-0.5">
+        <div class="shrink-0 mt-1">
             {#if checked}
                 <div
                     in:scale={{ duration: 200, start: 0.8 }}
@@ -61,7 +61,7 @@
             {:else}
                 <Square
                     size={22}
-                    class="text-app-border-strong group-hover:text-app-primary transition-colors"
+                    class="text-app-text-muted/70 group-hover:text-app-primary transition-colors"
                 />
             {/if}
         </div>
