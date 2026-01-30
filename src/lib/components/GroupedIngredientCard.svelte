@@ -74,10 +74,9 @@
                 <CheckSquare
                     size={26}
                     class="text-emerald-600"
-                    strokeWidth={2.5}
                 />
             {:else if someChecked}
-                <Square size={26} class="text-app-primary" strokeWidth={2.5}>
+                <Square size={26} class="text-app-primary">
                     <rect
                         x="7"
                         y="7"
@@ -87,7 +86,7 @@
                     />
                 </Square>
             {:else}
-                <Square size={26} class="text-app-text/40" strokeWidth={2.5} />
+                <Square size={26} class="text-app-text/40" />
             {/if}
         </button>
 
