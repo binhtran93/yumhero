@@ -167,7 +167,7 @@
     closeOnEsc={!showAddManualModal && !showEditModal}
 >
     {#snippet header()}
-        <div class="px-6 pt-6 pb-2 flex items-start justify-between shrink-0">
+        <div class="px-6 pt-6 pb-2 flex items-center justify-between shrink-0">
             <div class="flex-1">
                 <h2 class="text-2xl font-display font-black text-app-text">
                     Shopping List
@@ -189,7 +189,7 @@
                     onToggleDeleted={() => (showDeleted = !showDeleted)}
                 />
                 <button
-                    class="p-2 -mr-2 -mt-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
+                    class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
                     onclick={onClose}
                 >
                     <X size={20} />
