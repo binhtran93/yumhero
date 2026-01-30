@@ -1,14 +1,17 @@
 <script lang="ts">
-    import { X, Check, Search, Info, CheckSquare, Square } from "lucide-svelte";
-    import type { WeeklyPlan, Recipe } from "$lib/types";
+    import { X, Plus } from "lucide-svelte";
+    import type { Recipe } from "$lib/types";
+    import { fade, scale } from "svelte/transition";
+    import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
     import {
-        aggregatedShoppingList,
-        formatAmount,
-        type ShoppingItem,
-    } from "$lib/utils/shopping";
-    import { fade, slide, scale } from "svelte/transition";
-    import { onMount } from "svelte";
-    import IngredientItem from "./IngredientItem.svelte";
+        userShoppingList,
+        toggleShoppingItemCheck,
+        toggleAllShoppingItemChecks,
+        addManualShoppingItem,
+    } from "$lib/stores/userData";
+    import { buildShoppingListFromPlan } from "$lib/utils/shopping";
+    import type { WeeklyPlan } from "$lib/types";
+    import { addShoppingItem } from "$lib/stores/userData";
 
     interface Props {
         isOpen: boolean;
@@ -19,62 +22,117 @@
 
     let { isOpen, plan, availableRecipes, onClose }: Props = $props();
 
-    let selectedDay = $state<string | "all">("all");
-    let searchQuery = $state("");
+    let showAddManualModal = $state(false);
+    let manualItemName = $state("");
+    let manualItemAmount = $state("");
+    let manualItemUnit = $state("");
 
-    // Checked items state (persisted)
-    let checkedItems = $state<Record<string, boolean>>({});
-
-    // Expanded details for items
-    let expandedItems = $state<Record<string, boolean>>({});
-
-    onMount(() => {
-        const stored = localStorage.getItem("shoppingListChecked");
-        if (stored) {
-            try {
-                checkedItems = JSON.parse(stored);
-            } catch (e) {
-                console.error("Failed to parse checked items", e);
-            }
-        }
+    // Subscribe to shopping list
+    let shoppingListState = $state({ data: [], loading: true });
+    $effect(() => {
+        const unsubscribe = userShoppingList.subscribe((state) => {
+            shoppingListState = state;
+        });
+        return unsubscribe;
     });
 
-    const toggleCheck = (id: string) => {
-        checkedItems[id] = !checkedItems[id];
-        checkedItems = { ...checkedItems };
-        localStorage.setItem(
-            "shoppingListChecked",
-            JSON.stringify(checkedItems),
-        );
+    let shoppingList = $derived(shoppingListState.data);
+
+    const handleToggleAll = async (itemId: string, checked: boolean) => {
+        try {
+            await toggleAllShoppingItemChecks(itemId, checked);
+        } catch (error) {
+            console.error("Failed to toggle all checks:", error);
+        }
     };
 
-    const toggleExpand = (id: string) => {
-        expandedItems[id] = !expandedItems[id];
-        expandedItems = { ...expandedItems };
+    const handleToggleSource = async (
+        itemId: string,
+        sourceIndex: number,
+        checked: boolean,
+    ) => {
+        try {
+            await toggleShoppingItemCheck(itemId, sourceIndex, checked);
+        } catch (error) {
+            console.error("Failed to toggle source:", error);
+        }
     };
 
-    let shoppingList = $derived(aggregatedShoppingList(plan, selectedDay));
+    const handleAddManualItem = async () => {
+        if (!manualItemName.trim()) return;
 
-    let filteredList = $derived(
-        shoppingList.filter((item) => {
-            return item.name.toLowerCase().includes(searchQuery.toLowerCase());
-        }),
-    );
+        const amount = parseFloat(manualItemAmount) || 0;
+        try {
+            await addManualShoppingItem(
+                manualItemName,
+                amount,
+                manualItemUnit.trim() || null,
+            );
+            // Reset form
+            manualItemName = "";
+            manualItemAmount = "";
+            manualItemUnit = "";
+            showAddManualModal = false;
+        } catch (error) {
+            console.error("Failed to add manual item:", error);
+        }
+    };
 
-    const days = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ];
+    // Auto-generate shopping list from plan
+    $effect(() => {
+        if (isOpen && plan && availableRecipes.length > 0) {
+            const planItems = buildShoppingListFromPlan(plan, availableRecipes);
 
-    let totalCount = $derived(filteredList.length);
-    let checkedCount = $derived(
-        filteredList.filter((item) => checkedItems[item.id]).length,
-    );
+            // Add items from plan that don't exist in shopping list
+            planItems.forEach(async (planItem) => {
+                const existing = shoppingList.find(
+                    (item) => item.ingredient_name === planItem.ingredient_name,
+                );
+
+                if (!existing) {
+                    // Add all sources from the plan
+                    for (const source of planItem.sources) {
+                        try {
+                            await addShoppingItem(planItem.ingredient_name, {
+                                recipe_id: source.recipe_id,
+                                amount: source.amount,
+                                unit: source.unit,
+                            });
+                        } catch (error) {
+                            console.error(
+                                "Failed to add shopping item:",
+                                error,
+                            );
+                        }
+                    }
+                } else {
+                    // Check if any sources are missing and add them
+                    for (const planSource of planItem.sources) {
+                        const sourceExists = existing.sources.some(
+                            (s) => s.recipe_id === planSource.recipe_id,
+                        );
+                        if (!sourceExists) {
+                            try {
+                                await addShoppingItem(
+                                    planItem.ingredient_name,
+                                    {
+                                        recipe_id: planSource.recipe_id,
+                                        amount: planSource.amount,
+                                        unit: planSource.unit,
+                                    },
+                                );
+                            } catch (error) {
+                                console.error(
+                                    "Failed to add shopping source:",
+                                    error,
+                                );
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
 </script>
 
 {#if isOpen}
@@ -87,7 +145,7 @@
             if (e.target === e.currentTarget) onClose();
         }}
         onkeydown={(e) => {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape" && !showAddManualModal) onClose();
         }}
         tabindex="-1"
     >
@@ -98,147 +156,71 @@
             <!-- Header -->
             <div class="px-4 pt-4 pb-2 shrink-0">
                 <div class="flex items-start justify-between mb-4">
-                    <div>
+                    <div class="flex-1">
                         <h2
                             class="text-2xl font-display font-black text-app-text"
                         >
                             Shopping List
                         </h2>
+                        <p class="text-sm text-app-text-muted font-medium mt-1">
+                            {shoppingList.length} ingredient{shoppingList.length ===
+                            1
+                                ? ""
+                                : "s"}
+                        </p>
                     </div>
-                    <button
-                        class="p-2 -mr-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
-                        onclick={onClose}
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <!-- Day Filter -->
-                <div
-                    class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1"
-                >
-                    <button
-                        class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all {selectedDay ===
-                        'all'
-                            ? 'bg-app-primary text-white shadow-md'
-                            : 'bg-app-bg text-app-text-muted hover:bg-app-surface-hover'}"
-                        onclick={() => (selectedDay = "all")}
-                    >
-                        All Week
-                    </button>
-                    {#each days as day}
+                    <div class="flex items-center gap-2">
                         <button
-                            class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all {selectedDay ===
-                            day
-                                ? 'bg-app-primary text-white shadow-md'
-                                : 'bg-app-bg text-app-text-muted hover:bg-app-surface-hover'}"
-                            onclick={() => (selectedDay = day)}
+                            class="px-3 py-2 rounded-xl text-xs font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all flex items-center gap-2 active:scale-95"
+                            onclick={() => (showAddManualModal = true)}
                         >
-                            {day.slice(0, 3)}
+                            <Plus size={16} strokeWidth={2.5} />
+                            Add Item
                         </button>
-                    {/each}
+                        <button
+                            class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
+                            onclick={onClose}
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- List -->
-            <div class="flex-1 overflow-y-auto px-2 md:px-4 pb-2 md:pb-4">
-                {#if filteredList.length === 0}
+            <div class="flex-1 overflow-y-auto px-4 pb-4">
+                {#if shoppingListState.loading}
+                    <div class="flex items-center justify-center h-full">
+                        <div
+                            class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
+                        ></div>
+                    </div>
+                {:else if shoppingList.length === 0}
                     <div
                         class="flex flex-col items-center justify-center h-full text-center py-16"
                     >
-                        <div
-                            class="w-20 h-20 rounded-3xl bg-app-surface-deep flex items-center justify-center mb-4 shadow-inner"
-                        >
-                            <Search
-                                size={32}
-                                class="text-app-text-muted opacity-40"
-                            />
-                        </div>
                         <p class="font-black text-xl text-app-text mb-2">
-                            No ingredients found
+                            No ingredients yet
                         </p>
                         <p
                             class="text-sm font-bold text-app-text-muted max-w-60"
                         >
-                            Try changing your search or adding recipes to your
-                            plan.
+                            Add recipes to your meal plan or add manual items to
+                            get started.
                         </p>
                     </div>
                 {:else}
-                    <div class="grid grid-cols-1 md:grid-cols-2">
-                        {#each filteredList as item (item.id)}
-                            {@const isChecked = checkedItems[item.id] || false}
-                            {@const isExpanded =
-                                expandedItems[item.id] || false}
-                            <div
-                                class="group transition-all duration-200
-                                {isChecked
-                                    ? 'bg-app-surface/50 opacity-90'
-                                    : 'bg-app-surface hover:bg-app-surface-hover'}"
-                            >
-                                <!-- Main Row -->
-                                <IngredientItem
-                                    name={item.name}
-                                    amount={item.amount}
-                                    unit={item.unit}
-                                    checked={isChecked}
-                                    showInfo={true}
-                                    {isExpanded}
-                                    onToggle={() => toggleCheck(item.id)}
-                                    onInfoClick={() => toggleExpand(item.id)}
-                                />
-
-                                <!-- Expanded Details -->
-                                {#if isExpanded}
-                                    <div
-                                        class="px-4 pb-4 pt-0"
-                                        transition:slide={{ duration: 200 }}
-                                    >
-                                        <div
-                                            class="bg-app-surface-deep rounded-xl p-3 space-y-3 border border-app-border/50"
-                                        >
-                                            <h4
-                                                class="text-[10px] font-black uppercase tracking-[0.15em] text-app-text-muted opacity-60 flex items-center gap-2"
-                                            >
-                                                <span
-                                                    class="w-1 h-1 bg-app-primary rounded-full"
-                                                ></span>
-                                                Breakdown
-                                            </h4>
-                                            <ul class="space-y-2.5">
-                                                {#each item.sources as source}
-                                                    <li
-                                                        class="flex items-center justify-between gap-4"
-                                                    >
-                                                        <div class="min-w-0">
-                                                            <p
-                                                                class="font-bold text-xs text-app-text truncate"
-                                                            >
-                                                                {source.recipeName}
-                                                            </p>
-                                                            <p
-                                                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-tight"
-                                                            >
-                                                                {source.day.slice(
-                                                                    0,
-                                                                    3,
-                                                                )} • {source.mealType}
-                                                            </p>
-                                                        </div>
-                                                        <span
-                                                            class="text-xs font-black text-app-text-muted tabular-nums bg-app-bg px-2 py-1 rounded-md border border-app-border/40"
-                                                        >
-                                                            {formatAmount(
-                                                                source.originalAmount,
-                                                            )}
-                                                        </span>
-                                                    </li>
-                                                {/each}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                {/if}
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {#each shoppingList as item (item.id)}
+                            <GroupedIngredientCard
+                                ingredientName={item.ingredient_name}
+                                sources={item.sources}
+                                recipes={availableRecipes}
+                                onToggleAll={(checked) =>
+                                    handleToggleAll(item.id, checked)}
+                                onToggleSource={(idx, checked) =>
+                                    handleToggleSource(item.id, idx, checked)}
+                            />
                         {/each}
                     </div>
                 {/if}
@@ -247,12 +229,97 @@
     </div>
 {/if}
 
-<style lang="postcss">
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-</style>
+<!-- Add Manual Item Modal -->
+{#if showAddManualModal}
+    <div
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+        transition:fade={{ duration: 200 }}
+        onclick={(e) => {
+            if (e.target === e.currentTarget) showAddManualModal = false;
+        }}
+        onkeydown={(e) => {
+            if (e.key === "Escape") showAddManualModal = false;
+        }}
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
+    >
+        <div
+            class="bg-app-surface w-full max-w-md rounded-3xl overflow-hidden shadow-2xl relative border border-app-border/20 p-6"
+            transition:scale={{ start: 0.95, duration: 200 }}
+        >
+            <h3 class="text-xl font-display font-black text-app-text mb-4">
+                Add Manual Item
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label
+                        for="ingredient-name"
+                        class="block text-sm font-bold text-app-text mb-2"
+                    >
+                        Ingredient Name
+                    </label>
+                    <input
+                        id="ingredient-name"
+                        type="text"
+                        bind:value={manualItemName}
+                        class="w-full px-4 py-2 rounded-xl border border-app-border bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+                        placeholder="e.g., Cà Chua"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label
+                            for="amount"
+                            class="block text-sm font-bold text-app-text mb-2"
+                        >
+                            Amount
+                        </label>
+                        <input
+                            id="amount"
+                            type="number"
+                            step="0.1"
+                            bind:value={manualItemAmount}
+                            class="w-full px-4 py-2 rounded-xl border border-app-border bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+                            placeholder="0"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="unit"
+                            class="block text-sm font-bold text-app-text mb-2"
+                        >
+                            Unit
+                        </label>
+                        <input
+                            id="unit"
+                            type="text"
+                            bind:value={manualItemUnit}
+                            class="w-full px-4 py-2 rounded-xl border border-app-border bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+                            placeholder="trái, kg, etc."
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button
+                    class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all"
+                    onclick={() => (showAddManualModal = false)}
+                >
+                    Cancel
+                </button>
+                <button
+                    class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all active:scale-95"
+                    onclick={handleAddManualItem}
+                    disabled={!manualItemName.trim()}
+                >
+                    Add Item
+                </button>
+            </div>
+        </div>
+    </div>
+{/if}

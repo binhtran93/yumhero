@@ -157,3 +157,138 @@ export const aggregatedShoppingList = (
     // Convert to array and simple sort
     return Array.from(itemsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 };
+
+/**
+ * Build shopping list items from a meal plan.
+ * Groups ingredients by name and creates sources array with recipe_id.
+ */
+export const buildShoppingListFromPlan = (
+    plan: WeeklyPlan,
+    recipes: Recipe[]
+): { ingredient_name: string; sources: { recipe_id: string; amount: number; unit: string | null }[] }[] => {
+    const itemsMap = new Map<string, {
+        ingredient_name: string;
+        sources: { recipe_id: string; amount: number; unit: string | null }[];
+    }>();
+
+    plan.forEach(dayPlan => {
+        Object.entries(dayPlan.meals).forEach(([type, meals]) => {
+            if (type === 'note') return;
+
+            (meals as any[]).forEach(planRecipe => {
+                if (!planRecipe.ingredients) return;
+
+                const quantity = planRecipe.quantity || 1;
+                const recipeId = planRecipe.id;
+
+                planRecipe.ingredients.forEach((ing: any) => {
+                    if (!ing.name) return;
+
+                    const amountVal = parseAmount(ing.amount);
+                    const amount = amountVal === null ? 0 : amountVal;
+                    const scaledAmount = amount * quantity;
+                    const unit = ing.unit || null;
+                    const name = ing.name.trim().toLowerCase();
+
+                    if (itemsMap.has(name)) {
+                        const existing = itemsMap.get(name)!;
+                        existing.sources.push({
+                            recipe_id: recipeId,
+                            amount: scaledAmount,
+                            unit: unit
+                        });
+                    } else {
+                        itemsMap.set(name, {
+                            ingredient_name: name,
+                            sources: [{
+                                recipe_id: recipeId,
+                                amount: scaledAmount,
+                                unit: unit
+                            }]
+                        });
+                    }
+                });
+            });
+        });
+    });
+
+    return Array.from(itemsMap.values());
+};
+
+/**
+ * Get all recipe IDs from a meal plan.
+ */
+const getRecipeIdsFromPlan = (plan: WeeklyPlan): Set<string> => {
+    const recipeIds = new Set<string>();
+
+    plan.forEach(dayPlan => {
+        Object.entries(dayPlan.meals).forEach(([type, meals]) => {
+            if (type === 'note') return;
+            (meals as any[]).forEach(planRecipe => {
+                if (planRecipe.id) {
+                    recipeIds.add(planRecipe.id);
+                }
+            });
+        });
+    });
+
+    return recipeIds;
+};
+
+/**
+ * Sync shopping list with meal plan changes.
+ * Removes sources for recipes that are no longer in the plan.
+ * Preserves manual items (sources with recipe_id === null).
+ * 
+ * @param currentShoppingList - Current shopping list from Firestore
+ * @param newPlan - The updated meal plan
+ * @returns Operations to perform: items to update and items to delete
+ */
+export const syncShoppingListWithPlan = (
+    currentShoppingList: Array<{
+        id: string;
+        ingredient_name: string;
+        sources: Array<{
+            recipe_id: string | null;
+            amount: number;
+            unit: string | null;
+            is_checked: boolean;
+        }>;
+    }>,
+    newPlan: WeeklyPlan
+): {
+    toUpdate: Array<{ id: string; sources: any[] }>;
+    toDelete: string[];
+} => {
+    const planRecipeIds = getRecipeIdsFromPlan(newPlan);
+    const toUpdate: Array<{ id: string; sources: any[] }> = [];
+    const toDelete: string[] = [];
+
+    currentShoppingList.forEach(item => {
+        // Filter out sources whose recipe_id is not in the new plan
+        // Keep manual items (recipe_id === null)
+        const remainingSources = item.sources.filter(source => {
+            if (source.recipe_id === null) {
+                // Keep manual items
+                return true;
+            }
+            // Keep only if recipe is still in plan
+            return planRecipeIds.has(source.recipe_id);
+        });
+
+        if (remainingSources.length === 0) {
+            // No sources left, delete the item
+            toDelete.push(item.id);
+        } else if (remainingSources.length !== item.sources.length) {
+            // Some sources were removed, update the item
+            toUpdate.push({
+                id: item.id,
+                sources: remainingSources
+            });
+        }
+        // else: no change needed
+    });
+
+    return { toUpdate, toDelete };
+};
+

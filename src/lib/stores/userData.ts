@@ -1,7 +1,7 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { collectionStore, documentStore, type CollectionState, type DocumentState } from './firestore';
-import type { Recipe, WeeklyPlan, Tag } from '$lib/types';
+import type { Recipe, WeeklyPlan, Tag, ShoppingListItem } from '$lib/types';
 import { doc, setDoc, deleteDoc, collection, addDoc, updateDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 
@@ -139,11 +139,146 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
+    // Save the plan to Firestore
     await setDoc(doc(db, `users/${$user.uid}/plans`, weekId), {
         id: weekId,
         days: plan,
         updatedAt: new Date()
     }, { merge: true });
+
+    // Sync shopping list with the updated plan
+    await syncShoppingList($user.uid, plan);
+};
+
+// Sync shopping list with meal plan
+const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
+    const { syncShoppingListWithPlan } = await import('$lib/utils/shopping');
+
+    // Get current shopping list
+    const currentList = get(userShoppingList).data;
+
+    // Calculate what needs to be updated/deleted
+    const { toUpdate, toDelete } = syncShoppingListWithPlan(currentList, plan);
+
+    // Perform deletions
+    for (const itemId of toDelete) {
+        await deleteDoc(doc(db, `users/${userId}/shopping_lists`, itemId));
+    }
+
+    // Perform updates
+    for (const update of toUpdate) {
+        await updateDoc(doc(db, `users/${userId}/shopping_lists`, update.id), {
+            sources: update.sources,
+            updated_at: new Date()
+        });
+    }
+};
+
+// 3. Shopping List
+export const userShoppingList = derived<[Readable<any>, Readable<boolean>], CollectionState<ShoppingListItem>>(
+    [user, authLoading],
+    ([$user, $authLoading], set) => {
+        if ($authLoading) {
+            set({ data: [], loading: true });
+            return;
+        }
+        if (!$user) {
+            set({ data: [], loading: false });
+            return;
+        }
+
+        const store = collectionStore<ShoppingListItem>(`users/${$user.uid}/shopping_lists`);
+        return store.subscribe(set);
+    },
+    { data: [], loading: true }
+);
+
+// Actions - Shopping List
+export const addShoppingItem = async (ingredientName: string, source: Omit<ShoppingListItem['sources'][0], 'is_checked'>) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    const normalizedName = ingredientName.trim().toLowerCase();
+
+    // Check if item already exists
+    const existingItems = get(userShoppingList).data;
+    const existing = existingItems.find(item => item.ingredient_name === normalizedName);
+
+    if (existing) {
+        // Add source to existing item
+        const updatedSources = [...existing.sources, { ...source, is_checked: false }];
+        await updateDoc(doc(db, `users/${$user.uid}/shopping_lists`, existing.id), {
+            sources: updatedSources,
+            updated_at: new Date()
+        });
+    } else {
+        // Create new item
+        const docRef = await addDoc(collection(db, `users/${$user.uid}/shopping_lists`), {
+            ingredient_name: normalizedName,
+            sources: [{ ...source, is_checked: false }],
+            user_id: $user.uid,
+            created_at: new Date(),
+            updated_at: new Date()
+        });
+        await updateDoc(docRef, { id: docRef.id });
+    }
+};
+
+export const updateShoppingItemSources = async (itemId: string, sources: ShoppingListItem['sources']) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    await updateDoc(doc(db, `users/${$user.uid}/shopping_lists`, itemId), {
+        sources,
+        updated_at: new Date()
+    });
+};
+
+export const deleteShoppingItem = async (itemId: string) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    await deleteDoc(doc(db, `users/${$user.uid}/shopping_lists`, itemId));
+};
+
+export const toggleShoppingItemCheck = async (itemId: string, sourceIndex: number, checked: boolean) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    const items = get(userShoppingList).data;
+    const item = items.find(i => i.id === itemId);
+
+    if (!item || !item.sources[sourceIndex]) {
+        throw new Error("Shopping item or source not found");
+    }
+
+    const updatedSources = [...item.sources];
+    updatedSources[sourceIndex] = { ...updatedSources[sourceIndex], is_checked: checked };
+
+    await updateShoppingItemSources(itemId, updatedSources);
+};
+
+export const toggleAllShoppingItemChecks = async (itemId: string, checked: boolean) => {
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
+
+    const items = get(userShoppingList).data;
+    const item = items.find(i => i.id === itemId);
+
+    if (!item) {
+        throw new Error("Shopping item not found");
+    }
+
+    const updatedSources = item.sources.map(source => ({ ...source, is_checked: checked }));
+    await updateShoppingItemSources(itemId, updatedSources);
+};
+
+export const addManualShoppingItem = async (ingredientName: string, amount: number, unit: string | null) => {
+    await addShoppingItem(ingredientName, {
+        recipe_id: null,
+        amount,
+        unit
+    });
 };
 
 // Initialization & Resets

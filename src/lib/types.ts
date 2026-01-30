@@ -12,6 +12,30 @@ export interface Ingredient {
     notes?: string;
 }
 
+/**
+ * ShoppingListSource represents a single source of an ingredient.
+ * Each source tracks which recipe it came from and its individual amount/unit.
+ */
+export interface ShoppingListSource {
+    recipe_id: string | null; // null for manual items added by user
+    amount: number;
+    unit: string | null;
+    is_checked: boolean;
+}
+
+/**
+ * ShoppingListItem is a Firestore document that groups all sources
+ * of the same ingredient together (e.g., all "Cà Chua" from different recipes).
+ */
+export interface ShoppingListItem {
+    id: string; // Firestore document ID
+    ingredient_name: string; // e.g., "Cà Chua" (normalized lowercase)
+    sources: ShoppingListSource[];
+    user_id: string; // For Firestore security rules
+    created_at: Date;
+    updated_at: Date;
+}
+
 export interface Recipe {
     id: string;
     title: string;
