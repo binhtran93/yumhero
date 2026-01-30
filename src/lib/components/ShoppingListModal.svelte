@@ -102,7 +102,7 @@
         </div>
     {/snippet}
 
-    <div class="px-6 pb-6">
+    <div class="px-4 pb-4">
         {#if isLoading}
             <div class="flex items-center justify-center h-64">
                 <div

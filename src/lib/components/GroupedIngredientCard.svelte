@@ -99,10 +99,7 @@
         </button>
 
         <!-- Ingredient Name & Quantities (single line) -->
-        <button
-            class="flex-1 text-left min-w-0 py-1"
-            onclick={() => (isExpanded = !isExpanded)}
-        >
+        <button class="flex-1 text-left min-w-0 py-1" onclick={handleToggle}>
             <div
                 class="flex items-baseline gap-2 flex-wrap"
                 class:line-through={allChecked}
@@ -135,7 +132,7 @@
 
     <!-- Collapsible Source Details -->
     {#if isExpanded && sources.length > 1}
-        <div class="pb-3 pl-14 pr-4 space-y-1.5 bg-app-surface-deep/30">
+        <div class="pb-3 pl-8 pr-4 space-y-1.5 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button
                     class="flex items-center gap-2.5 w-full text-left py-1.5 px-2 hover:bg-app-surface-hover/50 rounded-lg transition-colors active:scale-[0.98]"
