@@ -16,6 +16,7 @@
         Utensils,
         ExternalLink,
         ShoppingCart,
+        Square,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
@@ -208,9 +209,11 @@
                                     <li
                                         class="flex items-start gap-3 p-1 -mx-2 rounded-lg"
                                     >
-                                        <div
-                                            class="mt-2 w-1.5 h-1.5 rounded-full bg-app-primary shrink-0"
-                                        ></div>
+                                        <Square
+                                            size={16}
+                                            strokeWidth={2.5}
+                                            class="text-app-border-strong shrink-0 mt-1"
+                                        />
                                         <div
                                             class="text-[15px] text-app-text leading-snug flex-1"
                                         >

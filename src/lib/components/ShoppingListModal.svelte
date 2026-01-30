@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { X, Check, Search, ChevronRight } from "lucide-svelte";
+    import { X, Check, Search, Info, CheckSquare, Square } from "lucide-svelte";
     import type { WeeklyPlan, Recipe } from "$lib/types";
     import {
         aggregatedShoppingList,
@@ -93,7 +93,7 @@
         tabindex="-1"
     >
         <div
-            class="bg-app-surface w-full max-w-lg h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col relative border border-app-border/20"
+            class="bg-app-surface w-full max-w-4xl h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col relative border border-app-border/20"
             transition:scale={{ start: 0.95, duration: 250 }}
         >
             <!-- Header -->
@@ -145,37 +145,44 @@
             </div>
 
             <!-- List -->
-            <div class="flex-1 overflow-y-auto px-6 pb-6">
+            <div class="flex-1 overflow-y-auto px-6 pb-6 mt-4">
                 {#if filteredList.length === 0}
                     <div
-                        class="flex flex-col items-center justify-center h-full text-center opacity-60 py-16"
+                        class="flex flex-col items-center justify-center h-full text-center py-16"
                     >
                         <div
-                            class="w-16 h-16 rounded-2xl bg-app-bg flex items-center justify-center mb-4"
+                            class="w-20 h-20 rounded-3xl bg-app-surface-deep flex items-center justify-center mb-4 shadow-inner"
                         >
-                            <Search size={28} class="text-app-text-muted" />
+                            <Search
+                                size={32}
+                                class="text-app-text-muted opacity-40"
+                            />
                         </div>
-                        <p class="font-bold text-app-text mb-1">
-                            No ingredients
+                        <p class="font-black text-xl text-app-text mb-2">
+                            No ingredients found
                         </p>
-                        <p class="text-xs text-app-text-muted max-w-[200px]">
-                            Add recipes to your plan to see shopping items
+                        <p
+                            class="text-sm font-bold text-app-text-muted max-w-[240px]"
+                        >
+                            Try changing your search or adding recipes to your
+                            plan.
                         </p>
                     </div>
                 {:else}
-                    <div class="space-y-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2">
                         {#each filteredList as item (item.id)}
                             {@const isChecked = checkedItems[item.id] || false}
                             {@const isExpanded =
                                 expandedItems[item.id] || false}
                             <div
-                                class="group rounded-xl transition-all duration-200 overflow-hidden"
+                                class="group transition-all duration-200
+                                {isChecked
+                                    ? 'bg-app-surface/50 opacity-50'
+                                    : 'bg-app-surface hover:bg-app-surface-hover'}"
                             >
                                 <!-- Main Row -->
                                 <div
-                                    class="w-full flex items-center gap-3 p-4 rounded-xl transition-all cursor-pointer {isChecked
-                                        ? 'bg-app-bg/50 opacity-60'
-                                        : 'bg-app-bg hover:bg-app-surface-hover'}"
+                                    class="w-full flex items-center gap-4 p-3 text-left cursor-pointer"
                                     onclick={() => toggleCheck(item.id)}
                                     role="button"
                                     tabindex="0"
@@ -189,55 +196,63 @@
                                         }
                                     }}
                                 >
-                                    <!-- Checkbox -->
-                                    <div
-                                        class="w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all {isChecked
-                                            ? 'bg-green-500 border-green-500 scale-105'
-                                            : 'border-app-text-muted/30 group-hover:border-app-primary/50'}"
-                                    >
+                                    <!-- Custom Checkbox -->
+                                    <div class="shrink-0">
                                         {#if isChecked}
-                                            <Check
-                                                size={12}
-                                                strokeWidth={3}
-                                                class="text-white"
+                                            <div
+                                                in:scale={{
+                                                    duration: 200,
+                                                    start: 0.8,
+                                                }}
+                                                class="text-app-primary"
+                                            >
+                                                <CheckSquare
+                                                    size={22}
+                                                    fill="currentColor"
+                                                    class="fill-app-primary/10"
+                                                />
+                                            </div>
+                                        {:else}
+                                            <Square
+                                                size={22}
+                                                class="text-app-border-strong group-hover:text-app-primary transition-colors"
                                             />
                                         {/if}
                                     </div>
 
                                     <!-- Content -->
                                     <div class="flex-1 min-w-0">
-                                        <p
-                                            class="font-semibold text-sm text-app-text {isChecked
-                                                ? 'line-through'
-                                                : ''} capitalize leading-tight"
-                                        >
-                                            {item.name}
-                                        </p>
-                                        <p
-                                            class="text-xs text-app-text-muted mt-0.5 font-medium"
-                                        >
-                                            {formatAmount(item.amount)}
-                                            {item.unit}
-                                        </p>
-                                    </div>
-
-                                    <!-- Sources Badge -->
-                                    {#if item.sources.length > 1}
                                         <div
-                                            class="px-2 py-1 bg-app-primary/10 rounded-lg"
+                                            class="flex flex-wrap items-baseline gap-x-1.5 {isChecked
+                                                ? 'line-through'
+                                                : ''} transition-all"
                                         >
+                                            {#if item.amount > 0}
+                                                <span
+                                                    class="text-base font-black text-app-text"
+                                                >
+                                                    {formatAmount(item.amount)}
+                                                </span>
+                                            {/if}
+                                            {#if item.unit}
+                                                <span
+                                                    class="text-base font-black text-app-text"
+                                                >
+                                                    {item.unit}
+                                                </span>
+                                            {/if}
                                             <span
-                                                class="text-[10px] font-bold text-app-primary"
+                                                class="text-base font-bold text-app-text capitalize break-words"
                                             >
-                                                {item.sources.length}×
+                                                {item.name}
                                             </span>
                                         </div>
-                                    {/if}
+                                    </div>
 
                                     <!-- Expand Button -->
                                     <button
-                                        class="p-1.5 text-app-text-muted hover:text-app-primary rounded-lg transition-all {isExpanded
-                                            ? 'rotate-90'
+                                        class="shrink-0 p-1.5 text-app-text-muted hover:text-app-primary hover:bg-app-primary/10 rounded-lg transition-all {isExpanded
+                                            ? 'rotate-90 bg-app-primary/10 text-app-primary'
                                             : ''}"
                                         onclick={(e) => {
                                             e.stopPropagation();
@@ -245,51 +260,58 @@
                                         }}
                                         aria-label="View sources"
                                     >
-                                        <ChevronRight size={16} />
+                                        <Info size={18} strokeWidth={2.5} />
                                     </button>
                                 </div>
 
                                 <!-- Expanded Details -->
                                 {#if isExpanded}
                                     <div
-                                        class="bg-app-surface-hover/30 mx-4 mb-2 rounded-xl p-3 border-l-2 border-app-primary/30"
+                                        class="px-4 pb-4 pt-0"
                                         transition:slide={{ duration: 200 }}
                                     >
-                                        <h4
-                                            class="text-[10px] uppercase tracking-widest font-bold text-app-text-muted mb-2 opacity-60"
+                                        <div
+                                            class="bg-app-surface-deep rounded-xl p-3 space-y-3 border border-app-border/50"
                                         >
-                                            Used in {item.sources.length}
-                                            {item.sources.length === 1
-                                                ? "recipe"
-                                                : "recipes"}
-                                        </h4>
-                                        <ul class="space-y-2">
-                                            {#each item.sources as source}
-                                                <li
-                                                    class="flex items-start justify-between gap-2"
-                                                >
-                                                    <div class="flex-1 min-w-0">
-                                                        <p
-                                                            class="font-medium text-xs text-app-text leading-tight truncate"
-                                                        >
-                                                            {source.recipeName}
-                                                        </p>
-                                                        <p
-                                                            class="text-[10px] text-app-text-muted mt-0.5"
-                                                        >
-                                                            {source.day} • {source.mealType}
-                                                        </p>
-                                                    </div>
-                                                    <span
-                                                        class="text-xs font-mono text-app-text-muted shrink-0"
+                                            <h4
+                                                class="text-[10px] font-black uppercase tracking-[0.15em] text-app-text-muted opacity-60 flex items-center gap-2"
+                                            >
+                                                <span
+                                                    class="w-1 h-1 bg-app-primary rounded-full"
+                                                ></span>
+                                                Breakdown
+                                            </h4>
+                                            <ul class="space-y-2.5">
+                                                {#each item.sources as source}
+                                                    <li
+                                                        class="flex items-center justify-between gap-4"
                                                     >
-                                                        {formatAmount(
-                                                            source.originalAmount,
-                                                        )}
-                                                    </span>
-                                                </li>
-                                            {/each}
-                                        </ul>
+                                                        <div class="min-w-0">
+                                                            <p
+                                                                class="font-bold text-xs text-app-text truncate"
+                                                            >
+                                                                {source.recipeName}
+                                                            </p>
+                                                            <p
+                                                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-tight"
+                                                            >
+                                                                {source.day.slice(
+                                                                    0,
+                                                                    3,
+                                                                )} • {source.mealType}
+                                                            </p>
+                                                        </div>
+                                                        <span
+                                                            class="text-xs font-black text-app-text-muted tabular-nums bg-app-bg px-2 py-1 rounded-md border border-app-border/40"
+                                                        >
+                                                            {formatAmount(
+                                                                source.originalAmount,
+                                                            )}
+                                                        </span>
+                                                    </li>
+                                                {/each}
+                                            </ul>
+                                        </div>
                                     </div>
                                 {/if}
                             </div>
