@@ -215,9 +215,6 @@ export const buildShoppingListFromPlan = (
     return Array.from(itemsMap.values());
 };
 
-/**
- * Get all recipe IDs from a meal plan.
- */
 const getRecipeIdsFromPlan = (plan: WeeklyPlan): Set<string> => {
     const recipeIds = new Set<string>();
 
@@ -237,12 +234,9 @@ const getRecipeIdsFromPlan = (plan: WeeklyPlan): Set<string> => {
 
 /**
  * Sync shopping list with meal plan changes.
- * Removes sources for recipes that are no longer in the plan.
+ * Updates amounts when recipe quantities change.
+ * Removes sources for recipes no longer in the plan.
  * Preserves manual items (sources with recipe_id === null).
- * 
- * @param currentShoppingList - Current shopping list from Firestore
- * @param newPlan - The updated meal plan
- * @returns Operations to perform: items to update and items to delete
  */
 export const syncShoppingListWithPlan = (
     currentShoppingList: Array<{
@@ -261,32 +255,72 @@ export const syncShoppingListWithPlan = (
     toDelete: string[];
 } => {
     const planRecipeIds = getRecipeIdsFromPlan(newPlan);
+
+    const planIngredients = new Map<string, Map<string, number>>();
+
+    newPlan.forEach(dayPlan => {
+        Object.entries(dayPlan.meals).forEach(([type, meals]) => {
+            if (type === 'note') return;
+
+            (meals as any[]).forEach(planRecipe => {
+                if (!planRecipe.ingredients || !planRecipe.id) return;
+
+                const quantity = planRecipe.quantity || 1;
+                const recipeId = planRecipe.id;
+
+                planRecipe.ingredients.forEach((ing: any) => {
+                    if (!ing.name) return;
+
+                    const amountVal = parseAmount(ing.amount);
+                    const amount = amountVal === null ? 0 : amountVal;
+                    const scaledAmount = amount * quantity;
+                    const name = ing.name.trim().toLowerCase();
+
+                    if (!planIngredients.has(name)) {
+                        planIngredients.set(name, new Map());
+                    }
+
+                    const ingredientSources = planIngredients.get(name)!;
+                    ingredientSources.set(recipeId, scaledAmount);
+                });
+            });
+        });
+    });
+
     const toUpdate: Array<{ id: string; sources: any[] }> = [];
     const toDelete: string[] = [];
 
     currentShoppingList.forEach(item => {
-        // Filter out sources whose recipe_id is not in the new plan
-        // Keep manual items (recipe_id === null)
         const remainingSources = item.sources.filter(source => {
             if (source.recipe_id === null) {
-                // Keep manual items
                 return true;
             }
-            // Keep only if recipe is still in plan
             return planRecipeIds.has(source.recipe_id);
         });
 
+        let needsUpdate = remainingSources.length !== item.sources.length;
+
+        const planIngredient = planIngredients.get(item.ingredient_name);
+        if (planIngredient) {
+            remainingSources.forEach(source => {
+                if (source.recipe_id && planIngredient.has(source.recipe_id)) {
+                    const newAmount = planIngredient.get(source.recipe_id)!;
+                    if (source.amount !== newAmount) {
+                        source.amount = newAmount;
+                        needsUpdate = true;
+                    }
+                }
+            });
+        }
+
         if (remainingSources.length === 0) {
-            // No sources left, delete the item
             toDelete.push(item.id);
-        } else if (remainingSources.length !== item.sources.length) {
-            // Some sources were removed, update the item
+        } else if (needsUpdate) {
             toUpdate.push({
                 id: item.id,
                 sources: remainingSources
             });
         }
-        // else: no change needed
     });
 
     return { toUpdate, toDelete };
