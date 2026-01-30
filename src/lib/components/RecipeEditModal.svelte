@@ -360,17 +360,6 @@
 >
     <!-- Scroll Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        <!-- Import Actions -->
-        <div class="grid grid-cols-1 gap-3">
-            <button
-                onclick={() => (showPasteModal = true)}
-                class="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text hover:border-app-primary hover:bg-app-primary/5 transition-all font-medium text-sm"
-            >
-                <FileText size={18} class="text-app-primary" />
-                <span>Paste Recipe text</span>
-            </button>
-        </div>
-
         <!-- Basic Info Wrapper -->
         <div class="flex flex-row gap-4 md:gap-6">
             <!-- Left Column - Inputs -->
@@ -380,7 +369,7 @@
                         type="text"
                         bind:value={title}
                         placeholder="Name"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
+                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium"
                     />
                 </div>
 
@@ -389,7 +378,7 @@
                         type="text"
                         bind:value={source}
                         placeholder="Source"
-                        class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors"
+                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors"
                     />
                 </div>
             </div>
@@ -398,7 +387,7 @@
             <div class="w-24 md:w-32 shrink-0">
                 <button
                     onclick={triggerFileInput}
-                    class="group relative w-full aspect-square md:aspect-[4/3] md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2"
+                    class="group relative w-full aspect-square md:aspect-4/3 md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2"
                 >
                     {#if imageUrl}
                         <img
@@ -482,7 +471,7 @@
                             type="text"
                             bind:value={prepTime}
                             placeholder="e.g. 15 mins"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
                         />
                     </div>
                     <div class="space-y-2">
@@ -495,7 +484,7 @@
                             type="text"
                             bind:value={cookTime}
                             placeholder="e.g. 30 mins"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
                         />
                     </div>
                     <div class="space-y-2">
@@ -508,7 +497,7 @@
                             type="text"
                             bind:value={servings}
                             placeholder="e.g. 4"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
                         />
                     </div>
                     <div class="space-y-2">
@@ -521,7 +510,7 @@
                             type="text"
                             bind:value={yields}
                             placeholder="e.g. 12"
-                            class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
+                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium"
                         />
                     </div>
                 </div>
