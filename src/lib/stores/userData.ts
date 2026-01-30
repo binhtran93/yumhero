@@ -139,19 +139,6 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
-    // Save the plan to Firestore
-    await setDoc(doc(db, `users/${$user.uid}/plans`, weekId), {
-        id: weekId,
-        days: plan,
-        updatedAt: new Date()
-    }, { merge: true });
-
-    // Sync shopping list with the updated plan
-    await syncShoppingList($user.uid, plan);
-};
-
-// Sync shopping list with meal plan
-const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
     const { syncShoppingListWithPlan, buildShoppingListFromPlan } = await import('$lib/utils/shopping');
 
     // Get current shopping list
@@ -191,43 +178,46 @@ const syncShoppingList = async (userId: string, plan: WeeklyPlan) => {
         }
     });
 
-    // If no changes needed, skip
-    if (toUpdate.length === 0 && toDelete.length === 0 && toAdd.length === 0) {
-        return;
-    }
-
-    // Use batch writes for optimal performance (max 500 operations per batch)
+    // Create a single batch for BOTH plan save and shopping list sync
     const batch = writeBatch(db);
 
-    // Add deletions to batch
+    // 1. Add plan save to batch
+    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
+    batch.set(planRef, {
+        id: weekId,
+        days: plan,
+        updatedAt: new Date()
+    }, { merge: true });
+
+    // 2. Add shopping list deletions to batch
     toDelete.forEach(itemId => {
-        const docRef = doc(db, `users/${userId}/shopping_lists`, itemId);
+        const docRef = doc(db, `users/${$user.uid}/shopping_lists`, itemId);
         batch.delete(docRef);
     });
 
-    // Add updates to batch
+    // 3. Add shopping list updates to batch
     toUpdate.forEach(update => {
-        const docRef = doc(db, `users/${userId}/shopping_lists`, update.id);
+        const docRef = doc(db, `users/${$user.uid}/shopping_lists`, update.id);
         batch.update(docRef, {
             sources: update.sources,
             updated_at: new Date()
         });
     });
 
-    // Add new items to batch
+    // 4. Add new shopping list items to batch
     toAdd.forEach(item => {
-        const docRef = doc(collection(db, `users/${userId}/shopping_lists`));
+        const docRef = doc(collection(db, `users/${$user.uid}/shopping_lists`));
         batch.set(docRef, {
             id: docRef.id,
             ingredient_name: item.ingredient_name,
             sources: item.sources.map(s => ({ ...s, is_checked: false })),
-            user_id: userId,
+            user_id: $user.uid,
             created_at: new Date(),
             updated_at: new Date()
         });
     });
 
-    // Commit all operations atomically
+    // Commit everything atomically - plan save AND shopping list sync together
     await batch.commit();
 };
 
