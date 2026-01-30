@@ -158,7 +158,7 @@
 
                             <!-- Instruction Content -->
                             <div
-                                class="max-h-[30vh] md:max-h-[40vh] overflow-y-auto px-2"
+                                class="max-h-[70vh] overflow-y-auto px-2"
                             >
                                 <p
                                     class="text-xl md:text-3xl font-medium text-app-text leading-relaxed"

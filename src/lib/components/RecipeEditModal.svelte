@@ -626,7 +626,7 @@
         <button
             onclick={onClose}
             disabled={isSaving}
-            class="flex-1 px-6 py-3 border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-6 py-3 border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-auto"
         >
             Cancel
         </button>
