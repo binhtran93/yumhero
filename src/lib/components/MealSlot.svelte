@@ -161,9 +161,9 @@
     ></button>
     <!-- Cell Header (Subtle Label) -->
     <div
-        class="relative z-10 pointer-events-none p-2 py-1.5 flex items-center justify-between bg-app-bg/10 hover:bg-app-bg/20 transition-colors"
+        class="relative z-10 pointer-events-none p-2 py-1 flex items-center justify-between transition-colors bg-app-bg/10 group-hover:bg-app-bg/20"
     >
-        <div class="flex items-center">
+        <div class="flex items-center pointer-events-none">
             <div
                 class={twMerge(
                     "w-2 h-2 rounded-full mr-2",
@@ -184,6 +184,14 @@
                 {type}
             </span>
         </div>
+        <button
+            type="button"
+            class="hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:!text-app-text-muted/100 pointer-events-auto"
+            onclick={onClick}
+            aria-label={`Add to ${type}`}
+        >
+            <Plus size={14} />
+        </button>
     </div>
 
     <!-- Cell Content -->
@@ -285,19 +293,20 @@
         {/each}
 
         {#if items.length === 0 && !isLoading}
-            <div class="flex-1 flex items-center justify-center -mt-2">
+            <div
+                class="flex-1 flex items-center justify-center -mt-2 md:mt-0 md:block"
+            >
                 <Plus
                     size={16}
-                    class="text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-colors"
+                    class="text-app-text-muted/80 md:hidden transition-colors"
                 />
             </div>
         {:else}
-            <!-- Filling the remaining space with a subtle interactive area -->
-            <div class="flex-1 flex items-center justify-center min-h-8">
-                <Plus
-                    size={16}
-                    class="text-app-text-muted/80 md:text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-all duration-200"
-                />
+            <!-- Bottom Plus: Show only on mobile, remove from desktop -->
+            <div
+                class="flex-1 flex items-center justify-center min-h-8 md:hidden"
+            >
+                <Plus size={16} class="text-app-text-muted/80" />
             </div>
         {/if}
 
