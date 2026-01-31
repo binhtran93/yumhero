@@ -15,6 +15,8 @@
 
     import type { Recipe, Ingredient } from "$lib/types";
     import { addRecipe } from "$lib/stores/recipes";
+    import { userTags, addTag as addUserTag } from "$lib/stores/tags";
+    import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
     import { toasts } from "$lib/stores/toasts";
@@ -79,6 +81,7 @@
         ingredientMode: "line" | "bulk"; // Track mode per variant
         bulkIngredients: string;
         instructions: string;
+        tags: string[];
     };
 
     let recipeVariants = $state<RecipeVariantState[]>([]);
@@ -137,6 +140,7 @@
         ingredientMode: "line",
         bulkIngredients: "",
         instructions: "",
+        tags: [],
     });
 
     const populateForm = (data: Partial<Recipe>) => {
@@ -172,6 +176,7 @@
             instructions: Array.isArray(data.instructions)
                 ? data.instructions.join("\n\n")
                 : data.instructions || "",
+            tags: data.tags || [],
         };
     };
 
@@ -190,6 +195,7 @@
         ingredientMode = variant.ingredientMode;
         bulkIngredients = variant.bulkIngredients;
         instructions = variant.instructions;
+        tags = variant.tags || [];
     };
 
     const saveBufferToVariant = (index: number) => {
@@ -218,6 +224,7 @@
             ingredientMode,
             bulkIngredients: syncedBulk,
             instructions,
+            tags,
         };
     };
 
@@ -316,6 +323,36 @@
 
     const formatIngredientToString = (i: FormIngredient) => {
         return `${i.amount} ${i.unit} ${i.name}`.trim();
+    };
+
+    // Tags Management
+    let tagInput = $state("");
+    let tags = $state<string[]>([]);
+
+    const addTag = () => {
+        const cleanTag = tagInput.trim();
+        if (cleanTag && tags.length < 5 && !tags.includes(cleanTag)) {
+            tags = [...tags, cleanTag];
+            tagInput = "";
+        }
+    };
+
+    const removeTag = (index: number) => {
+        tags = tags.filter((_, i) => i !== index);
+    };
+
+    const handleTagKeydown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addTag();
+        } else if (e.key === "," || e.key === " ") {
+            // Allow comma or space to add tag too, but don't prevent default if it's space and we want to allow spaces in tags?
+            // Actually, usually tags don't have spaces, but some might. Let's stick to Enter and Comma.
+            if (e.key === ",") {
+                e.preventDefault();
+                addTag();
+            }
+        }
     };
 
     const handleImageUpload = (e: Event) => {
@@ -423,11 +460,24 @@
                     yields: variant.yields,
                     ingredients: finalIngredients,
                     instructions: instructionSteps,
-                    tags: [],
+                    tags: variant.tags,
                 };
 
                 try {
                     await addRecipe(newRecipe);
+                    // Also ensure tags are in user's tag collection
+                    for (const tagLabel of variant.tags) {
+                        const existingTags = get(userTags).data;
+                        if (
+                            !existingTags.some(
+                                (t) =>
+                                    t.label.toLowerCase() ===
+                                    tagLabel.toLowerCase(),
+                            )
+                        ) {
+                            await addUserTag(tagLabel);
+                        }
+                    }
                     successCount++;
                 } catch (e) {
                     console.error("Failed to save", e);
@@ -468,12 +518,13 @@
 
     const handleImportFromUrl = async (url: string) => {
         try {
+            const currentTags = get(userTags).data.map((t) => t.label);
             const response = await fetch("/api/extract-recipe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url, userTags: currentTags }),
             });
 
             if (!response.ok) {
@@ -491,12 +542,13 @@
 
     const handlePasteText = async (text: string) => {
         try {
+            const currentTags = get(userTags).data.map((t) => t.label);
             const response = await fetch("/api/extract-recipe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ text, userTags: currentTags }),
             });
 
             if (!response.ok) {
@@ -863,6 +915,43 @@
                             placeholder="e.g. 12"
                             class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
+                    </div>
+                </div>
+
+                <!-- Tags Section -->
+                <div class="space-y-3">
+                    <label
+                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                        >Tags (Max 5)</label
+                    >
+                    <div
+                        class="flex flex-wrap gap-2 p-2 bg-white dark:bg-gray-800 border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
+                    >
+                        {#each tags as tag, i}
+                            <span
+                                class="bg-app-primary/10 text-app-primary text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1.5 animate-in fade-in scale-in duration-200"
+                            >
+                                {tag}
+                                <button
+                                    onclick={() => removeTag(i)}
+                                    class="hover:text-red-500 transition-colors"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </span>
+                        {/each}
+                        {#if tags.length < 5}
+                            <input
+                                type="text"
+                                bind:value={tagInput}
+                                onkeydown={handleTagKeydown}
+                                onblur={addTag}
+                                placeholder={tags.length === 0
+                                    ? "Add tags (e.g. Healthy, Quick, Vegan)"
+                                    : "Add tag..."}
+                                class="flex-1 bg-transparent border-none outline-none text-app-text placeholder:text-app-text-muted/50 text-sm min-w-[120px] h-8"
+                            />
+                        {/if}
                     </div>
                 </div>
             </div>

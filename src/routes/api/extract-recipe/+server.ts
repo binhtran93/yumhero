@@ -41,7 +41,7 @@ export async function POST({ request }) {
     });
 
     try {
-        const { url, text: pastedText } = await request.json();
+        const { url, text: pastedText, userTags } = await request.json();
 
         if (!url && !pastedText) {
             return json({ error: 'URL or text is required' }, { status: 400 });
@@ -129,6 +129,17 @@ export async function POST({ request }) {
             IMPORTANT FOR SERVINGS:
             If the servings amount is provided as a range (e.g. "4-6"), you MUST calculate the average and return a SINGLE NUMBER (e.g. 5).
             Do not return a string or a range. Servings must always be a number.
+
+            IMPORTANT FOR TAGS:
+            The user has some saved tags: ${userTags?.length > 0 ? userTags.join(', ') : 'None'}.
+            When generating tags for each recipe:
+            1. You MUST limit the number of tags to a maximum of 5.
+            2. Refer to the user's saved tags above. If a recipe is suitable for any of those tags, USE THEM first.
+            3. You can also come up with new tags if they are highly relevant and better describe the recipe than the user's existing tags.
+            4. Rate/score all potential tags (both existing and new) based on how well they describe the recipe.
+            5. Finalize the list by picking the top 5 highest-scoring tags.
+            6. If a new tag has a very high score (higher than some existing tags), include it even if it's not in the user's list.
+            7. Return the final list of up to 5 tags in the 'tags' field.
         `;
 
         const { output } = await generateText({
