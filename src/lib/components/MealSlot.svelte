@@ -203,7 +203,7 @@
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm text-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
+                    "pointer-events-auto group/item relative flex items-start gap-2 px-3 py-2 rounded-xl shadow-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -225,7 +225,7 @@
                 >
                     <p
                         class={twMerge(
-                            "font-bold leading-tight text-sm",
+                            "font-bold leading-tight text-xs 2xl:text-sm",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
