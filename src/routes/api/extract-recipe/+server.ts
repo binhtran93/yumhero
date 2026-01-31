@@ -26,6 +26,7 @@ const RecipeSchema = z.object({
     instructions: z.array(z.string()).describe('Step-by-step cooking instructions'),
     prepNotes: z.string().optional().describe('Notes about preparation before starting'),
     course: z.string().optional().describe('Course type, e.g. Breakfast, Lunch, Dinner'),
+    mealTypes: z.array(z.enum(['breakfast', 'lunch', 'dinner', 'snack'])).describe('The categorical meal types this recipe is suitable for. Pick ONE OR MANY from: breakfast, lunch, dinner, snack.'),
     cuisine: z.string().optional().describe('Cuisine type, e.g. Italian, Mexican'),
     mainIngredient: z.string().optional().describe('The main ingredient of the dish'),
     tags: z.array(z.string()).describe('List of smart tags for the recipe, e.g. "Healthy", "Weeknight Dinner", "Quick", "Vegan", "Gluten-Free", "Kid-Friendly"')
@@ -139,7 +140,8 @@ export async function POST({ request }) {
             4. Rate/score all potential tags (both existing and new) based on how well they describe the recipe.
             5. Finalize the list by picking the top 5 highest-scoring tags.
             6. If a new tag has a very high score (higher than some existing tags), include it even if it's not in the user's list.
-            7. Return the final list of up to 5 tags in the 'tags' field.
+            7. For 'mealTypes', categorize the recipe into ALL suitable categories from: breakfast, lunch, dinner, snack. If a recipe is versatile (e.g. a granola that works for breakfast or a snack, or a dish suitable for both lunch and dinner), YOU MUST include all relevant types in the array.
+            8. Return the final list of up to 5 tags in the 'tags' field.
         `;
 
         const { output } = await generateText({

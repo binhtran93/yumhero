@@ -97,20 +97,43 @@
 
                     <!-- Info (Title, Desc, Stats) -->
                     <div class="flex-1 flex flex-col justify-center space-y-4">
-                        <!-- Tags -->
-                        {#if recipe.tags && recipe.tags.length > 0}
-                            <div
-                                class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-app-text-muted"
-                            >
-                                {#each recipe.tags as tag}
-                                    <span
-                                        class="px-2 py-1 rounded-md bg-app-surface-hover border border-app-border"
-                                    >
-                                        {getTagName(tag)}
-                                    </span>
-                                {/each}
-                            </div>
-                        {/if}
+                        <!-- Tags & Meal Types -->
+                        <div class="flex flex-col gap-3">
+                            {#if recipe.mealTypes && recipe.mealTypes.length > 0}
+                                <div class="flex flex-wrap gap-2">
+                                    {#each recipe.mealTypes as type}
+                                        <span
+                                            class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border
+                                            {type === 'breakfast'
+                                                ? 'bg-accent-breakfast text-white border-accent-breakfast'
+                                                : type === 'lunch'
+                                                  ? 'bg-accent-lunch text-white border-accent-lunch'
+                                                  : type === 'dinner'
+                                                    ? 'bg-accent-dinner text-white border-accent-dinner'
+                                                    : type === 'snack'
+                                                      ? 'bg-accent-snack text-white border-accent-snack'
+                                                      : 'bg-app-primary text-white border-app-primary'}"
+                                        >
+                                            {type}
+                                        </span>
+                                    {/each}
+                                </div>
+                            {/if}
+
+                            {#if recipe.tags && recipe.tags.length > 0}
+                                <div
+                                    class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-app-text-muted"
+                                >
+                                    {#each recipe.tags as tag}
+                                        <span
+                                            class="px-2 py-1 rounded-md bg-app-surface-hover border border-app-border"
+                                        >
+                                            {getTagName(tag)}
+                                        </span>
+                                    {/each}
+                                </div>
+                            {/if}
+                        </div>
 
                         <h1
                             class="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-app-text leading-tight"

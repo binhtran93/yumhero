@@ -62,6 +62,7 @@ export interface Recipe {
     ingredients: Ingredient[];
     instructions: string[];
     prepNotes?: string;
+    mealTypes?: MealType[];
     course?: string;
     cuisine?: string;
     mainIngredient?: string;

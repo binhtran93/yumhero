@@ -178,7 +178,7 @@
                             title={recipe.title}
                             image={recipe.image}
                             totalTime={recipe.totalTime}
-                            servings={recipe.servings}
+                            servings={recipe.servings || 1}
                             tags={recipe.tags}
                         />
                     </div>

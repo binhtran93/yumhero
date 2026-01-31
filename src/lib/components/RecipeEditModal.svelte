@@ -13,13 +13,14 @@
         MoreVertical,
     } from "lucide-svelte";
 
-    import type { Recipe, Ingredient } from "$lib/types";
+    import type { Recipe, Ingredient, MealType } from "$lib/types";
     import { addRecipe } from "$lib/stores/recipes";
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
     import { toasts } from "$lib/stores/toasts";
+    import { twMerge } from "tailwind-merge";
 
     type FormIngredient = {
         amount: string;
@@ -64,6 +65,7 @@
 
     // Instructions
     let instructions = $state("");
+    let mealTypes = $state<MealType[]>([]);
     let showAdvanced = $state(false);
 
     // Multiple Recipe Management
@@ -82,6 +84,7 @@
         bulkIngredients: string;
         instructions: string;
         tags: string[];
+        mealTypes: MealType[];
     };
 
     let recipeVariants = $state<RecipeVariantState[]>([]);
@@ -141,6 +144,7 @@
         bulkIngredients: "",
         instructions: "",
         tags: [],
+        mealTypes: [],
     });
 
     const populateForm = (data: Partial<Recipe>) => {
@@ -177,6 +181,7 @@
                 ? data.instructions.join("\n\n")
                 : data.instructions || "",
             tags: data.tags || [],
+            mealTypes: data.mealTypes || [],
         };
     };
 
@@ -196,6 +201,7 @@
         bulkIngredients = variant.bulkIngredients;
         instructions = variant.instructions;
         tags = variant.tags || [];
+        mealTypes = variant.mealTypes || [];
     };
 
     const saveBufferToVariant = (index: number) => {
@@ -225,6 +231,7 @@
             bulkIngredients: syncedBulk,
             instructions,
             tags,
+            mealTypes,
         };
     };
 
@@ -323,6 +330,14 @@
 
     const formatIngredientToString = (i: FormIngredient) => {
         return `${i.amount} ${i.unit} ${i.name}`.trim();
+    };
+
+    const toggleMealType = (type: MealType) => {
+        if (mealTypes.includes(type)) {
+            mealTypes = mealTypes.filter((t) => t !== type);
+        } else {
+            mealTypes = [...mealTypes, type];
+        }
     };
 
     // Tags Management
@@ -493,6 +508,7 @@
                     ingredients: finalIngredients,
                     instructions: instructionSteps,
                     tags: variant.tags,
+                    mealTypes: variant.mealTypes,
                 };
 
                 try {
@@ -801,14 +817,30 @@
                     />
                 </div>
 
-                <div class="space-y-2">
-                    <input
-                        type="text"
-                        bind:value={source}
-                        disabled={isSaving}
-                        placeholder="Source"
-                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
+                <div class="space-y-3">
+                    <div class="flex flex-wrap gap-2">
+                        {#each ["breakfast", "lunch", "dinner", "snack"] as type}
+                            <button
+                                type="button"
+                                onclick={() => toggleMealType(type as MealType)}
+                                disabled={isSaving}
+                                class={twMerge(
+                                    "px-4 py-2 rounded-full text-xs font-bold border transition-all disabled:opacity-50",
+                                    mealTypes.includes(type as MealType)
+                                        ? "bg-app-primary text-white border-app-primary shadow-sm"
+                                        : "bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50",
+                                )}
+                            >
+                                <span class="capitalize">{type}</span>
+                            </button>
+                        {/each}
+                    </div>
+                    <p
+                        class="text-[11px] text-app-text-muted/70 pl-1 leading-tight"
+                    >
+                        Choose where this recipe fits best in your weekly plan
+                        to help with organization.
+                    </p>
                 </div>
             </div>
 
@@ -888,6 +920,21 @@
                         placeholder="Description"
                         class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors disabled:opacity-50"
                     ></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label
+                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
+                        for="source">Source</label
+                    >
+                    <input
+                        id="source"
+                        type="text"
+                        bind:value={source}
+                        disabled={isSaving}
+                        placeholder="Website URL or cookbook name"
+                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
                 </div>
 
                 <!-- Metadata Row (Prep, Cook, Serves, Yields) -->

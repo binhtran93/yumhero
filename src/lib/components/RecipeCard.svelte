@@ -45,7 +45,6 @@
         class="w-20 h-20 md:w-24 md:h-24 rounded-lg group-hover:scale-105 transition-transform duration-500 shrink-0"
     />
 
-    <!-- Content -->
     <div class="flex-1 flex flex-col justify-center min-w-0 py-1">
         <div class="flex items-start justify-between gap-4 mb-1">
             <!-- Title -->
