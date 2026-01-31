@@ -31,7 +31,7 @@
 </script>
 
 <div
-    class="relative group w-full flex items-start gap-3 p-3 transition-all duration-200 text-left {checked
+    class="relative group w-full flex items-start gap-2.5 p-1.5 sm:p-2.5 transition-all duration-200 text-left {checked
         ? 'opacity-80'
         : 'hover:bg-app-surface-hover/80'}"
     role="button"

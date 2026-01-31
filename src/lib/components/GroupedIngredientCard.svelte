@@ -80,11 +80,11 @@
 
 <!-- Compact Row Layout with High Contrast -->
 <div
-    class="border-b border-app-border/60 last:border-0 transition-colors {isDeleted
+    class="transition-colors {isDeleted
         ? 'bg-red-50/50 dark:bg-red-950/10'
         : 'hover:bg-app-surface-hover/30'}"
 >
-    <div class="flex items-center gap-3 py-3.5 px-2">
+    <div class="flex items-center gap-2 py-1.5 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
             class="shrink-0 p-2 -m-2 active:scale-95 transition-transform"
@@ -92,9 +92,9 @@
             aria-label={`Toggle ${displayName}`}
         >
             {#if allChecked}
-                <CheckSquare size={26} class="text-emerald-600" />
+                <CheckSquare size={24} class="text-emerald-600" />
             {:else if someChecked}
-                <Square size={26} class="text-app-primary">
+                <Square size={24} class="text-app-primary">
                     <rect
                         x="7"
                         y="7"
@@ -104,21 +104,21 @@
                     />
                 </Square>
             {:else}
-                <Square size={26} class="text-app-text/40" />
+                <Square size={24} class="text-app-text/40" />
             {/if}
         </button>
 
         <!-- Ingredient Name & Quantities (single line) -->
-        <button class="flex-1 text-left min-w-0 py-1" onclick={handleToggle}>
+        <button class="flex-1 text-left min-w-0 py-0.5" onclick={handleToggle}>
             <div
                 class="flex items-baseline gap-2 flex-wrap"
                 class:line-through={allChecked}
                 class:opacity-50={allChecked}
             >
-                <span class="font-black text-base text-app-text">
+                <span class="font-semibold text-sm sm:text-base text-app-text">
                     {displayName}
                 </span>
-                <span class="text-sm text-app-text/60 font-semibold">
+                <span class="text-xs sm:text-sm text-app-text/60 font-semibold">
                     — {formattedQuantities}
                     {#if sources.length === 1 && sources[0].day}
                         <span class="opacity-40 font-medium ml-1">
@@ -137,9 +137,9 @@
                 aria-label={isExpanded ? "Collapse" : "Expand"}
             >
                 {#if isExpanded}
-                    <EyeOff size={18} strokeWidth={2.5} />
+                    <EyeOff size={16} strokeWidth={2.5} />
                 {:else}
-                    <Eye size={18} strokeWidth={2.5} />
+                    <Eye size={16} strokeWidth={2.5} />
                 {/if}
             </button>
         {/if}
@@ -159,10 +159,10 @@
 
     <!-- Collapsible Source Details -->
     {#if isExpanded && sources.length > 1 && !isDeleted}
-        <div class="pb-3 pl-8 pr-4 space-y-1.5 bg-app-surface-deep/30">
+        <div class="pb-2.5 pl-8 pr-4 space-y-1 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button
-                    class="flex items-center gap-2.5 w-full text-left py-1.5 px-2 hover:bg-app-surface-hover/50 rounded-lg transition-colors active:scale-[0.98]"
+                    class="flex items-center gap-2 w-full text-left py-1 px-2 hover:bg-app-surface-hover/50 rounded-lg transition-colors active:scale-[0.98]"
                     onclick={() => onToggleSource(i, !source.is_checked)}
                 >
                     <!-- Regular checkbox style -->

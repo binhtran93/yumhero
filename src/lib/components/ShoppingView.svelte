@@ -59,7 +59,7 @@
 
     <!-- Content Area -->
     <div class="flex-1 overflow-y-auto pb-20">
-        <div class="max-w-5xl mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto px-4 py-4 sm:py-8">
             <!-- Summary Header -->
             <div
                 class="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-6"
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Ingredients Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
                 {#each recipe.ingredients as ingredient, i}
                     <IngredientItem
                         name={ingredient.name}

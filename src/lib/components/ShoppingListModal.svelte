@@ -176,12 +176,18 @@
     closeOnEsc={!showAddManualModal && !showEditModal}
 >
     {#snippet header()}
-        <div class="px-6 pt-6 pb-2 flex items-center justify-between shrink-0">
+        <div
+            class="px-4 pb-1 pt-4 sm:px-6 sm:pt-6 flex items-center justify-between shrink-0"
+        >
             <div class="flex-1">
-                <h2 class="text-2xl font-display font-black text-app-text">
+                <h2
+                    class="text-xl sm:text-2xl font-display font-black text-app-text"
+                >
                     Shopping List
                 </h2>
-                <p class="text-sm text-app-text-muted font-medium mt-1">
+                <p
+                    class="text-xs sm:text-sm text-app-text-muted font-medium mt-0.5"
+                >
                     {activeCount} ingredient{activeCount === 1 ? "" : "s"}
                     {#if showDeleted && deletedCount > 0}
                         <span class="text-red-500">
@@ -207,7 +213,7 @@
         </div>
     {/snippet}
 
-    <div class="px-4 pb-4">
+    <div class="px-2 pb-2 sm:px-4 sm:pb-4">
         {#if isLoading}
             <div class="flex items-center justify-center h-64">
                 <div
