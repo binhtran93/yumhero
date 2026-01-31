@@ -5,7 +5,7 @@
     import Modal from "./Modal.svelte";
     import ShoppingListHeaderMenu from "./ShoppingListHeaderMenu.svelte";
     import {
-        userShoppingList,
+        getWeekShoppingList,
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
         toggleAllShoppingItemChecks as toggleAllShoppingItemChecks,
         addManualShoppingItem,
@@ -20,12 +20,13 @@
 
     interface Props {
         isOpen: boolean;
+        weekId: string;
         plan: WeeklyPlan;
         availableRecipes: Recipe[];
         onClose: () => void;
     }
 
-    let { isOpen, plan, availableRecipes, onClose }: Props = $props();
+    let { isOpen, weekId, plan, availableRecipes, onClose }: Props = $props();
 
     // Modal states
     let showAddManualModal = $state(false);
@@ -42,9 +43,10 @@
     // Toggle for showing deleted items
     let showDeleted = $state(false);
 
-    // Subscribe to shopping list
-    let shoppingList = $derived($userShoppingList.data);
-    let isLoading = $derived($userShoppingList.loading);
+    // Subscribe to week-scoped shopping list
+    let weekShoppingListStore = $derived(getWeekShoppingList(weekId));
+    let shoppingList = $derived($weekShoppingListStore.data);
+    let isLoading = $derived($weekShoppingListStore.loading);
 
     // Filter items based on showDeleted state
     let displayedItems = $derived(
@@ -63,7 +65,7 @@
 
     const handleToggleAll = async (itemId: string, checked: boolean) => {
         try {
-            await toggleAllShoppingItemChecks(itemId, checked);
+            await toggleAllShoppingItemChecks(weekId, itemId, checked);
         } catch (error) {
             console.error("Failed to toggle all checks:", error);
         }
@@ -75,7 +77,12 @@
         checked: boolean,
     ) => {
         try {
-            await toggleShoppingSourceCheck(itemId, sourceIndex, checked);
+            await toggleShoppingSourceCheck(
+                weekId,
+                itemId,
+                sourceIndex,
+                checked,
+            );
         } catch (error) {
             console.error("Failed to toggle source:", error);
         }
@@ -87,6 +94,7 @@
         const amount = parseFloat(manualItemAmount) || 0;
         try {
             await addManualShoppingItem(
+                weekId,
                 manualItemName,
                 amount,
                 manualItemUnit.trim() || null,
@@ -103,7 +111,7 @@
 
     const handleDeleteItem = async (itemId: string) => {
         try {
-            await softDeleteShoppingItem(itemId);
+            await softDeleteShoppingItem(weekId, itemId);
         } catch (error) {
             console.error("Failed to delete item:", error);
         }
@@ -111,7 +119,7 @@
 
     const handleRestoreItem = async (itemId: string) => {
         try {
-            await restoreShoppingItem(itemId);
+            await restoreShoppingItem(weekId, itemId);
         } catch (error) {
             console.error("Failed to restore item:", error);
         }
@@ -132,6 +140,7 @@
         const amount = parseFloat(editItemAmount) || 0;
         try {
             await updateShoppingItem(
+                weekId,
                 editingItem.id,
                 amount,
                 editItemUnit.trim() || null,
@@ -145,7 +154,7 @@
 
     const handleResetItem = async (itemId: string) => {
         try {
-            await resetShoppingItem(itemId);
+            await resetShoppingItem(weekId, itemId);
         } catch (error) {
             console.error("Failed to reset item:", error);
         }
@@ -153,7 +162,7 @@
 
     const handleResetAll = async () => {
         try {
-            await resetAllShoppingItems();
+            await resetAllShoppingItems(weekId);
         } catch (error) {
             console.error("Failed to reset all items:", error);
         }

@@ -738,6 +738,7 @@
 
 <ShoppingListModal
     isOpen={isShoppingListOpen}
+    {weekId}
     {plan}
     {availableRecipes}
     onClose={() => (isShoppingListOpen = false)}
