@@ -134,7 +134,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     class={twMerge(
-        "group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-24 cursor-pointer",
+        "group relative flex flex-col bg-app-surface transition-all duration-200 h-full min-h-20 cursor-pointer",
         isDragOver &&
             "ring-2 z-20 " +
                 (type === "breakfast"
