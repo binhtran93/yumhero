@@ -118,6 +118,36 @@
       r.title.toLowerCase().includes(searchQuery.toLowerCase()),
     ),
   );
+
+  const colors = $derived(
+    mealType && mealType !== "note"
+      ? {
+          text: `text-accent-${mealType}`,
+          bg: `bg-accent-${mealType}`,
+          border: `border-accent-${mealType}`,
+          bgLight: `bg-accent-${mealType}/10`,
+          borderLight: `border-accent-${mealType}/20`,
+          hoverBg: `hover:bg-accent-${mealType}`,
+          hoverBgDark: `hover:bg-accent-${mealType}/90`,
+          focusBorder: `focus:border-accent-${mealType}`,
+          hoverText: `hover:text-accent-${mealType}`,
+          hoverBorder: `hover:border-accent-${mealType}`,
+          bgFaint: `bg-accent-${mealType}/5`,
+        }
+      : {
+          text: "text-app-primary",
+          bg: "bg-app-primary",
+          border: "border-app-primary",
+          bgLight: "bg-app-primary/10",
+          borderLight: "border-app-primary/20",
+          hoverBg: "hover:bg-app-primary",
+          hoverBgDark: "hover:bg-app-primary/90",
+          focusBorder: "focus:border-app-primary",
+          hoverText: "hover:text-app-primary",
+          hoverBorder: "hover:border-app-primary",
+          bgFaint: "bg-app-primary/5",
+        },
+  );
 </script>
 
 {#snippet customHeader()}
@@ -126,7 +156,8 @@
   >
     <div>
       <h2 class="text-2xl font-display font-bold text-app-text">
-        Add to <span class="capitalize text-app-primary">{mealType}</span>
+        Add to <span class={twMerge("capitalize", colors.text)}>{mealType}</span
+        >
       </h2>
     </div>
     <button
@@ -143,7 +174,11 @@
   <div class="p-4 border-t border-app-border bg-app-surface shrink-0">
     <button
       onclick={handleDone}
-      class="w-full py-3 rounded-xl bg-app-primary text-white font-bold text-sm shadow-sm hover:bg-app-primary/90 transition-colors"
+      class={twMerge(
+        "w-full py-3 rounded-xl text-white font-bold text-sm shadow-sm transition-colors",
+        colors.bg,
+        colors.hoverBgDark,
+      )}
     >
       Done
     </button>
@@ -169,7 +204,10 @@
           type="text"
           bind:value={searchQuery}
           placeholder={`Search recipes...`}
-          class="w-full pl-11 pr-4 py-3 text-sm bg-app-surface-deep border border-app-border rounded-2xl focus:outline-none focus:border-app-primary text-app-text transition-colors placeholder:text-app-text-muted/50"
+          class={twMerge(
+            "w-full pl-11 pr-4 py-3 text-sm bg-app-surface-deep border border-app-border rounded-2xl focus:outline-none text-app-text transition-colors placeholder:text-app-text-muted/50",
+            colors.focusBorder,
+          )}
         />
       </div>
     </div>
@@ -181,7 +219,12 @@
           {#each selection.values() as { recipe, count } (recipe.id)}
             <button
               onclick={() => removeSelection(recipe.id)}
-              class="flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-app-primary/10 border border-app-primary/20 text-app-primary text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group"
+              class={twMerge(
+                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group",
+                colors.bgLight,
+                colors.borderLight,
+                colors.text,
+              )}
             >
               <span>{recipe.title} {count > 1 ? `(${count})` : ""}</span>
               <X size={14} class="p-0.5" strokeWidth={3} />
@@ -200,7 +243,7 @@
         class={twMerge(
           "flex items-center justify-between px-4 py-3 rounded-2xl border cursor-pointer gap-2",
           count > 0
-            ? "bg-app-primary/5 border-app-primary/20"
+            ? `${colors.bgFaint} ${colors.borderLight}`
             : "bg-transparent border-transparent hover:bg-app-surface-hover",
         )}
         onclick={() => toggleSelection(recipe)}
@@ -213,7 +256,7 @@
           <h3
             class={twMerge(
               "font-display font-bold transition-colors text-sm",
-              count > 0 ? "text-app-primary" : "text-app-text",
+              count > 0 ? colors.text : "text-app-text",
             )}
           >
             {recipe.title}
@@ -232,7 +275,10 @@
                   e.stopPropagation();
                   decrement(recipe);
                 }}
-                class="w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover hover:text-app-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                class={twMerge(
+                  "w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+                  colors.hoverText,
+                )}
                 disabled={count === 0}
               >
                 <Minus size={14} strokeWidth={3} />
@@ -251,7 +297,10 @@
                   e.stopPropagation();
                   increment(recipe);
                 }}
-                class="w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover hover:text-app-primary transition-colors"
+                class={twMerge(
+                  "w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover transition-colors",
+                  colors.hoverText,
+                )}
               >
                 <Plus size={14} strokeWidth={3} />
               </button>
@@ -263,7 +312,12 @@
                 e.stopPropagation();
                 increment(recipe);
               }}
-              class="p-2 rounded-full bg-app-surface text-app-text-muted hover:bg-app-primary hover:text-white transition-all shadow-sm border border-app-border hover:border-app-primary"
+              class={twMerge(
+                "p-2 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border",
+                colors.hoverBg,
+                "hover:text-white",
+                colors.hoverBorder,
+              )}
             >
               <Plus size={16} strokeWidth={3} />
             </button>
