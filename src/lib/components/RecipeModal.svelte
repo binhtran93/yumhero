@@ -26,23 +26,17 @@
 
   let searchQuery = $state("");
 
-  // Track quantity: Recipe ID -> { recipe, count }
-  let selection = $state<Map<string, { recipe: Recipe; count: number }>>(
-    new Map(),
-  );
+  // Track selection: Recipe ID -> Recipe
+  let selection = $state<Map<string, Recipe>>(new Map());
 
   // Reset selection when modal opens
   $effect(() => {
     if (isOpen) {
-      const newSelection = new Map<string, { recipe: Recipe; count: number }>();
+      const newSelection = new Map<string, Recipe>();
+      // Initialize with existing recipes - selection in modal is now just a set
       currentRecipes.forEach((recipe: any) => {
-        // currentRecipes now contains PlannedRecipe with quantity property
-        const existing = newSelection.get(recipe.id);
-        const count = recipe.quantity || 1;
-        if (existing) {
-          existing.count += count;
-        } else {
-          newSelection.set(recipe.id, { recipe, count });
+        if (!newSelection.has(recipe.id)) {
+          newSelection.set(recipe.id, recipe);
         }
       });
       selection = newSelection;
@@ -50,45 +44,18 @@
     }
   });
 
-  const getCount = (recipeId: string) => {
-    return selection.get(recipeId)?.count || 0;
+  const isSelected = (recipeId: string) => {
+    return selection.has(recipeId);
   };
 
   const toggleSelection = (recipe: Recipe) => {
-    if (selection.has(recipe.id)) {
-      const newMap = new Map(selection);
+    const newMap = new Map(selection);
+    if (newMap.has(recipe.id)) {
       newMap.delete(recipe.id);
-      selection = newMap;
     } else {
-      selection = new Map(selection.set(recipe.id, { recipe, count: 1 }));
+      newMap.set(recipe.id, recipe);
     }
-  };
-
-  const increment = (recipe: Recipe) => {
-    const current = selection.get(recipe.id);
-    if (current) {
-      selection = new Map(
-        selection.set(recipe.id, { recipe, count: current.count + 1 }),
-      );
-    } else {
-      selection = new Map(selection.set(recipe.id, { recipe, count: 1 }));
-    }
-  };
-
-  const decrement = (recipe: Recipe) => {
-    const current = selection.get(recipe.id);
-    if (current) {
-      if (current.count > 1) {
-        selection = new Map(
-          selection.set(recipe.id, { recipe, count: current.count - 1 }),
-        );
-      } else {
-        // Remove if count becomes 0
-        const newMap = new Map(selection);
-        newMap.delete(recipe.id);
-        selection = newMap;
-      }
-    }
+    selection = newMap;
   };
 
   // Directly remove via "x" on tag
@@ -99,16 +66,9 @@
   };
 
   const handleDone = () => {
-    if (selection.size > 0) {
-      // Flatten the map into a list of recipes based on count
-      // Each recipe will be added 'count' times with its original servings
-      const result: Recipe[] = [];
-      for (const { recipe, count } of selection.values()) {
-        for (let i = 0; i < count; i++) {
-          result.push(recipe);
-        }
-      }
-      onSelect(result);
+    if (selection.size >= 0) {
+      // Return the current list of selected recipes
+      onSelect(Array.from(selection.values()));
     }
     onClose();
   };
@@ -209,7 +169,7 @@
     {#if selection.size > 0}
       <div class="px-4 pb-4 overflow-x-auto">
         <div class="flex flex-wrap gap-2">
-          {#each selection.values() as { recipe, count } (recipe.id)}
+          {#each selection.values() as recipe (recipe.id)}
             <button
               onclick={() => removeSelection(recipe.id)}
               class={twMerge(
@@ -217,7 +177,7 @@
                 colors.text,
               )}
             >
-              <span>{recipe.title} {count > 1 ? `(${count})` : ""}</span>
+              <span>{recipe.title}</span>
               <X size={14} class="p-0.5" strokeWidth={3} />
             </button>
           {/each}
@@ -229,13 +189,15 @@
   <!-- List -->
   <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-2">
     {#each filteredRecipes as recipe (recipe.id)}
-      {@const count = getCount(recipe.id)}
+      {@const selected = isSelected(recipe.id)}
       <div
         class={twMerge(
           "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors",
-          count > 0
+          selected
             ? `${colors.bgFaint}`
-            : twMerge("bg-transparent border-transparent"),
+            : twMerge(
+                "bg-transparent border-transparent hover:bg-app-surface-hover",
+              ),
         )}
         onclick={() => toggleSelection(recipe)}
         onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
@@ -247,71 +209,36 @@
           <h3
             class={twMerge(
               "font-display font-bold transition-colors text-sm",
-              count > 0 ? colors.text : "text-app-text",
+              selected ? colors.text : "text-app-text",
             )}
           >
             {recipe.title}
           </h3>
         </div>
 
-        <!-- Quantity Controls -->
-        <div class="flex items-center gap-1">
-          {#if count > 0}
+        <!-- Selection Indicator -->
+        <div class="flex items-center">
+          {#if selected}
             <div
-              class="flex items-center bg-white border border-app-border rounded-lg shadow-sm overflow-hidden h-8"
-            >
-              <!-- Decrement -->
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  decrement(recipe);
-                }}
-                class={twMerge(
-                  "w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
-                  colors.hoverText,
-                )}
-                disabled={count === 0}
-              >
-                <Minus size={14} strokeWidth={3} />
-              </button>
-
-              <!-- Count -->
-              <div
-                class="w-6 h-full flex items-center justify-center text-sm font-bold text-app-text border-x border-app-border/50 bg-app-surface-deep"
-              >
-                {count}
-              </div>
-
-              <!-- Increment -->
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  increment(recipe);
-                }}
-                class={twMerge(
-                  "w-8 h-full flex items-center justify-center text-app-text-muted hover:bg-app-surface-hover transition-colors",
-                  colors.hoverText,
-                )}
-              >
-                <Plus size={14} strokeWidth={3} />
-              </button>
-            </div>
-          {:else}
-            <!-- Initial Add Button -->
-            <button
-              onclick={(e) => {
-                e.stopPropagation();
-                increment(recipe);
-              }}
               class={twMerge(
-                "p-2 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border",
-                colors.hoverBg,
-                "hover:text-white",
-                colors.hoverBorder,
+                "p-1.5 rounded-full text-white shadow-sm border",
+                colors.bg,
+                colors.border,
               )}
             >
+              <Plus
+                size={16}
+                strokeWidth={3}
+                class="rotate-45"
+                aria-hidden="true"
+              />
+            </div>
+          {:else}
+            <div
+              class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+            >
               <Plus size={16} strokeWidth={3} />
-            </button>
+            </div>
           {/if}
         </div>
       </div>
