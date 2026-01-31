@@ -12,9 +12,16 @@
         Trash2,
         LogOut,
         User,
+        Sun,
+        Moon,
+        PanelLeftClose,
+        PanelLeftOpen,
+        Layout,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import Avatar from "$lib/components/Avatar.svelte";
+    import { theme } from "$lib/stores/theme";
+    import { sidebarExpanded } from "$lib/stores/ui";
 
     let email = $state("");
     let message = $state("");
@@ -94,30 +101,109 @@
 
             <div class="border-t border-app-border my-4 md:my-6"></div>
 
-            <!-- User Details & Plan -->
-            <div class="space-y-4">
-                <div
-                    class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
-                        >
-                            <User size={20} />
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-app-text">
-                                Current Plan
-                            </p>
-                            <p class="text-xs text-app-text-muted">
-                                Free Trial
-                            </p>
-                        </div>
-                    </div>
-                    <span
-                        class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full"
-                        >Active</span
+            <!-- Settings Section -->
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 px-1">
+                    <h3
+                        class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                     >
+                        Settings
+                    </h3>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Current Plan -->
+                    <div
+                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
+                            >
+                                <User size={20} />
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-app-text">
+                                    Current Plan
+                                </p>
+                                <p class="text-xs text-app-text-muted">
+                                    Free Trial
+                                </p>
+                            </div>
+                        </div>
+                        <span
+                            class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full"
+                            >Active</span
+                        >
+                    </div>
+
+                    <!-- Appearance / Theme Toggle -->
+                    <div
+                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
+                            >
+                                {#if $theme === "dark"}
+                                    <Sun size={20} />
+                                {:else}
+                                    <Moon size={20} />
+                                {/if}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-app-text">
+                                    Appearance
+                                </p>
+                                <p class="text-xs text-app-text-muted">
+                                    {$theme === "dark"
+                                        ? "Dark Mode"
+                                        : "Light Mode"}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onclick={() =>
+                                ($theme = $theme === "dark" ? "light" : "dark")}
+                            class="px-4 py-1.5 bg-app-surface border border-app-border text-app-text text-sm font-bold rounded-lg hover:bg-app-surface-hover transition-colors shadow-sm"
+                        >
+                            Switch to {$theme === "dark" ? "Light" : "Dark"}
+                        </button>
+                    </div>
+
+                    <!-- Sidebar Configuration -->
+                    <div
+                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
+                            >
+                                {#if $sidebarExpanded}
+                                    <PanelLeftClose size={20} />
+                                {:else}
+                                    <PanelLeftOpen size={20} />
+                                {/if}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-app-text">
+                                    Sidebar Layout
+                                </p>
+                                <p class="text-xs text-app-text-muted">
+                                    {$sidebarExpanded
+                                        ? "Expanded"
+                                        : "Collapsed"}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onclick={() =>
+                                ($sidebarExpanded = !$sidebarExpanded)}
+                            class="px-4 py-1.5 bg-app-surface border border-app-border text-app-text text-sm font-bold rounded-lg hover:bg-app-surface-hover transition-colors shadow-sm"
+                        >
+                            {$sidebarExpanded ? "Collapse" : "Expand"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
