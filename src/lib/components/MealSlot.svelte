@@ -285,10 +285,10 @@
         {/each}
 
         {#if items.length === 0 && !isLoading}
-            <div class="flex-1 flex items-center justify-center -mt-4">
+            <div class="flex-1 flex items-center justify-center -mt-2">
                 <Plus
                     size={16}
-                    class="text-app-text-muted/50 group-hover:text-app-text-muted/80 transition-colors"
+                    class="text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-colors"
                 />
             </div>
         {:else}
@@ -296,7 +296,7 @@
             <div class="flex-1 flex items-center justify-center min-h-8">
                 <Plus
                     size={16}
-                    class="text-app-text-muted/50 group-hover:text-app-text-muted/80 transition-all duration-200"
+                    class="text-app-text-muted/80 md:text-app-text-muted/0 group-hover:text-app-text-muted/80 transition-all duration-200"
                 />
             </div>
         {/if}
