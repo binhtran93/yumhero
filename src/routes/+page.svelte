@@ -531,9 +531,14 @@
     };
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
     import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
+    import { getWeekShoppingList } from "$lib/stores/shoppingList";
 
-    // Shopping List Modal State
+    // Shopping List State
     let isShoppingListOpen = $state(false);
+    let shoppingListStore = $derived(getWeekShoppingList(weekId));
+    let itemCount = $derived(
+        $shoppingListStore.data.filter((i) => !i.is_deleted).length,
+    );
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />
@@ -567,7 +572,10 @@
 
             <div class="w-px h-6 bg-app-border mx-1"></div>
 
-            <ShoppingCartButton onclick={() => (isShoppingListOpen = true)} />
+            <ShoppingCartButton
+                onclick={() => (isShoppingListOpen = true)}
+                {itemCount}
+            />
         </div>
     </Header>
 
