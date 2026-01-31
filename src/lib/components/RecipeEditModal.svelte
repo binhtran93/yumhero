@@ -328,12 +328,30 @@
     // Tags Management
     let tagInput = $state("");
     let tags = $state<string[]>([]);
+    let selectedTagIndex = $state(-1);
 
-    const addTag = () => {
-        const cleanTag = tagInput.trim();
+    let tagSuggestions = $derived(
+        tagInput.trim()
+            ? get(userTags)
+                  .data.map((t) => t.label)
+                  .filter(
+                      (label) =>
+                          label
+                              .toLowerCase()
+                              .includes(tagInput.toLowerCase().trim()) &&
+                          !tags.includes(label),
+                  )
+                  .slice(0, 5)
+            : [],
+    );
+
+    const addTag = (label?: string) => {
+        const cleanTag =
+            typeof label === "string" ? label.trim() : tagInput.trim();
         if (cleanTag && tags.length < 5 && !tags.includes(cleanTag)) {
             tags = [...tags, cleanTag];
             tagInput = "";
+            selectedTagIndex = -1;
         }
     };
 
@@ -344,14 +362,28 @@
     const handleTagKeydown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            addTag();
-        } else if (e.key === "," || e.key === " ") {
-            // Allow comma or space to add tag too, but don't prevent default if it's space and we want to allow spaces in tags?
-            // Actually, usually tags don't have spaces, but some might. Let's stick to Enter and Comma.
-            if (e.key === ",") {
-                e.preventDefault();
+            if (
+                selectedTagIndex >= 0 &&
+                selectedTagIndex < tagSuggestions.length
+            ) {
+                addTag(tagSuggestions[selectedTagIndex]);
+            } else {
                 addTag();
             }
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedTagIndex = Math.min(
+                selectedTagIndex + 1,
+                tagSuggestions.length - 1,
+            );
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedTagIndex = Math.max(selectedTagIndex - 1, -1);
+        } else if (e.key === "Escape") {
+            selectedTagIndex = -1;
+        } else if (e.key === ",") {
+            e.preventDefault();
+            addTag();
         }
     };
 
@@ -918,39 +950,59 @@
                     </div>
                 </div>
 
-                <!-- Tags Section -->
                 <div class="space-y-3">
                     <label
                         class="text-xs text-app-text-muted uppercase font-bold pl-1"
                         >Tags (Max 5)</label
                     >
-                    <div
-                        class="flex flex-wrap gap-2 p-2 bg-white dark:bg-gray-800 border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
-                    >
-                        {#each tags as tag, i}
-                            <span
-                                class="bg-app-primary/10 text-app-primary text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1.5 animate-in fade-in scale-in duration-200"
-                            >
-                                {tag}
-                                <button
-                                    onclick={() => removeTag(i)}
-                                    class="hover:text-red-500 transition-colors"
+                    <div class="relative">
+                        <div
+                            class="flex flex-wrap gap-2 p-2 bg-white dark:bg-gray-800 border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
+                        >
+                            {#each tags as tag, i}
+                                <span
+                                    class="bg-app-primary/10 text-app-primary text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1.5 animate-in fade-in scale-in duration-200"
                                 >
-                                    <X size={14} />
-                                </button>
-                            </span>
-                        {/each}
-                        {#if tags.length < 5}
-                            <input
-                                type="text"
-                                bind:value={tagInput}
-                                onkeydown={handleTagKeydown}
-                                onblur={addTag}
-                                placeholder={tags.length === 0
-                                    ? "Add tags (e.g. Healthy, Quick, Vegan)"
-                                    : "Add tag..."}
-                                class="flex-1 bg-transparent border-none outline-none text-app-text placeholder:text-app-text-muted/50 text-sm min-w-[120px] h-8"
-                            />
+                                    {tag}
+                                    <button
+                                        onclick={() => removeTag(i)}
+                                        class="hover:text-red-500 transition-colors"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </span>
+                            {/each}
+                            {#if tags.length < 5}
+                                <input
+                                    type="text"
+                                    bind:value={tagInput}
+                                    onkeydown={handleTagKeydown}
+                                    onblur={() =>
+                                        setTimeout(() => addTag(), 200)}
+                                    placeholder={tags.length === 0
+                                        ? "Add tags (e.g. Healthy, Quick, Vegan)"
+                                        : "Add tag..."}
+                                    class="flex-1 bg-transparent border-none outline-none text-app-text placeholder:text-app-text-muted/50 text-sm min-w-[120px] h-8"
+                                />
+                            {/if}
+                        </div>
+
+                        {#if tagSuggestions.length > 0}
+                            <div
+                                class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-app-border rounded-xl shadow-xl z-[100] overflow-hidden py-1"
+                            >
+                                {#each tagSuggestions as suggestion, i}
+                                    <button
+                                        onclick={() => addTag(suggestion)}
+                                        class="w-full text-left px-4 py-2.5 text-sm transition-colors {i ===
+                                        selectedTagIndex
+                                            ? 'bg-app-primary text-white font-bold'
+                                            : 'text-app-text hover:bg-app-surface-hover'}"
+                                    >
+                                        {suggestion}
+                                    </button>
+                                {/each}
+                            </div>
                         {/if}
                     </div>
                 </div>
