@@ -27,6 +27,7 @@ export interface ShoppingListSource {
     unit: string | null;
     is_checked: boolean;
     day: string | null; // e.g., "Monday" or null for manual items
+    meal_type: MealType | null; // e.g., "breakfast", "lunch", "dinner"
     histories?: ShoppingListSourceHistory[]; // Track edit history for reset
 }
 

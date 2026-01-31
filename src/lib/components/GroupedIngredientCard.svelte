@@ -120,10 +120,17 @@
                 </span>
                 <span class="text-xs sm:text-sm text-app-text/60 font-semibold">
                     — {formattedQuantities}
-                    {#if sources.length === 1 && sources[0].day}
-                        <span class="opacity-40 font-medium ml-1">
-                            ({sources[0].day?.slice(0, 3)})
-                        </span>
+                    {#if sources.length === 1}
+                        {#if sources[0].day || sources[0].meal_type}
+                            <span class="opacity-40 font-medium ml-1">
+                                ({[
+                                    sources[0].day?.slice(0, 3),
+                                    sources[0].meal_type,
+                                ]
+                                    .filter(Boolean)
+                                    .join(" • ")})
+                            </span>
+                        {/if}
                     {/if}
                 </span>
             </div>
@@ -193,6 +200,11 @@
                             from {getRecipeName(source.recipe_id)}
                             {#if source.day}
                                 • {source.day?.slice(0, 3)}
+                            {/if}
+                            {#if source.meal_type}
+                                • <span class="capitalize"
+                                    >{source.meal_type}</span
+                                >
                             {/if}
                         </span>
                     </span>

@@ -1,7 +1,7 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
-import type { WeeklyPlan, ShoppingListItem, ShoppingListSource } from '$lib/types';
+import type { WeeklyPlan, ShoppingListItem, ShoppingListSource, MealType } from '$lib/types';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import { getShoppingList } from './shoppingList';
@@ -72,7 +72,8 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
                         recipe_id: recipeId,
                         amount: scaledAmount,
                         unit: unit,
-                        day: dayPlan.day
+                        day: dayPlan.day,
+                        meal_type: type as MealType
                     });
                 });
             });
