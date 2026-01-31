@@ -101,7 +101,7 @@
                         <div class="flex flex-col gap-3">
                             {#if recipe.mealTypes && recipe.mealTypes.length > 0}
                                 <div class="flex flex-wrap gap-2">
-                                    {#each recipe.mealTypes as type}
+                                    {#each [...new Set(recipe.mealTypes)] as type}
                                         <span
                                             class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border
                                             {type === 'breakfast'

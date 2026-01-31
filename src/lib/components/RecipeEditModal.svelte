@@ -181,7 +181,7 @@
                 ? data.instructions.join("\n\n")
                 : data.instructions || "",
             tags: data.tags || [],
-            mealTypes: data.mealTypes || [],
+            mealTypes: Array.from(new Set(data.mealTypes || [])),
         };
     };
 

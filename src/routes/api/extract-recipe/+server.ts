@@ -157,7 +157,22 @@ export async function POST({ request }) {
             ]
         });
 
-        const recipes = output.recipes;
+        // Post-process recipes to deduplicate and clean
+        const recipes = output.recipes.map(recipe => {
+            const mealTypes = Array.from(new Set(recipe.mealTypes || []));
+            const tags = Array.from(new Set(recipe.tags || []))
+                .filter(tag => {
+                    const t = tag.toLowerCase();
+                    const mealRelated = ['breakfast', 'lunch', 'dinner', 'snack', 'brunch', 'meal', 'course'];
+                    return !mealRelated.some(m => t.includes(m));
+                });
+
+            return {
+                ...recipe,
+                mealTypes,
+                tags
+            };
+        });
 
         // Upload images to R2 if available
         if (recipes && recipes.length > 0) {
