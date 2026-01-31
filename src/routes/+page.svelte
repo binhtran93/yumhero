@@ -464,11 +464,25 @@
             if (!recipe) return;
 
             const targetList = plan[targetDayIndex].meals[target.type];
+
+            // Check if recipe already exists in target list
             // @ts-ignore
-            targetList.push({
-                ...recipe,
-                quantity: 1, // Default quantity when dragging from sidebar
-            });
+            const existingIndex = targetList.findIndex(
+                (r) => r.id === recipe.id,
+            );
+
+            if (existingIndex !== -1) {
+                // Recipe exists, increase quantity
+                // @ts-ignore
+                targetList[existingIndex].quantity += 1;
+            } else {
+                // Recipe doesn't exist, add it with quantity 1
+                // @ts-ignore
+                targetList.push({
+                    ...recipe,
+                    quantity: 1, // Default quantity when dragging from sidebar
+                });
+            }
 
             saveWeekPlan(weekId, plan);
             return;
@@ -490,13 +504,28 @@
 
         if (!item) return;
 
-        // Remove from source
+        // Check if recipe already exists in target list
         // @ts-ignore
-        sourceList.splice(source.index, 1);
+        const existingIndex = targetList.findIndex((r) => r.id === item.id);
 
-        // Add to target
-        // @ts-ignore
-        targetList.push(item);
+        if (existingIndex !== -1) {
+            // Recipe exists in target, merge quantities
+            // @ts-ignore
+            targetList[existingIndex].quantity += item.quantity;
+
+            // Remove from source
+            // @ts-ignore
+            sourceList.splice(source.index, 1);
+        } else {
+            // Recipe doesn't exist in target, move it
+            // Remove from source
+            // @ts-ignore
+            sourceList.splice(source.index, 1);
+
+            // Add to target
+            // @ts-ignore
+            targetList.push(item);
+        }
 
         saveWeekPlan(weekId, plan);
     };
