@@ -73,9 +73,27 @@
     onClose();
   };
 
-  let filteredRecipes = $derived(
+  let matchingRecipes = $derived(
     availableRecipes.filter((r) =>
       r.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
+  );
+
+  let suggestedRecipes = $derived(
+    matchingRecipes.filter(
+      (r) =>
+        mealType &&
+        mealType !== "note" &&
+        r.mealTypes?.includes(mealType as MealType),
+    ),
+  );
+
+  let otherRecipes = $derived(
+    matchingRecipes.filter(
+      (r) =>
+        !mealType ||
+        mealType === "note" ||
+        !r.mealTypes?.includes(mealType as MealType),
     ),
   );
 
@@ -103,6 +121,62 @@
         },
   );
 </script>
+
+{#snippet recipeItem(recipe: Recipe)}
+  {@const selected = isSelected(recipe.id)}
+  <div
+    class={twMerge(
+      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0",
+      selected
+        ? `${colors.bgFaint}`
+        : twMerge(
+            "bg-transparent border-transparent hover:bg-app-surface-hover",
+          ),
+    )}
+    onclick={() => toggleSelection(recipe)}
+    onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
+    role="button"
+    tabindex="0"
+  >
+    <!-- Info area -->
+    <div class="flex-1 flex items-center gap-2">
+      <h3
+        class={twMerge(
+          "font-display font-bold transition-colors text-sm",
+          selected ? colors.text : "text-app-text",
+        )}
+      >
+        {recipe.title}
+      </h3>
+    </div>
+
+    <!-- Selection Indicator -->
+    <div class="flex items-center">
+      {#if selected}
+        <div
+          class={twMerge(
+            "p-1.5 rounded-full text-white shadow-sm border",
+            colors.bg,
+            colors.border,
+          )}
+        >
+          <Plus
+            size={16}
+            strokeWidth={3}
+            class="rotate-45"
+            aria-hidden="true"
+          />
+        </div>
+      {:else}
+        <div
+          class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+        >
+          <Plus size={16} strokeWidth={3} />
+        </div>
+      {/if}
+    </div>
+  </div>
+{/snippet}
 
 {#snippet customHeader()}
   <div
@@ -187,61 +261,40 @@
   </div>
 
   <!-- List -->
-  <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-2">
-    {#each filteredRecipes as recipe (recipe.id)}
-      {@const selected = isSelected(recipe.id)}
+  <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-1">
+    {#if suggestedRecipes.length > 0}
       <div
-        class={twMerge(
-          "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors",
-          selected
-            ? `${colors.bgFaint}`
-            : twMerge(
-                "bg-transparent border-transparent hover:bg-app-surface-hover",
-              ),
-        )}
-        onclick={() => toggleSelection(recipe)}
-        onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
-        role="button"
-        tabindex="0"
+        class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
       >
-        <!-- Info area -->
-        <div class="flex-1 flex items-center gap-2">
-          <h3
-            class={twMerge(
-              "font-display font-bold transition-colors text-sm",
-              selected ? colors.text : "text-app-text",
-            )}
-          >
-            {recipe.title}
-          </h3>
-        </div>
-
-        <!-- Selection Indicator -->
-        <div class="flex items-center">
-          {#if selected}
-            <div
-              class={twMerge(
-                "p-1.5 rounded-full text-white shadow-sm border",
-                colors.bg,
-                colors.border,
-              )}
-            >
-              <Plus
-                size={16}
-                strokeWidth={3}
-                class="rotate-45"
-                aria-hidden="true"
-              />
-            </div>
-          {:else}
-            <div
-              class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
-            >
-              <Plus size={16} strokeWidth={3} />
-            </div>
-          {/if}
-        </div>
+        Suggested for <span class={colors.text}>{mealType}</span>
       </div>
+      {#each suggestedRecipes as recipe (recipe.id)}
+        {@render recipeItem(recipe)}
+      {/each}
+
+      {#if otherRecipes.length > 0}
+        <div
+          class="px-3 pt-5 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
+        >
+          All Recipes
+        </div>
+      {/if}
+    {/if}
+
+    {#each otherRecipes as recipe (recipe.id)}
+      {@render recipeItem(recipe)}
     {/each}
+
+    {#if matchingRecipes.length === 0}
+      <div class="flex flex-col items-center justify-center p-8 text-center">
+        <div class="p-3 bg-app-surface-deep rounded-full mb-3">
+          <Search size={24} class="text-app-text-muted/50" />
+        </div>
+        <p class="text-sm font-bold text-app-text">No recipes found</p>
+        <p class="text-xs text-app-text-muted mt-1">
+          Try a different search term or add a new recipe.
+        </p>
+      </div>
+    {/if}
   </div>
 </Modal>
