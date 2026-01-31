@@ -14,9 +14,6 @@
         User,
         Sun,
         Moon,
-        PanelLeftClose,
-        PanelLeftOpen,
-        Layout,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import Avatar from "$lib/components/Avatar.svelte";
@@ -168,40 +165,6 @@
                             class="px-4 py-1.5 bg-app-surface border border-app-border text-app-text text-sm font-bold rounded-lg hover:bg-app-surface-hover transition-colors shadow-sm"
                         >
                             Switch to {$theme === "dark" ? "Light" : "Dark"}
-                        </button>
-                    </div>
-
-                    <!-- Sidebar Configuration -->
-                    <div
-                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
-                    >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
-                            >
-                                {#if $sidebarExpanded}
-                                    <PanelLeftClose size={20} />
-                                {:else}
-                                    <PanelLeftOpen size={20} />
-                                {/if}
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-app-text">
-                                    Sidebar Layout
-                                </p>
-                                <p class="text-xs text-app-text-muted">
-                                    {$sidebarExpanded
-                                        ? "Expanded"
-                                        : "Collapsed"}
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onclick={() =>
-                                ($sidebarExpanded = !$sidebarExpanded)}
-                            class="px-4 py-1.5 bg-app-surface border border-app-border text-app-text text-sm font-bold rounded-lg hover:bg-app-surface-hover transition-colors shadow-sm"
-                        >
-                            {$sidebarExpanded ? "Collapse" : "Expand"}
                         </button>
                     </div>
                 </div>

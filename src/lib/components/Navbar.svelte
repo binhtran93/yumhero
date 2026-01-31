@@ -1,6 +1,14 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { Calendar, Book, ChefHat, User, Search } from "lucide-svelte";
+    import {
+        Calendar,
+        Book,
+        ChefHat,
+        User,
+        Search,
+        PanelLeftClose,
+        PanelLeftOpen,
+    } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { sidebarExpanded } from "$lib/stores/ui";
 
@@ -166,4 +174,21 @@
             </div>
         </div>
     {/if}
+
+    <!-- Sidebar Toggle (Fixed at bottom) -->
+    <div class="hidden md:flex mt-auto px-2 pb-2">
+        <button
+            onclick={() => ($sidebarExpanded = !$sidebarExpanded)}
+            class="p-2 rounded-lg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all duration-200"
+            aria-label={$sidebarExpanded
+                ? "Collapse Sidebar"
+                : "Expand Sidebar"}
+        >
+            {#if $sidebarExpanded}
+                <PanelLeftClose size={18} strokeWidth={2} />
+            {:else}
+                <PanelLeftOpen size={18} strokeWidth={2} />
+            {/if}
+        </button>
+    </div>
 </aside>
