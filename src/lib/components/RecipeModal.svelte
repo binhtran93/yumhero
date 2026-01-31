@@ -125,11 +125,7 @@
           text: `text-accent-${mealType}`,
           bg: `bg-accent-${mealType}`,
           border: `border-accent-${mealType}`,
-          bgLight: `bg-accent-${mealType}-bg`,
-          borderLight: `border-transparent`,
           hoverBg: `hover:bg-accent-${mealType}`,
-          hoverBgLight: `hover:bg-accent-${mealType}-bg/30`,
-          hoverBgDark: `hover:bg-accent-${mealType}/90`,
           focusBorder: `focus:border-accent-${mealType}`,
           hoverText: `hover:text-accent-${mealType}`,
           hoverBorder: `hover:border-accent-${mealType}`,
@@ -139,11 +135,7 @@
           text: "text-app-primary",
           bg: "bg-app-primary",
           border: "border-app-primary",
-          bgLight: "bg-app-primary/10",
-          borderLight: "border-transparent",
           hoverBg: "hover:bg-app-primary",
-          hoverBgLight: "hover:bg-app-surface-hover",
-          hoverBgDark: "hover:bg-app-primary/90",
           focusBorder: "focus:border-app-primary",
           hoverText: "hover:text-app-primary",
           hoverBorder: "hover:border-app-primary",
@@ -179,7 +171,6 @@
       class={twMerge(
         "w-full py-3 rounded-xl text-white font-bold text-sm shadow-sm transition-colors",
         colors.bg,
-        colors.hoverBgDark,
       )}
     >
       Done
@@ -222,9 +213,7 @@
             <button
               onclick={() => removeSelection(recipe.id)}
               class={twMerge(
-                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-colors cursor-pointer group border",
-                colors.bgLight,
-                colors.borderLight,
+                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-colors cursor-pointer group border",
                 colors.text,
               )}
             >
@@ -243,10 +232,10 @@
       {@const count = getCount(recipe.id)}
       <div
         class={twMerge(
-          "flex items-center justify-between px-4 py-3 rounded-2xl border cursor-pointer gap-2 transition-colors",
+          "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors",
           count > 0
-            ? `${colors.bgFaint} ${colors.borderLight}`
-            : twMerge("bg-transparent border-transparent", colors.hoverBgLight),
+            ? `${colors.bgFaint}`
+            : twMerge("bg-transparent border-transparent"),
         )}
         onclick={() => toggleSelection(recipe)}
         onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
