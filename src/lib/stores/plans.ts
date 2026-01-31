@@ -114,11 +114,17 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
                 });
             }
         } else if (recipeData) {
-            // Item from recipes - update with new amounts
-            const recipeSources = recipeData.sources.map(s => ({
-                ...s,
-                is_checked: false
-            }));
+            // Item from recipes - update with new amounts but preserve checked state
+            const recipeSources = recipeData.sources.map(s => {
+                // Find existing source with same recipe_id to preserve checked state
+                const existingSource = existingItem.sources.find(
+                    es => es.recipe_id === s.recipe_id
+                );
+                return {
+                    ...s,
+                    is_checked: existingSource?.is_checked ?? false
+                };
+            });
             const manualSources = updatedSources.filter(s => s.recipe_id === null);
 
             newList.push({
