@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { X } from "lucide-svelte";
+    import { X, ShoppingCart, ShoppingBasket, Plus, Eye } from "lucide-svelte";
     import type { Recipe, ShoppingListItem } from "$lib/types";
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
     import Modal from "./Modal.svelte";
@@ -216,23 +216,70 @@
             </div>
         {:else if displayedItems.length === 0}
             <div
-                class="flex flex-col items-center justify-center h-64 text-center py-16"
+                class="flex flex-col items-center justify-center min-h-[400px] text-center px-6 py-12"
             >
-                <p class="font-black text-xl text-app-text mb-2">
-                    {#if showDeleted && shoppingList.length > 0}
-                        No deleted items
+                <div class="relative mb-6">
+                    <div
+                        class="absolute inset-0 bg-app-primary/10 blur-2xl rounded-full scale-150"
+                    ></div>
+                    <div
+                        class="relative w-24 h-24 bg-app-bg border-4 border-app-primary/20 rounded-3xl flex items-center justify-center shadow-sm"
+                    >
+                        {#if activeCount === 0 && deletedCount > 0}
+                            <ShoppingBasket
+                                class="text-app-primary/40"
+                                size={48}
+                                strokeWidth={1.5}
+                            />
+                        {:else}
+                            <ShoppingCart
+                                class="text-app-primary"
+                                size={48}
+                                strokeWidth={1.5}
+                            />
+                        {/if}
+                    </div>
+                </div>
+
+                <h3 class="font-display font-black text-2xl text-app-text mb-3">
+                    {#if activeCount === 0 && deletedCount > 0}
+                        All items completed!
                     {:else}
-                        No ingredients yet
+                        Ready to shop?
+                    {/if}
+                </h3>
+
+                <p
+                    class="text-app-text-muted font-medium max-w-[280px] leading-relaxed mb-8"
+                >
+                    {#if activeCount === 0 && deletedCount > 0}
+                        You've cleared your list. You can view your history or
+                        add new items.
+                    {:else}
+                        Add recipes to your meal plan or add manual items to
+                        build your shopping list.
                     {/if}
                 </p>
-                <p class="text-sm font-bold text-app-text-muted max-w-60">
-                    {#if showDeleted && shoppingList.length > 0}
-                        All items are active.
-                    {:else}
-                        Add recipes to your meal plan or add manual items to get
-                        started.
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button
+                        onclick={() => (showAddManualModal = true)}
+                        class="flex items-center justify-center gap-2 px-6 py-3 bg-app-primary text-white rounded-2xl font-bold hover:bg-app-primary/90 transition-all active:scale-95 shadow-lg shadow-app-primary/20"
+                    >
+                        <Plus size={20} strokeWidth={3} />
+                        Add First Item
+                    </button>
+
+                    {#if activeCount === 0 && deletedCount > 0 && !showDeleted}
+                        <button
+                            onclick={() => (showDeleted = true)}
+                            class="flex items-center justify-center gap-2 px-6 py-3 bg-app-bg text-app-text border border-app-border rounded-2xl font-bold hover:bg-app-surface-hover transition-all active:scale-95"
+                        >
+                            <Eye size={20} />
+                            View Checked Off
+                        </button>
                     {/if}
-                </p>
+                </div>
             </div>
         {:else}
             <div>
