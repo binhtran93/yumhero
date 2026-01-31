@@ -1,7 +1,7 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
-import type { WeeklyPlan, ShoppingListItem } from '$lib/types';
+import type { WeeklyPlan, ShoppingListItem, ShoppingListSource } from '$lib/types';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import { getShoppingList } from './shoppingList';
@@ -42,7 +42,7 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
 
     // Build ingredient map from recipes
     const recipeIngredientsMap = new Map<string, {
-        sources: Array<{ recipe_id: string; amount: number; unit: string | null }>;
+        sources: Array<Omit<ShoppingListSource, 'is_checked'>>;
     }>();
 
     plan.forEach(dayPlan => {
@@ -71,7 +71,8 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
                     recipeIngredientsMap.get(name)!.sources.push({
                         recipe_id: recipeId,
                         amount: scaledAmount,
-                        unit: unit
+                        unit: unit,
+                        day: dayPlan.day
                     });
                 });
             });
@@ -116,9 +117,9 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
         } else if (recipeData) {
             // Item from recipes - update with new amounts but preserve checked state
             const recipeSources = recipeData.sources.map(s => {
-                // Find existing source with same recipe_id to preserve checked state
+                // Find existing source with same recipe_id and day to preserve checked state
                 const existingSource = existingItem.sources.find(
-                    es => es.recipe_id === s.recipe_id
+                    es => es.recipe_id === s.recipe_id && es.day === s.day
                 );
                 return {
                     ...s,

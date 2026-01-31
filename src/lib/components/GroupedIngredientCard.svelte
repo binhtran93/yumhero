@@ -120,6 +120,11 @@
                 </span>
                 <span class="text-sm text-app-text/60 font-semibold">
                     — {formattedQuantities}
+                    {#if sources.length === 1 && sources[0].day}
+                        <span class="opacity-40 font-medium ml-1">
+                            ({sources[0].day?.slice(0, 3)})
+                        </span>
+                    {/if}
                 </span>
             </div>
         </button>
@@ -186,6 +191,9 @@
                         {source.unit || ""}
                         <span class="text-app-text/40 ml-1.5 font-medium">
                             from {getRecipeName(source.recipe_id)}
+                            {#if source.day}
+                                • {source.day?.slice(0, 3)}
+                            {/if}
                         </span>
                     </span>
                 </button>

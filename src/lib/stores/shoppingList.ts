@@ -78,7 +78,8 @@ export const addManualShoppingItem = async (weekId: string, ingredientName: stri
             recipe_id: null,
             amount,
             unit,
-            is_checked: false
+            is_checked: false,
+            day: null
         }];
         existing.sources = updatedSources;
         existing.updated_at = new Date();
@@ -90,7 +91,8 @@ export const addManualShoppingItem = async (weekId: string, ingredientName: stri
                 recipe_id: null,
                 amount,
                 unit,
-                is_checked: false
+                is_checked: false,
+                day: null
             }],
             user_id: get(user)!.uid,
             created_at: new Date(),
@@ -210,6 +212,7 @@ export const updateShoppingItem = async (weekId: string, itemId: string, newAmou
         amount: newAmount,
         unit: newUnit,
         is_checked: item.sources.every(s => s.is_checked),
+        day: item.sources[0]?.day || null,
         histories: [
             ...(item.sources[0]?.histories || []),
             { amount: totalAmount, unit: currentUnit }
@@ -245,6 +248,7 @@ export const resetShoppingItem = async (weekId: string, itemId: string) => {
             amount: previousState.amount,
             unit: previousState.unit,
             is_checked: item.sources[0].is_checked,
+            day: item.sources[0].day,
         };
 
         const updatedSource = histories.length > 0

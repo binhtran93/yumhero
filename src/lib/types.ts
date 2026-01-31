@@ -26,6 +26,7 @@ export interface ShoppingListSource {
     amount: number;
     unit: string | null;
     is_checked: boolean;
+    day: string | null; // e.g., "Monday" or null for manual items
     histories?: ShoppingListSourceHistory[]; // Track edit history for reset
 }
 
