@@ -120,24 +120,12 @@
                 </span>
                 <span class="text-xs sm:text-sm text-app-text/60 font-semibold">
                     — {formattedQuantities}
-                    {#if sources.length === 1}
-                        {#if sources[0].day || sources[0].meal_type}
-                            <span class="opacity-40 font-medium ml-1">
-                                ({[
-                                    sources[0].day?.slice(0, 3),
-                                    sources[0].meal_type,
-                                ]
-                                    .filter(Boolean)
-                                    .join(" • ")})
-                            </span>
-                        {/if}
-                    {/if}
                 </span>
             </div>
         </button>
 
         <!-- Expand/Collapse Icon -->
-        {#if sources.length > 1 && !isDeleted}
+        {#if !isDeleted && (sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type)))}
             <button
                 class="shrink-0 p-1.5 -m-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
                 onclick={() => (isExpanded = !isExpanded)}
@@ -165,7 +153,7 @@
     </div>
 
     <!-- Collapsible Source Details -->
-    {#if isExpanded && sources.length > 1 && !isDeleted}
+    {#if isExpanded && !isDeleted && (sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type)))}
         <div class="pb-2.5 pl-8 pr-4 space-y-1 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button

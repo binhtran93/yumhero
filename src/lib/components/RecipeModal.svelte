@@ -273,10 +273,11 @@
       {/each}
 
       {#if otherRecipes.length > 0}
+        <div class="mt-4 mb-2 border-t border-app-border mx-3"></div>
         <div
-          class="px-3 pt-5 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
+          class="px-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
         >
-          All Recipes
+          Other Recipes
         </div>
       {/if}
     {/if}
