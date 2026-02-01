@@ -186,7 +186,7 @@
             }}
         >
             <Refrigerator size={18} />
-            Add to Fridge
+            Put leftover to fridge
         </button>
     {/if}
 
