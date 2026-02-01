@@ -203,7 +203,7 @@
 
 {#snippet leftoverItem(leftover: LeftoverItem)}
   <div
-    class="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0 border-2 border-dashed border-app-border hover:border-app-primary/50 hover:bg-app-surface-hover"
+    class="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0 bg-transparent border border-transparent hover:bg-app-surface-hover"
     onclick={() => handleLeftoverSelect(leftover)}
     onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
     role="button"
@@ -211,15 +211,16 @@
   >
     <!-- Info area -->
     <div class="flex-1 flex items-center gap-2">
-      <UtensilsCrossed size={14} class="text-app-text-muted shrink-0" />
       <h3
         class="font-display font-bold transition-colors text-sm text-app-text"
       >
         {leftover.title}
       </h3>
-      <span class="text-[10px] text-app-text-muted/70 uppercase font-medium"
-        >leftover</span
+      <span
+        class="px-1.5 py-0.5 rounded-md bg-app-surface-deep text-[10px] font-bold text-app-text-muted uppercase tracking-wider border border-app-border/50"
       >
+        Leftover
+      </span>
     </div>
 
     <!-- Add Indicator -->
@@ -322,7 +323,6 @@
       <div
         class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider flex items-center gap-2"
       >
-        <UtensilsCrossed size={12} />
         From Your Fridge
       </div>
       {#each matchingLeftovers as leftover (leftover.id)}
