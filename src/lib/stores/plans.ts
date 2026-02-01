@@ -2,7 +2,7 @@ import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
 import type { WeeklyPlan, ShoppingListItem, ShoppingListSource, MealType } from '$lib/types';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import { getShoppingList } from './shoppingList';
 import { parseAmount } from '$lib/utils/shopping';
@@ -183,4 +183,37 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
         shopping_list: shoppingList,
         updatedAt: new Date()
     }, { merge: true });
+};
+
+/**
+ * Remove a specific leftover from a week plan.
+ * Used when a leftover is deleted from the fridge.
+ */
+export const removeLeftoverFromWeekPlan = async (weekId: string, leftoverId: string) => {
+    const $user = get(user);
+    if (!$user) return;
+
+    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
+    const planSnap = await getDoc(planRef);
+    if (!planSnap.exists()) return;
+
+    const planData = planSnap.data();
+    const days = planData.days as WeeklyPlan;
+
+    let modified = false;
+    days.forEach(day => {
+        Object.keys(day.meals).forEach(mealType => {
+            if (mealType === 'note') return;
+            const items = day.meals[mealType as keyof typeof day.meals] as any[];
+            const index = items.findIndex(item => item.isLeftover && item.leftoverId === leftoverId);
+            if (index !== -1) {
+                items.splice(index, 1);
+                modified = true;
+            }
+        });
+    });
+
+    if (modified) {
+        await saveWeekPlan(weekId, days);
+    }
 };

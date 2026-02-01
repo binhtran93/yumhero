@@ -11,6 +11,7 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import type { LeftoverItem, LeftoverStatus, MealType } from '$lib/types';
+import { removeLeftoverFromWeekPlan } from './plans';
 
 /**
  * Leftovers Store
@@ -162,12 +163,21 @@ export const setLeftoverNotPlanned = async (leftoverId: string): Promise<void> =
 };
 
 /**
- * Permanently delete a leftover (Mark as Eaten).
- * Removes from both the Fridge and any meal plan.
+ * Permanently delete a leftover.
+ * @param leftoverId ID of the leftover to delete
+ * @param cleanPlan Whether to also remove the leftover from any associated meal plans (default: true)
  */
-export const deleteLeftover = async (leftoverId: string): Promise<void> => {
+export const deleteLeftover = async (leftoverId: string, cleanPlan: boolean = true): Promise<void> => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
+
+    // Check if it's planned and we should clean up the plan document
+    if (cleanPlan) {
+        const item = getLeftoverById(leftoverId);
+        if (item?.status === 'planned' && item.plannedFor?.weekId) {
+            await removeLeftoverFromWeekPlan(item.plannedFor.weekId, leftoverId);
+        }
+    }
 
     const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
     await deleteDoc(leftoverRef);

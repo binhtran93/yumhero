@@ -26,8 +26,9 @@
     let actionMenuPosition = $state({ x: 0, y: 0 });
 
     // State for confirmation modal
-    let showConfirmEaten = $state(false);
-    let itemToConfirm = $state<LeftoverItem | null>(null);
+    let showConfirmDelete = $state(false);
+    let itemToDelete = $state<LeftoverItem | null>(null);
+    let isEatingLeftover = $state(false);
 
     // Current time for past-time detection
     let now = $state(new Date());
@@ -82,21 +83,33 @@
 
     const handleMarkAsEaten = () => {
         if (!selectedItem) return;
-        itemToConfirm = selectedItem;
-        showConfirmEaten = true;
+        isEatingLeftover = true;
+        itemToDelete = selectedItem;
+        showConfirmDelete = true;
         closeActionMenu();
     };
 
-    const confirmMarkAsEaten = async () => {
-        if (!itemToConfirm) return;
-        await deleteLeftover(itemToConfirm.id);
-        showConfirmEaten = false;
-        itemToConfirm = null;
+    const handleDelete = () => {
+        if (!selectedItem) return;
+        isEatingLeftover = false;
+        itemToDelete = selectedItem;
+        showConfirmDelete = true;
+        closeActionMenu();
+    };
+
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
+        // Mark as Eaten only removes from fridge (cleanPlan = false)
+        // Delete removes from both (cleanPlan = true)
+        await deleteLeftover(itemToDelete.id, !isEatingLeftover);
+        showConfirmDelete = false;
+        itemToDelete = null;
     };
 
     const handlePastTimeConfirm = (item: LeftoverItem) => {
-        itemToConfirm = item;
-        showConfirmEaten = true;
+        isEatingLeftover = true;
+        itemToDelete = item;
+        showConfirmDelete = true;
     };
 
     // Format planned location
@@ -323,11 +336,19 @@
         {/if}
 
         <button
-            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
             onclick={handleMarkAsEaten}
         >
-            <Trash2 size={18} />
+            <CheckCircle2 size={18} class="text-emerald-500" />
             <span class="font-medium">Mark as Eaten</span>
+        </button>
+
+        <button
+            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+            onclick={handleDelete}
+        >
+            <Trash2 size={18} />
+            <span class="font-medium">Delete</span>
         </button>
 
         <div class="border-t border-app-border my-1"></div>
@@ -344,15 +365,17 @@
 
 <!-- Confirm Modal -->
 <ConfirmModal
-    isOpen={showConfirmEaten}
-    title="Mark as Eaten?"
-    message={`This will remove "${itemToConfirm?.title ?? ""}" from your fridge permanently.`}
-    confirmText="Yes, I ate it"
+    isOpen={showConfirmDelete}
+    title={isEatingLeftover ? "Mark as Eaten?" : "Delete Leftover?"}
+    message={isEatingLeftover
+        ? `This will remove "${itemToDelete?.title ?? ""}" from your fridge inventory.`
+        : `This will permanently remove "${itemToDelete?.title ?? ""}" from your fridge ${itemToDelete?.status === "planned" ? "and your meal plan" : ""}.`}
+    confirmText={isEatingLeftover ? "I ate it!" : "Delete"}
     cancelText="Cancel"
-    isDestructive={true}
-    onConfirm={confirmMarkAsEaten}
+    isDestructive={!isEatingLeftover ? true : false}
+    onConfirm={confirmDelete}
     onClose={() => {
-        showConfirmEaten = false;
-        itemToConfirm = null;
+        showConfirmDelete = false;
+        itemToDelete = null;
     }}
 />
