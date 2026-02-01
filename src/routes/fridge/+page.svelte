@@ -119,7 +119,6 @@
 
         // Format date as "Mon, Jan 1"
         const dateStr = item.sourceDate.toLocaleDateString("en-US", {
-            weekday: "short",
             month: "short",
             day: "numeric",
         });
@@ -129,7 +128,37 @@
               item.sourceMealType.slice(1)
             : "";
 
-        return `Leftover from ${dateStr} • ${mealTypeStr}`;
+        return `${dateStr} • ${mealTypeStr}`;
+    };
+
+    const DAYS = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
+
+    const formatPlannedDate = (item: LeftoverItem): string => {
+        if (!item.plannedFor) return "";
+        const weekStart = parseWeekId(item.plannedFor.weekId);
+        const dayIndex = DAYS.indexOf(item.plannedFor.day);
+
+        if (dayIndex !== -1) {
+            const plannedDate = new Date(weekStart);
+            plannedDate.setDate(weekStart.getDate() + dayIndex);
+            const dateStr = plannedDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+            });
+            const meal = item.plannedFor.mealType;
+            return `${dateStr} • ${meal.charAt(0).toUpperCase() + meal.slice(1)}`;
+        }
+
+        // Fallback
+        return formatPlannedFor(item);
     };
 </script>
 
@@ -241,13 +270,11 @@
                                     transition:slide={{ duration: 200 }}
                                 >
                                     <div
-                                        class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border transition-colors text-left group {isPast
-                                            ? 'border-amber-400/50 bg-amber-50/50 dark:bg-amber-900/10'
-                                            : 'border-app-border hover:bg-app-surface-hover'}"
+                                        class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
                                     >
                                         {#if item.imageUrl}
                                             <div
-                                                class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                                class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
                                             >
                                                 <img
                                                     src={item.imageUrl}
@@ -257,11 +284,11 @@
                                             </div>
                                         {:else}
                                             <div
-                                                class="w-8 h-8 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
+                                                class="w-10 h-10 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
                                             >
-                                                <CheckCircle2
+                                                <UtensilsCrossed
                                                     size={14}
-                                                    class="text-app-primary"
+                                                    class="text-app-text-muted/60"
                                                 />
                                             </div>
                                         {/if}
@@ -272,9 +299,11 @@
                                                 {item.title}
                                             </span>
                                             <span
-                                                class="text-xs text-app-text-muted"
+                                                class="text-xs text-app-text-muted block"
                                             >
-                                                → {formatPlannedFor(item)}
+                                                {formatSource(item)} → {formatPlannedDate(
+                                                    item,
+                                                )}
                                             </span>
                                         </div>
 
