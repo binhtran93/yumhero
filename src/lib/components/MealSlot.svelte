@@ -3,7 +3,7 @@
         Plus,
         EllipsisVertical,
         Loader,
-        UtensilsCrossed,
+        Refrigerator,
     } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
     import LeftoverSlotMenu from "$lib/components/LeftoverSlotMenu.svelte";
@@ -236,9 +236,7 @@
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-center gap-2 px-3 py-1 rounded-xl shadow-sm transition-all cursor-pointer active:cursor-grabbing select-none",
-                    // Use dashed border for leftovers, solid for recipes
-                    itemIsLeftover ? "border-2 border-dashed" : "border",
+                    "pointer-events-auto group/item relative flex items-center gap-2 px-3 py-1 rounded-xl shadow-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -259,21 +257,7 @@
             >
                 <!-- Leftover icon indicator -->
                 {#if itemIsLeftover}
-                    <UtensilsCrossed
-                        size={12}
-                        class={twMerge(
-                            "shrink-0 opacity-70",
-                            type === "breakfast"
-                                ? "text-accent-breakfast-text"
-                                : type === "lunch"
-                                  ? "text-accent-lunch-text"
-                                  : type === "dinner"
-                                    ? "text-accent-dinner-text"
-                                    : type === "snack"
-                                      ? "text-accent-snack-text"
-                                      : "text-accent-note-text",
-                        )}
-                    />
+                    <Refrigerator size={12} class="shrink-0 text-app-primary" />
                 {/if}
 
                 <div
