@@ -18,6 +18,8 @@ export interface LeftoverItem {
     imageUrl?: string | null;           // Optional recipe thumbnail
     status: LeftoverStatus;             // Current planning state
     createdAt: Date;                    // When added to fridge
+    sourceDate: Date;                   // The date of the meal this leftover came from
+    sourceMealType: MealType;           // The meal type (Lunch/Dinner) this came from
     plannedFor?: {                      // Set when status = 'planned'
         weekId: string;
         day: string;

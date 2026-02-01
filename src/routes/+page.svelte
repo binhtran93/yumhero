@@ -30,6 +30,7 @@
     import { user } from "$lib/stores/auth";
     import { derived } from "svelte/store";
     import { X } from "lucide-svelte";
+    import { toasts } from "$lib/stores/toasts";
 
     const DAYS = [
         "Monday",
@@ -312,11 +313,30 @@
         title: string,
         recipeId: string,
         imageUrl?: string,
+        day?: string,
+        type?: MealType,
     ) => {
         try {
-            await addLeftoverToFridge(title, recipeId, imageUrl);
-        } catch (error) {
+            let sourceDate: Date | undefined;
+            if (day) {
+                const dayIndex = DAYS.indexOf(day);
+                if (dayIndex !== -1) {
+                    const d = new Date(weekRange.start);
+                    d.setDate(d.getDate() + dayIndex);
+                    sourceDate = d;
+                }
+            }
+            await addLeftoverToFridge(
+                title,
+                recipeId,
+                imageUrl,
+                sourceDate,
+                type,
+            );
+            toasts.success("Leftover added to fridge");
+        } catch (error: any) {
             console.error("Failed to add leftover to fridge:", error);
+            toasts.error(error.message);
         }
     };
 
@@ -806,7 +826,18 @@
                                             newQuantity,
                                         )}
                                     onOpenRecipeMode={handleOpenRecipeMode}
-                                    onAddToFridge={handleAddToFridge}
+                                    onAddToFridge={(
+                                        title,
+                                        recipeId,
+                                        imageUrl,
+                                    ) =>
+                                        handleAddToFridge(
+                                            title,
+                                            recipeId,
+                                            imageUrl,
+                                            dayPlan.day,
+                                            section.type,
+                                        )}
                                     onRemoveLeftoverFromPlan={(
                                         leftoverId,
                                         idx,

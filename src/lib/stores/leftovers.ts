@@ -32,6 +32,8 @@ const fromFirestore = (doc: any): LeftoverItem => {
         imageUrl: data.imageUrl ?? null,
         status: data.status as LeftoverStatus,
         createdAt: data.createdAt?.toDate?.() || new Date(),
+        sourceDate: data.sourceDate?.toDate?.() || new Date(),
+        sourceMealType: data.sourceMealType || 'dinner',
         plannedFor: data.plannedFor || undefined,
     };
 };
@@ -44,6 +46,8 @@ const toFirestore = (item: Omit<LeftoverItem, 'id'>) => {
         imageUrl: item.imageUrl ?? null,
         status: item.status,
         createdAt: Timestamp.fromDate(item.createdAt),
+        sourceDate: Timestamp.fromDate(item.sourceDate),
+        sourceMealType: item.sourceMealType,
         plannedFor: item.plannedFor || null,
     };
 };
@@ -108,11 +112,36 @@ export const availableLeftovers = derived(leftovers, ($leftovers) => {
  */
 export const addLeftoverToFridge = async (
     title: string,
-    sourceRecipeId?: string,
-    imageUrl?: string | null
+    sourceRecipeId: string | undefined,
+    imageUrl: string | null = null,
+    sourceDate: Date,
+    sourceMealType: MealType
 ): Promise<string> => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
+
+    // Check for duplicates
+    const $leftovers = get(leftovers);
+    const existing = $leftovers.data.find((item) => {
+        // Check matching date and meal type
+        const sameDate =
+            item.sourceDate.getFullYear() === sourceDate.getFullYear() &&
+            item.sourceDate.getMonth() === sourceDate.getMonth() &&
+            item.sourceDate.getDate() === sourceDate.getDate();
+
+        const sameMeal = item.sourceMealType === sourceMealType;
+
+        // Also match by recipe ID or title to be specific
+        const sameContent = sourceRecipeId
+            ? item.sourceRecipeId === sourceRecipeId
+            : item.title === title;
+
+        return sameDate && sameMeal && sameContent;
+    });
+
+    if (existing) {
+        throw new Error('This leftover has already been added to the fridge.');
+    }
 
     const leftoverId = crypto.randomUUID();
     const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
@@ -123,6 +152,8 @@ export const addLeftoverToFridge = async (
         imageUrl: imageUrl ?? null,
         status: 'not_planned',
         createdAt: new Date(),
+        sourceDate,
+        sourceMealType
     };
 
     await setDoc(leftoverRef, toFirestore(newLeftover));
