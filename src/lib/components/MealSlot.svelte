@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Plus, X, Loader } from "lucide-svelte";
+    import { Plus, EllipsisVertical, Loader } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
     import type { Recipe, MealType, Note, PlannedRecipe } from "$lib/types";
     import { twMerge } from "tailwind-merge";
@@ -264,6 +264,7 @@
                                 onOpenRecipeMode(action, item.id);
                             }
                         }}
+                        onRemove={() => onRemove?.(i)}
                     />
                 {/if}
 
@@ -281,12 +282,10 @@
                                       ? "text-accent-snack-text"
                                       : "text-accent-note-text",
                         )}
-                        onclick={(e) => {
-                            e.stopPropagation();
-                            onRemove(i);
-                        }}
+                        onclick={(e) => handleCardClick(e, i)}
+                        aria-label="More options"
                     >
-                        <X size={14} />
+                        <EllipsisVertical size={14} />
                     </button>
                 {/if}
             </div>

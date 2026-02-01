@@ -9,6 +9,7 @@
         X as XIcon,
         Hash,
         Users,
+        Trash2,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -22,6 +23,7 @@
         onUpdate: (newQuantity: number) => void;
         onClose: () => void;
         onAction: (action: "cooking") => void;
+        onRemove?: () => void;
     }
 
     let {
@@ -32,6 +34,7 @@
         onUpdate,
         onClose,
         onAction,
+        onRemove,
     }: Props = $props();
 
     function clickOutside(node: HTMLElement) {
@@ -165,7 +168,7 @@
             {@const min = Math.floor(baseServings) * quantity}
             {@const max = Math.ceil(baseServings) * quantity}
             <span>Serves {min === max ? min : `${min}-${max}`}</span>
-            <Users size={12} fill="currentColor"/>
+            <Users size={12} fill="currentColor" />
         {/if}
     </div>
 
@@ -177,6 +180,21 @@
         <Snowflake size={18} />
         Add to freezer
     </button>
+
+    {#if onRemove}
+        <div class="border-t border-app-border my-1"></div>
+        <button
+            class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+            onclick={(e) => {
+                e.stopPropagation();
+                onRemove();
+                onClose();
+            }}
+        >
+            <Trash2 size={18} />
+            Remove from plan
+        </button>
+    {/if}
 
     <div class="border-t border-app-border my-1"></div>
 
