@@ -1,10 +1,5 @@
 <script lang="ts">
-    import {
-        Plus,
-        EllipsisVertical,
-        Loader,
-        Refrigerator,
-    } from "lucide-svelte";
+    import { Plus, EllipsisVertical, Loader } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
     import LeftoverSlotMenu from "$lib/components/LeftoverSlotMenu.svelte";
     import type {
@@ -255,14 +250,6 @@
                 class:opacity-50={itemIsLeftover &&
                     isEatenStatus(item.leftoverId)}
             >
-                <!-- Leftover icon indicator -->
-                {#if itemIsLeftover}
-                    <Refrigerator
-                        size={12}
-                        class="shrink-0 text-app-primary mt-0.5"
-                    />
-                {/if}
-
                 <div
                     class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3"
                 >
@@ -291,6 +278,13 @@
                             >
                         {/if}
                     </p>
+                    {#if itemIsLeftover}
+                        <p
+                            class="text-[9px] font-bold opacity-50"
+                        >
+                            Leftover
+                        </p>
+                    {/if}
                 </div>
 
                 <!-- Show menu based on item type -->
