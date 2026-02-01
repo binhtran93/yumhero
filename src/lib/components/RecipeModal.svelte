@@ -169,7 +169,6 @@
   interface Section {
     id: string;
     title: string;
-    highlight?: string | null;
     items: (Recipe | LeftoverItem)[];
     kind: "recipe" | "leftover";
   }
@@ -190,8 +189,7 @@
       if (suggestedRecipes.length > 0) {
         list.push({
           id: "suggested",
-          title: "Suggested for ",
-          highlight: mealType,
+          title: `Suggested for <span class="${colors.text} capitalize">${mealType}</span>`,
           items: suggestedRecipes,
           kind: "recipe",
         });
@@ -438,10 +436,7 @@
         <div
           class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
         >
-          {section.title}
-          {#if section.highlight}
-            <span class={colors.text}>{section.highlight}</span>
-          {/if}
+          {@html section.title}
         </div>
       {/if}
 
