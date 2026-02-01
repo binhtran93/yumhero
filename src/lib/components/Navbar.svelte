@@ -8,19 +8,34 @@
         Search,
         PanelLeftClose,
         PanelLeftOpen,
+        Refrigerator,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { sidebarExpanded } from "$lib/stores/ui";
     import { userRecipes } from "$lib/stores/recipes";
+    import { notPlannedCount } from "$lib/stores/leftovers";
     import type { Recipe } from "$lib/types";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
-    // Navigation Items
-    const navItems = [
+    // Navigation Items (with optional badge support)
+    type NavItem = {
+        href: string;
+        label: string;
+        icon: any;
+        badge?: number;
+    };
+
+    let navItems = $derived<NavItem[]>([
         { href: "/", label: "Plan", icon: Calendar },
+        {
+            href: "/fridge",
+            label: "Fridge",
+            icon: Refrigerator,
+            badge: $notPlannedCount > 0 ? $notPlannedCount : undefined,
+        },
         { href: "/recipes", label: "Recipes", icon: Book },
         { href: "/profile", label: "Profile", icon: User },
-    ];
+    ]);
 
     // Check if a link is active
     const isActive = (path: string) => {
@@ -110,12 +125,21 @@
                     ></div>
                 {/if}
 
-                <item.icon
-                    size={24}
-                    class="{active
-                        ? 'text-app-primary'
-                        : 'text-app-text-muted group-hover:text-app-text transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
-                />
+                <div class="relative">
+                    <item.icon
+                        size={24}
+                        class="{active
+                            ? 'text-app-primary'
+                            : 'text-app-text-muted group-hover:text-app-text transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
+                    />
+                    {#if item.badge}
+                        <span
+                            class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold text-white bg-app-primary rounded-full"
+                        >
+                            {item.badge > 9 ? "9+" : item.badge}
+                        </span>
+                    {/if}
+                </div>
                 {#if $sidebarExpanded}
                     <span
                         class="text-[10px] md:block lg:block lg:text-sm whitespace-nowrap"

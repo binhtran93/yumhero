@@ -50,6 +50,9 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
             if (type === 'note') return;
 
             (meals as any[]).forEach(planRecipe => {
+                // Skip leftovers entirely - they don't contribute to shopping list
+                if ('isLeftover' in planRecipe && planRecipe.isLeftover) return;
+
                 if (!planRecipe.ingredients || !planRecipe.id) return;
 
                 const quantity = planRecipe.quantity || 1;
@@ -86,6 +89,8 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
         Object.entries(dayPlan.meals).forEach(([type, meals]) => {
             if (type === 'note') return;
             (meals as any[]).forEach(planRecipe => {
+                // Skip leftovers - they don't have recipe IDs for shopping purposes
+                if ('isLeftover' in planRecipe && planRecipe.isLeftover) return;
                 if (planRecipe.id) planRecipeIds.add(planRecipe.id);
             });
         });

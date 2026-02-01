@@ -1,19 +1,36 @@
 <script lang="ts">
-    import { Plus, EllipsisVertical, Loader } from "lucide-svelte";
+    import {
+        Plus,
+        EllipsisVertical,
+        Loader,
+        UtensilsCrossed,
+    } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
-    import type { Recipe, MealType, Note, PlannedRecipe } from "$lib/types";
+    import LeftoverSlotMenu from "$lib/components/LeftoverSlotMenu.svelte";
+    import type {
+        Recipe,
+        MealType,
+        Note,
+        PlannedRecipe,
+        PlannedLeftover,
+        MealSlotItem,
+    } from "$lib/types";
+    import { isPlannedLeftover } from "$lib/types";
     import { twMerge } from "tailwind-merge";
 
     interface Props {
         day: string;
         type: MealType;
-        items: (PlannedRecipe | Note)[];
+        items: (MealSlotItem | Note)[];
         onClick: (e: MouseEvent) => void;
         onClear?: (e: MouseEvent) => void;
         onRemove?: (index: number) => void;
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newQuantity: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
+        onAddToFridge?: (title: string, recipeId: string) => void;
+        onRemoveLeftoverFromPlan?: (leftoverId: string, index: number) => void;
+        onMarkLeftoverAsEaten?: (leftoverId: string, index: number) => void;
         isLoading?: boolean;
         activeDropdown?: {
             day: string;
@@ -35,6 +52,9 @@
         onDrop,
         onUpdate,
         onOpenRecipeMode,
+        onAddToFridge,
+        onRemoveLeftoverFromPlan,
+        onMarkLeftoverAsEaten,
         isLoading = false,
         activeDropdown = null,
         onToggleDropdown,
@@ -42,9 +62,10 @@
         availableRecipes = [],
     }: Props = $props();
 
-    const getLabel = (item: PlannedRecipe | Note) => {
+    const getLabel = (item: MealSlotItem | Note) => {
         if ("title" in item) return item.title;
-        return item.text;
+        if ("text" in item) return (item as Note).text;
+        return "";
     };
 
     let isDragOver = $state(false);
@@ -75,7 +96,7 @@
     const handleDragStart = (
         e: DragEvent,
         index: number,
-        item: PlannedRecipe | Note,
+        item: MealSlotItem | Note,
     ) => {
         // Defer hiding the element so the browser has time to create the ghost image from the visible element
         setTimeout(() => {
@@ -199,11 +220,14 @@
         class="pointer-events-none z-10 flex-1 px-2 pb-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
+            {@const itemIsLeftover = "isLeftover" in item && item.isLeftover}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-center gap-2 px-3 py-1 rounded-xl shadow-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
+                    "pointer-events-auto group/item relative flex items-center gap-2 px-3 py-1 rounded-xl shadow-sm transition-all cursor-pointer active:cursor-grabbing select-none",
+                    // Use dashed border for leftovers, solid for recipes
+                    itemIsLeftover ? "border-2 border-dashed" : "border",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
@@ -220,6 +244,25 @@
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
             >
+                <!-- Leftover icon indicator -->
+                {#if itemIsLeftover}
+                    <UtensilsCrossed
+                        size={12}
+                        class={twMerge(
+                            "shrink-0 opacity-70",
+                            type === "breakfast"
+                                ? "text-accent-breakfast-text"
+                                : type === "lunch"
+                                  ? "text-accent-lunch-text"
+                                  : type === "dinner"
+                                    ? "text-accent-dinner-text"
+                                    : type === "snack"
+                                      ? "text-accent-snack-text"
+                                      : "text-accent-note-text",
+                        )}
+                    />
+                {/if}
+
                 <div
                     class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3"
                 >
@@ -247,25 +290,45 @@
                     </p>
                 </div>
 
-                {#if onUpdate && "quantity" in item && activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
-                    {@const quantity = item.quantity || 1}
-                    {@const baseServings = item.servings || undefined}
+                <!-- Show menu based on item type -->
+                {#if activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
+                    {#if itemIsLeftover}
+                        <!-- Leftover menu (simplified) -->
+                        <LeftoverSlotMenu
+                            leftoverId={item.leftoverId}
+                            leftoverTitle={item.title}
+                            triggerRect={activeTriggerRect}
+                            onClose={handleMenuClose}
+                            onRemoveFromPlan={() =>
+                                onRemoveLeftoverFromPlan?.(item.leftoverId, i)}
+                            onMarkAsEaten={() =>
+                                onMarkLeftoverAsEaten?.(item.leftoverId, i)}
+                        />
+                    {:else if onUpdate && "quantity" in item}
+                        <!-- Recipe menu (full feature set) -->
+                        {@const quantity = item.quantity || 1}
+                        {@const baseServings = item.servings || undefined}
 
-                    <WeekSlotMenu
-                        recipeId={item.id}
-                        {quantity}
-                        {baseServings}
-                        triggerRect={activeTriggerRect}
-                        onUpdate={(newQuantity: number) =>
-                            onUpdate(i, newQuantity)}
-                        onClose={handleMenuClose}
-                        onAction={(action) => {
-                            if (onOpenRecipeMode && "id" in item) {
-                                onOpenRecipeMode(action, item.id);
-                            }
-                        }}
-                        onRemove={() => onRemove?.(i)}
-                    />
+                        <WeekSlotMenu
+                            recipeId={item.id}
+                            recipeTitle={item.title}
+                            {quantity}
+                            {baseServings}
+                            triggerRect={activeTriggerRect}
+                            onUpdate={(newQuantity: number) =>
+                                onUpdate(i, newQuantity)}
+                            onClose={handleMenuClose}
+                            onAction={(action) => {
+                                if (onOpenRecipeMode && "id" in item) {
+                                    onOpenRecipeMode(action, item.id);
+                                }
+                            }}
+                            onRemove={() => onRemove?.(i)}
+                            onAddToFridge={onAddToFridge
+                                ? (title) => onAddToFridge(title, item.id)
+                                : undefined}
+                        />
+                    {/if}
                 {/if}
 
                 {#if onRemove}

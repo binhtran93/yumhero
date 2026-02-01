@@ -1,5 +1,47 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'note';
 
+/**
+ * Leftover status representing the two states of a leftover item.
+ * - 'not_planned': Available in the Fridge, ready to be added to a meal plan
+ * - 'planned': Assigned to a specific meal slot
+ */
+export type LeftoverStatus = 'not_planned' | 'planned';
+
+/**
+ * LeftoverItem represents a single leftover stored in the Fridge.
+ * Leftovers are treated as single, indivisible units.
+ */
+export interface LeftoverItem {
+    id: string;
+    title: string;                      // Recipe title or custom name
+    sourceRecipeId?: string;            // Optional reference to source recipe
+    status: LeftoverStatus;             // Current planning state
+    createdAt: Date;                    // When added to fridge
+    plannedFor?: {                      // Set when status = 'planned'
+        weekId: string;
+        day: string;
+        mealType: MealType;
+    };
+}
+
+/**
+ * PlannedLeftover represents a leftover placed in the meal plan.
+ * Uses type discriminator pattern with 'isLeftover: true' to distinguish from PlannedRecipe.
+ */
+export interface PlannedLeftover {
+    id: string;                         // Unique ID for this planned item
+    leftoverId: string;                 // Reference to LeftoverItem.id in Fridge
+    title: string;                      // Display title
+    isLeftover: true;                   // Type discriminator - always true
+}
+
+/**
+ * Type guard to check if a meal plan item is a leftover
+ */
+export function isPlannedLeftover(item: PlannedRecipe | PlannedLeftover): item is PlannedLeftover {
+    return 'isLeftover' in item && item.isLeftover === true;
+}
+
 export interface Tag {
     id: string;
     label: string;
@@ -88,13 +130,19 @@ export interface PlannedRecipe extends Recipe {
     quantity: number; // Number of batches to make (default: 1)
 }
 
+/**
+ * Union type for items that can be placed in a meal slot.
+ * Use isPlannedLeftover() type guard to distinguish between them.
+ */
+export type MealSlotItem = PlannedRecipe | PlannedLeftover;
+
 export interface DayPlan {
     day: string; // e.g., "Monday"
     meals: {
-        breakfast: PlannedRecipe[];
-        lunch: PlannedRecipe[];
-        dinner: PlannedRecipe[];
-        snack: PlannedRecipe[];
+        breakfast: MealSlotItem[];
+        lunch: MealSlotItem[];
+        dinner: MealSlotItem[];
+        snack: MealSlotItem[];
         note: Note[];
     };
 }

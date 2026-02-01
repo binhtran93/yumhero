@@ -1,6 +1,12 @@
 <script lang="ts">
-  import { Search, Plus, Minus, X } from "lucide-svelte";
-  import type { Recipe, MealType } from "$lib/types";
+  import { Search, Plus, Minus, X, UtensilsCrossed } from "lucide-svelte";
+  import type {
+    Recipe,
+    MealType,
+    LeftoverItem,
+    PlannedLeftover,
+  } from "$lib/types";
+  import { availableLeftovers } from "$lib/stores/leftovers";
 
   import { twMerge } from "tailwind-merge";
   import { fade } from "svelte/transition";
@@ -12,6 +18,7 @@
     currentRecipes?: Recipe[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
+    onSelectLeftover?: (leftover: LeftoverItem) => void;
     availableRecipes?: Recipe[];
   }
 
@@ -21,6 +28,7 @@
     currentRecipes = [],
     onClose,
     onSelect,
+    onSelectLeftover,
     availableRecipes = [],
   }: Props = $props();
 
@@ -96,6 +104,21 @@
         !r.mealTypes?.includes(mealType as MealType),
     ),
   );
+
+  // Filter available leftovers by search query
+  let matchingLeftovers = $derived(
+    $availableLeftovers.filter((l) =>
+      l.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
+  );
+
+  // Handle leftover selection
+  const handleLeftoverSelect = (leftover: LeftoverItem) => {
+    if (onSelectLeftover) {
+      onSelectLeftover(leftover);
+      onClose();
+    }
+  };
 
   const colors = $derived(
     mealType && mealType !== "note"
@@ -174,6 +197,38 @@
           <Plus size={16} strokeWidth={3} />
         </div>
       {/if}
+    </div>
+  </div>
+{/snippet}
+
+{#snippet leftoverItem(leftover: LeftoverItem)}
+  <div
+    class="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0 border-2 border-dashed border-app-border hover:border-app-primary/50 hover:bg-app-surface-hover"
+    onclick={() => handleLeftoverSelect(leftover)}
+    onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
+    role="button"
+    tabindex="0"
+  >
+    <!-- Info area -->
+    <div class="flex-1 flex items-center gap-2">
+      <UtensilsCrossed size={14} class="text-app-text-muted shrink-0" />
+      <h3
+        class="font-display font-bold transition-colors text-sm text-app-text"
+      >
+        {leftover.title}
+      </h3>
+      <span class="text-[10px] text-app-text-muted/70 uppercase font-medium"
+        >leftover</span
+      >
+    </div>
+
+    <!-- Add Indicator -->
+    <div class="flex items-center">
+      <div
+        class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+      >
+        <Plus size={16} strokeWidth={3} />
+      </div>
     </div>
   </div>
 {/snippet}
@@ -262,6 +317,23 @@
 
   <!-- List -->
   <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-1">
+    <!-- Leftovers Section (Always at top when available) -->
+    {#if matchingLeftovers.length > 0 && onSelectLeftover}
+      <div
+        class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider flex items-center gap-2"
+      >
+        <UtensilsCrossed size={12} />
+        From Your Fridge
+      </div>
+      {#each matchingLeftovers as leftover (leftover.id)}
+        {@render leftoverItem(leftover)}
+      {/each}
+
+      {#if suggestedRecipes.length > 0 || otherRecipes.length > 0}
+        <div class="mt-4 mb-2 border-t border-app-border mx-3"></div>
+      {/if}
+    {/if}
+
     {#if suggestedRecipes.length > 0}
       <div
         class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
@@ -286,7 +358,7 @@
       {@render recipeItem(recipe)}
     {/each}
 
-    {#if matchingRecipes.length === 0}
+    {#if matchingRecipes.length === 0 && matchingLeftovers.length === 0}
       <div class="flex flex-col items-center justify-center p-8 text-center">
         <div class="p-3 bg-app-surface-deep rounded-full mb-3">
           <Search size={24} class="text-app-text-muted/50" />

@@ -5,11 +5,19 @@
         WeeklyPlan,
         DayPlan,
         PlannedRecipe,
+        LeftoverItem,
+        PlannedLeftover,
     } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
+    import {
+        addLeftoverToFridge,
+        setLeftoverPlanned,
+        setLeftoverNotPlanned,
+        deleteLeftover,
+    } from "$lib/stores/leftovers";
     import { onMount } from "svelte";
     import { fade, scale } from "svelte/transition";
     import { ChevronLeft, ChevronRight } from "lucide-svelte";
@@ -210,8 +218,11 @@
 
         console.log("Open Modal:", day, type);
         const dayPlan = plan.find((d) => d.day === day);
-        // @ts-ignore
-        const currentRecipes = dayPlan ? dayPlan.meals[type] : [];
+        // Filter to only get recipes (not leftovers) for the modal's current selection
+        const currentMeals = dayPlan ? dayPlan.meals[type] : [];
+        const currentRecipes = currentMeals.filter(
+            (item: any) => !("isLeftover" in item && item.isLeftover),
+        ) as Recipe[];
 
         modal.isOpen = true;
         modal.day = day;
@@ -225,26 +236,35 @@
 
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            // Replace the entire list for this slot with the new selection
-            // Consolidate duplicates by summing quantity
-            const newMeals: PlannedRecipe[] = [];
+            // Preserve existing leftovers in the slot
+            const existingLeftovers = plan[dayIndex].meals[mealType].filter(
+                (item: any) => "isLeftover" in item && item.isLeftover,
+            );
+
+            // Consolidate duplicate recipes by summing quantity
+            const newRecipes: PlannedRecipe[] = [];
             recipes.forEach((newRecipe) => {
-                const existingIndex = newMeals.findIndex(
+                const existingIndex = newRecipes.findIndex(
                     (r) => r.id === newRecipe.id,
                 );
                 if (existingIndex !== -1) {
                     // Add to quantity if recipe already exists
-                    newMeals[existingIndex].quantity += 1;
+                    newRecipes[existingIndex].quantity += 1;
                 } else {
                     // Add new recipe with quantity = 1
-                    newMeals.push({
+                    newRecipes.push({
                         ...newRecipe,
                         quantity: 1,
                     });
                 }
             });
 
-            plan[dayIndex].meals[mealType] = newMeals;
+            // Combine leftovers (at start) with new recipes
+            // @ts-ignore - MealSlotItem union type
+            plan[dayIndex].meals[mealType] = [
+                ...existingLeftovers,
+                ...newRecipes,
+            ];
             saveWeekPlan(weekId, plan);
         }
     };
@@ -285,6 +305,69 @@
             plan[dayIndex].meals[type] = [];
             saveWeekPlan(weekId, plan);
         }
+    };
+
+    // Leftover Handlers
+    const handleAddToFridge = async (title: string, recipeId: string) => {
+        try {
+            await addLeftoverToFridge(title, recipeId);
+        } catch (error) {
+            console.error("Failed to add leftover to fridge:", error);
+        }
+    };
+
+    const handleSelectLeftover = async (leftover: LeftoverItem) => {
+        const { day, mealType } = modal;
+        if (!day || !mealType || mealType === "note") return;
+
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex === -1) return;
+
+        // Create PlannedLeftover for the meal plan
+        const plannedLeftover: PlannedLeftover = {
+            id: crypto.randomUUID(),
+            leftoverId: leftover.id,
+            title: leftover.title,
+            isLeftover: true,
+        };
+
+        // Add to meal plan
+        // @ts-ignore - MealSlotItem includes PlannedLeftover
+        plan[dayIndex].meals[mealType].push(plannedLeftover);
+        saveWeekPlan(weekId, plan);
+
+        // Update leftover status to planned
+        await setLeftoverPlanned(leftover.id, weekId, day, mealType);
+    };
+
+    const handleRemoveLeftoverFromPlan = async (
+        day: string,
+        type: MealType,
+        leftoverId: string,
+        index: number,
+    ) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex !== -1) {
+            plan[dayIndex].meals[type].splice(index, 1);
+            saveWeekPlan(weekId, plan);
+        }
+        // Set leftover back to not_planned
+        await setLeftoverNotPlanned(leftoverId);
+    };
+
+    const handleMarkLeftoverAsEaten = async (
+        day: string,
+        type: MealType,
+        leftoverId: string,
+        index: number,
+    ) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex !== -1) {
+            plan[dayIndex].meals[type].splice(index, 1);
+            saveWeekPlan(weekId, plan);
+        }
+        // Permanently delete the leftover
+        await deleteLeftover(leftoverId);
     };
 
     const closeModal = () => {
@@ -681,6 +764,24 @@
                                             newQuantity,
                                         )}
                                     onOpenRecipeMode={handleOpenRecipeMode}
+                                    onAddToFridge={handleAddToFridge}
+                                    onRemoveLeftoverFromPlan={(
+                                        leftoverId,
+                                        idx,
+                                    ) =>
+                                        handleRemoveLeftoverFromPlan(
+                                            dayPlan.day,
+                                            section.type,
+                                            leftoverId,
+                                            idx,
+                                        )}
+                                    onMarkLeftoverAsEaten={(leftoverId, idx) =>
+                                        handleMarkLeftoverAsEaten(
+                                            dayPlan.day,
+                                            section.type,
+                                            leftoverId,
+                                            idx,
+                                        )}
                                     onDrop={handleDrop}
                                     {isLoading}
                                     {activeDropdown}
@@ -735,6 +836,7 @@
     {availableRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
+    onSelectLeftover={handleSelectLeftover}
 />
 
 <NotePopover

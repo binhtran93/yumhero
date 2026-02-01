@@ -9,6 +9,7 @@
         Hash,
         Users,
         Trash2,
+        Refrigerator,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -16,6 +17,7 @@
 
     interface Props {
         recipeId: string;
+        recipeTitle?: string;
         quantity: number;
         baseServings?: number;
         triggerRect: DOMRect;
@@ -23,10 +25,12 @@
         onClose: () => void;
         onAction: (action: "cooking") => void;
         onRemove?: () => void;
+        onAddToFridge?: (title: string) => void;
     }
 
     let {
         recipeId,
+        recipeTitle = "",
         quantity,
         baseServings = 1,
         triggerRect,
@@ -34,6 +38,7 @@
         onClose,
         onAction,
         onRemove,
+        onAddToFridge,
     }: Props = $props();
 
     function clickOutside(node: HTMLElement) {
@@ -170,6 +175,20 @@
             <Users size={12} fill="currentColor" />
         {/if}
     </div>
+
+    {#if onAddToFridge}
+        <button
+            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+            onclick={(e) => {
+                e.stopPropagation();
+                onAddToFridge(recipeTitle);
+                onClose();
+            }}
+        >
+            <Refrigerator size={18} />
+            Add to Fridge
+        </button>
+    {/if}
 
     {#if onRemove}
         <div class="border-t border-app-border my-1"></div>
