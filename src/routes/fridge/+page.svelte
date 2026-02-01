@@ -113,6 +113,24 @@
         const { day, mealType } = item.plannedFor;
         return `${day.slice(0, 3)} ${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`;
     };
+
+    const formatSource = (item: LeftoverItem): string => {
+        if (!item.sourceDate) return "Manual Entry";
+
+        // Format date as "Mon, Jan 1"
+        const dateStr = item.sourceDate.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+        });
+
+        const mealTypeStr = item.sourceMealType
+            ? item.sourceMealType.charAt(0).toUpperCase() +
+              item.sourceMealType.slice(1)
+            : "";
+
+        return `Leftover from ${dateStr} • ${mealTypeStr}`;
+    };
 </script>
 
 <svelte:window
@@ -121,18 +139,7 @@
 />
 
 <div class="h-full flex flex-col">
-    <Header title="Your Fridge" mobileTitle="Fridge">
-        <div class="flex items-center gap-2">
-            <div
-                class="flex items-center gap-1.5 px-3 py-1.5 bg-app-surface-deep rounded-full border border-app-border"
-            >
-                <Refrigerator size={16} class="text-app-primary" />
-                <span class="text-sm font-bold text-app-text">
-                    {$leftovers.data.length}
-                </span>
-            </div>
-        </div>
-    </Header>
+    <Header title="Your Fridge" mobileTitle="Fridge" />
 
     <div class="flex-1 overflow-auto bg-app-bg p-4 md:p-6">
         {#if $leftovers.loading}
@@ -174,7 +181,7 @@
                                 >
                                     {#if item.imageUrl}
                                         <div
-                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
                                         >
                                             <img
                                                 src={item.imageUrl}
@@ -184,7 +191,7 @@
                                         </div>
                                     {:else}
                                         <div
-                                            class="w-8 h-8 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
+                                            class="w-10 h-10 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
                                         >
                                             <UtensilsCrossed
                                                 size={14}
@@ -192,11 +199,18 @@
                                             />
                                         </div>
                                     {/if}
-                                    <span
-                                        class="flex-1 font-medium text-app-text text-sm truncate"
-                                    >
-                                        {item.title}
-                                    </span>
+                                    <div class="flex-1 min-w-0">
+                                        <span
+                                            class="font-medium text-app-text text-sm truncate block"
+                                        >
+                                            {item.title}
+                                        </span>
+                                        <span
+                                            class="text-xs text-app-text-muted"
+                                        >
+                                            {formatSource(item)}
+                                        </span>
+                                    </div>
                                     <button
                                         class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
                                         onclick={(e) =>
