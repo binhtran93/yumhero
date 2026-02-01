@@ -89,6 +89,13 @@ export const notPlannedCount = derived(leftovers, ($leftovers) => {
 });
 
 /**
+ * Derived store: Total count of items in the leftovers store (for sidebar badge)
+ */
+export const totalLeftoversCount = derived(leftovers, ($leftovers) => {
+    return $leftovers.data.length;
+});
+
+/**
  * Derived store: Available leftovers that can be added to meal plan
  */
 export const availableLeftovers = derived(leftovers, ($leftovers) => {

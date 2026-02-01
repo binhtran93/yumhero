@@ -13,7 +13,7 @@
     import { fade } from "svelte/transition";
     import { sidebarExpanded } from "$lib/stores/ui";
     import { userRecipes } from "$lib/stores/recipes";
-    import { notPlannedCount } from "$lib/stores/leftovers";
+    import { totalLeftoversCount } from "$lib/stores/leftovers";
     import type { Recipe } from "$lib/types";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
@@ -31,7 +31,7 @@
             href: "/fridge",
             label: "Fridge",
             icon: Refrigerator,
-            badge: $notPlannedCount > 0 ? $notPlannedCount : undefined,
+            badge: $totalLeftoversCount > 0 ? $totalLeftoversCount : undefined,
         },
         { href: "/recipes", label: "Recipes", icon: Book },
         { href: "/profile", label: "Profile", icon: User },
