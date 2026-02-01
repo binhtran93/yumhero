@@ -8,6 +8,7 @@
         AlertCircle,
         EllipsisVertical,
         UtensilsCrossed,
+        CheckCircle2,
     } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
@@ -348,7 +349,7 @@
             onclick={handleDelete}
         >
             <Trash2 size={18} />
-            <span class="font-medium">Delete</span>
+            <span class="font-medium">Throw away</span>
         </button>
 
         <div class="border-t border-app-border my-1"></div>
@@ -366,11 +367,11 @@
 <!-- Confirm Modal -->
 <ConfirmModal
     isOpen={showConfirmDelete}
-    title={isEatingLeftover ? "Mark as Eaten?" : "Delete Leftover?"}
+    title={isEatingLeftover ? "Mark as Eaten?" : "Throw away leftover?"}
     message={isEatingLeftover
-        ? `This will remove "${itemToDelete?.title ?? ""}" from your fridge inventory.`
-        : `This will permanently remove "${itemToDelete?.title ?? ""}" from your fridge ${itemToDelete?.status === "planned" ? "and your meal plan" : ""}.`}
-    confirmText={isEatingLeftover ? "I ate it!" : "Delete"}
+        ? `This will remove this leftover from your fridge inventory.`
+        : `This will permanently remove this leftover from your fridge ${itemToDelete?.status === "planned" ? "and your meal plan" : ""}.`}
+    confirmText={isEatingLeftover ? "I ate it!" : "Throw away"}
     cancelText="Cancel"
     isDestructive={!isEatingLeftover ? true : false}
     onConfirm={confirmDelete}
