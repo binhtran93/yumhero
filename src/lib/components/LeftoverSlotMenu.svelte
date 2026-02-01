@@ -83,7 +83,7 @@
     <div class="py-1">
         {#if isEaten}
             <button
-                class="w-full text-left px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex items-center gap-3 transition-colors"
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
                 onclick={(e) => {
                     e.stopPropagation();
                     onMarkAsNotEaten?.();
@@ -95,7 +95,7 @@
             </button>
         {:else}
             <button
-                class="w-full text-left px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex items-center gap-3 transition-colors"
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
                 onclick={(e) => {
                     e.stopPropagation();
                     onMarkAsEaten();
