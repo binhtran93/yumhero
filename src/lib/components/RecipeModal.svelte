@@ -208,7 +208,7 @@
       if (otherRecipes.length > 0) {
         list.push({
           id: "other",
-          title: suggestedRecipes.length > 0 ? "Other Recipes" : "",
+          title: suggestedRecipes.length > 0 ? "Other Recipes" : "All Recipes",
           items: otherRecipes,
           kind: "recipe",
         });
