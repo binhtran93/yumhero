@@ -257,7 +257,7 @@
             >
                 <!-- Leftover icon indicator -->
                 {#if itemIsLeftover}
-                    <Refrigerator size={12} class="shrink-0 text-app-primary" />
+                    <Refrigerator size={12} class="shrink-0 text-app-primary mt-0.5" />
                 {/if}
 
                 <div

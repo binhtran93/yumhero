@@ -82,7 +82,7 @@
 >
     <!-- Leftover indicator header -->
     <div class="px-4 py-2 flex items-center gap-2 border-b border-app-border">
-        <Refrigerator size={14} class="text-app-text-muted" />
+        <Refrigerator size={14} class="text-app-primary" />
         <span class="text-xs text-app-text-muted font-medium truncate flex-1"
             >{leftoverTitle}</span
         >
