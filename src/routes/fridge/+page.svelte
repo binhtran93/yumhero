@@ -1,7 +1,7 @@
 <script lang="ts">
     import {
         Refrigerator,
-        CheckCircle2,
+        Utensils,
         Clock,
         Trash2,
         X as XIcon,
@@ -336,10 +336,10 @@
         {/if}
 
         <button
-            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
             onclick={handleMarkAsEaten}
         >
-            <CheckCircle2 size={18} />
+            <Utensils size={18} />
             <span class="font-medium">Mark as Eaten</span>
         </button>
 

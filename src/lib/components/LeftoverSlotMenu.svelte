@@ -4,7 +4,7 @@
         Trash2,
         Refrigerator,
         Undo2,
-        CheckCircle2,
+        Utensils,
         Eraser,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
@@ -102,7 +102,7 @@
                     onClose();
                 }}
             >
-                <CheckCircle2 size={18} />
+                <Utensils size={18} />
                 Mark as Eaten
             </button>
         {/if}
