@@ -247,8 +247,6 @@
                 ondragstart={(e) => handleDragStart(e, i, item)}
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
-                class:opacity-50={itemIsLeftover &&
-                    isEatenStatus(item.leftoverId)}
             >
                 <div
                     class="flex-1 min-w-0 pt-0.5 pointer-events-none line-clamp-3"
@@ -256,9 +254,6 @@
                     <p
                         class={twMerge(
                             "font-bold leading-tight text-sm md:text-xs 2xl:text-sm",
-                            itemIsLeftover &&
-                                isEatenStatus(item.leftoverId) &&
-                                "line-through opacity-60",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
@@ -279,7 +274,19 @@
                         {/if}
                     </p>
                     {#if itemIsLeftover}
-                        <p class="text-[9px] font-bold opacity-50">Leftover</p>
+                        <div class="flex items-center gap-1.5 -mt-0.5">
+                            <div
+                                class={twMerge(
+                                    "w-1.5 h-1.5 rounded-full shrink-0",
+                                    isEatenStatus(item.leftoverId)
+                                        ? "bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
+                                        : "bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.4)]",
+                                )}
+                            ></div>
+                            <p class="text-[9px] font-bold opacity-60">
+                                Leftover
+                            </p>
+                        </div>
                     {/if}
                 </div>
 
