@@ -18,6 +18,9 @@
         setLeftoverNotPlanned,
         deleteLeftover,
     } from "$lib/stores/leftovers";
+    import { getBoughtIngredientsForRecipe } from "$lib/stores/shoppingList";
+    import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
+    import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
     import { onMount } from "svelte";
     import { fade, scale } from "svelte/transition";
     import { ChevronLeft, ChevronRight } from "lucide-svelte";
@@ -287,12 +290,107 @@
         }
     };
 
-    const handleRemoveRecipe = (day: string, type: MealType, index: number) => {
+    // State for bought ingredients confirmation
+    let boughtIngredientsModal = $state<{
+        isOpen: boolean;
+        recipeTitle: string;
+        recipeId: string;
+        ingredients: Array<{
+            ingredientName: string;
+            amount: number;
+            unit: string | null;
+        }>;
+        pendingRemoval: {
+            day: string;
+            type: MealType;
+            index: number;
+        } | null;
+    }>({
+        isOpen: false,
+        recipeTitle: "",
+        recipeId: "",
+        ingredients: [],
+        pendingRemoval: null,
+    });
+
+    const handleRemoveRecipe = async (
+        day: string,
+        type: MealType,
+        index: number,
+    ) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex !== -1) {
-            plan[dayIndex].meals[type].splice(index, 1);
-            saveWeekPlan(weekId, plan);
+        if (dayIndex === -1) return;
+
+        const item = plan[dayIndex].meals[type][index];
+        // Only check for bought ingredients if it's a recipe (not a leftover)
+        if (item && "id" in item && !("isLeftover" in item)) {
+            const recipe = item as PlannedRecipe;
+            // Check for bought ingredients
+            const boughtIngredients = await getBoughtIngredientsForRecipe(
+                weekId,
+                recipe.id,
+                day,
+                type,
+            );
+
+            if (boughtIngredients.length > 0) {
+                // Show confirmation modal
+                boughtIngredientsModal = {
+                    isOpen: true,
+                    recipeTitle: recipe.title,
+                    recipeId: recipe.id,
+                    ingredients: boughtIngredients,
+                    pendingRemoval: { day, type, index },
+                };
+                return;
+            }
         }
+
+        // No bought ingredients, proceed with removal
+        plan[dayIndex].meals[type].splice(index, 1);
+        saveWeekPlan(weekId, plan);
+    };
+
+    const handleConfirmAddToFridge = async () => {
+        if (!boughtIngredientsModal.pendingRemoval) return;
+
+        const { day, type, index } = boughtIngredientsModal.pendingRemoval;
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex === -1) return;
+
+        // Add ingredients to fridge
+        await addIngredientsToFridge(
+            boughtIngredientsModal.ingredients.map((ing) => ({
+                name: ing.ingredientName,
+                amount: ing.amount,
+                unit: ing.unit,
+                sourceRecipeId: boughtIngredientsModal.recipeId,
+                sourceRecipeTitle: boughtIngredientsModal.recipeTitle,
+            })),
+        );
+
+        // Remove the recipe from plan
+        plan[dayIndex].meals[type].splice(index, 1);
+        saveWeekPlan(weekId, plan);
+
+        // Close modal and show success
+        boughtIngredientsModal.isOpen = false;
+        toasts.success("Ingredients added to fridge");
+    };
+
+    const handleSkipAddToFridge = () => {
+        if (!boughtIngredientsModal.pendingRemoval) return;
+
+        const { day, type, index } = boughtIngredientsModal.pendingRemoval;
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex === -1) return;
+
+        // Just remove the recipe without saving ingredients
+        plan[dayIndex].meals[type].splice(index, 1);
+        saveWeekPlan(weekId, plan);
+
+        // Close modal
+        boughtIngredientsModal.isOpen = false;
     };
 
     const handleRecipeUpdate = (
@@ -1042,3 +1140,13 @@
         {/if}
     </div>
 </Modal>
+
+<!-- Bought Ingredients Confirmation Modal -->
+<BoughtIngredientsConfirmModal
+    isOpen={boughtIngredientsModal.isOpen}
+    recipeTitle={boughtIngredientsModal.recipeTitle}
+    ingredients={boughtIngredientsModal.ingredients}
+    onConfirm={handleConfirmAddToFridge}
+    onSkip={handleSkipAddToFridge}
+    onClose={() => (boughtIngredientsModal.isOpen = false)}
+/>

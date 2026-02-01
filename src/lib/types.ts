@@ -28,6 +28,20 @@ export interface LeftoverItem {
 }
 
 /**
+ * FridgeIngredient represents a bought ingredient stored in the Fridge.
+ * Created when user removes a planned recipe but has already bought ingredients.
+ */
+export interface FridgeIngredient {
+    id: string;
+    name: string;                        // Ingredient name (normalized lowercase)
+    amount: number;
+    unit: string | null;
+    addedAt: Date;                       // When added to fridge
+    sourceRecipeId: string | null;       // Reference to recipe it came from
+    sourceRecipeTitle: string | null;    // Recipe title for display
+}
+
+/**
  * PlannedLeftover represents a leftover placed in the meal plan.
  * Uses type discriminator pattern with 'isLeftover: true' to distinguish from PlannedRecipe.
  */

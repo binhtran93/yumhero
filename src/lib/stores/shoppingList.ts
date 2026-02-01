@@ -322,3 +322,45 @@ export const hasItemHistory = (item: ShoppingListItem): boolean => {
     const hasOriginalSources = !!item.original_sources;
     return hasSourceHistory || hasOriginalSources;
 };
+
+/**
+ * Get bought ingredients for a specific recipe.
+ * Used when removing a recipe to check if any ingredients were already bought.
+ * Returns a list of ingredients that have is_checked=true for the given recipe.
+ */
+export const getBoughtIngredientsForRecipe = async (
+    weekId: string,
+    recipeId: string,
+    day?: string,
+    mealType?: string
+): Promise<Array<{
+    ingredientName: string;
+    amount: number;
+    unit: string | null;
+}>> => {
+    const shoppingList = await getShoppingList(weekId);
+    const boughtIngredients: Array<{
+        ingredientName: string;
+        amount: number;
+        unit: string | null;
+    }> = [];
+
+    for (const item of shoppingList) {
+        for (const source of item.sources) {
+            // Check if this source matches the recipe being removed
+            const matchesRecipe = source.recipe_id === recipeId;
+            const matchesDay = !day || source.day === day;
+            const matchesMeal = !mealType || source.meal_type === mealType;
+
+            if (matchesRecipe && matchesDay && matchesMeal && source.is_checked) {
+                boughtIngredients.push({
+                    ingredientName: item.ingredient_name,
+                    amount: source.amount,
+                    unit: source.unit,
+                });
+            }
+        }
+    }
+
+    return boughtIngredients;
+};
