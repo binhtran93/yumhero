@@ -330,8 +330,8 @@
                 title,
                 recipeId,
                 imageUrl,
-                sourceDate,
-                type,
+                sourceDate || new Date(),
+                type || "dinner",
             );
             toasts.success("Leftover added to fridge");
         } catch (error: any) {
@@ -340,30 +340,33 @@
         }
     };
 
-    const handleSelectLeftover = async (leftover: LeftoverItem) => {
+    const handleSelectLeftovers = async (selectedLeftovers: LeftoverItem[]) => {
         const { day, mealType } = modal;
         if (!day || !mealType || mealType === "note") return;
 
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        // Create PlannedLeftover for the meal plan
-        const plannedLeftover: PlannedLeftover = {
-            id: crypto.randomUUID(),
-            leftoverId: leftover.id,
-            title: leftover.title,
-            imageUrl: leftover.imageUrl,
-            sourceRecipeId: leftover.sourceRecipeId,
-            isLeftover: true,
-        };
+        for (const leftover of selectedLeftovers) {
+            // Create PlannedLeftover for the meal plan
+            const plannedLeftover: PlannedLeftover = {
+                id: crypto.randomUUID(),
+                leftoverId: leftover.id,
+                title: leftover.title,
+                imageUrl: leftover.imageUrl,
+                sourceRecipeId: leftover.sourceRecipeId,
+                isLeftover: true,
+            };
 
-        // Add to meal plan
-        // @ts-ignore - MealSlotItem includes PlannedLeftover
-        plan[dayIndex].meals[mealType].push(plannedLeftover);
+            // Add to meal plan
+            // @ts-ignore - MealSlotItem includes PlannedLeftover
+            plan[dayIndex].meals[mealType].push(plannedLeftover);
+
+            // Update leftover status to planned
+            await setLeftoverPlanned(leftover.id, weekId, day, mealType);
+        }
+
         saveWeekPlan(weekId, plan);
-
-        // Update leftover status to planned
-        await setLeftoverPlanned(leftover.id, weekId, day, mealType);
     };
 
     const handleRemoveLeftoverFromPlan = async (
@@ -421,6 +424,8 @@
             item.title,
             item.sourceRecipeId,
             item.imageUrl,
+            new Date(), // Default to today since we lost the original source date info in the plan item
+            type, // The meal type it was in
         );
 
         // 2. Update the meal plan with the NEW leftover ID
@@ -919,7 +924,7 @@
     {availableRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
-    onSelectLeftover={handleSelectLeftover}
+    onSelectLeftovers={handleSelectLeftovers}
 />
 
 <NotePopover

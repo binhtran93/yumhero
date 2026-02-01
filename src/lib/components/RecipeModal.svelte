@@ -18,7 +18,7 @@
     currentRecipes?: Recipe[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
-    onSelectLeftover?: (leftover: LeftoverItem) => void;
+    onSelectLeftovers?: (leftovers: LeftoverItem[]) => void;
     availableRecipes?: Recipe[];
   }
 
@@ -28,7 +28,7 @@
     currentRecipes = [],
     onClose,
     onSelect,
-    onSelectLeftover,
+    onSelectLeftovers,
     availableRecipes = [],
   }: Props = $props();
 
@@ -36,6 +36,7 @@
 
   // Track selection: Recipe ID -> Recipe
   let selection = $state<Map<string, Recipe>>(new Map());
+  let leftoverSelection = $state<Map<string, LeftoverItem>>(new Map());
 
   // Reset selection when modal opens
   $effect(() => {
@@ -48,6 +49,7 @@
         }
       });
       selection = newSelection;
+      leftoverSelection = new Map<string, LeftoverItem>();
       searchQuery = "";
     }
   });
@@ -73,10 +75,33 @@
     selection = newMap;
   };
 
+  const isLeftoverSelected = (leftoverId: string) => {
+    return leftoverSelection.has(leftoverId);
+  };
+
+  const toggleLeftoverSelection = (leftover: LeftoverItem) => {
+    const newMap = new Map(leftoverSelection);
+    if (newMap.has(leftover.id)) {
+      newMap.delete(leftover.id);
+    } else {
+      newMap.set(leftover.id, leftover);
+    }
+    leftoverSelection = newMap;
+  };
+
+  const removeLeftoverSelection = (leftoverId: string) => {
+    const newMap = new Map(leftoverSelection);
+    newMap.delete(leftoverId);
+    leftoverSelection = newMap;
+  };
+
   const handleDone = () => {
     if (selection.size >= 0) {
       // Return the current list of selected recipes
       onSelect(Array.from(selection.values()));
+    }
+    if (leftoverSelection.size > 0 && onSelectLeftovers) {
+      onSelectLeftovers(Array.from(leftoverSelection.values()));
     }
     onClose();
   };
@@ -114,10 +139,7 @@
 
   // Handle leftover selection
   const handleLeftoverSelect = (leftover: LeftoverItem) => {
-    if (onSelectLeftover) {
-      onSelectLeftover(leftover);
-      onClose();
-    }
+    toggleLeftoverSelection(leftover);
   };
 
   const colors = $derived(
@@ -202,8 +224,16 @@
 {/snippet}
 
 {#snippet leftoverItem(leftover: LeftoverItem)}
+  {@const selected = isLeftoverSelected(leftover.id)}
   <div
-    class="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0 bg-transparent border border-transparent hover:bg-app-surface-hover"
+    class={twMerge(
+      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0",
+      selected
+        ? `${colors.bgFaint}`
+        : twMerge(
+            "bg-transparent border-transparent hover:bg-app-surface-hover",
+          ),
+    )}
     onclick={() => handleLeftoverSelect(leftover)}
     onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
     role="button"
@@ -212,24 +242,39 @@
     <!-- Info area -->
     <div class="flex-1 flex items-center gap-2">
       <h3
-        class="font-display font-bold transition-colors text-sm text-app-text"
+        class={twMerge(
+          "font-display font-bold transition-colors text-sm",
+          selected ? colors.text : "text-app-text",
+        )}
       >
         {leftover.title}
       </h3>
-      <span
-        class="px-1.5 py-0.5 rounded-md bg-app-surface-deep text-[10px] font-bold text-app-text-muted uppercase tracking-wider border border-app-border/50"
-      >
-        Leftover
-      </span>
     </div>
 
-    <!-- Add Indicator -->
+    <!-- Selection Indicator -->
     <div class="flex items-center">
-      <div
-        class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
-      >
-        <Plus size={16} strokeWidth={3} />
-      </div>
+      {#if selected}
+        <div
+          class={twMerge(
+            "p-1.5 rounded-full text-white shadow-sm border",
+            colors.bg,
+            colors.border,
+          )}
+        >
+          <Plus
+            size={16}
+            strokeWidth={3}
+            class="rotate-45"
+            aria-hidden="true"
+          />
+        </div>
+      {:else}
+        <div
+          class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+        >
+          <Plus size={16} strokeWidth={3} />
+        </div>
+      {/if}
     </div>
   </div>
 {/snippet}
@@ -295,8 +340,8 @@
       </div>
     </div>
 
-    <!-- Selected Recipes Display -->
-    {#if selection.size > 0}
+    <!-- Selected Recipes & Leftovers Display -->
+    {#if selection.size > 0 || leftoverSelection.size > 0}
       <div class="px-4 pb-4 overflow-x-auto">
         <div class="flex flex-wrap gap-2">
           {#each selection.values() as recipe (recipe.id)}
@@ -305,9 +350,31 @@
               class={twMerge(
                 "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-colors cursor-pointer group border",
                 colors.text,
+                colors.border,
+                colors.bgFaint,
               )}
             >
               <span>{recipe.title}</span>
+              <X size={14} class="p-0.5" strokeWidth={3} />
+            </button>
+          {/each}
+          {#each leftoverSelection.values() as leftover (leftover.id)}
+            <button
+              onclick={() => removeLeftoverSelection(leftover.id)}
+              class={twMerge(
+                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-colors cursor-pointer group border",
+                colors.text,
+                colors.border,
+                colors.bgFaint,
+              )}
+            >
+              <span class="flex items-center gap-1">
+                {leftover.title}
+                <span
+                  class="text-[10px] px-1 rounded bg-app-primary text-app-bg font-bold"
+                  >Leftover</span
+                >
+              </span>
               <X size={14} class="p-0.5" strokeWidth={3} />
             </button>
           {/each}
@@ -319,7 +386,7 @@
   <!-- List -->
   <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-1">
     <!-- Leftovers Section (Always at top when available) -->
-    {#if matchingLeftovers.length > 0 && onSelectLeftover}
+    {#if matchingLeftovers.length > 0 && onSelectLeftovers}
       <div
         class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider flex items-center gap-2"
       >
