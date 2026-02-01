@@ -5,6 +5,7 @@
         Refrigerator,
         Undo2,
         CheckCircle2,
+        Eraser,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
@@ -12,7 +13,6 @@
 
     interface Props {
         leftoverId: string;
-        leftoverTitle: string;
         triggerRect: DOMRect;
         isEaten?: boolean;
         onClose: () => void;
@@ -23,7 +23,6 @@
 
     let {
         leftoverId,
-        leftoverTitle,
         triggerRect,
         isEaten = false,
         onClose,
@@ -80,31 +79,8 @@
     tabindex="-1"
     onclick={(e) => e.stopPropagation()}
 >
-    <!-- Leftover indicator header -->
-    <div class="px-4 py-2 flex items-center gap-2 border-b border-app-border">
-        <Refrigerator size={14} class="text-app-primary" />
-        <span class="text-xs text-app-text-muted font-medium truncate flex-1"
-            >{leftoverTitle}</span
-        >
-        <span class="text-[10px] text-app-text-muted/50 uppercase"
-            >leftover</span
-        >
-    </div>
-
     <!-- Menu Items -->
     <div class="py-1">
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={(e) => {
-                e.stopPropagation();
-                onRemoveFromPlan();
-                onClose();
-            }}
-        >
-            <XIcon size={18} />
-            Remove from Plan
-        </button>
-
         {#if isEaten}
             <button
                 class="w-full text-left px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex items-center gap-3 transition-colors"
@@ -131,6 +107,20 @@
             </button>
         {/if}
     </div>
+
+    <div class="border-t border-app-border my-1"></div>
+
+    <button
+        class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+        onclick={(e) => {
+            e.stopPropagation();
+            onRemoveFromPlan();
+            onClose();
+        }}
+    >
+        <Eraser size={18} />
+        Remove from Plan
+    </button>
 
     <div class="border-t border-app-border my-1"></div>
 

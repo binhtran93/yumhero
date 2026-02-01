@@ -10,6 +10,7 @@
         Users,
         Trash2,
         Refrigerator,
+        Eraser,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { goto } from "$app/navigation";
@@ -200,7 +201,7 @@
                 onClose();
             }}
         >
-            <Trash2 size={18} />
+            <Eraser size={18} />
             Remove from plan
         </button>
     {/if}

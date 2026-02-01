@@ -257,7 +257,10 @@
             >
                 <!-- Leftover icon indicator -->
                 {#if itemIsLeftover}
-                    <Refrigerator size={12} class="shrink-0 text-app-primary mt-0.5" />
+                    <Refrigerator
+                        size={12}
+                        class="shrink-0 text-app-primary mt-0.5"
+                    />
                 {/if}
 
                 <div
@@ -296,7 +299,6 @@
                         <!-- Leftover menu (simplified) -->
                         <LeftoverSlotMenu
                             leftoverId={item.leftoverId}
-                            leftoverTitle={item.title}
                             triggerRect={activeTriggerRect}
                             isEaten={isEatenStatus(item.leftoverId)}
                             onClose={handleMenuClose}
