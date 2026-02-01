@@ -71,13 +71,39 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
                         recipeIngredientsMap.set(name, { sources: [] });
                     }
 
-                    recipeIngredientsMap.get(name)!.sources.push({
-                        recipe_id: recipeId,
-                        amount: scaledAmount,
-                        unit: unit,
-                        day: dayPlan.day,
-                        meal_type: type as MealType
-                    });
+                    const sources = recipeIngredientsMap.get(name)!.sources;
+                    const existingSourceIndex = sources.findIndex(s =>
+                        s.recipe_id === recipeId &&
+                        s.day === dayPlan.day &&
+                        s.meal_type === type
+                    );
+
+                    let merged = false;
+                    if (existingSourceIndex !== -1) {
+                        const existingSource = sources[existingSourceIndex];
+                        // Check if units are compatible for merging
+                        const u1 = existingSource.unit ? existingSource.unit.toLowerCase().trim() : '';
+                        const u2 = unit ? unit.toLowerCase().trim() : '';
+
+                        if (u1 === u2 || !u1 || !u2) {
+                            existingSource.amount += scaledAmount;
+                            // Update unit if the existing one was empty and new one is present
+                            if (!u1 && u2) {
+                                existingSource.unit = unit;
+                            }
+                            merged = true;
+                        }
+                    }
+
+                    if (!merged) {
+                        sources.push({
+                            recipe_id: recipeId,
+                            amount: scaledAmount,
+                            unit: unit,
+                            day: dayPlan.day,
+                            meal_type: type as MealType
+                        });
+                    }
                 });
             });
         });
