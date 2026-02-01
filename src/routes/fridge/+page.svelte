@@ -76,12 +76,6 @@
         selectedItem = null;
     };
 
-    const handleRemoveFromPlan = async () => {
-        if (!selectedItem) return;
-        await setLeftoverNotPlanned(selectedItem.id);
-        closeActionMenu();
-    };
-
     const handleMarkAsEaten = () => {
         if (!selectedItem) return;
         isEatingLeftover = true;
@@ -326,16 +320,6 @@
         transition:fade={{ duration: 100 }}
         onclick={(e) => e.stopPropagation()}
     >
-        {#if selectedItem.status === "planned"}
-            <button
-                class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                onclick={handleRemoveFromPlan}
-            >
-                <XIcon size={18} />
-                <span class="font-medium">Remove from Plan</span>
-            </button>
-        {/if}
-
         <button
             class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
             onclick={handleMarkAsEaten}
