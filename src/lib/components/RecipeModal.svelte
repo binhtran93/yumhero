@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { Search, Plus, Minus, X, UtensilsCrossed } from "lucide-svelte";
+  import {
+    Search,
+    Plus,
+    Minus,
+    X,
+    UtensilsCrossed,
+    Clock,
+    Users,
+    Calendar,
+  } from "lucide-svelte";
   import type {
     Recipe,
     MealType,
@@ -11,6 +20,7 @@
   import { twMerge } from "tailwind-merge";
   import { fade } from "svelte/transition";
   import Modal from "$lib/components/Modal.svelte";
+  import { formatServings } from "$lib/utils/recipe";
 
   interface Props {
     isOpen: boolean;
@@ -260,17 +270,31 @@
       >
         {recipe.title}
       </h3>
-      <p class="text-[11px] text-app-text-muted font-medium tracking-tight">
-        {#if recipe.totalTime}{recipe.totalTime} mins{/if}
-        {#each recipe.tags?.slice(0, 1) || [] as tag}
-          {#if recipe.totalTime}
-            •
-          {/if}{tag}
-        {/each}
-        {#if !recipe.totalTime && (!recipe.tags || recipe.tags.length === 0)}
-          Shared by user
+      <div class="flex items-center gap-3 mt-1">
+        {#if recipe.totalTime}
+          <div
+            class="flex items-center gap-1 text-[11px] text-app-text-muted font-semibold leading-none"
+          >
+            <Clock size={12} strokeWidth={2.5} class="shrink-0 opacity-40" />
+            <span>{recipe.totalTime}m</span>
+          </div>
         {/if}
-      </p>
+        {#if recipe.servings}
+          <div
+            class="flex items-center gap-1 text-[11px] text-app-text-muted font-semibold leading-none"
+          >
+            <Users size={12} strokeWidth={2.5} class="shrink-0 opacity-40" />
+            <span>{formatServings(recipe.servings)}</span>
+          </div>
+        {/if}
+        {#if !recipe.totalTime && !recipe.servings}
+          <span
+            class="text-[10px] text-app-text-muted/60 font-bold uppercase tracking-wider"
+          >
+            User Recipe
+          </span>
+        {/if}
+      </div>
     </div>
 
     <!-- Selection Indicator -->
@@ -346,9 +370,12 @@
       >
         {leftover.title}
       </h3>
-      <p class="text-[11px] text-app-text-muted font-medium tracking-tight">
-        Leftover from {leftover.sourceMealType}
-      </p>
+      <div
+        class="flex items-center gap-1.5 mt-1 text-[11px] text-app-text-muted font-semibold leading-none"
+      >
+        <Calendar size={12} strokeWidth={2.5} class="shrink-0 opacity-40" />
+        <span class="capitalize">From {leftover.sourceMealType}</span>
+      </div>
     </div>
 
     <!-- Selection Indicator -->
