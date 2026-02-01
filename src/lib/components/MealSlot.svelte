@@ -279,11 +279,7 @@
                         {/if}
                     </p>
                     {#if itemIsLeftover}
-                        <p
-                            class="text-[9px] font-bold opacity-50"
-                        >
-                            Leftover
-                        </p>
+                        <p class="text-[9px] font-bold opacity-50">Leftover</p>
                     {/if}
                 </div>
 
