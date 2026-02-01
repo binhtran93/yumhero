@@ -165,6 +165,50 @@
           bgFaint: "bg-app-primary/5",
         },
   );
+
+  interface Section {
+    id: string;
+    title: string;
+    highlight?: string | null;
+    items: (Recipe | LeftoverItem)[];
+    kind: "recipe" | "leftover";
+  }
+
+  let sections = $derived<Section[]>(
+    (() => {
+      const list: Section[] = [];
+
+      if (matchingLeftovers.length > 0 && onSelectLeftovers) {
+        list.push({
+          id: "leftovers",
+          title: "From Your Fridge",
+          items: matchingLeftovers,
+          kind: "leftover",
+        });
+      }
+
+      if (suggestedRecipes.length > 0) {
+        list.push({
+          id: "suggested",
+          title: "Suggested for ",
+          highlight: mealType,
+          items: suggestedRecipes,
+          kind: "recipe",
+        });
+      }
+
+      if (otherRecipes.length > 0) {
+        list.push({
+          id: "other",
+          title: suggestedRecipes.length > 0 ? "Other Recipes" : "",
+          items: otherRecipes,
+          kind: "recipe",
+        });
+      }
+
+      return list;
+    })(),
+  );
 </script>
 
 {#snippet recipeItem(recipe: Recipe)}
@@ -385,47 +429,32 @@
 
   <!-- List -->
   <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-1">
-    <!-- Leftovers Section (Always at top when available) -->
-    {#if matchingLeftovers.length > 0 && onSelectLeftovers}
-      <div
-        class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider flex items-center gap-2"
-      >
-        From Your Fridge
-      </div>
-      {#each matchingLeftovers as leftover (leftover.id)}
-        {@render leftoverItem(leftover)}
-      {/each}
-
-      {#if suggestedRecipes.length > 0 || otherRecipes.length > 0}
+    {#each sections as section, i (section.id)}
+      {#if i > 0}
         <div class="mt-4 mb-2 border-t border-app-border mx-3"></div>
       {/if}
-    {/if}
 
-    {#if suggestedRecipes.length > 0}
-      <div
-        class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
-      >
-        Suggested for <span class={colors.text}>{mealType}</span>
-      </div>
-      {#each suggestedRecipes as recipe (recipe.id)}
-        {@render recipeItem(recipe)}
-      {/each}
-
-      {#if otherRecipes.length > 0}
-        <div class="mt-4 mb-2 border-t border-app-border mx-3"></div>
+      {#if section.title}
         <div
-          class="px-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
+          class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
         >
-          Other Recipes
+          {section.title}
+          {#if section.highlight}
+            <span class={colors.text}>{section.highlight}</span>
+          {/if}
         </div>
       {/if}
-    {/if}
 
-    {#each otherRecipes as recipe (recipe.id)}
-      {@render recipeItem(recipe)}
+      {#each section.items as item (item.id)}
+        {#if section.kind === "leftover"}
+          {@render leftoverItem(item as LeftoverItem)}
+        {:else}
+          {@render recipeItem(item as Recipe)}
+        {/if}
+      {/each}
     {/each}
 
-    {#if matchingRecipes.length === 0 && matchingLeftovers.length === 0}
+    {#if sections.length === 0}
       <div class="flex flex-col items-center justify-center p-8 text-center">
         <div class="p-3 bg-app-surface-deep rounded-full mb-3">
           <Search size={24} class="text-app-text-muted/50" />
