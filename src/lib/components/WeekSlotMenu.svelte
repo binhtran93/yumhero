@@ -4,7 +4,6 @@
         ShoppingCart,
         Minus,
         Plus,
-        Snowflake,
         Ellipsis,
         X as XIcon,
         Hash,
@@ -171,15 +170,6 @@
             <Users size={12} fill="currentColor" />
         {/if}
     </div>
-
-    <button
-        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text-muted hover:bg-app-surface-hover flex items-center gap-3 transition-colors opacity-50 cursor-not-allowed"
-        disabled
-        onclick={(e) => e.stopPropagation()}
-    >
-        <Snowflake size={18} />
-        Add to freezer
-    </button>
 
     {#if onRemove}
         <div class="border-t border-app-border my-1"></div>
