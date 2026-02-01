@@ -61,6 +61,7 @@
     };
 
     const handleItemClick = (item: LeftoverItem, e: MouseEvent) => {
+        e.stopPropagation();
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
         selectedItem = item;
         actionMenuPosition = { x: rect.right - 200, y: rect.bottom + 8 };
