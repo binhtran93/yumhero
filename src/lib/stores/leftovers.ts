@@ -28,6 +28,7 @@ const fromFirestore = (doc: any): LeftoverItem => {
         id: doc.id,
         title: data.title,
         sourceRecipeId: data.sourceRecipeId || undefined,
+        imageUrl: data.imageUrl ?? null,
         status: data.status as LeftoverStatus,
         createdAt: data.createdAt?.toDate?.() || new Date(),
         plannedFor: data.plannedFor || undefined,
@@ -39,6 +40,7 @@ const toFirestore = (item: Omit<LeftoverItem, 'id'>) => {
     return {
         title: item.title,
         sourceRecipeId: item.sourceRecipeId || null,
+        imageUrl: item.imageUrl ?? null,
         status: item.status,
         createdAt: Timestamp.fromDate(item.createdAt),
         plannedFor: item.plannedFor || null,
@@ -98,7 +100,8 @@ export const availableLeftovers = derived(leftovers, ($leftovers) => {
  */
 export const addLeftoverToFridge = async (
     title: string,
-    sourceRecipeId?: string
+    sourceRecipeId?: string,
+    imageUrl?: string | null
 ): Promise<string> => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
@@ -109,6 +112,7 @@ export const addLeftoverToFridge = async (
     const newLeftover: Omit<LeftoverItem, 'id'> = {
         title,
         sourceRecipeId,
+        imageUrl: imageUrl ?? null,
         status: 'not_planned',
         createdAt: new Date(),
     };

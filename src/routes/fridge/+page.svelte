@@ -1,12 +1,13 @@
 <script lang="ts">
     import {
         Refrigerator,
-        Circle,
         CheckCircle2,
         Clock,
         Trash2,
         X as XIcon,
         AlertCircle,
+        EllipsisVertical,
+        UtensilsCrossed,
     } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
@@ -159,26 +160,44 @@
                         </h2>
                         <div class="space-y-2">
                             {#each availableItems as item (item.id)}
-                                <button
+                                <div
                                     class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
-                                    onclick={(e) => handleItemClick(item, e)}
                                     transition:slide={{ duration: 200 }}
                                 >
-                                    <Circle
-                                        size={18}
-                                        class="text-app-text-muted/50 shrink-0"
-                                    />
+                                    {#if item.imageUrl}
+                                        <div
+                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                        >
+                                            <img
+                                                src={item.imageUrl}
+                                                alt={item.title}
+                                                class="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    {:else}
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
+                                        >
+                                            <UtensilsCrossed
+                                                size={14}
+                                                class="text-app-text-muted/60"
+                                            />
+                                        </div>
+                                    {/if}
                                     <span
                                         class="flex-1 font-medium text-app-text text-sm truncate"
                                     >
                                         {item.title}
                                     </span>
-                                    <span
-                                        class="text-xs text-app-text-muted opacity-0 group-hover:opacity-100 transition-opacity"
+                                    <button
+                                        class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
+                                        onclick={(e) =>
+                                            handleItemClick(item, e)}
+                                        aria-label="Options"
                                     >
-                                        Click for options
-                                    </span>
-                                </button>
+                                        <EllipsisVertical size={18} />
+                                    </button>
+                                </div>
                             {/each}
                         </div>
                     </div>
@@ -199,17 +218,31 @@
                                     class="relative"
                                     transition:slide={{ duration: 200 }}
                                 >
-                                    <button
+                                    <div
                                         class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border transition-colors text-left group {isPast
                                             ? 'border-amber-400/50 bg-amber-50/50 dark:bg-amber-900/10'
                                             : 'border-app-border hover:bg-app-surface-hover'}"
-                                        onclick={(e) =>
-                                            handleItemClick(item, e)}
                                     >
-                                        <CheckCircle2
-                                            size={18}
-                                            class="text-app-primary shrink-0"
-                                        />
+                                        {#if item.imageUrl}
+                                            <div
+                                                class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                            >
+                                                <img
+                                                    src={item.imageUrl}
+                                                    alt={item.title}
+                                                    class="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                        {:else}
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
+                                            >
+                                                <CheckCircle2
+                                                    size={14}
+                                                    class="text-app-primary"
+                                                />
+                                            </div>
+                                        {/if}
                                         <div class="flex-1 min-w-0">
                                             <span
                                                 class="font-medium text-app-text text-sm truncate block"
@@ -248,13 +281,17 @@
                                                 <AlertCircle size={12} />
                                                 Eaten?
                                             </div>
-                                        {:else}
-                                            <Clock
-                                                size={14}
-                                                class="text-app-text-muted/50 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            />
                                         {/if}
-                                    </button>
+
+                                        <button
+                                            class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
+                                            onclick={(e) =>
+                                                handleItemClick(item, e)}
+                                            aria-label="Options"
+                                        >
+                                            <EllipsisVertical size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             {/each}
                         </div>

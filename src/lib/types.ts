@@ -15,6 +15,7 @@ export interface LeftoverItem {
     id: string;
     title: string;                      // Recipe title or custom name
     sourceRecipeId?: string;            // Optional reference to source recipe
+    imageUrl?: string | null;           // Optional recipe thumbnail
     status: LeftoverStatus;             // Current planning state
     createdAt: Date;                    // When added to fridge
     plannedFor?: {                      // Set when status = 'planned'

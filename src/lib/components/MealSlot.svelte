@@ -28,7 +28,11 @@
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newQuantity: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
-        onAddToFridge?: (title: string, recipeId: string) => void;
+        onAddToFridge?: (
+            title: string,
+            recipeId: string,
+            imageUrl?: string,
+        ) => void;
         onRemoveLeftoverFromPlan?: (leftoverId: string, index: number) => void;
         onMarkLeftoverAsEaten?: (leftoverId: string, index: number) => void;
         isLoading?: boolean;
@@ -325,7 +329,8 @@
                             }}
                             onRemove={() => onRemove?.(i)}
                             onAddToFridge={onAddToFridge
-                                ? (title) => onAddToFridge(title, item.id)
+                                ? (title) =>
+                                      onAddToFridge(title, item.id, item.image)
                                 : undefined}
                         />
                     {/if}

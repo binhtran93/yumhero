@@ -308,9 +308,13 @@
     };
 
     // Leftover Handlers
-    const handleAddToFridge = async (title: string, recipeId: string) => {
+    const handleAddToFridge = async (
+        title: string,
+        recipeId: string,
+        imageUrl?: string,
+    ) => {
         try {
-            await addLeftoverToFridge(title, recipeId);
+            await addLeftoverToFridge(title, recipeId, imageUrl);
         } catch (error) {
             console.error("Failed to add leftover to fridge:", error);
         }
