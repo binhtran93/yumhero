@@ -17,6 +17,7 @@
     } from "$lib/types";
     import { isPlannedLeftover } from "$lib/types";
     import { twMerge } from "tailwind-merge";
+    import { leftovers } from "$lib/stores/leftovers";
 
     interface Props {
         day: string;
@@ -35,6 +36,7 @@
         ) => void;
         onRemoveLeftoverFromPlan?: (leftoverId: string, index: number) => void;
         onMarkLeftoverAsEaten?: (leftoverId: string, index: number) => void;
+        onMarkLeftoverAsNotEaten?: (leftoverId: string, index: number) => void;
         isLoading?: boolean;
         activeDropdown?: {
             day: string;
@@ -59,12 +61,17 @@
         onAddToFridge,
         onRemoveLeftoverFromPlan,
         onMarkLeftoverAsEaten,
+        onMarkLeftoverAsNotEaten,
         isLoading = false,
         activeDropdown = null,
         onToggleDropdown,
         onCloseDropdown,
         availableRecipes = [],
     }: Props = $props();
+
+    const isEatenStatus = (leftoverId: string) => {
+        return !$leftovers.data.some((l) => l.id === leftoverId);
+    };
 
     const getLabel = (item: MealSlotItem | Note) => {
         if ("title" in item) return item.title;
@@ -247,6 +254,8 @@
                 ondragstart={(e) => handleDragStart(e, i, item)}
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
+                class:opacity-50={itemIsLeftover &&
+                    isEatenStatus(item.leftoverId)}
             >
                 <!-- Leftover icon indicator -->
                 {#if itemIsLeftover}
@@ -273,6 +282,9 @@
                     <p
                         class={twMerge(
                             "font-bold leading-tight text-sm md:text-xs 2xl:text-sm",
+                            itemIsLeftover &&
+                                isEatenStatus(item.leftoverId) &&
+                                "line-through opacity-60",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
@@ -302,11 +314,14 @@
                             leftoverId={item.leftoverId}
                             leftoverTitle={item.title}
                             triggerRect={activeTriggerRect}
+                            isEaten={isEatenStatus(item.leftoverId)}
                             onClose={handleMenuClose}
                             onRemoveFromPlan={() =>
                                 onRemoveLeftoverFromPlan?.(item.leftoverId, i)}
                             onMarkAsEaten={() =>
                                 onMarkLeftoverAsEaten?.(item.leftoverId, i)}
+                            onMarkAsNotEaten={() =>
+                                onMarkLeftoverAsNotEaten?.(item.leftoverId, i)}
                         />
                     {:else if onUpdate && "quantity" in item}
                         <!-- Recipe menu (full feature set) -->

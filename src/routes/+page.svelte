@@ -332,6 +332,8 @@
             id: crypto.randomUUID(),
             leftoverId: leftover.id,
             title: leftover.title,
+            imageUrl: leftover.imageUrl,
+            sourceRecipeId: leftover.sourceRecipeId,
             isLeftover: true,
         };
 
@@ -367,11 +369,47 @@
     ) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            plan[dayIndex].meals[type].splice(index, 1);
+            // NOTE: We don't splice here if we want to keep it in the plan but mark as eaten?
+            // Actually, the user's flow seems to be: Mark as eaten (disappears from fridge but stays in plan?)
+            // Wait, if I splice, it's gone from plan.
+            // But if it's gone from plan, how can they click it to "Mark as Not Eaten"?
+            // Aha! If they "Mark as Eaten" in the FRIDGE, it stays in the PLAN.
+            // If they "Mark as Eaten" in the WEEK VIEW, it SHOULD stay in the plan too?
+            // "where is mark as eaten already, dont rmeove that, this is different from delete, because it will only remove from fridge"
+            // This means when they "Mark as Eaten" in Week View, it should NOT be spliced from the plan.
+            // It should only be deleted from the fridge.
             saveWeekPlan(weekId, plan);
         }
-        // Permanently delete the leftover
-        await deleteLeftover(leftoverId);
+        // Permanently delete the leftover from fridge (cleanPlan = false)
+        await deleteLeftover(leftoverId, false);
+    };
+
+    const handleMarkLeftoverAsNotEaten = async (
+        day: string,
+        type: MealType,
+        leftoverId: string,
+        index: number,
+    ) => {
+        const dayIndex = plan.findIndex((d) => d.day === day);
+        if (dayIndex === -1) return;
+
+        const item = plan[dayIndex].meals[type][index] as PlannedLeftover;
+        if (!item || !item.isLeftover) return;
+
+        // 1. Add back to fridge
+        const newLeftoverId = await addLeftoverToFridge(
+            item.title,
+            item.sourceRecipeId,
+            item.imageUrl,
+        );
+
+        // 2. Update the meal plan with the NEW leftover ID
+        item.leftoverId = newLeftoverId;
+        plan[dayIndex].meals[type][index] = item;
+        await saveWeekPlan(weekId, plan);
+
+        // 3. Mark as planned in the fridge
+        await setLeftoverPlanned(newLeftoverId, weekId, day, type);
     };
 
     const closeModal = () => {
@@ -781,6 +819,16 @@
                                         )}
                                     onMarkLeftoverAsEaten={(leftoverId, idx) =>
                                         handleMarkLeftoverAsEaten(
+                                            dayPlan.day,
+                                            section.type,
+                                            leftoverId,
+                                            idx,
+                                        )}
+                                    onMarkLeftoverAsNotEaten={(
+                                        leftoverId,
+                                        idx,
+                                    ) =>
+                                        handleMarkLeftoverAsNotEaten(
                                             dayPlan.day,
                                             section.type,
                                             leftoverId,

@@ -33,6 +33,8 @@ export interface PlannedLeftover {
     id: string;                         // Unique ID for this planned item
     leftoverId: string;                 // Reference to LeftoverItem.id in Fridge
     title: string;                      // Display title
+    imageUrl?: string | null;           // Store image URL in plan for disconnected states
+    sourceRecipeId?: string;            // Store source recipe ID in plan
     isLeftover: true;                   // Type discriminator - always true
 }
 

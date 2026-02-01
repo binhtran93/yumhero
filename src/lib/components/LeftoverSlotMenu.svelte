@@ -1,24 +1,35 @@
 <script lang="ts">
-    import { X as XIcon, Trash2, UtensilsCrossed } from "lucide-svelte";
+    import {
+        X as XIcon,
+        Trash2,
+        UtensilsCrossed,
+        Undo2,
+        CheckCircle2,
+    } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
+    import { twMerge } from "tailwind-merge";
 
     interface Props {
         leftoverId: string;
         leftoverTitle: string;
         triggerRect: DOMRect;
+        isEaten?: boolean;
         onClose: () => void;
         onRemoveFromPlan: () => void;
         onMarkAsEaten: () => void;
+        onMarkAsNotEaten?: () => void;
     }
 
     let {
         leftoverId,
         leftoverTitle,
         triggerRect,
+        isEaten = false,
         onClose,
         onRemoveFromPlan,
         onMarkAsEaten,
+        onMarkAsNotEaten,
     }: Props = $props();
 
     function clickOutside(node: HTMLElement) {
@@ -94,17 +105,31 @@
             Remove from Plan
         </button>
 
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
-            onclick={(e) => {
-                e.stopPropagation();
-                onMarkAsEaten();
-                onClose();
-            }}
-        >
-            <Trash2 size={18} />
-            Mark as Eaten
-        </button>
+        {#if isEaten}
+            <button
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex items-center gap-3 transition-colors"
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onMarkAsNotEaten?.();
+                    onClose();
+                }}
+            >
+                <Undo2 size={18} />
+                Mark as Not Eaten
+            </button>
+        {:else}
+            <button
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 flex items-center gap-3 transition-colors"
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onMarkAsEaten();
+                    onClose();
+                }}
+            >
+                <CheckCircle2 size={18} />
+                Mark as Eaten
+            </button>
+        {/if}
     </div>
 
     <div class="border-t border-app-border my-1"></div>
