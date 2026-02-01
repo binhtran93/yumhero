@@ -223,52 +223,82 @@
   {@const selected = isSelected(recipe.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0",
-      selected
-        ? `${colors.bgFaint}`
-        : twMerge(
-            "bg-transparent border-transparent hover:bg-app-surface-hover",
-          ),
+      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
+      selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => toggleSelection(recipe)}
     onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
     role="button"
     tabindex="0"
   >
+    <!-- Thumbnail -->
+    <div
+      class="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-sm border border-app-border"
+    >
+      {#if recipe.image}
+        <img
+          src={recipe.image}
+          alt={recipe.title}
+          class="w-full h-full object-cover"
+        />
+      {:else}
+        <div
+          class="w-full h-full bg-app-surface-deep flex items-center justify-center text-app-text-muted"
+        >
+          <UtensilsCrossed size={20} />
+        </div>
+      {/if}
+    </div>
+
     <!-- Info area -->
-    <div class="flex-1 flex items-center gap-2">
+    <div class="flex-1 flex flex-col justify-center min-w-0">
       <h3
         class={twMerge(
-          "font-display font-bold transition-colors text-sm",
+          "font-display font-bold transition-colors text-sm truncate",
           selected ? colors.text : "text-app-text",
         )}
       >
         {recipe.title}
       </h3>
+      <p class="text-[11px] text-app-text-muted font-medium tracking-tight">
+        {#if recipe.totalTime}{recipe.totalTime} mins{/if}
+        {#each recipe.tags?.slice(0, 1) || [] as tag}
+          {#if recipe.totalTime}
+            •
+          {/if}{tag}
+        {/each}
+        {#if !recipe.totalTime && (!recipe.tags || recipe.tags.length === 0)}
+          Shared by user
+        {/if}
+      </p>
     </div>
 
     <!-- Selection Indicator -->
-    <div class="flex items-center">
+    <div class="flex items-center shrink-0">
       {#if selected}
         <div
           class={twMerge(
-            "p-1.5 rounded-full text-white shadow-sm border",
+            "p-1.5 rounded-full text-white shadow-md border transition-all transform scale-110",
             colors.bg,
             colors.border,
           )}
         >
           <Plus
-            size={16}
-            strokeWidth={3}
+            size={14}
+            strokeWidth={4}
             class="rotate-45"
             aria-hidden="true"
           />
         </div>
       {:else}
         <div
-          class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+          class={twMerge(
+            "p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border",
+            colors.hoverBorder,
+            colors.hoverText,
+          )}
         >
-          <Plus size={16} strokeWidth={3} />
+          <Plus size={14} strokeWidth={4} />
         </div>
       {/if}
     </div>
@@ -279,52 +309,74 @@
   {@const selected = isLeftoverSelected(leftover.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-2 transition-colors shrink-0",
-      selected
-        ? `${colors.bgFaint}`
-        : twMerge(
-            "bg-transparent border-transparent hover:bg-app-surface-hover",
-          ),
+      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
+      selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => handleLeftoverSelect(leftover)}
     onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
     role="button"
     tabindex="0"
   >
+    <!-- Thumbnail -->
+    <div
+      class="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-sm border border-app-border"
+    >
+      {#if leftover.imageUrl}
+        <img
+          src={leftover.imageUrl}
+          alt={leftover.title}
+          class="w-full h-full object-cover"
+        />
+      {:else}
+        <div
+          class="w-full h-full bg-app-surface-deep flex items-center justify-center text-app-text-muted"
+        >
+          <UtensilsCrossed size={20} />
+        </div>
+      {/if}
+    </div>
+
     <!-- Info area -->
-    <div class="flex-1 flex items-center gap-2">
+    <div class="flex-1 flex flex-col justify-center min-w-0">
       <h3
         class={twMerge(
-          "font-display font-bold transition-colors text-sm",
+          "font-display font-bold transition-colors text-sm truncate",
           selected ? colors.text : "text-app-text",
         )}
       >
         {leftover.title}
       </h3>
+      <p class="text-[11px] text-app-text-muted font-medium tracking-tight">
+        Leftover from {leftover.sourceMealType}
+      </p>
     </div>
 
     <!-- Selection Indicator -->
-    <div class="flex items-center">
+    <div class="flex items-center shrink-0">
       {#if selected}
         <div
           class={twMerge(
-            "p-1.5 rounded-full text-white shadow-sm border",
+            "p-1.5 rounded-full text-white shadow-md border transition-all transform scale-110",
             colors.bg,
             colors.border,
           )}
         >
           <Plus
-            size={16}
-            strokeWidth={3}
+            size={14}
+            strokeWidth={4}
             class="rotate-45"
             aria-hidden="true"
           />
         </div>
       {:else}
         <div
-          class="p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border"
+          class={twMerge(
+            "p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border",
+            colors.hoverBorder,
+            colors.hoverText,
+          )}
         >
-          <Plus size={16} strokeWidth={3} />
+          <Plus size={14} strokeWidth={4} />
         </div>
       {/if}
     </div>
@@ -375,9 +427,12 @@
   <!-- Search & Selected -->
   <div class="flex flex-col border-b border-app-border bg-app-surface shrink-0">
     <div class="p-4">
-      <div class="relative">
+      <div class="relative group">
         <Search
-          class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted"
+          class={twMerge(
+            "absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted transition-colors",
+            colors.hoverText,
+          )}
           size={18}
         />
         <input
@@ -394,27 +449,31 @@
 
     <!-- Selected Recipes & Leftovers Display -->
     {#if selection.size > 0 || leftoverSelection.size > 0}
-      <div class="px-4 pb-4 overflow-x-auto">
+      <div class="px-6 pb-4 overflow-x-auto no-scrollbar">
         <div class="flex flex-wrap gap-2">
           {#each selection.values() as recipe (recipe.id)}
             <button
               onclick={() => removeSelection(recipe.id)}
               class={twMerge(
-                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-colors cursor-pointer group border",
+                "flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border",
                 colors.text,
                 colors.border,
                 colors.bgFaint,
               )}
             >
               <span>{recipe.title}</span>
-              <X size={14} class="p-0.5" strokeWidth={3} />
+              <X
+                size={14}
+                class="p-0.5 bg-white rounded-full border border-app-border"
+                strokeWidth={3}
+              />
             </button>
           {/each}
           {#each leftoverSelection.values() as leftover (leftover.id)}
             <button
               onclick={() => removeLeftoverSelection(leftover.id)}
               class={twMerge(
-                "flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-colors cursor-pointer group border",
+                "flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border",
                 colors.text,
                 colors.border,
                 colors.bgFaint,
@@ -423,11 +482,15 @@
               <span class="flex items-center gap-1">
                 {leftover.title}
                 <span
-                  class="text-[10px] px-1 rounded bg-app-primary text-app-bg font-bold"
+                  class="text-[9px] px-1.5 py-0.5 rounded-full bg-app-primary text-white font-black"
                   >Leftover</span
                 >
               </span>
-              <X size={14} class="p-0.5" strokeWidth={3} />
+              <X
+                size={14}
+                class="p-0.5 bg-white rounded-full border border-app-border"
+                strokeWidth={3}
+              />
             </button>
           {/each}
         </div>
@@ -436,17 +499,18 @@
   </div>
 
   <!-- List -->
-  <div class="flex-1 overflow-y-auto bg-app-surface p-2 flex flex-col gap-1">
+  <div
+    class="flex-1 overflow-y-auto bg-app-surface p-2 pb-6 flex flex-col gap-1 no-scrollbar"
+  >
     {#each sections as section, i (section.id)}
-      {#if i > 0}
-        <div class="mt-4 mb-2 border-t border-app-border mx-3"></div>
-      {/if}
-
       {#if section.title}
-        <div
-          class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text tracking-wider"
-        >
-          {@html section.title}
+        <div class="flex items-center gap-4 px-6 pt-6 pb-2">
+          <div
+            class="text-[11px] uppercase font-extrabold text-app-text-muted tracking-[0.2em] whitespace-nowrap"
+          >
+            {@html section.title}
+          </div>
+          <div class="h-px bg-app-border flex-1"></div>
         </div>
       {/if}
 
