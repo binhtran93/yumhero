@@ -16,6 +16,7 @@
     isOpen: boolean;
     mealType: MealType | null;
     currentRecipes?: Recipe[];
+    currentLeftovers?: LeftoverItem[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
     onSelectLeftovers?: (leftovers: LeftoverItem[]) => void;
@@ -26,6 +27,7 @@
     isOpen,
     mealType,
     currentRecipes = [],
+    currentLeftovers = [],
     onClose,
     onSelect,
     onSelectLeftovers,
@@ -49,7 +51,13 @@
         }
       });
       selection = newSelection;
-      leftoverSelection = new Map<string, LeftoverItem>();
+      const newLeftoverSelection = new Map<string, LeftoverItem>();
+      currentLeftovers.forEach((leftover) => {
+        if (!newLeftoverSelection.has(leftover.id)) {
+          newLeftoverSelection.set(leftover.id, leftover);
+        }
+      });
+      leftoverSelection = newLeftoverSelection;
       searchQuery = "";
     }
   });
@@ -100,7 +108,7 @@
       // Return the current list of selected recipes
       onSelect(Array.from(selection.values()));
     }
-    if (leftoverSelection.size > 0 && onSelectLeftovers) {
+    if (onSelectLeftovers) {
       onSelectLeftovers(Array.from(leftoverSelection.values()));
     }
     onClose();
@@ -132,9 +140,11 @@
 
   // Filter available leftovers by search query
   let matchingLeftovers = $derived(
-    $availableLeftovers.filter((l) =>
-      l.title.toLowerCase().includes(searchQuery.toLowerCase()),
-    ),
+    [...currentLeftovers, ...$availableLeftovers]
+      .filter(
+        (l, index, self) => self.findIndex((t) => t.id === l.id) === index,
+      ) // Unique by ID
+      .filter((l) => l.title.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   // Handle leftover selection
@@ -434,7 +444,7 @@
 
       {#if section.title}
         <div
-          class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text-muted tracking-wider"
+          class="px-3 pt-3 pb-1 text-[10px] uppercase font-bold text-app-text tracking-wider"
         >
           {@html section.title}
         </div>

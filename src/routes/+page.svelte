@@ -75,11 +75,13 @@
         day: string | null;
         mealType: MealType | null;
         currentRecipes: Recipe[];
+        currentLeftovers: LeftoverItem[];
     }>({
         isOpen: false,
         day: null,
         mealType: null,
         currentRecipes: [],
+        currentLeftovers: [],
     });
 
     let noteModal = $state<{
@@ -112,7 +114,7 @@
 
     // Derived store to fetch the specific recipe for the mode modal
     // We need to bridge Runes state to Store for documentStore
-    import { writable } from "svelte/store";
+    import { get, writable } from "svelte/store";
     let activeRecipeIdStore = writable<string | null>(null);
 
     $effect(() => {
@@ -229,7 +231,22 @@
         modal.day = day;
         modal.mealType = type;
         modal.currentRecipes = currentRecipes;
+
+        // Extract leftover items for this slot to pass to modal
+        const leftoverPlannedItems = currentMeals.filter(
+            (item: any) => "isLeftover" in item && item.isLeftover,
+        ) as PlannedLeftover[];
+
+        // Reconstruct LeftoverItem from PlannedLeftover (or fetch from store)
+        // Since we need the full LeftoverItem for the modal, we'll try to find them in the available leftovers
+        // or just construct what's needed for the UI. The modal needs id, title, and imageUrl.
+        const leftoversVal = get(leftovers);
+        modal.currentLeftovers = leftoverPlannedItems
+            .map((pl) => leftoversVal.data.find((l) => l.id === pl.leftoverId))
+            .filter(Boolean) as LeftoverItem[];
     };
+
+    import { leftovers } from "$lib/stores/leftovers";
 
     const handleRecipeSelect = (recipes: Recipe[]) => {
         const { day, mealType } = modal;
@@ -347,24 +364,63 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        for (const leftover of selectedLeftovers) {
-            // Create PlannedLeftover for the meal plan
-            const plannedLeftover: PlannedLeftover = {
-                id: crypto.randomUUID(),
-                leftoverId: leftover.id,
-                title: leftover.title,
-                imageUrl: leftover.imageUrl,
-                sourceRecipeId: leftover.sourceRecipeId,
-                isLeftover: true,
-            };
+        // Current leftovers in the plan
+        const existingLeftoversInPlan = plan[dayIndex].meals[mealType].filter(
+            (item: any) => "isLeftover" in item && item.isLeftover,
+        ) as PlannedLeftover[];
 
-            // Add to meal plan
-            // @ts-ignore - MealSlotItem includes PlannedLeftover
-            plan[dayIndex].meals[mealType].push(plannedLeftover);
+        const currentRecipesInPlan = plan[dayIndex].meals[mealType].filter(
+            (item: any) => !("isLeftover" in item && item.isLeftover),
+        ) as PlannedRecipe[];
 
-            // Update leftover status to planned
-            await setLeftoverPlanned(leftover.id, weekId, day, mealType);
+        // 1. Identify removed leftovers
+        const selectedLeftoverIds = new Set(selectedLeftovers.map((l) => l.id));
+        const removedLeftovers = existingLeftoversInPlan.filter(
+            (pl) => !selectedLeftoverIds.has(pl.leftoverId),
+        );
+
+        for (const removed of removedLeftovers) {
+            await setLeftoverNotPlanned(removed.leftoverId);
         }
+
+        // 2. Identify newly added leftovers
+        const existingLeftoverIds = new Set(
+            existingLeftoversInPlan.map((pl) => pl.leftoverId),
+        );
+        const newlyAddedLeftovers = selectedLeftovers.filter(
+            (l) => !existingLeftoverIds.has(l.id),
+        );
+
+        for (const added of newlyAddedLeftovers) {
+            await setLeftoverPlanned(added.id, weekId, day, mealType);
+        }
+
+        // 3. Update the plan with the new set of leftovers (mapping them to PlannedLeftover)
+        const newPlannedLeftovers: PlannedLeftover[] = selectedLeftovers.map(
+            (l) => {
+                // Try to find existing one to preserve its stable ID if possible
+                const existing = existingLeftoversInPlan.find(
+                    (pl) => pl.leftoverId === l.id,
+                );
+                return (
+                    existing || {
+                        id: crypto.randomUUID(),
+                        leftoverId: l.id,
+                        title: l.title,
+                        imageUrl: l.imageUrl,
+                        sourceRecipeId: l.sourceRecipeId,
+                        isLeftover: true,
+                    }
+                );
+            },
+        );
+
+        // Combine new recipes and leftovers
+        // @ts-ignore
+        plan[dayIndex].meals[mealType] = [
+            ...newPlannedLeftovers,
+            ...currentRecipesInPlan,
+        ];
 
         saveWeekPlan(weekId, plan);
     };
@@ -921,6 +977,7 @@
     isOpen={modal.isOpen}
     mealType={modal.mealType}
     currentRecipes={modal.currentRecipes}
+    currentLeftovers={modal.currentLeftovers}
     {availableRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
