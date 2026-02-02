@@ -32,7 +32,7 @@ export async function POST({ request }) {
         const exactMatches = [];
         const unmatchedShoppingItems = [...shoppingList];
 
-        // 1. Exact Matching
+        // 1. Exact Name + Unit Matching
         for (let i = unmatchedShoppingItems.length - 1; i >= 0; i--) {
             const sItem = unmatchedShoppingItems[i];
             const sName = sItem.name.toLowerCase().trim();
@@ -66,18 +66,18 @@ export async function POST({ request }) {
             const prompt = `
                 ACT AS A STRICT KITCHEN INVENTORY MANAGER. Match shopping items to fridge ingredients.
                 
-                Shopping List (to find):
-                ${unmatchedShoppingItems.map(item => `- ${item.id}: ${item.name}`).join('\n')}
+                Shopping List:
+                ${unmatchedShoppingItems.map(item => `- ${item.id}: ${item.name} (unit: ${item.unit || 'none'})`).join('\n')}
 
-                Fridge (available):
-                ${fridgeIngredients.map(item => `- ${item.id}: ${item.name}`).join('\n')}
+                Fridge:
+                ${fridgeIngredients.map(item => `- ${item.id}: ${item.name} (unit: ${item.unit || 'none'})`).join('\n')}
 
                 CRITICAL RULES:
-                1. IDENTITY MATCH ONLY: Only match if the items are the SAME ingredient, regardless of the language used (e.g., matching "tomato", "cà chua", "pomodoro", "tomat", etc.). 
-                   IDENTICAL identity from a global culinary perspective is required.
-                2. UNIVERSAL LANGUAGE AGNOSTICISM: Recognize synonyms and translations across ALL languages. The recipe and fridge items can be in any language; match them by their biological or culinary essence.
-                3. DO NOT MATCH SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots. Even if they are "similar fresh produce", they ARE NOT THE SAME.
-                4. CONFIDENCE > 0.95: If you are not 100% sure they are the exact same thing in reality, DO NOT match.
+                1. IDENTITY MATCH ONLY: Match if they are the SAME ingredient (e.g., "tomatoes" and "cà chua"). 
+                   Ignore differences in preparations, units, or forms (e.g., "sliced", "minced", "cloves", "bulbs", "pieces" are all the SAME ingredient).
+                2. UNIVERSAL LANGUAGE AGNOSTICISM: Recognize synonyms/translations across ALL languages. 
+                3. DO NOT MATCH SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots. Different ingredients are NOT matches.
+                4. CONFIDENCE > 0.95: Be extremely strict about the ingredient's nature.
                 5. FORMAT: Return groups where first ID is Fridge ID, and remaining IDs are Shopping Item IDs.
             `;
 
@@ -86,7 +86,7 @@ export async function POST({ request }) {
                 experimental_output: Output.object({
                     schema: MatchResultSchema
                 }),
-                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages. You never match substitutions or vaguely related items.',
+                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages and forms (e.g. cloves vs bulbs). You never match substitutions.',
                 messages: [{ role: 'user', content: prompt }]
             });
 
