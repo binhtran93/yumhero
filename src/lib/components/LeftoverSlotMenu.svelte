@@ -1,18 +1,9 @@
 <script lang="ts">
-    import {
-        X as XIcon,
-        Trash2,
-        Refrigerator,
-        Undo2,
-        Utensils,
-        Eraser,
-    } from "lucide-svelte";
-    import { fade } from "svelte/transition";
-    import { portal } from "$lib/actions";
-    import { twMerge } from "tailwind-merge";
+    import {BrushCleaning, Undo2, Utensils, X as XIcon,} from "lucide-svelte";
+    import {fade} from "svelte/transition";
+    import {portal} from "$lib/actions";
 
     interface Props {
-        leftoverId: string;
         triggerRect: DOMRect;
         isEaten?: boolean;
         onClose: () => void;
@@ -22,7 +13,6 @@
     }
 
     let {
-        leftoverId,
         triggerRect,
         isEaten = false,
         onClose,
@@ -118,7 +108,7 @@
             onClose();
         }}
     >
-        <Eraser size={18} />
+        <BrushCleaning size={18} />
         Remove from Plan
     </button>
 
