@@ -94,10 +94,10 @@
                     >
                         <div class="shrink-0">
                             <div
-                                class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all
+                                class="w-5 h-5 rounded-md border flex items-center justify-center transition-all
                                 {selectedMatches.has(match.shoppingItemId)
                                     ? 'bg-app-primary border-app-primary text-white'
-                                    : 'border-app-border bg-white text-transparent group-hover:border-app-primary/50'}"
+                                    : 'border-app-border-strong bg-app-bg text-transparent group-hover:border-app-primary/50'}"
                             >
                                 <Check size={12} strokeWidth={4} />
                             </div>
