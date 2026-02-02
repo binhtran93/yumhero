@@ -149,48 +149,6 @@ export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string
     await saveShoppingList(weekId, shoppingList);
 };
 
-/**
- * Soft delete a shopping item (marks as deleted)
- */
-export const softDeleteShoppingItem = async (weekId: string, itemId: string) => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item) {
-        throw new Error("Shopping item not found");
-    }
-
-    // Save original sources on first delete if not already saved
-    if (!item.original_sources) {
-        item.original_sources = JSON.parse(JSON.stringify(item.sources));
-    }
-
-    item.is_deleted = true;
-    item.updated_at = new Date();
-
-    await saveShoppingList(weekId, shoppingList);
-};
-
-/**
- * Restore a soft-deleted shopping item
- */
-export const restoreShoppingItem = async (weekId: string, itemId: string) => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item) {
-        throw new Error("Shopping item not found");
-    }
-
-    item.is_deleted = false;
-    item.updated_at = new Date();
-
-    await saveShoppingList(weekId, shoppingList);
-};
-
-/**
- * Update a shopping item's amount and unit
- */
 export const updateShoppingItem = async (weekId: string, itemId: string, newAmount: number, newUnit: string | null) => {
     const shoppingList = await getShoppingList(weekId);
     const item = shoppingList.find(i => i.id === itemId);
@@ -199,27 +157,13 @@ export const updateShoppingItem = async (weekId: string, itemId: string, newAmou
         throw new Error("Shopping item not found");
     }
 
-    // Save original sources on first edit if not already saved
-    if (!item.original_sources) {
-        item.original_sources = JSON.parse(JSON.stringify(item.sources));
-    }
-
-    // Calculate total current amount for history
-    const totalAmount = item.sources.reduce((sum, s) => sum + s.amount, 0);
-    const currentUnit = item.sources[0]?.unit || null;
-
-    // Create a single source that replaces all existing sources with history tracking
     const newSource = {
         recipe_id: null,
         amount: newAmount,
         unit: newUnit,
         is_checked: item.sources.every(s => s.is_checked),
         day: item.sources[0]?.day || null,
-        meal_type: item.sources[0]?.meal_type || null,
-        histories: [
-            ...(item.sources[0]?.histories || []),
-            { amount: totalAmount, unit: currentUnit }
-        ]
+        meal_type: item.sources[0]?.meal_type || null
     };
 
     item.sources = [newSource];
@@ -228,99 +172,30 @@ export const updateShoppingItem = async (weekId: string, itemId: string, newAmou
     await saveShoppingList(weekId, shoppingList);
 };
 
-/**
- * Reset a shopping item to its previous state
- */
-export const resetShoppingItem = async (weekId: string, itemId: string) => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item) {
-        throw new Error("Shopping item not found");
-    }
-
-    const hasHistory = item.sources[0]?.histories && item.sources[0].histories.length > 0;
-
-    if (hasHistory) {
-        // Pop from history
-        const histories = [...item.sources[0].histories!];
-        const previousState = histories.pop()!;
-
-        const baseSource = {
-            recipe_id: item.sources[0].recipe_id,
-            amount: previousState.amount,
-            unit: previousState.unit,
-            is_checked: item.sources[0].is_checked,
-            day: item.sources[0].day,
-            meal_type: item.sources[0].meal_type,
-        };
-
-        const updatedSource = histories.length > 0
-            ? { ...baseSource, histories }
-            : baseSource;
-
-        item.sources = [updatedSource];
-        item.updated_at = new Date();
-    } else if (item.original_sources) {
-        // Restore to original
-        item.sources = item.original_sources.map(s => {
-            const { histories, ...rest } = s as any;
-            return rest;
-        });
-        delete item.original_sources;
-        item.updated_at = new Date();
-    } else {
-        throw new Error("Shopping item has no history to reset");
-    }
-
-    await saveShoppingList(weekId, shoppingList);
-};
-
-/**
- * Reset all shopping items in a week
- */
 export const resetAllShoppingItems = async (weekId: string) => {
-    const shoppingList = await getShoppingList(weekId);
+    const $user = get(user);
+    if (!$user) throw new Error("User not authenticated");
 
-    // Filter out pure manual items and reset modified items
-    const resetList = shoppingList.filter(item => {
-        // Remove pure manual items (no original sources, all sources have null recipe_id)
-        const isPureManualItem = !item.original_sources &&
-            item.sources.every(s => s.recipe_id === null);
-        return !isPureManualItem;
-    }).map(item => {
-        // Reset modified items
-        if (item.original_sources) {
-            item.sources = item.original_sources.map(s => {
-                const { histories, ...rest } = s as any;
-                return rest;
-            });
-            delete item.original_sources;
-        } else {
-            // Clear histories
-            item.sources = item.sources.map(s => {
-                const { histories, ...rest } = s as any;
-                return rest;
-            });
-        }
+    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
+    const planSnap = await getDoc(planRef);
 
-        // Remove deleted flag
-        delete item.is_deleted;
-        item.updated_at = new Date();
+    if (!planSnap.exists()) {
+        await saveShoppingList(weekId, []);
+        return;
+    }
 
-        return item;
-    });
+    const planData = planSnap.data();
+    const days = planData.days;
 
-    await saveShoppingList(weekId, resetList);
-};
+    if (!days) {
+        await saveShoppingList(weekId, []);
+        return;
+    }
 
-/**
- * Check if a shopping item can be reset
- */
-export const hasItemHistory = (item: ShoppingListItem): boolean => {
-    const hasSourceHistory = item.sources.some(s => s.histories && s.histories.length > 0);
-    const hasOriginalSources = !!item.original_sources;
-    return hasSourceHistory || hasOriginalSources;
+    await saveShoppingList(weekId, []);
+
+    const { saveWeekPlan } = await import('./plans');
+    await saveWeekPlan(weekId, days);
 };
 
 /**

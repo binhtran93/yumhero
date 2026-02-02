@@ -8,28 +8,20 @@
         ingredientName: string;
         sources: ShoppingListSource[];
         recipes: Recipe[];
-        isDeleted?: boolean;
-        hasHistory?: boolean;
         onToggleAll: (checked: boolean) => void;
         onToggleSource: (sourceIndex: number, checked: boolean) => void;
         onDelete?: () => void;
         onEdit?: () => void;
-        onReset?: () => void;
-        onRestore?: () => void;
     }
 
     let {
         ingredientName,
         sources,
         recipes,
-        isDeleted = false,
-        hasHistory = false,
         onToggleAll,
         onToggleSource,
         onDelete,
         onEdit,
-        onReset,
-        onRestore,
     }: Props = $props();
 
     // Capitalize first letter for display
@@ -78,12 +70,7 @@
     });
 </script>
 
-<!-- Compact Row Layout with High Contrast -->
-<div
-    class="transition-colors {isDeleted
-        ? 'bg-red-50/50 dark:bg-red-950/10'
-        : 'hover:bg-app-surface-hover/30'}"
->
+<div class="hover:bg-app-surface-hover/30 transition-colors">
     <div class="flex items-center gap-2 py-1.5 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
@@ -125,7 +112,7 @@
         </button>
 
         <!-- Expand/Collapse Icon -->
-        {#if !isDeleted && (sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type)))}
+        {#if sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type))}
             <button
                 class="shrink-0 p-1.5 -m-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
                 onclick={() => (isExpanded = !isExpanded)}
@@ -139,21 +126,12 @@
             </button>
         {/if}
 
-        <!-- More Menu -->
         {#if onDelete && onEdit}
-            <ShoppingItemMenu
-                {hasHistory}
-                {isDeleted}
-                {onDelete}
-                {onEdit}
-                {onReset}
-                {onRestore}
-            />
+            <ShoppingItemMenu {onDelete} {onEdit} />
         {/if}
     </div>
 
-    <!-- Collapsible Source Details -->
-    {#if isExpanded && !isDeleted && (sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type)))}
+    {#if isExpanded && (sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type)))}
         <div class="pb-2.5 pl-8 pr-4 space-y-1 bg-app-surface-deep/30">
             {#each sources as source, i}
                 <button

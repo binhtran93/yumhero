@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { Settings2, Plus, RotateCcw, Eye, EyeOff } from "lucide-svelte";
+    import { Settings2, Plus, RotateCcw } from "lucide-svelte";
     import { fade } from "svelte/transition";
 
     interface Props {
-        showDeleted: boolean;
         onAddItem: () => void;
         onResetAll: () => void;
-        onToggleDeleted: () => void;
     }
 
-    let { showDeleted, onAddItem, onResetAll, onToggleDeleted }: Props =
-        $props();
+    let { onAddItem, onResetAll }: Props = $props();
 
     let isMenuOpen = $state(false);
 
@@ -70,18 +67,6 @@
             >
                 <Plus size={16} />
                 Add Item
-            </button>
-            <button
-                class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                onclick={handleAction(onToggleDeleted)}
-            >
-                {#if showDeleted}
-                    <EyeOff size={16} />
-                    Hide Deleted
-                {:else}
-                    <Eye size={16} />
-                    Show Deleted
-                {/if}
             </button>
             <button
                 class="w-full text-left px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/30 flex items-center gap-3 transition-colors"

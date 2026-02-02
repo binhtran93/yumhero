@@ -9,12 +9,9 @@
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
         toggleAllShoppingItemChecks as toggleAllShoppingItemChecks,
         addManualShoppingItem,
-        softDeleteShoppingItem,
-        restoreShoppingItem,
+        deleteShoppingItem,
         updateShoppingItem,
-        resetShoppingItem,
         resetAllShoppingItems,
-        hasItemHistory,
     } from "$lib/stores/shoppingList";
     import type { WeeklyPlan } from "$lib/types";
 
@@ -40,28 +37,14 @@
     let editItemAmount = $state("");
     let editItemUnit = $state("");
 
-    // Toggle for showing deleted items
-    let showDeleted = $state(false);
-
     // Subscribe to week-scoped shopping list
     let weekShoppingListStore = $derived(getWeekShoppingList(weekId));
     let shoppingList = $derived($weekShoppingListStore.data);
     let isLoading = $derived($weekShoppingListStore.loading);
 
-    // Filter items based on showDeleted state
-    let displayedItems = $derived(
-        showDeleted
-            ? shoppingList
-            : shoppingList.filter((item) => !item.is_deleted),
-    );
+    let displayedItems = $derived(shoppingList);
 
-    // Count for display
-    let activeCount = $derived(
-        shoppingList.filter((item) => !item.is_deleted).length,
-    );
-    let deletedCount = $derived(
-        shoppingList.filter((item) => item.is_deleted).length,
-    );
+    let itemCount = $derived(shoppingList.length);
 
     const handleToggleAll = async (itemId: string, checked: boolean) => {
         try {
@@ -111,17 +94,9 @@
 
     const handleDeleteItem = async (itemId: string) => {
         try {
-            await softDeleteShoppingItem(weekId, itemId);
+            await deleteShoppingItem(weekId, itemId);
         } catch (error) {
             console.error("Failed to delete item:", error);
-        }
-    };
-
-    const handleRestoreItem = async (itemId: string) => {
-        try {
-            await restoreShoppingItem(weekId, itemId);
-        } catch (error) {
-            console.error("Failed to restore item:", error);
         }
     };
 
@@ -149,14 +124,6 @@
             editingItem = null;
         } catch (error) {
             console.error("Failed to update item:", error);
-        }
-    };
-
-    const handleResetItem = async (itemId: string) => {
-        try {
-            await resetShoppingItem(weekId, itemId);
-        } catch (error) {
-            console.error("Failed to reset item:", error);
         }
     };
 
@@ -188,20 +155,13 @@
                 <p
                     class="text-xs sm:text-sm text-app-text-muted font-medium mt-0.5"
                 >
-                    {activeCount} ingredient{activeCount === 1 ? "" : "s"}
-                    {#if showDeleted && deletedCount > 0}
-                        <span class="text-red-500">
-                            ({deletedCount} deleted)
-                        </span>
-                    {/if}
+                    {itemCount} ingredient{itemCount === 1 ? "" : "s"}
                 </p>
             </div>
             <div class="flex items-center gap-1">
                 <ShoppingListHeaderMenu
-                    {showDeleted}
                     onAddItem={() => (showAddManualModal = true)}
                     onResetAll={handleResetAll}
-                    onToggleDeleted={() => (showDeleted = !showDeleted)}
                 />
                 <button
                     class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
@@ -231,7 +191,7 @@
                     <div
                         class="relative w-24 h-24 bg-app-bg border-4 border-app-primary/20 rounded-3xl flex items-center justify-center shadow-sm"
                     >
-                        {#if activeCount === 0 && deletedCount > 0}
+                        {#if itemCount === 0}
                             <ShoppingBasket
                                 class="text-app-primary/40"
                                 size={48}
@@ -248,7 +208,7 @@
                 </div>
 
                 <h3 class="font-display font-black text-2xl text-app-text mb-3">
-                    {#if activeCount === 0 && deletedCount > 0}
+                    {#if itemCount === 0}
                         All items completed!
                     {:else}
                         Ready to shop?
@@ -258,9 +218,8 @@
                 <p
                     class="text-app-text-muted font-medium max-w-[280px] leading-relaxed mb-8"
                 >
-                    {#if activeCount === 0 && deletedCount > 0}
-                        You've cleared your list. You can view your history or
-                        add new items.
+                    {#if itemCount === 0}
+                        You've cleared your list. Click below to add new items.
                     {:else}
                         Add recipes to your meal plan or add manual items to
                         build your shopping list.
@@ -275,16 +234,6 @@
                         <Plus size={20} strokeWidth={3} />
                         Add First Item
                     </button>
-
-                    {#if activeCount === 0 && deletedCount > 0 && !showDeleted}
-                        <button
-                            onclick={() => (showDeleted = true)}
-                            class="flex items-center justify-center gap-2 px-6 py-3 bg-app-bg text-app-text border border-app-border rounded-2xl font-bold hover:bg-app-surface-hover transition-all active:scale-95"
-                        >
-                            <Eye size={20} />
-                            View Checked Off
-                        </button>
-                    {/if}
                 </div>
             </div>
         {:else}
@@ -294,16 +243,12 @@
                         ingredientName={item.ingredient_name}
                         sources={item.sources}
                         recipes={availableRecipes}
-                        isDeleted={item.is_deleted}
-                        hasHistory={hasItemHistory(item)}
                         onToggleAll={(checked) =>
                             handleToggleAll(item.id, checked)}
                         onToggleSource={(idx, checked) =>
                             handleToggleSource(item.id, idx, checked)}
                         onDelete={() => handleDeleteItem(item.id)}
                         onEdit={() => handleEditItem(item)}
-                        onReset={() => handleResetItem(item.id)}
-                        onRestore={() => handleRestoreItem(item.id)}
                     />
                 {/each}
             </div>

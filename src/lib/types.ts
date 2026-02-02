@@ -73,38 +73,22 @@ export interface Ingredient {
     notes?: string;
 }
 
-/**
- * ShoppingListSource represents a single source of an ingredient.
- * Each source tracks which recipe it came from and its individual amount/unit.
- */
-export interface ShoppingListSourceHistory {
-    amount: number;
-    unit: string | null;
-}
-
 export interface ShoppingListSource {
-    recipe_id: string | null; // null for manual items added by user
+    recipe_id: string | null;
     amount: number;
     unit: string | null;
     is_checked: boolean;
-    day: string | null; // e.g., "Monday" or null for manual items
-    meal_type: MealType | null; // e.g., "breakfast", "lunch", "dinner"
-    histories?: ShoppingListSourceHistory[]; // Track edit history for reset
+    day: string | null;
+    meal_type: MealType | null;
 }
 
-/**
- * ShoppingListItem is a Firestore document that groups all sources
- * of the same ingredient together (e.g., all "Cà Chua" from different recipes).
- */
 export interface ShoppingListItem {
-    id: string; // Firestore document ID
-    ingredient_name: string; // e.g., "Cà Chua" (normalized lowercase)
+    id: string;
+    ingredient_name: string;
     sources: ShoppingListSource[];
-    user_id: string; // For Firestore security rules
+    user_id: string;
     created_at: Date;
     updated_at: Date;
-    is_deleted?: boolean; // Soft delete flag
-    original_sources?: ShoppingListSource[]; // Snapshot for full reset
 }
 
 export interface Recipe {

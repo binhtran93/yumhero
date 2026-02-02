@@ -131,25 +131,13 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
         const ingredientName = existingItem.ingredient_name;
         const recipeData = recipeIngredientsMap.get(ingredientName);
 
-        // Filter out sources for recipes no longer in plan, keep manual items
         const updatedSources = existingItem.sources.filter(source => {
-            if (source.recipe_id === null) return true; // Keep manual items
+            if (source.recipe_id === null) return true;
             return planRecipeIds.has(source.recipe_id);
         });
 
-        // If item was manually edited, keep it as is but remove old recipe sources
-        if (existingItem.original_sources) {
-            if (updatedSources.length > 0) {
-                newList.push({
-                    ...existingItem,
-                    sources: updatedSources,
-                    updated_at: new Date()
-                });
-            }
-        } else if (recipeData) {
-            // Item from recipes - update with new amounts but preserve checked state
+        if (recipeData) {
             const recipeSources = recipeData.sources.map(s => {
-                // Find existing source with same recipe_id and day to preserve checked state
                 const existingSource = existingItem.sources.find(
                     es => es.recipe_id === s.recipe_id && es.day === s.day
                 );
@@ -167,14 +155,12 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
             });
             processedIngredients.add(ingredientName);
         } else if (updatedSources.length > 0) {
-            // No recipe data but has manual items - keep manual items
             newList.push({
                 ...existingItem,
                 sources: updatedSources,
                 updated_at: new Date()
             });
         }
-        // If no sources left, item is removed (not added to newList)
     }
 
     // Add new ingredients from recipes that weren't in the existing list
