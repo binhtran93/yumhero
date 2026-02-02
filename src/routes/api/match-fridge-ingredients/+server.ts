@@ -78,7 +78,9 @@ export async function POST({ request }) {
                 2. UNIVERSAL LANGUAGE AGNOSTICISM: Recognize synonyms/translations across ALL languages. 
                 3. DO NOT MATCH SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots. Different ingredients are NOT matches.
                 4. CONFIDENCE > 0.95: Be extremely strict about the ingredient's nature.
-                5. FORMAT: Return groups where first ID is Fridge ID, and remaining IDs are Shopping Item IDs.
+                5. EXHAUSTIVE: One fridge item can and SHOULD group multiple shopping items. Find EVERYTHING that matches.
+                6. FORMAT: Return groups where first ID is Fridge ID, and remaining IDs are Shopping Item IDs.
+                   Example: [[fridgeId1, shoppingId1, shoppingId2], [fridgeId2, shoppingId3]]
             `;
 
             const { output } = await generateText({
@@ -86,7 +88,7 @@ export async function POST({ request }) {
                 experimental_output: Output.object({
                     schema: MatchResultSchema
                 }),
-                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages and forms (e.g. cloves vs bulbs). You never match substitutions.',
+                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages and forms. You are EXHAUSTIVE and always find ALL possible matches for every item listed.',
                 messages: [{ role: 'user', content: prompt }]
             });
 

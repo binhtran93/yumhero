@@ -78,19 +78,19 @@
         >
             {#if allChecked}
                 <div
-                    class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all bg-app-primary border-app-primary text-white"
+                    class="w-6 h-6 rounded-md border flex items-center justify-center transition-all bg-app-primary border-app-primary text-white"
                 >
                     <Check size={16} strokeWidth={4} />
                 </div>
             {:else if someChecked}
                 <div
-                    class="w-6 h-6 rounded-lg border border-app-primary bg-app-bg flex items-center justify-center transition-all"
+                    class="w-6 h-6 rounded-md border border-app-primary bg-app-bg flex items-center justify-center transition-all"
                 >
                     <div class="w-2.5 h-2.5 rounded-sm bg-app-primary"></div>
                 </div>
             {:else}
                 <div
-                    class="w-6 h-6 rounded-lg border border-app-border-strong bg-app-bg text-transparent transition-all group-hover:border-app-primary/50"
+                    class="w-6 h-6 rounded-md border border-app-border-strong bg-app-bg text-transparent transition-all group-hover:border-app-primary/50"
                 ></div>
             {/if}
         </button>

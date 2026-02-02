@@ -35,7 +35,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-    class="group relative bg-app-surface rounded-xl border border-app-border shadow-sm hover:shadow-md transition-all duration-200 overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
+    class="group relative bg-app-surface rounded-xl border border-app-border shadow hover:shadow-md transition-all duration-200 overflow-visible cursor-pointer flex flex-row items-center gap-3 p-2 md:gap-4 md:p-3"
     onclick={handleCardClick}
 >
     <!-- Image -->
