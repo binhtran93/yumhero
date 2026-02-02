@@ -203,6 +203,11 @@
             day: "numeric",
         });
     };
+
+    import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
+    import { Plus } from "lucide-svelte";
+
+    let showAddIngredientModal = $state(false);
 </script>
 
 <svelte:window
@@ -646,3 +651,24 @@
         ingredientToDelete = null;
     }}
 />
+
+<!-- Add Ingredient Modal -->
+<FridgeIngredientModal
+    isOpen={showAddIngredientModal}
+    onClose={() => (showAddIngredientModal = false)}
+/>
+
+{#if activeTab === "ingredients"}
+    <div
+        class="fixed bottom-6 right-6 z-30"
+        transition:fade={{ duration: 150 }}
+    >
+        <button
+            class="w-14 h-14 bg-app-primary text-white rounded-full shadow-lg shadow-app-primary/25 flex items-center justify-center hover:bg-app-primary-hover transition-all active:scale-95"
+            onclick={() => (showAddIngredientModal = true)}
+            aria-label="Add Ingredient"
+        >
+            <Plus size={28} />
+        </button>
+    </div>
+{/if}
