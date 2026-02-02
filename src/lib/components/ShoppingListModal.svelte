@@ -246,7 +246,7 @@
                     onclick={() => (showAddManualModal = true)}
                     disabled={isMatching}
                 >
-                    <Plus size={16} strokeWidth={2.5} />
+                    <Plus size={16} />
                     Add item
                 </button>
                 <button
@@ -259,17 +259,17 @@
                             class="w-4 h-4 border-2 border-app-text-muted/30 border-t-app-text-muted rounded-full animate-spin"
                         ></div>
                     {:else}
-                        <Refrigerator size={16} strokeWidth={2.5} />
+                        <Refrigerator size={16} />
                     {/if}
-                    Check Fridge
+                    <span class="hidden sm:inline">Check Fridge</span>
                 </button>
                 <button
                     class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
                     onclick={handleResetAll}
                     disabled={isMatching}
                 >
-                    <RotateCcw size={16} strokeWidth={2.5} />
-                    Reset
+                    <RotateCcw size={16} />
+                    <span class="hidden sm:inline">Reset</span>
                 </button>
             </div>
         {/if}
