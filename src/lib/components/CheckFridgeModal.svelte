@@ -37,6 +37,19 @@
     let selectedMatches = $state<Set<string>>(new Set());
     let isApplying = $state(false);
 
+    let groupedMatches = $derived(
+        matches.reduce(
+            (acc, match) => {
+                if (!match || !match.fridgeIngredientId) return acc;
+                const fid = match.fridgeIngredientId;
+                if (!acc[fid]) acc[fid] = [];
+                acc[fid].push(match);
+                return acc;
+            },
+            {} as Record<string, Match[]>,
+        ),
+    );
+
     const toggleMatch = (id: string) => {
         if (selectedMatches.has(id)) {
             selectedMatches.delete(id);
@@ -65,6 +78,24 @@
             isApplying = false;
         }
     };
+
+    const isGroupSelected = (group: Match[]) =>
+        group.every((m) => selectedMatches.has(m.shoppingItemId));
+    const isGroupPartiallySelected = (group: Match[]) =>
+        !isGroupSelected(group) &&
+        group.some((m) => selectedMatches.has(m.shoppingItemId));
+
+    const toggleGroup = (group: Match[]) => {
+        const allSelected = isGroupSelected(group);
+        for (const m of group) {
+            if (allSelected) {
+                selectedMatches.delete(m.shoppingItemId);
+            } else {
+                selectedMatches.add(m.shoppingItemId);
+            }
+        }
+        selectedMatches = new Set(selectedMatches);
+    };
 </script>
 
 <Modal
@@ -89,44 +120,89 @@
                 </p>
             </div>
         {:else}
-            <div class="max-h-[90vh] overflow-y-auto pr-2 custom-scrollbar">
-                {#each (matches || []).filter((m) => m && m.shoppingItemId) as match (match.shoppingItemId)}
-                    <button
-                        class="w-full flex items-baseline gap-2.5 p-2 rounded-xl transition-all text-left hover:bg-app-surface-hover group"
-                        onclick={() => toggleMatch(match.shoppingItemId)}
+            <div
+                class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar space-y-4"
+            >
+                {#each Object.entries(groupedMatches) as [fridgeId, group] (fridgeId)}
+                    <div
+                        class="border border-app-border rounded-2xl p-3 bg-app-bg/30"
                     >
-                        <div class="shrink-0 self-center">
-                            <div
-                                class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all
-                                {selectedMatches.has(match.shoppingItemId)
-                                    ? 'bg-app-primary border-app-primary text-white'
-                                    : 'border-app-border-strong bg-app-bg text-transparent group-hover:border-app-primary/50'}"
-                            >
-                                <Check size={16} strokeWidth={4} />
-                            </div>
-                        </div>
-
-                        <div class="flex-1">
-                            <p class="text-app-text leading-relaxed text-sm">
-                                You have <span class="font-black"
-                                    >{formatAmount(match.fridgeAmount)}</span
+                        <div class="mb-3 px-1">
+                            <p class="text-sm font-medium text-app-text-muted">
+                                You have
+                                <span class="font-bold text-app-text"
+                                    >{formatAmount(group[0].fridgeAmount)}</span
                                 >
-                                {#if match.fridgeUnit}
-                                    <span class="text-app-text/60 font-medium"
-                                        >{match.fridgeUnit}</span
+                                {#if group[0].fridgeUnit}
+                                    <span class="font-bold text-app-text"
+                                        >{group[0].fridgeUnit}</span
                                     >
                                 {/if}
                                 <span class="font-bold text-app-primary"
-                                    >{match.fridgeName}</span
+                                    >{group[0].fridgeName}</span
                                 > in fridge already.
                             </p>
                         </div>
-                    </button>
+
+                        <div class="space-y-3">
+                            {#each group as match (match.shoppingItemId)}
+                                <button
+                                    class="w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left bg-app-bg border border-app-border hover:border-app-primary/50 group/item relative overflow-hidden"
+                                    onclick={() =>
+                                        toggleMatch(match.shoppingItemId)}
+                                >
+                                    {#if selectedMatches.has(match.shoppingItemId)}
+                                        <div
+                                            class="absolute inset-0 bg-app-primary/5"
+                                        ></div>
+                                    {/if}
+
+                                    <div class="shrink-0 relative z-10">
+                                        <div
+                                            class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all
+                                            {selectedMatches.has(
+                                                match.shoppingItemId,
+                                            )
+                                                ? 'bg-app-primary border-app-primary text-white'
+                                                : 'border-app-border-strong bg-app-bg text-transparent group-hover/item:border-app-primary/50'}"
+                                        >
+                                            <Check size={16} strokeWidth={4} />
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0 relative z-10">
+                                        <div
+                                            class="flex items-center gap-2 mb-0.5"
+                                        >
+                                            <p
+                                                class="text-app-text font-black text-lg leading-tight truncate"
+                                            >
+                                                {match.name}
+                                            </p>
+                                            {#if match.name.toLowerCase() !== group[0].fridgeName.toLowerCase()}
+                                                <span
+                                                    class="text-[10px] px-2 py-0.5 rounded-full bg-app-primary/10 text-app-primary font-bold uppercase tracking-wider"
+                                                >
+                                                    Match
+                                                </span>
+                                            {/if}
+                                        </div>
+                                        <p
+                                            class="text-app-text-muted font-medium"
+                                        >
+                                            Need {formatAmount(match.amount)}
+                                            {match.unit || ""}
+                                        </p>
+                                    </div>
+                                </button>
+                            {/each}
+                        </div>
+                    </div>
                 {/each}
             </div>
         {/if}
 
-        <div class="flex gap-3 mt-8">
+        <div class="flex gap-3 mt-6">
             <button
                 class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all enabled:active:scale-95 shadow-lg shadow-app-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 h-auto whitespace-normal"
                 disabled={matches.length === 0 ||

@@ -40,14 +40,13 @@ export async function POST({ request }) {
             const sName = sItem.ingredient_name.toLowerCase().trim();
             const sUnit = getUnit(sItem)?.toLowerCase().trim() || null;
 
-            const fIndex = unmatchedFridgeIngredients.findIndex(fItem => {
-                const fName = fItem.name.toLowerCase().trim();
-                const fUnit = fItem.unit?.toLowerCase().trim() || null;
+            const fItem = fridgeIngredients.find(f => {
+                const fName = f.name.toLowerCase().trim();
+                const fUnit = f.unit?.toLowerCase().trim() || null;
                 return fName === sName && fUnit === sUnit;
             });
 
-            if (fIndex !== -1) {
-                const fItem = unmatchedFridgeIngredients[fIndex];
+            if (fItem) {
                 exactMatches.push({
                     shoppingItemId: sItem.id,
                     fridgeIngredientId: fItem.id,
@@ -60,13 +59,12 @@ export async function POST({ request }) {
                     type: 'exact'
                 });
                 unmatchedShoppingItems.splice(i, 1);
-                unmatchedFridgeIngredients.splice(fIndex, 1);
             }
         }
 
-        // 2. AI Fuzzy Matching (only if there are items left on both sides)
+        // 2. AI Fuzzy Matching (only if there are items left)
         let aiMatches: any[] = [];
-        if (unmatchedShoppingItems.length > 0 && unmatchedFridgeIngredients.length > 0) {
+        if (unmatchedShoppingItems.length > 0 && fridgeIngredients.length > 0) {
             const prompt = `
                 You are an expert chef and kitchen assistant. Your task is to match items from a shopping list with ingredients already available in the fridge.
                 
@@ -74,14 +72,14 @@ export async function POST({ request }) {
                 ${unmatchedShoppingItems.map(item => `- ID: ${item.id}, Name: ${item.ingredient_name} (${getTotalAmount(item)} ${getUnit(item) || ''})`).join('\n')}
 
                 Fridge Ingredients available:
-                ${unmatchedFridgeIngredients.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
+                ${fridgeIngredients.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
 
                 Rules:
                 1. Look for fuzzy matches, synonyms, or variations (e.g., "tomatoes" matches "cherry tomatoes", "shoyu" matches "soy sauce").
                 2. Only match items that are functionally equivalent or can substitute each other in most recipes.
                 3. Provide a clear reasoning for each match.
                 4. Give a confidence score from 0 to 1. Only return matches with confidence > 0.7.
-                5. A shopping item can only match one fridge ingredient, and vice versa.
+                5. A shopping item can only match one fridge ingredient. One fridge ingredient can match multiple shopping items.
             `;
 
             const { output } = await generateText({
