@@ -545,7 +545,7 @@
                 Cancel
             </button>
             <button
-                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-primary/90 text-app-bg hover:bg-app-primary transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                 onclick={performResetAll}
                 disabled={isResetting}
             >
