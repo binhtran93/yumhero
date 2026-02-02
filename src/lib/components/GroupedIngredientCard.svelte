@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CheckSquare, Square, Eye, EyeOff } from "lucide-svelte";
+    import { Check, Eye, EyeOff } from "lucide-svelte";
     import { formatAmount } from "$lib/utils/shopping";
     import type { Recipe, ShoppingListSource } from "$lib/types";
     import ShoppingItemMenu from "./ShoppingItemMenu.svelte";
@@ -69,7 +69,7 @@
 </script>
 
 <div class="hover:bg-app-surface-hover/30 transition-colors">
-    <div class="flex items-center gap-2 py-1.5 px-2">
+    <div class="flex items-center gap-2 py-1 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
             class="shrink-0 p-2 -m-2 active:scale-95 transition-transform"
@@ -77,19 +77,21 @@
             aria-label={`Toggle ${displayName}`}
         >
             {#if allChecked}
-                <CheckSquare size={24} class="text-emerald-600" />
+                <div
+                    class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all bg-app-primary border-app-primary text-white"
+                >
+                    <Check size={16} strokeWidth={4} />
+                </div>
             {:else if someChecked}
-                <Square size={24} class="text-app-primary">
-                    <rect
-                        x="7"
-                        y="7"
-                        width="10"
-                        height="10"
-                        fill="currentColor"
-                    />
-                </Square>
+                <div
+                    class="w-6 h-6 rounded-lg border border-app-primary bg-app-bg flex items-center justify-center transition-all"
+                >
+                    <div class="w-2.5 h-2.5 rounded-sm bg-app-primary"></div>
+                </div>
             {:else}
-                <Square size={24} class="text-app-text/40" />
+                <div
+                    class="w-6 h-6 rounded-lg border border-app-border-strong bg-app-bg text-transparent transition-all group-hover:border-app-primary/50"
+                ></div>
             {/if}
         </button>
 
@@ -101,7 +103,7 @@
                 class:opacity-50={allChecked}
             >
                 {#each quantityGroups as q, i}
-                    <span class="font-black text-sm sm:text-base text-app-text">
+                    <span class="font-black text-sm sm:text-sm text-app-text">
                         {q.amount}
                     </span>
                     {#if q.unit}
@@ -118,7 +120,7 @@
                     {/if}
                 {/each}
 
-                <span class="font-bold text-sm sm:text-base text-app-primary">
+                <span class="font-bold text-xs sm:text-sm text-app-primary">
                     {displayName}
                 </span>
             </div>
@@ -154,17 +156,15 @@
                     <!-- Regular checkbox style -->
                     <div class="shrink-0">
                         {#if source.is_checked}
-                            <CheckSquare
-                                size={18}
-                                class="text-emerald-600"
-                                strokeWidth={2.5}
-                            />
+                            <div
+                                class="w-4 h-4 rounded-md border flex items-center justify-center transition-all bg-app-primary border-app-primary text-white"
+                            >
+                                <Check size={10} strokeWidth={5} />
+                            </div>
                         {:else}
-                            <Square
-                                size={18}
-                                class="text-app-text/40"
-                                strokeWidth={2}
-                            />
+                            <div
+                                class="w-4 h-4 rounded-md border border-app-border-strong bg-app-bg text-transparent transition-all"
+                            ></div>
                         {/if}
                     </div>
 
