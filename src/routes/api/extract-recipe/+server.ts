@@ -52,12 +52,27 @@ export async function POST({ request }) {
         let contentType = '';
         let mainImage: string | null = null;
 
+        const optimizeTextContent = (text: string): string => {
+            return text
+                // Normalize newlines
+                .replace(/\r\n|\r/g, '\n')
+                // Remove excessive horizontal whitespace (tabs, multiple spaces)
+                .replace(/[ \t]+/g, ' ')
+                // Collapse 3+ newlines into 2 to preserve paragraph structure but safe space
+                .replace(/\n\s*\n\s*\n+/g, '\n\n')
+                // Remove leading/trailing whitespace
+                .trim();
+        };
+
         if (url) {
             // Use the robust scraper to get text content and raw JSON-LD
             const { text, jsonLds, mainImage: scrapedImage } = await scrapeText(url);
             mainImage = scrapedImage;
 
-            contentToProcess = text.length > 500000 ? text.substring(0, 500000) : text;
+            // Optimize text BEFORE truncation to ensure we keep meaningful content
+            const optimizedText = optimizeTextContent(text);
+            contentToProcess = optimizedText.length > 50000 ? optimizedText.substring(0, 50000) : optimizedText;
+
             if (mainImage) {
                 contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
             }
@@ -105,7 +120,8 @@ export async function POST({ request }) {
                 }
             }
         } else {
-            contentToProcess = pastedText;
+            const optimizedPasted = optimizeTextContent(pastedText);
+            contentToProcess = optimizedPasted.length > 50000 ? optimizedPasted.substring(0, 50000) : optimizedPasted;
             contentType = 'pasted recipe text';
         }
 
