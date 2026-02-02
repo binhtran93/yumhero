@@ -50,7 +50,7 @@
     };
 
     // Format all quantities for display - merge quantities with same unit
-    const formattedQuantities = $derived.by(() => {
+    const quantityGroups = $derived.by(() => {
         const unitMap = new Map<string, number>();
 
         // Group by unit and sum amounts
@@ -60,13 +60,11 @@
             unitMap.set(unit, current + s.amount);
         });
 
-        // Format as "amount unit, amount unit"
-        return Array.from(unitMap.entries())
-            .map(
-                ([unit, amount]) =>
-                    `${formatAmount(amount)}${unit ? " " + unit : ""}`,
-            )
-            .join(", ");
+        // Return array of objects for granular styling
+        return Array.from(unitMap.entries()).map(([unit, amount]) => ({
+            amount: formatAmount(amount),
+            unit: unit || null,
+        }));
     });
 </script>
 
@@ -98,15 +96,30 @@
         <!-- Ingredient Name & Quantities (single line) -->
         <button class="flex-1 text-left min-w-0 py-0.5" onclick={handleToggle}>
             <div
-                class="flex items-baseline gap-2 flex-wrap"
+                class="flex items-baseline gap-1.5 flex-wrap"
                 class:line-through={allChecked}
                 class:opacity-50={allChecked}
             >
-                <span class="font-semibold text-sm sm:text-base text-app-text">
+                {#each quantityGroups as q, i}
+                    <span class="font-black text-sm sm:text-base text-app-text">
+                        {q.amount}
+                    </span>
+                    {#if q.unit}
+                        <span
+                            class="text-xs sm:text-sm text-app-text/60 font-medium"
+                        >
+                            {q.unit}
+                        </span>
+                    {/if}
+                    {#if i < quantityGroups.length - 1}
+                        <span class="text-xs sm:text-sm text-app-text/40"
+                            >,</span
+                        >
+                    {/if}
+                {/each}
+
+                <span class="font-bold text-sm sm:text-base text-app-primary">
                     {displayName}
-                </span>
-                <span class="text-xs sm:text-sm text-app-text/60 font-semibold">
-                    — {formattedQuantities}
                 </span>
             </div>
         </button>
@@ -156,13 +169,19 @@
                     </div>
 
                     <span
-                        class="text-xs text-app-text/70 font-semibold"
+                        class="text-xs font-semibold flex items-baseline gap-1"
                         class:line-through={source.is_checked}
                         class:opacity-60={source.is_checked}
                     >
-                        {formatAmount(source.amount)}
-                        {source.unit || ""}
-                        <span class="text-app-text/40 ml-1.5 font-medium">
+                        <span class="font-black text-app-text">
+                            {formatAmount(source.amount)}
+                        </span>
+                        {#if source.unit}
+                            <span class="text-app-text/60 font-medium">
+                                {source.unit}
+                            </span>
+                        {/if}
+                        <span class="text-app-text/40 ml-1 font-medium">
                             from {getRecipeName(source.recipe_id)}
                             {#if source.day}
                                 • {source.day?.slice(0, 3)}

@@ -84,31 +84,33 @@
                 </p>
             </div>
         {:else}
-            <div
-                class="max-h-[90vh] overflow-y-auto pr-2 custom-scrollbar"
-            >
+            <div class="max-h-[90vh] overflow-y-auto pr-2 custom-scrollbar">
                 {#each (matches || []).filter((m) => m && m.shoppingItemId) as match (match.shoppingItemId)}
                     <button
-                        class="w-full flex items-baseline gap-2 p-2 rounded-xl transition-all text-left hover:bg-app-surface-hover group"
+                        class="w-full flex items-baseline gap-2.5 p-2 rounded-xl transition-all text-left hover:bg-app-surface-hover group"
                         onclick={() => toggleMatch(match.shoppingItemId)}
                     >
-                        <div class="shrink-0">
+                        <div class="shrink-0 self-center">
                             <div
-                                class="w-5 h-5 rounded-md border flex items-center justify-center transition-all
+                                class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all
                                 {selectedMatches.has(match.shoppingItemId)
                                     ? 'bg-app-primary border-app-primary text-white'
                                     : 'border-app-border-strong bg-app-bg text-transparent group-hover:border-app-primary/50'}"
                             >
-                                <Check size={12} strokeWidth={4} />
+                                <Check size={16} strokeWidth={4} />
                             </div>
                         </div>
 
                         <div class="flex-1">
                             <p class="text-app-text leading-relaxed text-sm">
-                                You have <span class="font-bold"
-                                    >{formatAmount(match.fridgeAmount)}
-                                    {match.fridgeUnit || ""}</span
+                                You have <span class="font-black"
+                                    >{formatAmount(match.fridgeAmount)}</span
                                 >
+                                {#if match.fridgeUnit}
+                                    <span class="text-app-text/60 font-medium"
+                                        >{match.fridgeUnit}</span
+                                    >
+                                {/if}
                                 <span class="font-bold text-app-primary"
                                     >{match.fridgeName}</span
                                 > in fridge already.
