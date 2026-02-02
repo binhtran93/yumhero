@@ -1,9 +1,14 @@
 <script lang="ts">
-    import { X, ShoppingCart, ShoppingBasket, Plus, Eye } from "lucide-svelte";
+    import {
+        X,
+        ShoppingCart,
+        ShoppingBasket,
+        Plus,
+        RotateCcw,
+    } from "lucide-svelte";
     import type { Recipe, ShoppingListItem } from "$lib/types";
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
     import Modal from "./Modal.svelte";
-    import ShoppingListHeaderMenu from "./ShoppingListHeaderMenu.svelte";
     import {
         getWeekShoppingList,
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
@@ -45,6 +50,10 @@
     let displayedItems = $derived(shoppingList);
 
     let itemCount = $derived(shoppingList.length);
+    let checkedCount = $derived(
+        shoppingList.filter((item) => item.sources.every((s) => s.is_checked))
+            .length,
+    );
 
     const handleToggleAll = async (itemId: string, checked: boolean) => {
         try {
@@ -143,26 +152,13 @@
     closeOnEsc={!showAddManualModal && !showEditModal}
 >
     {#snippet header()}
-        <div
-            class="px-4 pb-1 pt-4 sm:px-6 sm:pt-6 flex items-center justify-between shrink-0"
-        >
-            <div class="flex-1">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 shrink-0">
+            <div class="flex items-center justify-between mb-3">
                 <h2
                     class="text-xl sm:text-2xl font-display font-black text-app-text"
                 >
                     Shopping List
                 </h2>
-                <p
-                    class="text-xs sm:text-sm text-app-text-muted font-medium mt-0.5"
-                >
-                    {itemCount} ingredient{itemCount === 1 ? "" : "s"}
-                </p>
-            </div>
-            <div class="flex items-center gap-1">
-                <ShoppingListHeaderMenu
-                    onAddItem={() => (showAddManualModal = true)}
-                    onResetAll={handleResetAll}
-                />
                 <button
                     class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
                     onclick={onClose}
@@ -170,6 +166,29 @@
                     <X size={20} />
                 </button>
             </div>
+
+            {#if itemCount > 0}
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-app-text-muted">
+                        {checkedCount}/{itemCount} items
+                    </span>
+                    <div class="flex-1"></div>
+                    <button
+                        class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-xs hover:bg-app-surface-hover hover:text-app-text transition-all"
+                        onclick={handleResetAll}
+                    >
+                        <RotateCcw size={12} strokeWidth={2.5} />
+                        Reset
+                    </button>
+                    <button
+                            class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-xs hover:bg-app-primary/90 transition-all"
+                            onclick={() => (showAddManualModal = true)}
+                    >
+                        <Plus size={14} strokeWidth={2.5} />
+                        Add item
+                    </button>
+                </div>
+            {/if}
         </div>
     {/snippet}
 
