@@ -79,6 +79,7 @@ export const addManualShoppingItem = async (weekId: string, ingredientName: stri
             amount,
             unit,
             is_checked: false,
+            checked_from: null,
             day: null,
             meal_type: null
         }];
@@ -93,6 +94,7 @@ export const addManualShoppingItem = async (weekId: string, ingredientName: stri
                 amount,
                 unit,
                 is_checked: false,
+                checked_from: null,
                 day: null,
                 meal_type: null
             }],
@@ -118,7 +120,7 @@ export const deleteShoppingItem = async (weekId: string, itemId: string) => {
 /**
  * Toggle check state for a specific source
  */
-export const toggleShoppingItemCheck = async (weekId: string, itemId: string, sourceIndex: number, checked: boolean) => {
+export const toggleShoppingItemCheck = async (weekId: string, itemId: string, sourceIndex: number, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
     const shoppingList = await getShoppingList(weekId);
     const item = shoppingList.find(i => i.id === itemId);
 
@@ -126,7 +128,11 @@ export const toggleShoppingItemCheck = async (weekId: string, itemId: string, so
         throw new Error("Shopping item or source not found");
     }
 
-    item.sources[sourceIndex] = { ...item.sources[sourceIndex], is_checked: checked };
+    item.sources[sourceIndex] = {
+        ...item.sources[sourceIndex],
+        is_checked: checked,
+        checked_from: checked ? checked_from : null
+    };
     item.updated_at = new Date();
 
     await saveShoppingList(weekId, shoppingList);
@@ -135,7 +141,7 @@ export const toggleShoppingItemCheck = async (weekId: string, itemId: string, so
 /**
  * Toggle all sources for an item
  */
-export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string, checked: boolean) => {
+export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
     const shoppingList = await getShoppingList(weekId);
     const item = shoppingList.find(i => i.id === itemId);
 
@@ -143,7 +149,11 @@ export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string
         throw new Error("Shopping item not found");
     }
 
-    item.sources = item.sources.map(source => ({ ...source, is_checked: checked }));
+    item.sources = item.sources.map(source => ({
+        ...source,
+        is_checked: checked,
+        checked_from: checked ? checked_from : null
+    }));
     item.updated_at = new Date();
 
     await saveShoppingList(weekId, shoppingList);

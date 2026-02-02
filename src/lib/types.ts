@@ -76,6 +76,7 @@ export interface ShoppingListSource {
     amount: number;
     unit: string | null;
     is_checked: boolean;
+    checked_from?: 'user' | 'fridge' | null;
     day: string | null;
     meal_type: MealType | null;
 }

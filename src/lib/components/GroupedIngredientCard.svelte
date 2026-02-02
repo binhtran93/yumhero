@@ -97,31 +97,36 @@
 
         <!-- Ingredient Name & Quantities (single line) -->
         <button class="flex-1 text-left min-w-0 py-0.5" onclick={handleToggle}>
-            <div
-                class="flex items-baseline gap-1.5 flex-wrap"
-                class:line-through={allChecked}
-                class:opacity-50={allChecked}
-            >
-                <span class="font-bold text-xs sm:text-sm">
-                    {displayName}
-                </span>
-                {#each quantityGroups as q, i}
-                    <span class="font-black text-sm sm:text-sm text-app-primary">
-                        {q.amount}
+            <div class="flex flex-col">
+                <div
+                    class="flex items-baseline gap-1.5 flex-wrap"
+                    class:line-through={allChecked}
+                    class:opacity-70={allChecked}
+                >
+                    <span class="font-bold text-xs sm:text-sm">
+                        {displayName}
                     </span>
-                    {#if q.unit}
+                    {#each quantityGroups as q, i}
                         <span
-                            class="text-xs sm:text-sm text-app-text/60 font-medium"
+                            class="font-black text-sm sm:text-sm text-app-primary"
                         >
-                            {q.unit}
+                            {q.amount}
                         </span>
-                    {/if}
-                    {#if i < quantityGroups.length - 1}
-                        <span class="text-xs text-app-text/80"
-                            >&</span
-                        >
-                    {/if}
-                {/each}
+                        {#if q.unit}
+                            <span
+                                class="text-xs sm:text-sm text-app-text/60 font-medium"
+                            >
+                                {q.unit}
+                            </span>
+                        {/if}
+                        {#if i < quantityGroups.length - 1}
+                            <span class="text-xs text-app-text/80">&</span>
+                        {/if}
+                    {/each}
+                </div>
+                {#if sources.some((s) => s.is_checked && s.checked_from === "fridge")}
+                    <span class="text-[10px] text-app-text-muted">Available in fridge</span>
+                {/if}
             </div>
         </button>
 
@@ -189,6 +194,13 @@
                                 • <span class="capitalize"
                                     >{source.meal_type}</span
                                 >
+                            {/if}
+                            {#if source.is_checked && source.checked_from === "fridge"}
+                                <span
+                                    class="ml-2 px-1 py-0.5 rounded-md bg-app-primary/10 text-app-primary text-[9px] uppercase tracking-wider"
+                                >
+                                    Skipped
+                                </span>
                             {/if}
                         </span>
                     </span>

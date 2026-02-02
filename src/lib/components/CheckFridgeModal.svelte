@@ -50,7 +50,12 @@
         isApplying = true;
         try {
             for (const shoppingItemId of selectedMatches) {
-                await toggleAllShoppingItemChecks(weekId, shoppingItemId, true);
+                await toggleAllShoppingItemChecks(
+                    weekId,
+                    shoppingItemId,
+                    true,
+                    "fridge",
+                );
             }
             onApplied();
             onClose();

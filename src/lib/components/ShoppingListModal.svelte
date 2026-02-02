@@ -229,8 +229,9 @@
                 Shopping List
             </h2>
             <button
-                class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
+                class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all disabled:opacity-50"
                 onclick={onClose}
+                disabled={isMatching}
             >
                 <X size={20} />
             </button>
@@ -241,8 +242,9 @@
                 class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 flex items-center gap-3 border-b border-app-border"
             >
                 <button
-                    class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-sm hover:bg-app-primary/90 transition-all"
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-sm hover:bg-app-primary/90 transition-all disabled:opacity-50"
                     onclick={() => (showAddManualModal = true)}
+                    disabled={isMatching}
                 >
                     <Plus size={16} strokeWidth={2.5} />
                     Add item
@@ -262,8 +264,9 @@
                     Check Fridge
                 </button>
                 <button
-                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all"
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
                     onclick={handleResetAll}
+                    disabled={isMatching}
                 >
                     <RotateCcw size={16} strokeWidth={2.5} />
                     Reset
@@ -272,7 +275,12 @@
         {/if}
     {/snippet}
 
-    <div class="px-2 py-2 sm:px-4 sm:py-4">
+    <div
+        class="px-2 py-2 sm:px-4 sm:py-4 transition-all duration-300"
+        class:pointer-events-none={isMatching}
+        class:opacity-50={isMatching}
+        class:grayscale-[0.3]={isMatching}
+    >
         {#if isLoading}
             <div class="flex items-center justify-center h-64">
                 <div

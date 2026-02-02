@@ -143,7 +143,8 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
                 );
                 return {
                     ...s,
-                    is_checked: existingSource?.is_checked ?? false
+                    is_checked: existingSource?.is_checked ?? false,
+                    checked_from: existingSource?.checked_from ?? null
                 };
             });
             const manualSources = updatedSources.filter(s => s.recipe_id === null);
@@ -169,7 +170,7 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
             newList.push({
                 id: crypto.randomUUID(),
                 ingredient_name: ingredientName,
-                sources: data.sources.map(s => ({ ...s, is_checked: false })),
+                sources: data.sources.map(s => ({ ...s, is_checked: false, checked_from: null })),
                 user_id: $user.uid,
                 created_at: new Date(),
                 updated_at: new Date()
