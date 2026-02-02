@@ -193,8 +193,21 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    shoppingList: uncheckedItems,
-                    fridgeIngredients: latestFridgeIngredients,
+                    shoppingList: uncheckedItems.map((item) => ({
+                        id: item.id,
+                        name: item.ingredient_name,
+                        amount: item.sources.reduce(
+                            (sum, s) => sum + (s.amount || 0),
+                            0,
+                        ),
+                        unit: item.sources[0]?.unit || null,
+                    })),
+                    fridgeIngredients: latestFridgeIngredients.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        amount: item.amount,
+                        unit: item.unit,
+                    })),
                 }),
             });
 

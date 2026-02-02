@@ -15,13 +15,20 @@ const MatchResultSchema = z.object({
     })).describe('List of fuzzy matches found between remaining shopping list items and fridge ingredients')
 });
 
+interface MinimalIngredient {
+    id: string;
+    name: string;
+    amount: number;
+    unit: string | null;
+}
+
 export async function POST({ request }) {
     const google = createGoogleGenerativeAI({
         apiKey: GOOGLE_GENERATIVE_AI_API_KEY
     });
 
     try {
-        const { shoppingList, fridgeIngredients }: { shoppingList: ShoppingListItem[], fridgeIngredients: FridgeIngredient[] } = await request.json();
+        const { shoppingList, fridgeIngredients }: { shoppingList: MinimalIngredient[], fridgeIngredients: MinimalIngredient[] } = await request.json();
 
         if (!shoppingList || !fridgeIngredients) {
             return json({ error: 'Missing shoppingList or fridgeIngredients' }, { status: 400 });
@@ -30,14 +37,11 @@ export async function POST({ request }) {
         const exactMatches = [];
         const unmatchedShoppingItems = [...shoppingList];
 
-        const getTotalAmount = (item: ShoppingListItem) => item.sources.reduce((sum, s) => sum + (s.amount || 0), 0);
-        const getUnit = (item: ShoppingListItem) => item.sources[0]?.unit || null;
-
         // 1. Exact Matching
         for (let i = unmatchedShoppingItems.length - 1; i >= 0; i--) {
             const sItem = unmatchedShoppingItems[i];
-            const sName = sItem.ingredient_name.toLowerCase().trim();
-            const sUnit = getUnit(sItem)?.toLowerCase().trim() || null;
+            const sName = sItem.name.toLowerCase().trim();
+            const sUnit = sItem.unit?.toLowerCase().trim() || null;
 
             const fItem = fridgeIngredients.find(f => {
                 const fName = f.name.toLowerCase().trim();
@@ -49,10 +53,10 @@ export async function POST({ request }) {
                 exactMatches.push({
                     shoppingItemId: sItem.id,
                     fridgeIngredientId: fItem.id,
-                    name: sItem.ingredient_name,
+                    name: sItem.name,
                     fridgeName: fItem.name,
-                    amount: getTotalAmount(sItem),
-                    unit: getUnit(sItem),
+                    amount: sItem.amount,
+                    unit: sItem.unit,
                     fridgeAmount: fItem.amount,
                     fridgeUnit: fItem.unit,
                     type: 'exact'
@@ -65,27 +69,20 @@ export async function POST({ request }) {
         let aiMatches: any[] = [];
         if (unmatchedShoppingItems.length > 0 && fridgeIngredients.length > 0) {
             const prompt = `
-                You are an expert chef and kitchen assistant. Your task is to match items from a shopping list with ingredients already available in the fridge.
+                You are a multilingual culinary expert. Match shopping list items with fridge ingredients.
                 
-                Shopping List items to check:
-                ${unmatchedShoppingItems.map(item => `- ID: ${item.id}, Name: ${item.ingredient_name} (${getTotalAmount(item)} ${getUnit(item) || ''})`).join('\n')}
+                Shopping List:
+                ${unmatchedShoppingItems.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
 
-                Fridge Ingredients available:
+                Fridge:
                 ${fridgeIngredients.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
 
                 Rules:
-                1. You are a multilingual culinary expert. Match items based on their identity, regardless of the language used (English, Vietnamese, or any other language).
-                2. Explicitly handle polyglot lists: If a shopping list has "tomatoes" and the fridge has "cà chua", these are a match.
-                3. High flexibility: if the items are practically the same ingredient in a kitchen context (e.g., "poultry" and "chicken", "scallions" and "hành lá"), they should match.
-                4. One fridge ingredient can satisfy multiple shopping list entries.
-                5. Provide a clear reasoning for each match.
-                6. Give a confidence score from 0 to 1. Only return matches with confidence > 0.7.
-
-                Examples of language-agnostic matches:
-                - "tomatoes" (EN) <-> "cà chua" (VN)
-                - "garlic" (EN) <-> "tỏi" (VN)
-                - "cilantro" (EN) <-> "ngò rí" (VN)
-                - "eggs" (EN) <-> "trứng" (VN)
+                1. Match items based on identity regardless of language (EN, VN, etc.).
+                2. "tomatoes" (EN) matches "cà chua" (VN), "garlic" matches "tỏi", etc.
+                3. High flexibility: "poultry" matches "chicken", "scallions" matches "hành lá".
+                4. One fridge ingredient can satisfy multiple shopping entries.
+                5. Provide clear reasoning and confidence > 0.7.
             `;
 
             const { output } = await generateText({
@@ -105,10 +102,10 @@ export async function POST({ request }) {
 
                 return {
                     ...match,
-                    name: sItem.ingredient_name,
+                    name: sItem.name,
                     fridgeName: fItem.name,
-                    amount: getTotalAmount(sItem),
-                    unit: getUnit(sItem),
+                    amount: sItem.amount,
+                    unit: sItem.unit,
                     fridgeAmount: fItem.amount,
                     fridgeUnit: fItem.unit,
                     type: 'ai'
