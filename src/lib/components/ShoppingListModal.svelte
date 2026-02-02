@@ -5,6 +5,7 @@
         ShoppingBasket,
         Plus,
         RotateCcw,
+        Refrigerator,
     } from "lucide-svelte";
     import type { Recipe, ShoppingListItem } from "$lib/types";
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
@@ -189,6 +190,13 @@
                     >
                         <RotateCcw size={12} strokeWidth={2.5} />
                         Reset
+                    </button>
+                    <button
+                        class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-xs hover:bg-app-surface-hover hover:text-app-text transition-all"
+                        onclick={() => {}}
+                    >
+                        <Refrigerator size={12} strokeWidth={2.5} />
+                        Check Fridge
                     </button>
                     <button
                         class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-xs hover:bg-app-primary/90 transition-all"
