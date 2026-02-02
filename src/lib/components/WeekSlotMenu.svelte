@@ -12,7 +12,6 @@
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
     import { twMerge } from "tailwind-merge";
-    import { goto } from "$app/navigation";
     import { portal } from "$lib/actions";
 
     interface Props {

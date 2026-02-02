@@ -211,7 +211,7 @@
             </div>
         {:else if displayedItems.length === 0}
             <div
-                class="flex flex-col items-center justify-center min-h-[400px] text-center px-6 py-12"
+                class="flex flex-col items-center justify-center min-h-100 text-center px-6 py-12"
             >
                 <div class="relative mb-6">
                     <div
@@ -245,7 +245,7 @@
                 </h3>
 
                 <p
-                    class="text-app-text-muted font-medium max-w-[280px] leading-relaxed mb-8"
+                    class="text-app-text-muted font-medium max-w-70 leading-relaxed mb-8"
                 >
                     {#if itemCount === 0}
                         You've cleared your list. Click below to add new items.
