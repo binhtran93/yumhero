@@ -29,7 +29,6 @@ export async function POST({ request }) {
 
         const exactMatches = [];
         const unmatchedShoppingItems = [...shoppingList];
-        const unmatchedFridgeIngredients = [...fridgeIngredients];
 
         const getTotalAmount = (item: ShoppingListItem) => item.sources.reduce((sum, s) => sum + (s.amount || 0), 0);
         const getUnit = (item: ShoppingListItem) => item.sources[0]?.unit || null;
@@ -75,11 +74,18 @@ export async function POST({ request }) {
                 ${fridgeIngredients.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
 
                 Rules:
-                1. Look for fuzzy matches, synonyms, or variations (e.g., "tomatoes" matches "cherry tomatoes", "shoyu" matches "soy sauce").
-                2. Only match items that are functionally equivalent or can substitute each other in most recipes.
-                3. Provide a clear reasoning for each match.
-                4. Give a confidence score from 0 to 1. Only return matches with confidence > 0.7.
-                5. A shopping item can only match one fridge ingredient. One fridge ingredient can match multiple shopping items.
+                1. You are a multilingual culinary expert. Match items based on their identity, regardless of the language used (English, Vietnamese, or any other language).
+                2. Explicitly handle polyglot lists: If a shopping list has "tomatoes" and the fridge has "cà chua", these are a match.
+                3. High flexibility: if the items are practically the same ingredient in a kitchen context (e.g., "poultry" and "chicken", "scallions" and "hành lá"), they should match.
+                4. One fridge ingredient can satisfy multiple shopping list entries.
+                5. Provide a clear reasoning for each match.
+                6. Give a confidence score from 0 to 1. Only return matches with confidence > 0.7.
+
+                Examples of language-agnostic matches:
+                - "tomatoes" (EN) <-> "cà chua" (VN)
+                - "garlic" (EN) <-> "tỏi" (VN)
+                - "cilantro" (EN) <-> "ngò rí" (VN)
+                - "eggs" (EN) <-> "trứng" (VN)
             `;
 
             const { output } = await generateText({
