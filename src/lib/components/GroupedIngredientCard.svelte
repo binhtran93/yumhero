@@ -69,7 +69,7 @@
 </script>
 
 <div class="hover:bg-app-surface-hover/30 transition-colors">
-    <div class="flex items-center gap-2 py-1 px-2">
+    <div class="flex items-start gap-2 py-1 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
             class="shrink-0 p-2 -m-2 active:scale-95 transition-transform"
@@ -102,6 +102,9 @@
                 class:line-through={allChecked}
                 class:opacity-50={allChecked}
             >
+                <span class="font-bold text-xs sm:text-sm text-app-primary">
+                    {displayName}
+                </span>
                 {#each quantityGroups as q, i}
                     <span class="font-black text-sm sm:text-sm text-app-text">
                         {q.amount}
@@ -114,15 +117,11 @@
                         </span>
                     {/if}
                     {#if i < quantityGroups.length - 1}
-                        <span class="text-xs sm:text-sm text-app-text/40"
-                            >,</span
+                        <span class="text-xs text-app-text/80"
+                            >&</span
                         >
                     {/if}
                 {/each}
-
-                <span class="font-bold text-xs sm:text-sm text-app-primary">
-                    {displayName}
-                </span>
             </div>
         </button>
 
@@ -181,7 +180,7 @@
                                 {source.unit}
                             </span>
                         {/if}
-                        <span class="text-app-text/40 ml-1 font-medium">
+                        <span class="text-app-text/80 ml-1 font-medium">
                             from {getRecipeName(source.recipe_id)}
                             {#if source.day}
                                 • {source.day?.slice(0, 3)}
