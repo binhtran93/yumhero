@@ -156,7 +156,7 @@
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Search recipes..."
-                class="w-full pl-9 pr-3 py-2 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
+                class="w-full pl-9 pr-3 py-3 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
             />
         </div>
     </div>

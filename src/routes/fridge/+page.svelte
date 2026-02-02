@@ -197,11 +197,17 @@
         return formatPlannedFor(item);
     };
 
-    const formatIngredientDate = (date: Date): string => {
-        return date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-        });
+    const getDaysInFridge = (date: Date) => {
+        const diff = now.getTime() - date.getTime();
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    };
+
+    const getDaysBadgeClass = (days: number) => {
+        if (days <= 2)
+            return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+        if (days <= 5)
+            return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
     };
 
     import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
@@ -309,6 +315,9 @@
                                 </h2>
                                 <div class="space-y-2">
                                     {#each availableItems as item (item.id)}
+                                        {@const days = getDaysInFridge(
+                                            item.createdAt,
+                                        )}
                                         <div
                                             class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
                                             transition:slide={{ duration: 200 }}
@@ -339,11 +348,26 @@
                                                 >
                                                     {item.title}
                                                 </span>
-                                                <span
-                                                    class="text-xs text-app-text-muted"
+                                                <div
+                                                    class="flex items-center gap-2"
                                                 >
-                                                    {formatSource(item)}
-                                                </span>
+                                                    <span
+                                                        class="text-xs text-app-text-muted"
+                                                    >
+                                                        {formatSource(item)}
+                                                    </span>
+                                                    <span
+                                                        class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                            days,
+                                                        )}"
+                                                    >
+                                                        {days}
+                                                        {days === 1 ||
+                                                        days === 0
+                                                            ? "day"
+                                                            : "days"}
+                                                    </span>
+                                                </div>
                                             </div>
                                             <button
                                                 class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
@@ -370,6 +394,9 @@
                                 <div class="space-y-2">
                                     {#each plannedItems as item (item.id)}
                                         {@const isPast = isTimePast(item)}
+                                        {@const days = getDaysInFridge(
+                                            item.createdAt,
+                                        )}
                                         <div
                                             class="relative"
                                             transition:slide={{ duration: 200 }}
@@ -403,13 +430,29 @@
                                                     >
                                                         {item.title}
                                                     </span>
-                                                    <span
-                                                        class="text-xs text-app-text-muted block"
+                                                    <div
+                                                        class="flex items-center gap-2"
                                                     >
-                                                        {formatSource(item)} → {formatPlannedDate(
-                                                            item,
-                                                        )}
-                                                    </span>
+                                                        <span
+                                                            class="text-xs text-app-text-muted block"
+                                                        >
+                                                            {formatSource(item)}
+                                                            → {formatPlannedDate(
+                                                                item,
+                                                            )}
+                                                        </span>
+                                                        <span
+                                                            class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                                days,
+                                                            )}"
+                                                        >
+                                                            {days}
+                                                            {days === 1 ||
+                                                            days === 0
+                                                                ? "day"
+                                                                : "days"}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
                                                 {#if isPast}
@@ -492,35 +535,50 @@
                     <div class="max-w-2xl mx-auto">
                         <div class="space-y-2">
                             {#each ingredientsList as ingredient (ingredient.id)}
+                                {@const days = getDaysInFridge(
+                                    ingredient.addedAt,
+                                )}
                                 <div
                                     class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
                                     transition:slide={{ duration: 200 }}
                                 >
-                                    <div
-                                        class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0 border border-emerald-200 dark:border-emerald-800"
-                                    >
-                                        <Apple
-                                            size={18}
-                                            class="text-emerald-600 dark:text-emerald-400"
-                                        />
-                                    </div>
                                     <div class="flex-1 min-w-0">
-                                        <span
-                                            class="font-medium text-app-text text-sm truncate block capitalize"
-                                        >
-                                            {ingredient.name}
-                                        </span>
                                         <div
-                                            class="flex items-center gap-2 text-xs text-app-text-muted"
+                                            class="flex items-center justify-between gap-3"
                                         >
-                                            <span
-                                                class="font-medium bg-app-surface-deep px-1.5 py-0.5 rounded"
+                                            <div
+                                                class="flex-1 min-w-0 flex items-baseline gap-1"
                                             >
-                                                {formatAmount(
-                                                    ingredient.amount,
-                                                )}{ingredient.unit
-                                                    ? ` ${ingredient.unit}`
-                                                    : ""}
+                                                <span
+                                                    class="font-bold text-app-text tabular-nums text-sm"
+                                                >
+                                                    {formatAmount(
+                                                        ingredient.amount,
+                                                    )}
+                                                </span>
+                                                {#if ingredient.unit}
+                                                    <span
+                                                        class="text-[13px] font-medium text-app-text-muted"
+                                                    >
+                                                        {ingredient.unit}
+                                                    </span>
+                                                {/if}
+                                                <span
+                                                    class="font-bold text-app-primary text-sm capitalize truncate"
+                                                >
+                                                    {ingredient.name}
+                                                </span>
+                                            </div>
+
+                                            <span
+                                                class="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                    days,
+                                                )}"
+                                            >
+                                                {days}
+                                                {days === 1 || days === 0
+                                                    ? "day"
+                                                    : "days"}
                                             </span>
                                         </div>
                                     </div>
@@ -598,7 +656,7 @@
             onclick={handleDeleteIngredient}
         >
             <Trash2 size={18} />
-            <span class="font-medium">Remove</span>
+            <span class="font-medium">Throw away</span>
         </button>
 
         <div class="border-t border-app-border my-1"></div>
@@ -620,17 +678,17 @@
         ? isEatingLeftover
             ? "Mark as Eaten?"
             : "Throw away leftover?"
-        : "Remove ingredient?"}
+        : "Throw away ingredient?"}
     message={itemToDelete
         ? isEatingLeftover
             ? `This will remove this leftover from your fridge inventory.`
             : `This will permanently remove this leftover from your fridge ${itemToDelete?.status === "planned" ? "and your meal plan" : ""}.`
-        : `This will remove "${ingredientToDelete?.name}" from your fridge.`}
+        : `This will throw away "${ingredientToDelete?.name}" from your fridge.`}
     confirmText={itemToDelete
         ? isEatingLeftover
             ? "I ate it!"
             : "Throw away"
-        : "Remove"}
+        : "Throw away"}
     cancelText="Cancel"
     isDestructive={itemToDelete ? !isEatingLeftover : true}
     onConfirm={confirmDelete}
