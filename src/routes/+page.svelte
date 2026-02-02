@@ -364,8 +364,6 @@
                 name: ing.ingredientName,
                 amount: ing.amount,
                 unit: ing.unit,
-                sourceRecipeId: boughtIngredientsModal.recipeId,
-                sourceRecipeTitle: boughtIngredientsModal.recipeTitle,
             })),
         );
 
@@ -840,9 +838,7 @@
     // Shopping List State
     let isShoppingListOpen = $state(false);
     let shoppingListStore = $derived(getWeekShoppingList(weekId));
-    let itemCount = $derived(
-        $shoppingListStore.data.filter((i) => !i.is_deleted).length,
-    );
+    let itemCount = $derived($shoppingListStore.data.length);
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />

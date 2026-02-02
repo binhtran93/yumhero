@@ -18,7 +18,13 @@
         deleteShoppingItem,
         updateShoppingItem,
         resetAllShoppingItems,
+        getShoppingList,
     } from "$lib/stores/shoppingList";
+    import {
+        fridgeIngredients,
+        getFridgeIngredients,
+    } from "$lib/stores/fridgeIngredients";
+    import CheckFridgeModal from "./CheckFridgeModal.svelte";
     import type { WeeklyPlan } from "$lib/types";
 
     interface Props {
@@ -38,6 +44,11 @@
     let editingItem = $state<ShoppingListItem | null>(null);
     let isResetting = $state(false);
 
+    // Check Fridge states
+    let showCheckFridgeModal = $state(false);
+    let isMatching = $state(false);
+    let matches = $state<any[]>([]);
+
     // Form states
     let manualItemName = $state("");
     let manualItemAmount = $state("");
@@ -50,7 +61,9 @@
     let shoppingList = $derived($weekShoppingListStore.data);
     let isLoading = $derived($weekShoppingListStore.loading);
 
-    let displayedItems = $derived(shoppingList);
+    let displayedItems = $derived(
+        (shoppingList || []).filter((item) => item && item.id),
+    );
 
     let itemCount = $derived(shoppingList.length);
     let checkedCount = $derived(
@@ -154,60 +167,109 @@
             isResetting = false;
         }
     };
+
+    const handleCheckFridge = async () => {
+        isMatching = true;
+        try {
+            const [latestShoppingList, latestFridgeIngredients] =
+                await Promise.all([
+                    getShoppingList(weekId),
+                    getFridgeIngredients(),
+                ]);
+
+            if (latestShoppingList.length === 0) return;
+
+            // Only send items that are not fully checked
+            const uncheckedItems = latestShoppingList.filter((item) =>
+                item.sources.some((s) => !s.is_checked),
+            );
+
+            if (uncheckedItems.length === 0) {
+                isMatching = false;
+                return;
+            }
+
+            const response = await fetch("/api/match-fridge-ingredients", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    shoppingList: uncheckedItems,
+                    fridgeIngredients: latestFridgeIngredients,
+                }),
+            });
+
+            if (!response.ok) throw new Error("Failed to match ingredients");
+
+            const data = await response.json();
+            matches = (data.matches || []).filter(
+                (m: any) => m && m.shoppingItemId,
+            );
+            showCheckFridgeModal = true;
+        } catch (error) {
+            console.error("Error checking fridge:", error);
+        } finally {
+            isMatching = false;
+        }
+    };
 </script>
 
 <Modal
     {isOpen}
     {onClose}
-    class="max-w-4xl"
-    closeOnEsc={!showAddManualModal && !showEditModal}
+    class="max-w-2xl"
+    closeOnEsc={!showAddManualModal && !showEditModal && !showCheckFridgeModal}
 >
     {#snippet header()}
-        <div class="px-4 py-3 sm:px-6 sm:py-4 shrink-0">
-            <div class="flex items-center justify-between mb-3">
-                <h2
-                    class="text-xl sm:text-2xl font-display font-black text-app-text"
-                >
-                    Shopping List
-                </h2>
+        <div
+            class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 border-b border-app-border flex items-center justify-between"
+        >
+            <h2
+                class="text-xl sm:text-2xl font-display font-black text-app-text"
+            >
+                Shopping List
+            </h2>
+            <button
+                class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
+                onclick={onClose}
+            >
+                <X size={20} />
+            </button>
+        </div>
+
+        {#if itemCount > 0}
+            <div
+                class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 flex items-center gap-3 border-b border-app-border"
+            >
                 <button
-                    class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all"
-                    onclick={onClose}
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-sm hover:bg-app-primary/90 transition-all"
+                    onclick={() => (showAddManualModal = true)}
                 >
-                    <X size={20} />
+                    <Plus size={16} strokeWidth={2.5} />
+                    Add item
+                </button>
+                <button
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
+                    onclick={handleCheckFridge}
+                    disabled={isMatching || shoppingList.length === 0}
+                >
+                    {#if isMatching}
+                        <div
+                            class="w-4 h-4 border-2 border-app-text-muted/30 border-t-app-text-muted rounded-full animate-spin"
+                        ></div>
+                    {:else}
+                        <Refrigerator size={16} strokeWidth={2.5} />
+                    {/if}
+                    Check Fridge
+                </button>
+                <button
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all"
+                    onclick={handleResetAll}
+                >
+                    <RotateCcw size={16} strokeWidth={2.5} />
+                    Reset
                 </button>
             </div>
-
-            {#if itemCount > 0}
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-medium text-app-text-muted">
-                        {checkedCount}/{itemCount} items
-                    </span>
-                    <div class="flex-1"></div>
-                    <button
-                        class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-xs hover:bg-app-surface-hover hover:text-app-text transition-all"
-                        onclick={handleResetAll}
-                    >
-                        <RotateCcw size={12} strokeWidth={2.5} />
-                        Reset
-                    </button>
-                    <button
-                        class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-xs hover:bg-app-surface-hover hover:text-app-text transition-all"
-                        onclick={() => {}}
-                    >
-                        <Refrigerator size={12} strokeWidth={2.5} />
-                        Check Fridge
-                    </button>
-                    <button
-                        class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-xs hover:bg-app-primary/90 transition-all"
-                        onclick={() => (showAddManualModal = true)}
-                    >
-                        <Plus size={14} strokeWidth={2.5} />
-                        Add item
-                    </button>
-                </div>
-            {/if}
-        </div>
+        {/if}
     {/snippet}
 
     <div class="px-2 pb-2 sm:px-4 sm:pb-4">
@@ -489,3 +551,13 @@
         </div>
     </div>
 </Modal>
+
+<CheckFridgeModal
+    isOpen={showCheckFridgeModal}
+    {weekId}
+    {matches}
+    onClose={() => (showCheckFridgeModal = false)}
+    onApplied={() => {
+        // Results are applied via toggleAllShoppingItemChecks which updates the store
+    }}
+/>

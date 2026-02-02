@@ -27,8 +27,6 @@ const fromFirestore = (doc: any): FridgeIngredient => {
         amount: data.amount || 0,
         unit: data.unit || null,
         addedAt: data.addedAt?.toDate?.() || new Date(),
-        sourceRecipeId: data.sourceRecipeId || null,
-        sourceRecipeTitle: data.sourceRecipeTitle || null,
     };
 };
 
@@ -39,8 +37,6 @@ const toFirestore = (item: Omit<FridgeIngredient, 'id'>) => {
         amount: item.amount,
         unit: item.unit,
         addedAt: Timestamp.fromDate(item.addedAt),
-        sourceRecipeId: item.sourceRecipeId,
-        sourceRecipeTitle: item.sourceRecipeTitle,
     };
 };
 
@@ -93,8 +89,6 @@ export const addIngredientsToFridge = async (
         name: string;
         amount: number;
         unit: string | null;
-        sourceRecipeId: string | null;
-        sourceRecipeTitle: string | null;
     }>
 ): Promise<void> => {
     const $user = get(user);
@@ -110,8 +104,6 @@ export const addIngredientsToFridge = async (
             amount: ingredient.amount,
             unit: ingredient.unit,
             addedAt: new Date(),
-            sourceRecipeId: ingredient.sourceRecipeId,
-            sourceRecipeTitle: ingredient.sourceRecipeTitle,
         };
 
         await setDoc(ingredientRef, toFirestore(newIngredient));
@@ -135,4 +127,18 @@ export const deleteIngredient = async (ingredientId: string): Promise<void> => {
 export const getIngredientById = (ingredientId: string): FridgeIngredient | undefined => {
     const $fridgeIngredients = get(fridgeIngredients);
     return $fridgeIngredients.data.find(item => item.id === ingredientId);
+};
+/**
+ * Get all fridge ingredients once (not a subscription).
+ */
+export const getFridgeIngredients = async (): Promise<FridgeIngredient[]> => {
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+
+    const ingredientsRef = collection(db, `users/${$user.uid}/fridgeIngredients`);
+    const { getDocs } = await import('firebase/firestore');
+    const snapshot = await getDocs(ingredientsRef);
+    const items = snapshot.docs.map(fromFirestore);
+    items.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+    return items;
 };

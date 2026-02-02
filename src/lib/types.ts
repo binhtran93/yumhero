@@ -37,8 +37,6 @@ export interface FridgeIngredient {
     amount: number;
     unit: string | null;
     addedAt: Date;                       // When added to fridge
-    sourceRecipeId: string | null;       // Reference to recipe it came from
-    sourceRecipeTitle: string | null;    // Recipe title for display
 }
 
 /**
@@ -58,7 +56,7 @@ export interface PlannedLeftover {
  * Type guard to check if a meal plan item is a leftover
  */
 export function isPlannedLeftover(item: PlannedRecipe | PlannedLeftover): item is PlannedLeftover {
-    return 'isLeftover' in item && item.isLeftover === true;
+    return 'isLeftover' in item && item.isLeftover;
 }
 
 export interface Tag {

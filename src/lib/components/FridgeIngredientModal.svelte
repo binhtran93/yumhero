@@ -25,8 +25,6 @@
                     name: name.toLowerCase().trim(),
                     amount: parseFloat(amount),
                     unit: unit.trim() || null,
-                    sourceRecipeId: null,
-                    sourceRecipeTitle: null,
                 },
             ]);
             resetForm();

@@ -233,7 +233,7 @@
   {@const selected = isSelected(recipe.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
+      "flex items-center justify-between px-2 py-1 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
       selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => toggleSelection(recipe)}
@@ -447,7 +447,7 @@
 <Modal
   {isOpen}
   {onClose}
-  class="max-w-lg"
+  class="max-w-2xl"
   header={customHeader}
   footer={footerContent}
 >
@@ -531,7 +531,7 @@
   >
     {#each sections as section, i (section.id)}
       {#if section.title}
-        <div class="flex items-center gap-4 px-6 pt-6 pb-2">
+        <div class="flex items-center gap-4 px-4 pt-4 pb-2">
           <div
             class="text-[11px] uppercase font-extrabold text-app-text-muted tracking-[0.2em] whitespace-nowrap"
           >

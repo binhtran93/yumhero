@@ -522,17 +522,6 @@
                                                     ? ` ${ingredient.unit}`
                                                     : ""}
                                             </span>
-                                            {#if ingredient.sourceRecipeTitle}
-                                                <span
-                                                    class="flex items-center gap-1"
-                                                >
-                                                    <ChefHat
-                                                        size={12}
-                                                        class="opacity-50"
-                                                    />
-                                                    {ingredient.sourceRecipeTitle}
-                                                </span>
-                                            {/if}
                                         </div>
                                     </div>
                                     <button
