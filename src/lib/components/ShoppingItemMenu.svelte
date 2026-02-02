@@ -53,7 +53,7 @@
         class="p-1.5 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep/50 rounded-lg transition-colors"
         aria-label="More options"
     >
-        <EllipsisVertical size={18} />
+        <EllipsisVertical size={16} />
     </button>
 
     {#if isMenuOpen}

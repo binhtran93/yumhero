@@ -102,11 +102,11 @@
                 class:line-through={allChecked}
                 class:opacity-50={allChecked}
             >
-                <span class="font-bold text-xs sm:text-sm text-app-primary">
+                <span class="font-bold text-xs sm:text-sm">
                     {displayName}
                 </span>
                 {#each quantityGroups as q, i}
-                    <span class="font-black text-sm sm:text-sm text-app-text">
+                    <span class="font-black text-sm sm:text-sm text-app-primary">
                         {q.amount}
                     </span>
                     {#if q.unit}
@@ -128,14 +128,14 @@
         <!-- Expand/Collapse Icon -->
         {#if sources.length > 1 || (sources.length === 1 && (sources[0].recipe_id || sources[0].day || sources[0].meal_type))}
             <button
-                class="shrink-0 p-1.5 -m-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
+                class="p-1.5 text-app-text/50 hover:text-app-text transition-colors rounded-lg hover:bg-app-surface-deep/50"
                 onclick={() => (isExpanded = !isExpanded)}
                 aria-label={isExpanded ? "Collapse" : "Expand"}
             >
                 {#if isExpanded}
-                    <EyeOff size={16} strokeWidth={2.5} />
+                    <EyeOff size={18} />
                 {:else}
-                    <Eye size={16} strokeWidth={2.5} />
+                    <Eye size={18} />
                 {/if}
             </button>
         {/if}
@@ -180,7 +180,7 @@
                                 {source.unit}
                             </span>
                         {/if}
-                        <span class="text-app-text/80 ml-1 font-medium">
+                        <span class="text-app-text/60 ml-1 font-medium">
                             from {getRecipeName(source.recipe_id)}
                             {#if source.day}
                                 • {source.day?.slice(0, 3)}

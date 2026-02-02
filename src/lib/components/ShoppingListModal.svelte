@@ -272,7 +272,7 @@
         {/if}
     {/snippet}
 
-    <div class="px-2 pb-2 sm:px-4 sm:pb-4">
+    <div class="px-2 py-2 sm:px-4 sm:py-4">
         {#if isLoading}
             <div class="flex items-center justify-center h-64">
                 <div
