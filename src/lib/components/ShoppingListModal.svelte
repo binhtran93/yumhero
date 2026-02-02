@@ -33,7 +33,9 @@
     // Modal states
     let showAddManualModal = $state(false);
     let showEditModal = $state(false);
+    let showResetConfirmModal = $state(false);
     let editingItem = $state<ShoppingListItem | null>(null);
+    let isResetting = $state(false);
 
     // Form states
     let manualItemName = $state("");
@@ -136,11 +138,19 @@
         }
     };
 
-    const handleResetAll = async () => {
+    const handleResetAll = () => {
+        showResetConfirmModal = true;
+    };
+
+    const performResetAll = async () => {
         try {
+            isResetting = true;
             await resetAllShoppingItems(weekId);
+            showResetConfirmModal = false;
         } catch (error) {
             console.error("Failed to reset all items:", error);
+        } finally {
+            isResetting = false;
         }
     };
 </script>
@@ -181,8 +191,8 @@
                         Reset
                     </button>
                     <button
-                            class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-xs hover:bg-app-primary/90 transition-all"
-                            onclick={() => (showAddManualModal = true)}
+                        class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-xs hover:bg-app-primary/90 transition-all"
+                        onclick={() => (showAddManualModal = true)}
                     >
                         <Plus size={14} strokeWidth={2.5} />
                         Add item
@@ -415,6 +425,58 @@
                 onclick={handleSaveEdit}
             >
                 Save Changes
+            </button>
+        </div>
+    </div>
+</Modal>
+
+<Modal
+    isOpen={showResetConfirmModal}
+    onClose={() => !isResetting && (showResetConfirmModal = false)}
+    title="Reset Shopping List"
+    class="max-w-md"
+>
+    <div class="p-6 pt-0">
+        <p class="text-sm text-app-text-muted mb-4">
+            Are you sure you want to reset the shopping list? This will:
+        </p>
+        <ul class="space-y-2 mb-6 text-app-text-muted text-sm">
+            <li class="flex items-start gap-2">
+                <span
+                    class="mt-1.5 w-1.5 h-1.5 rounded-full bg-app-primary shrink-0"
+                ></span>
+                <span>Remove all manually added items</span>
+            </li>
+            <li class="flex items-start gap-2">
+                <span
+                    class="mt-1.5 w-1.5 h-1.5 rounded-full bg-app-primary shrink-0"
+                ></span>
+                <span
+                    >Recalculate items based on current planned recipes in this
+                    week</span
+                >
+            </li>
+        </ul>
+
+        <div class="flex gap-3">
+            <button
+                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all disabled:opacity-50"
+                onclick={() => (showResetConfirmModal = false)}
+                disabled={isResetting}
+            >
+                Cancel
+            </button>
+            <button
+                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                onclick={performResetAll}
+                disabled={isResetting}
+            >
+                {#if isResetting}
+                    <div
+                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                    ></div>
+                {/if}
+                Reset List
             </button>
         </div>
     </div>

@@ -1,17 +1,14 @@
 <script lang="ts">
     import {
         ChefHat,
-        ShoppingCart,
         Minus,
         Plus,
-        Ellipsis,
         X as XIcon,
         Hash,
         Users,
-        Trash2,
         Refrigerator,
-        Eraser,
         Info,
+        BrushCleaning,
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
     import { twMerge } from "tailwind-merge";
@@ -304,7 +301,7 @@
                 onClose();
             }}
         >
-            <Eraser size={18} />
+            <BrushCleaning size={18} />
             Remove from plan
         </button>
     {/if}
