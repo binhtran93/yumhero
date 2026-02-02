@@ -5,14 +5,9 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import type { ShoppingListItem, FridgeIngredient } from '$lib/types';
 
-// Schema for AI response
+// Schema for AI response - Optimized for token savings
 const MatchResultSchema = z.object({
-    matches: z.array(z.object({
-        shoppingItemId: z.string(),
-        fridgeIngredientId: z.string(),
-        reasoning: z.string().describe('Explanation of why these items match, e.g., "Different brand of the same spice" or "Plural vs singular"'),
-        confidence: z.number().min(0).max(1).describe('Confidence score from 0 to 1')
-    })).describe('List of fuzzy matches found between remaining shopping list items and fridge ingredients')
+    matches: z.array(z.array(z.string())).describe('Groups of IDs. Format: [fridgeIngredientId, shoppingItemId1, shoppingItemId2, ...]')
 });
 
 interface MinimalIngredient {
@@ -69,20 +64,21 @@ export async function POST({ request }) {
         let aiMatches: any[] = [];
         if (unmatchedShoppingItems.length > 0 && fridgeIngredients.length > 0) {
             const prompt = `
-                You are a multilingual culinary expert. Match shopping list items with fridge ingredients.
+                ACT AS A STRICT KITCHEN INVENTORY MANAGER. Match shopping items to fridge ingredients.
                 
-                Shopping List:
-                ${unmatchedShoppingItems.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
+                Shopping List (to find):
+                ${unmatchedShoppingItems.map(item => `- ${item.id}: ${item.name}`).join('\n')}
 
-                Fridge:
-                ${fridgeIngredients.map(item => `- ID: ${item.id}, Name: ${item.name} (${item.amount} ${item.unit || ''})`).join('\n')}
+                Fridge (available):
+                ${fridgeIngredients.map(item => `- ${item.id}: ${item.name}`).join('\n')}
 
-                Rules:
-                1. Match items based on identity regardless of language (EN, VN, etc.).
-                2. "tomatoes" (EN) matches "cà chua" (VN), "garlic" matches "tỏi", etc.
-                3. High flexibility: "poultry" matches "chicken", "scallions" matches "hành lá".
-                4. One fridge ingredient can satisfy multiple shopping entries.
-                5. Provide clear reasoning and confidence > 0.7.
+                CRITICAL RULES:
+                1. IDENTITY MATCH ONLY: Only match if the items are the SAME ingredient, regardless of the language used (e.g., matching "tomato", "cà chua", "pomodoro", "tomat", etc.). 
+                   IDENTICAL identity from a global culinary perspective is required.
+                2. UNIVERSAL LANGUAGE AGNOSTICISM: Recognize synonyms and translations across ALL languages. The recipe and fridge items can be in any language; match them by their biological or culinary essence.
+                3. DO NOT MATCH SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots. Even if they are "similar fresh produce", they ARE NOT THE SAME.
+                4. CONFIDENCE > 0.95: If you are not 100% sure they are the exact same thing in reality, DO NOT match.
+                5. FORMAT: Return groups where first ID is Fridge ID, and remaining IDs are Shopping Item IDs.
             `;
 
             const { output } = await generateText({
@@ -90,27 +86,35 @@ export async function POST({ request }) {
                 experimental_output: Output.object({
                     schema: MatchResultSchema
                 }),
-                system: 'You are a smart kitchen assistant focusing on ingredient matching.',
+                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages. You never match substitutions or vaguely related items.',
                 messages: [{ role: 'user', content: prompt }]
             });
 
-            aiMatches = output.matches.map(match => {
-                const sItem = shoppingList.find(s => s.id === match.shoppingItemId);
-                const fItem = fridgeIngredients.find(f => f.id === match.fridgeIngredientId);
+            aiMatches = (output.matches || []).flatMap((group: string[]) => {
+                if (group.length < 2) return [];
+                const fId = group[0];
+                const sIds = group.slice(1);
 
-                if (!sItem || !fItem) return null;
+                const fItem = fridgeIngredients.find(f => f.id === fId);
+                if (!fItem) return [];
 
-                return {
-                    ...match,
-                    name: sItem.name,
-                    fridgeName: fItem.name,
-                    amount: sItem.amount,
-                    unit: sItem.unit,
-                    fridgeAmount: fItem.amount,
-                    fridgeUnit: fItem.unit,
-                    type: 'ai'
-                };
-            }).filter((m): m is any => m !== null);
+                return sIds.map(sId => {
+                    const sItem = shoppingList.find(s => s.id === sId);
+                    if (!sItem) return null;
+
+                    return {
+                        shoppingItemId: sItem.id,
+                        fridgeIngredientId: fItem.id,
+                        name: sItem.name,
+                        fridgeName: fItem.name,
+                        amount: sItem.amount,
+                        unit: sItem.unit,
+                        fridgeAmount: fItem.amount,
+                        fridgeUnit: fItem.unit,
+                        type: 'ai'
+                    };
+                }).filter(m => m !== null);
+            });
         }
 
         return json({
