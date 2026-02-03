@@ -69,7 +69,7 @@
 </script>
 
 <div class="hover:bg-app-surface-hover/30 transition-colors">
-    <div class="flex items-start gap-1 py-1 px-2">
+    <div class="flex items-start gap-2 py-1 px-2">
         <!-- Master Checkbox - Large tap target -->
         <button
             class="shrink-0 p-2 -m-2 active:scale-95 transition-transform"
