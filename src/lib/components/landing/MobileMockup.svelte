@@ -35,7 +35,7 @@
     let addLunchRef: HTMLDivElement | undefined = $state();
     let addDinnerRef: HTMLDivElement | undefined = $state();
     let recipeTunaRef: HTMLDivElement | undefined = $state();
-    let recipePastaRef: HTMLDivElement | undefined = $state();
+    let recipeRiceRef: HTMLDivElement | undefined = $state();
 
     function updateCursorTarget(target: HTMLElement | undefined) {
         if (!target || !carouselRef) return { x: 0, y: 0 };
@@ -198,7 +198,7 @@
                                                 if (hasInteracted) return;
                                                 cursorPos =
                                                     updateCursorTarget(
-                                                        recipePastaRef,
+                                                        recipeRiceRef,
                                                     );
 
                                                 demoTimeout = setTimeout(() => {
@@ -206,7 +206,7 @@
                                                     isCursorClicking = true;
                                                     isRecipeActive = true;
                                                     activeRecipeName =
-                                                        "15-min Pasta";
+                                                        "Egg Fried Rice";
 
                                                     demoTimeout = setTimeout(
                                                         () => {
@@ -229,7 +229,7 @@
                                                                                     ...day.meals,
                                                                                     dinner: [
                                                                                         {
-                                                                                            name: "15-min Pasta",
+                                                                                            name: "Egg Fried Rice",
                                                                                         },
                                                                                     ],
                                                                                 },
@@ -493,63 +493,78 @@
                             >
                                 Select Recipe
                             </h3>
-                            <div class="space-y-2">
+                            <div class="space-y-2.5">
                                 <div
                                     bind:this={recipeTunaRef}
-                                    class="flex items-center gap-3 p-2 rounded-xl border transition-all duration-200 {isRecipeActive &&
+                                    class="group flex items-center gap-3 p-2.5 rounded-2xl border transition-all duration-300 {isRecipeActive &&
                                     activeRecipeName === 'Tuna Salad'
-                                        ? 'bg-app-primary/20 scale-[0.98]'
-                                        : 'bg-app-primary/5 border-app-primary/20'}"
+                                        ? 'bg-app-primary/15 border-app-primary/30 scale-[0.98] shadow-inner'
+                                        : 'bg-gray-50/50 border-gray-100 hover:border-app-primary/20 hover:bg-app-primary/5'}"
                                 >
                                     <div
-                                        class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
+                                        class="w-12 h-12 rounded-xl bg-white shrink-0 overflow-hidden shadow-sm border border-gray-100"
                                     >
                                         <img
                                             src="/mockup/tuna.png"
                                             alt="Tuna Salad"
-                                            class="w-full h-full object-cover"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />
                                     </div>
                                     <div class="flex-1">
                                         <p
-                                            class="text-xs font-bold text-app-text"
+                                            class="text-[13px] font-black text-gray-800"
                                         >
                                             Tuna Salad
                                         </p>
-                                        <p
-                                            class="text-[10px] text-gray-500 mt-0.5"
+                                        <div
+                                            class="flex items-center gap-2 mt-0.5"
                                         >
-                                            320 kcal • 10m
-                                        </p>
+                                            <span
+                                                class="text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md"
+                                                >2 servings</span
+                                            >
+                                            <span
+                                                class="text-[10px] font-medium text-app-primary/70"
+                                                >• 10m</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div
-                                    bind:this={recipePastaRef}
-                                    class="flex items-center gap-3 p-2 rounded-xl border transition-all duration-200 {isRecipeActive &&
-                                    activeRecipeName === '15-min Pasta'
-                                        ? 'bg-app-primary/20 scale-[0.98]'
-                                        : 'bg-app-primary/5 border-app-primary/20'}"
+                                    bind:this={recipeRiceRef}
+                                    class="group flex items-center gap-3 p-2.5 rounded-2xl border transition-all duration-300 {isRecipeActive &&
+                                    activeRecipeName === 'Egg Fried Rice'
+                                        ? 'bg-app-primary/15 border-app-primary/30 scale-[0.98] shadow-inner'
+                                        : 'bg-gray-50/50 border-gray-100 hover:border-app-primary/20 hover:bg-app-primary/5'}"
                                 >
                                     <div
-                                        class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
+                                        class="w-12 h-12 rounded-xl bg-white shrink-0 overflow-hidden shadow-sm border border-gray-100"
                                     >
                                         <img
-                                            src="/mockup/pasta.png"
-                                            alt="Pasta"
-                                            class="w-full h-full object-cover"
+                                            src="/mockup/rice.png"
+                                            alt="Rice"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />
                                     </div>
                                     <div class="flex-1">
                                         <p
-                                            class="text-xs font-bold text-app-text"
+                                            class="text-[13px] font-black text-gray-800"
                                         >
-                                            15-min Pasta
+                                            Egg Fried Rice
                                         </p>
-                                        <p
-                                            class="text-[10px] text-gray-500 mt-0.5"
+                                        <div
+                                            class="flex items-center gap-2 mt-0.5"
                                         >
-                                            450 kcal • 15m
-                                        </p>
+                                            <span
+                                                class="text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md"
+                                                >1-2 servings</span
+                                            >
+                                            <span
+                                                class="text-[10px] font-medium text-app-primary/70"
+                                                >• 12m</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>
