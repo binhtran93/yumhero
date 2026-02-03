@@ -1163,7 +1163,7 @@
                         <!-- Header -->
                         <div
                             class={twMerge(
-                                "sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0",
+                                "sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0 mb-2 md:mb-0",
                                 isPrinting && "h-15! py-0!",
                             )}
                             bind:this={dayRefs[i]}
@@ -1231,7 +1231,7 @@
 
                         {#each mealSections as section (section.type)}
                             <div
-                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative"
+                                class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative px-2"
                             >
                                 <MealSlot
                                     day={dayPlan.day}
