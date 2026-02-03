@@ -44,6 +44,7 @@ export default defineConfig({
 				]
 			},
 			manifest: {
+				id: '/',
 				name: 'YumHero',
 				short_name: 'YumHero',
 				description: 'Your personal meal planning hero',
@@ -53,6 +54,8 @@ export default defineConfig({
 				orientation: 'portrait',
 				start_url: '/',
 				scope: '/',
+				categories: ['food', 'lifestyle', 'productivity'],
+				prefer_related_applications: false,
 				icons: [
 					{
 						src: 'icons/icon-192x192.png',
@@ -75,6 +78,26 @@ export default defineConfig({
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'maskable'
+					}
+				],
+				shortcuts: [
+					{
+						name: 'Week Plan',
+						short_name: 'Plan',
+						url: '/weekplan',
+						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
+					},
+					{
+						name: 'Shopping List',
+						short_name: 'Shopping',
+						url: '/shopping',
+						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
+					},
+					{
+						name: 'Recipes',
+						short_name: 'Recipes',
+						url: '/recipes',
+						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
 					}
 				]
 			},

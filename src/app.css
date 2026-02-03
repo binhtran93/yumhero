@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* PWA: Disable pull-to-refresh and unwanted touch gestures */
+html,
+body {
+    overscroll-behavior: none;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+html {
+    touch-action: manipulation;
+}
+
 :root {
     --app-primary: #c2410c;
 
