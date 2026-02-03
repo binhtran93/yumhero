@@ -96,15 +96,35 @@
     const mealTypes = ["breakfast", "lunch", "dinner", "note"];
 
     const mockLeftovers = [
-        { name: "Bolognese Sauce", date: "yesterday" },
-        { name: "Grilled Veggies", date: "2d ago" },
+        {
+            name: "Bolognese Sauce",
+            date: "yesterday",
+            image: "/mockup/bolognese.png",
+        },
+        {
+            name: "Grilled Veggies",
+            date: "2d ago",
+            image: "/mockup/veggies.png",
+        },
     ];
 
     const mockQuickRecipes = [
-        { name: "15-min Pasta", calorie: "450 kcal" },
-        { name: "Tuna Salad", calorie: "320 kcal" },
-        { name: "Egg Fried Rice", calorie: "380 kcal" },
-        { name: "Avocado Toast", calorie: "290 kcal" },
+        {
+            name: "15-min Pasta",
+            calorie: "450 kcal",
+            image: "/mockup/pasta.png",
+        },
+        { name: "Tuna Salad", calorie: "320 kcal", image: "/mockup/tuna.png" },
+        {
+            name: "Egg Fried Rice",
+            calorie: "380 kcal",
+            image: "/mockup/rice.png",
+        },
+        {
+            name: "Avocado Toast",
+            calorie: "290 kcal",
+            image: "/mockup/avocado.png",
+        },
     ];
 
     const getMealStyles = (type: string) => {
@@ -279,23 +299,36 @@
                                         <div class="space-y-1.5">
                                             {#each mockLeftovers as item}
                                                 <div
-                                                    class="p-2 bg-app-bg border border-app-border rounded-lg shadow-sm"
+                                                    class="flex items-center gap-3 p-2 bg-app-bg border border-app-border rounded-lg shadow-sm"
                                                 >
-                                                    <p
-                                                        class="text-[10px] font-bold text-app-text leading-tight"
-                                                    >
-                                                        {item.name}
-                                                    </p>
-                                                    <div
-                                                        class="flex items-center gap-1 mt-1"
-                                                    >
+                                                    {#if item.image}
                                                         <div
-                                                            class="w-1.5 h-1.5 rounded-full bg-emerald-500"
-                                                        ></div>
-                                                        <span
-                                                            class="text-[8px] font-medium text-app-text-muted"
-                                                            >{item.date}</span
+                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
                                                         >
+                                                            <img
+                                                                src={item.image}
+                                                                alt={item.name}
+                                                                class="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                    {/if}
+                                                    <div class="flex-1 min-w-0">
+                                                        <p
+                                                            class="text-[10px] font-bold text-app-text leading-tight truncate"
+                                                        >
+                                                            {item.name}
+                                                        </p>
+                                                        <div
+                                                            class="flex items-center gap-1 mt-1"
+                                                        >
+                                                            <div
+                                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                                            ></div>
+                                                            <span
+                                                                class="text-[8px] font-medium text-app-text-muted"
+                                                                >{item.date}</span
+                                                            >
+                                                        </div>
                                                     </div>
                                                 </div>
                                             {/each}
@@ -325,32 +358,45 @@
                                         <div class="space-y-1.5">
                                             {#each mockQuickRecipes as item}
                                                 <div
-                                                    class="p-2 bg-app-bg border border-app-border rounded-lg shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer group"
+                                                    class="flex items-center gap-3 p-2 bg-app-bg border border-app-border rounded-lg shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer group"
                                                 >
-                                                    <p
-                                                        class="text-[10px] font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors"
-                                                    >
-                                                        {item.name}
-                                                    </p>
-                                                    <div
-                                                        class="flex items-center gap-2 mt-1"
-                                                    >
+                                                    {#if item.image}
                                                         <div
-                                                            class="flex items-center gap-1"
+                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
                                                         >
-                                                            <Clock
-                                                                size={8}
-                                                                class="text-app-text-muted"
+                                                            <img
+                                                                src={item.image}
+                                                                alt={item.name}
+                                                                class="w-full h-full object-cover"
                                                             />
+                                                        </div>
+                                                    {/if}
+                                                    <div class="flex-1 min-w-0">
+                                                        <p
+                                                            class="text-[10px] font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors truncate"
+                                                        >
+                                                            {item.name}
+                                                        </p>
+                                                        <div
+                                                            class="flex items-center gap-2 mt-1"
+                                                        >
+                                                            <div
+                                                                class="flex items-center gap-1"
+                                                            >
+                                                                <Clock
+                                                                    size={8}
+                                                                    class="text-app-text-muted"
+                                                                />
+                                                                <span
+                                                                    class="text-[8px] font-medium text-app-text-muted"
+                                                                    >15m</span
+                                                                >
+                                                            </div>
                                                             <span
                                                                 class="text-[8px] font-medium text-app-text-muted"
-                                                                >15m</span
+                                                                >• {item.calorie}</span
                                                             >
                                                         </div>
-                                                        <span
-                                                            class="text-[8px] font-medium text-app-text-muted"
-                                                            >• {item.calorie}</span
-                                                        >
                                                     </div>
                                                 </div>
                                             {/each}
