@@ -258,7 +258,9 @@
                     fridge, log leftovers, and master your menu in a clean,
                     high-performance interface.
                 </p>
-                <div class="flex flex-col flex-col-reverse sm:flex-row items-center gap-4">
+                <div
+                    class="flex flex-col flex-col-reverse sm:flex-row items-center gap-4"
+                >
                     <button
                         on:click={() => {
                             restartAnimation();
@@ -1282,13 +1284,13 @@
 
         /* 1. Move to Avocado Toast (Sidebar - 1st item in Quick Recipes) */
         5% {
-            top: 48%;
+            top: 53%;
             left: 8%;
             transform: translate(0, 0);
             opacity: 1;
         }
         7% {
-            top: 48%;
+            top: 53%;
             left: 8%;
             transform: scale(0.85);
         } /* Grab */
@@ -1349,13 +1351,13 @@
         0%,
         6.9% {
             opacity: 0;
-            top: 48%;
+            top: 53%;
             left: 8%;
             transform: translate(0, 0);
         }
         7% {
             opacity: 1;
-            top: 48%;
+            top: 53%;
             left: 8%;
             transform: rotate(-2deg);
         }
