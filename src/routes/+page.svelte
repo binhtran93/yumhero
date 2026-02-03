@@ -226,7 +226,7 @@
                     <span class="text-app-primary">Eat with Intent.</span>
                 </h1>
                 <p
-                    class="text-base md:text-xl text-app-text-muted mb-6 max-w-2xl mx-auto leading-relaxed"
+                    class="text-base md:text-xl text-app-text-muted mb-6 max-w-4xl mx-auto leading-relaxed"
                 >
                     A meal planner designed for the organized home. Track your
                     fridge, log leftovers, and master your weekly menu in a
@@ -308,6 +308,39 @@
                                             <span
                                                 class="text-[8px] font-medium text-app-text-muted"
                                                 >15m</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="ghost-card-2 absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
+                                    >
+                                        <img
+                                            src="/mockup/veggies.png"
+                                            alt="Grilled Veggies"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p
+                                            class="text-xs font-bold text-app-text leading-tight truncate"
+                                        >
+                                            Grilled Veggies
+                                        </p>
+                                        <div
+                                            class="flex items-center gap-1 mt-0.5"
+                                        >
+                                            <div
+                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                            ></div>
+                                            <span
+                                                class="text-[8px] font-medium text-app-text-muted"
+                                                >2d ago</span
                                             >
                                         </div>
                                     </div>
@@ -542,6 +575,21 @@
                                                                 >
                                                                     Avocado
                                                                     Toast
+                                                                </p>
+                                                            </div>
+                                                        {/if}
+                                                        <!-- Animation Target Drop 2 (Lunch) -->
+                                                        {#if day.day === "Thu" && type === "lunch"}
+                                                            <div
+                                                                class="drop-reveal-card-2 px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                    type,
+                                                                )} opacity-0"
+                                                            >
+                                                                <p
+                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                >
+                                                                    Grilled
+                                                                    Veggies
                                                                 </p>
                                                             </div>
                                                         {/if}
@@ -1142,14 +1190,22 @@
 
 <style>
     :global(.hand-cursor) {
-        animation: hand-grab-drag 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        animation: hand-grab-drag 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
         left: 0;
         top: 0;
         pointer-events: none;
     }
 
     :global(.ghost-card) {
-        animation: ghost-card-drag 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        animation: ghost-card-drag 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        left: 0;
+        top: 0;
+        z-index: 40;
+        pointer-events: none;
+    }
+
+    :global(.ghost-card-2) {
+        animation: ghost-card-drag-2 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
         left: 0;
         top: 0;
         z-index: 40;
@@ -1157,75 +1213,107 @@
     }
 
     :global(.drop-reveal-card) {
-        animation: drop-reveal 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        animation: drop-reveal 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    :global(.drop-reveal-card-2) {
+        animation: drop-reveal-2 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     @keyframes hand-grab-drag {
+        /* ----- SEGMENT 1: Avocado Toast to Thus Breakfast ----- */
         0% {
             transform: translate(40vw, 40vh);
             opacity: 0;
         }
+
+        /* 1. Move to Avocado Toast (Sidebar) */
         5% {
-            transform: translate(30vw, 35vh);
-            opacity: 1;
-        }
-        /* Move to Avocado Toast in sidebar (approx 8% x, 35% y relative to container) */
-        20% {
             top: 60%;
             left: 8%;
             transform: translate(0, 0);
             opacity: 1;
         }
-        25% {
+        7% {
             top: 60%;
             left: 8%;
             transform: scale(0.85);
-        }
-        /* Drag to Thursday Breakfast grid area (approx 55% x, 25% y relative to container) */
-        50% {
+        } /* Grab */
+
+        /* 2. Drag to Thursday Breakfast */
+        20% {
             top: 25%;
             left: 55%;
             transform: scale(0.85);
         }
-        55% {
+        22% {
             top: 25%;
             left: 55%;
             transform: scale(1.1);
-            opacity: 1;
-        }
-        65% {
+        } /* Drop */
+
+        /* ----- SEGMENT 2: Grilled Veggies to Thus Lunch ----- */
+        /* 3. Move to Grilled Veggies (Sidebar - it's above Quick Recipes)
+           Approx top: 30%, left: 8% */
+        35% {
             top: 30%;
+            left: 8%;
+            transform: translate(0, 0);
+        }
+        37% {
+            top: 30%;
+            left: 8%;
+            transform: scale(0.85);
+        } /* Grab */
+
+        /* 4. Drag to Thursday Lunch (Below Breakfast)
+           Approx top: 40%, left: 55% */
+        50% {
+            top: 40%;
+            left: 55%;
+            transform: scale(0.85);
+        }
+        52% {
+            top: 40%;
+            left: 55%;
+            transform: scale(1.1);
+        } /* Drop */
+
+        /* End / Fade out */
+        60% {
+            top: 45%;
             left: 60%;
             opacity: 0;
         }
         100% {
-            top: 60%;
+            top: 45%;
             left: 60%;
             opacity: 0;
         }
     }
 
     @keyframes ghost-card-drag {
+        /* Avocado Toast Ghost */
         0%,
-        24.9% {
+        6.9% {
             opacity: 0;
             top: 60%;
             left: 8%;
             transform: translate(0, 0);
         }
-        25% {
+        7% {
             opacity: 1;
             top: 60%;
             left: 8%;
             transform: rotate(-2deg);
         }
-        50% {
+        20% {
             opacity: 1;
             top: 25%;
             left: 55%;
             transform: rotate(2deg);
         }
-        50.1%,
+        20.1%,
         100% {
             opacity: 0;
             top: 25%;
@@ -1234,9 +1322,54 @@
         }
     }
 
-    @keyframes drop-reveal {
+    @keyframes ghost-card-drag-2 {
+        /* Grilled Veggies Ghost */
         0%,
+        36.9% {
+            opacity: 0;
+            top: 30%;
+            left: 8%;
+            transform: translate(0, 0);
+        }
+        37% {
+            opacity: 1;
+            top: 30%;
+            left: 8%;
+            transform: rotate(-2deg);
+        }
         50% {
+            opacity: 1;
+            top: 40%;
+            left: 55%;
+            transform: rotate(2deg);
+        }
+        50.1%,
+        100% {
+            opacity: 0;
+            top: 40%;
+            left: 55%;
+            transform: translate(0, 0);
+        }
+    }
+
+    @keyframes drop-reveal {
+        /* Avocado Toast Reveal */
+        0%,
+        20.5% {
+            opacity: 0;
+            transform: scale(0.9) translateY(4px);
+        }
+        23%,
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    @keyframes drop-reveal-2 {
+        /* Grilled Veggies Reveal */
+        0%,
+        50.5% {
             opacity: 0;
             transform: scale(0.9) translateY(4px);
         }
