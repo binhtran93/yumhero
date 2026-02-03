@@ -233,8 +233,10 @@
   {@const selected = isSelected(recipe.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-2 py-1 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
-      selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
+      "flex items-center justify-between px-3 py-2 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2 mb-1",
+      selected
+        ? colors.bgFaint + " shadow-sm"
+        : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => toggleSelection(recipe)}
     onkeydown={(e) => e.key === "Enter" && toggleSelection(recipe)}
@@ -243,7 +245,7 @@
   >
     <!-- Thumbnail -->
     <div
-      class="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-sm border border-app-border"
+      class="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-sm border border-app-border"
     >
       {#if recipe.image}
         <img
@@ -333,8 +335,10 @@
   {@const selected = isLeftoverSelected(leftover.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-2 py-1 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
-      selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
+      "flex items-center justify-between px-3 py-2 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2 mb-1",
+      selected
+        ? colors.bgFaint + " shadow-sm"
+        : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => handleLeftoverSelect(leftover)}
     onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
@@ -343,7 +347,7 @@
   >
     <!-- Thumbnail -->
     <div
-      class="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-sm border border-app-border"
+      class="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-sm border border-app-border"
     >
       {#if leftover.imageUrl}
         <img
@@ -453,11 +457,11 @@
 >
   <!-- Search & Selected -->
   <div class="flex flex-col border-b border-app-border bg-app-surface shrink-0">
-    <div class="p-4">
+    <div class="px-6 py-4">
       <div class="relative group">
         <Search
           class={twMerge(
-            "absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted transition-colors",
+            "absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted/50 group-focus-within:text-app-primary transition-colors",
             colors.hoverText,
           )}
           size={18}
@@ -465,9 +469,9 @@
         <input
           type="text"
           bind:value={searchQuery}
-          placeholder={`Search recipes...`}
+          placeholder={`Search recipes or leftovers...`}
           class={twMerge(
-            "w-full pl-11 pr-4 py-3 text-sm bg-app-surface-deep border border-app-border rounded-2xl focus:outline-none text-app-text transition-colors placeholder:text-app-text-muted/50",
+            "w-full pl-11 pr-4 py-2 md:py-3 text-sm bg-app-surface-deep/50 border border-app-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-app-primary/10 text-app-text transition-all placeholder:text-app-text-muted/40 font-medium",
             colors.focusBorder,
           )}
         />
@@ -482,42 +486,42 @@
             <button
               onclick={() => removeSelection(recipe.id)}
               class={twMerge(
-                "flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border",
+                "flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border max-w-[240px]",
                 colors.text,
                 colors.border,
                 colors.bgFaint,
               )}
             >
-              <span>{recipe.title}</span>
-              <X
-                size={14}
-                class="p-0.5 bg-white rounded-full border border-app-border"
-                strokeWidth={3}
-              />
+              <span class="truncate">{recipe.title}</span>
+              <div
+                class="shrink-0 p-0.5 bg-white/80 dark:bg-black/20 rounded-full border border-app-border group-hover:bg-white dark:group-hover:bg-black/40 transition-colors"
+              >
+                <X size={12} class="text-app-text" strokeWidth={3} />
+              </div>
             </button>
           {/each}
           {#each leftoverSelection.values() as leftover (leftover.id)}
             <button
               onclick={() => removeLeftoverSelection(leftover.id)}
               class={twMerge(
-                "flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border",
+                "flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border max-w-[300px]",
                 colors.text,
                 colors.border,
                 colors.bgFaint,
               )}
             >
-              <span class="flex items-center gap-1">
-                {leftover.title}
+              <span class="flex items-center gap-2 min-w-0">
+                <span class="truncate">{leftover.title}</span>
                 <span
-                  class="text-[9px] px-1.5 py-0.5 rounded-full bg-app-primary text-white font-black"
+                  class="shrink-0 text-[8px] px-1.5 py-0.5 rounded-full bg-app-primary text-white font-black uppercase tracking-tighter"
                   >Leftover</span
                 >
               </span>
-              <X
-                size={14}
-                class="p-0.5 bg-white rounded-full border border-app-border"
-                strokeWidth={3}
-              />
+              <div
+                class="shrink-0 p-0.5 bg-white/80 dark:bg-black/20 rounded-full border border-app-border group-hover:bg-white dark:group-hover:bg-black/40 transition-colors"
+              >
+                <X size={12} class="text-app-text" strokeWidth={3} />
+              </div>
             </button>
           {/each}
         </div>
