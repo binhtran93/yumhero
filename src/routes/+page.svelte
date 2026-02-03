@@ -1175,19 +1175,9 @@
                                                                     {#if day.meals && day.meals[type]}
                                                                         {#each day.meals[type] as meal}
                                                                             <div
-                                                                                class="flex items-center justify-between p-3.5 rounded-xl border shadow-sm {type ===
-                                                                                'breakfast'
-                                                                                    ? 'bg-accent-breakfast-bg/40 border-accent-breakfast-border/40'
-                                                                                    : type ===
-                                                                                        'lunch'
-                                                                                      ? 'bg-accent-lunch-bg/40 border-accent-lunch-border/40'
-                                                                                      : type ===
-                                                                                          'dinner'
-                                                                                        ? 'bg-accent-dinner-bg/40 border-accent-dinner-border/40'
-                                                                                        : type ===
-                                                                                            'snack'
-                                                                                          ? 'bg-accent-snack-bg/40 border-accent-snack-border/40'
-                                                                                          : 'bg-accent-note-bg/40 border-accent-note-border/40'}"
+                                                                                class="flex items-center justify-between p-3.5 rounded-xl border shadow-sm {getMealStyles(
+                                                                                    type,
+                                                                                )}"
                                                                             >
                                                                                 <span
                                                                                     class="text-sm font-bold text-gray-800"
