@@ -1,14 +1,8 @@
 <script lang="ts">
-    import {
-        Refrigerator,
-        Check,
-        X,
-        AlertCircle,
-        Sparkles,
-    } from "lucide-svelte";
+    import {Check, X,} from "lucide-svelte";
     import Modal from "./Modal.svelte";
-    import { toggleAllShoppingItemChecks } from "$lib/stores/shoppingList";
-    import { formatAmount } from "$lib/utils/shopping";
+    import {batchToggleShoppingItemChecks} from "$lib/stores/shoppingList";
+    import {formatAmount} from "$lib/utils/shopping";
 
     interface Match {
         shoppingItemId: string;
@@ -62,10 +56,10 @@
     const handleApply = async () => {
         isApplying = true;
         try {
-            for (const shoppingItemId of selectedMatches) {
-                await toggleAllShoppingItemChecks(
+            if (selectedMatches.size > 0) {
+                await batchToggleShoppingItemChecks(
                     weekId,
-                    shoppingItemId,
+                    Array.from(selectedMatches),
                     true,
                     "fridge",
                 );
@@ -81,21 +75,6 @@
 
     const isGroupSelected = (group: Match[]) =>
         group.every((m) => selectedMatches.has(m.shoppingItemId));
-    const isGroupPartiallySelected = (group: Match[]) =>
-        !isGroupSelected(group) &&
-        group.some((m) => selectedMatches.has(m.shoppingItemId));
-
-    const toggleGroup = (group: Match[]) => {
-        const allSelected = isGroupSelected(group);
-        for (const m of group) {
-            if (allSelected) {
-                selectedMatches.delete(m.shoppingItemId);
-            } else {
-                selectedMatches.add(m.shoppingItemId);
-            }
-        }
-        selectedMatches = new Set(selectedMatches);
-    };
 </script>
 
 <Modal
@@ -172,10 +151,17 @@
 
                                     <div class="flex-1 min-w-0 relative z-10">
                                         <div class="flex items-center gap-2">
-                                            <p class="text-app-text font-black line-clamp-2">
+                                            <p
+                                                class="text-app-text font-black line-clamp-2"
+                                            >
                                                 {match.name}
-                                                <span class="text-app-text-muted font-medium text-sm">
-                                                    (Need {formatAmount(match.amount)} {match.unit || ""})
+                                                <span
+                                                    class="text-app-text-muted font-medium text-sm"
+                                                >
+                                                    (Need {formatAmount(
+                                                        match.amount,
+                                                    )}
+                                                    {match.unit || ""})
                                                 </span>
                                             </p>
                                         </div>

@@ -159,6 +159,36 @@ export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string
     await saveShoppingList(weekId, shoppingList);
 };
 
+/**
+ * Batch toggle check state for multiple shopping items
+ */
+export const batchToggleShoppingItemChecks = async (
+    weekId: string,
+    itemIds: string[],
+    checked: boolean,
+    checked_from: 'user' | 'fridge' | null = 'user'
+) => {
+    const shoppingList = await getShoppingList(weekId);
+    let updatedCount = 0;
+
+    for (const itemId of itemIds) {
+        const item = shoppingList.find(i => i.id === itemId);
+        if (item) {
+            item.sources = item.sources.map(source => ({
+                ...source,
+                is_checked: checked,
+                checked_from: checked ? checked_from : null
+            }));
+            item.updated_at = new Date();
+            updatedCount++;
+        }
+    }
+
+    if (updatedCount > 0) {
+        await saveShoppingList(weekId, shoppingList);
+    }
+};
+
 export const updateShoppingItem = async (weekId: string, itemId: string, newAmount: number, newUnit: string | null) => {
     const shoppingList = await getShoppingList(weekId);
     const item = shoppingList.find(i => i.id === itemId);
