@@ -925,11 +925,88 @@
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
     import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
     import { getWeekShoppingList } from "$lib/stores/shoppingList";
+    import { toPng } from "html-to-image";
 
     // Shopping List State
     let isShoppingListOpen = $state(false);
     let shoppingListStore = $derived(getWeekShoppingList(weekId));
     let itemCount = $derived($shoppingListStore.data.length);
+
+    let printRef = $state<HTMLDivElement | null>(null);
+    let isPrinting = $state(false);
+
+    async function handlePrint() {
+        if (!printRef) return;
+
+        isPrinting = true;
+        toasts.info("Preparing print view...", 0); // No auto-remove
+
+        try {
+            // Need to ensure the element is fully expanded if it's currently scrolling
+            // html-to-image captures the element as it is.
+            // Since it's a grid, it should have its full width if we target the right div.
+
+            const dataUrl = await toPng(printRef, {
+                backgroundColor: "#fffdfc",
+                quality: 1,
+                pixelRatio: 2, // Higher resolution
+                style: {
+                    margin: "0",
+                    padding: "0",
+                    // Reset any transforms or scroll states if needed
+                },
+            });
+
+            const printWindow = window.open("", "_blank");
+            if (printWindow) {
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Week Plan ${weekId}</title>
+                        <style>
+                            @page { size: landscape; margin: 10mm; }
+                            body { 
+                                margin: 0; 
+                                display: flex; 
+                                flex-direction: column;
+                                align-items: center; 
+                                background: white; 
+                                font-family: sans-serif;
+                            }
+                            .header {
+                                width: 100%;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 10px 20px;
+                                box-sizing: border-box;
+                                border-bottom: 2px solid #c2410c;
+                                margin-bottom: 15px;
+                            }
+                            .header h1 { color: #c2410c; margin: 0; font-size: 24px; }
+                            .header p { color: #57534e; margin: 0; font-weight: bold; }
+                            img { max-width: 100%; height: auto; display: block; border: 1px solid #e7e5e4; }
+                        </style>
+                    </head>
+                    <body onload="setTimeout(() => { window.print(); window.close(); }, 500)">
+                        <div class="header">
+                            <h1>YumHero Meal Plan</h1>
+                            <p>${formatDate(weekRange.start)} - ${formatDate(weekRange.end)}, ${weekRange.start.getFullYear()}</p>
+                        </div>
+                        <img src="${dataUrl}" />
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            }
+            toasts.success("Print view ready");
+        } catch (error) {
+            console.error("Print failed:", error);
+            toasts.error("Failed to generate print view");
+        } finally {
+            isPrinting = false;
+        }
+    }
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />
@@ -967,14 +1044,21 @@
             </div>
 
             <button
-                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group"
-                onclick={() => window.print()}
+                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group disabled:opacity-50"
+                onclick={handlePrint}
+                disabled={isPrinting}
                 aria-label="Print Week Plan"
             >
-                <Printer
-                    size={24}
-                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                />
+                {#if isPrinting}
+                    <div
+                        class="w-6 h-6 border-2 border-app-primary border-t-transparent rounded-full animate-spin"
+                    ></div>
+                {:else}
+                    <Printer
+                        size={24}
+                        class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                    />
+                {/if}
             </button>
 
             <ShoppingCartButton
@@ -994,6 +1078,7 @@
             bind:this={scrollContainer}
         >
             <div
+                bind:this={printRef}
                 class="flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
