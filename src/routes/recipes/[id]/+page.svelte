@@ -21,8 +21,15 @@
         Square,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
-    import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
+    import RecipeMenu from "$lib/components/RecipeMenu.svelte";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import IngredientItem from "$lib/components/IngredientItem.svelte";
+    import { deleteDoc, doc } from "firebase/firestore";
+    import { db } from "$lib/firebase";
+    import { toasts } from "$lib/stores/toasts";
+    import { goto } from "$app/navigation";
+    import { EllipsisVertical } from "lucide-svelte";
 
     interface Props {
         data: PageData;
@@ -99,6 +106,39 @@
               }
             : null,
     );
+
+    // Menu State
+    let activeTriggerRect = $state<DOMRect | null>(null);
+    let showDeleteConfirm = $state(false);
+    let isDeleting = $state(false);
+    let showEditModal = $state(false);
+
+    function handleShowOptions(e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        activeTriggerRect = rect;
+    }
+
+    function handleCloseOptions() {
+        activeTriggerRect = null;
+    }
+
+    async function confirmDelete() {
+        if (!$user || !data.id) return;
+        isDeleting = true;
+        try {
+            await deleteDoc(doc(db, `users/${$user.uid}/recipes/${data.id}`));
+            toasts.success("Recipe deleted");
+            goto("/recipes");
+        } catch (error) {
+            console.error("Error deleting recipe:", error);
+            toasts.error("Failed to delete recipe");
+        } finally {
+            isDeleting = false;
+            showDeleteConfirm = false;
+        }
+    }
 </script>
 
 <SEO
@@ -115,7 +155,14 @@
         class="shrink-0 z-20 bg-app-bg border-b border-app-border md:block hidden"
     >
         <Header title="Recipe Details" showBack={true} backUrl="/recipes">
-            <RecipeActionMenu recipeId={data.id} />
+            <Header title="Recipe Details" showBack={true} backUrl="/recipes">
+                <button
+                    onclick={handleShowOptions}
+                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+                >
+                    <EllipsisVertical size={20} />
+                </button>
+            </Header>
         </Header>
     </div>
 
@@ -164,10 +211,12 @@
 
                         <!-- Action menu overlay -->
                         <div class="absolute top-3 right-3">
-                            <RecipeActionMenu
-                                recipeId={data.id}
-                                class="[&>button]:bg-overlay-bg [&>button]:backdrop-blur-sm [&>button]:text-overlay-text [&>button]:hover:bg-overlay-bg-hover [&>button]:mr-0"
-                            />
+                            <button
+                                onclick={handleShowOptions}
+                                class="p-2 text-overlay-text bg-overlay-bg backdrop-blur-sm hover:bg-overlay-bg-hover rounded-full transition-colors"
+                            >
+                                <EllipsisVertical size={20} />
+                            </button>
                         </div>
 
                         <!-- Title overlay at bottom -->
@@ -655,6 +704,45 @@
         {/if}
     </div>
 </div>
+
+{#if activeTriggerRect}
+    <RecipeMenu
+        triggerRect={activeTriggerRect}
+        onClose={handleCloseOptions}
+        onEdit={() => {
+            showEditModal = true;
+            handleCloseOptions();
+        }}
+        onDelete={() => {
+            showDeleteConfirm = true;
+            handleCloseOptions();
+        }}
+        onShare={() => {
+            // TODO: Share logic
+            toasts.success("Share functionality coming soon!");
+            handleCloseOptions();
+        }}
+    />
+{/if}
+
+<ConfirmModal
+    isOpen={showDeleteConfirm}
+    title="Delete Recipe"
+    message="Are you sure you want to delete this recipe? This cannot be undone."
+    confirmText="Delete"
+    isDestructive={true}
+    onConfirm={confirmDelete}
+    onClose={() => (showDeleteConfirm = false)}
+    isLoading={isDeleting}
+/>
+
+{#if recipe}
+    <RecipeEditModal
+        isOpen={showEditModal}
+        onClose={() => (showEditModal = false)}
+        initialRecipe={recipe}
+    />
+{/if}
 
 <style>
     /* Custom scrollbar hiding utility */
