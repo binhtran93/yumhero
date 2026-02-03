@@ -64,28 +64,40 @@
         };
     }
 
-    // Calculate position
-    // We want the menu to appear below the card, right aligned if possible,
-    // but we need to ensure it fits in viewport.
-    // For simplicity, let's align top-right of menu to bottom-right of trigger,
-    // or top-left to top-left if it fits better.
-    // Let's stick to the previous visual: "absolute right-0 top-full" relative to card.
-    // So with fixed positioning:
-    // left = trigger.right - menu.width (but we don't know menu width easily without layout)
-    // or left = trigger.left + trigger.width - menu.width
-    // Simpler: right aligned to the trigger right edge.
-    // top = trigger.bottom + 4px
+    // Calculate position with smart flip logic
+    // The menu will appear below the trigger by default,
+    // but will flip to appear above if there's not enough space below.
 
     let style = $state("");
+    let menuRef = $state<HTMLElement | null>(null);
+    const MENU_HEIGHT = 320; // Approximate max height of menu in pixels
+    const MARGIN = 8; // Safety margin from viewport edge
 
     $effect(() => {
         if (triggerRect) {
-            // Default: Open below, aligned to right edge
-            // We can use right/top css with fixed position
-            // right = viewport width - trigger.right
-            const right = window.innerWidth - triggerRect.right;
-            const top = triggerRect.bottom + 4;
-            style = `top: ${top}px; right: ${right}px; position: fixed;`;
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+
+            // Calculate available space below and above
+            const spaceBelow = viewportHeight - triggerRect.bottom - MARGIN;
+            const spaceAbove = triggerRect.top - MARGIN;
+
+            // Determine if we should flip to show above
+            const showAbove =
+                spaceBelow < MENU_HEIGHT && spaceAbove > spaceBelow;
+
+            // Calculate right alignment (menu right edge aligns with trigger right edge)
+            const right = viewportWidth - triggerRect.right;
+
+            if (showAbove) {
+                // Position above the trigger
+                const bottom = viewportHeight - triggerRect.top + 4;
+                style = `bottom: ${bottom}px; right: ${right}px; position: fixed;`;
+            } else {
+                // Position below the trigger (default)
+                const top = triggerRect.bottom + 4;
+                style = `top: ${top}px; right: ${right}px; position: fixed;`;
+            }
         }
     });
 

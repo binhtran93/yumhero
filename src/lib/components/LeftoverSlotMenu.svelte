@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {BrushCleaning, Undo2, Utensils, X as XIcon,} from "lucide-svelte";
-    import {fade} from "svelte/transition";
-    import {portal} from "$lib/actions";
+    import { BrushCleaning, Undo2, Utensils, X as XIcon } from "lucide-svelte";
+    import { fade } from "svelte/transition";
+    import { portal } from "$lib/actions";
 
     interface Props {
         triggerRect: DOMRect;
@@ -40,13 +40,39 @@
         };
     }
 
+    // Calculate position with smart flip logic
+    // The menu will appear below the trigger by default,
+    // but will flip to appear above if there's not enough space below.
+
     let style = $state("");
+    const MENU_HEIGHT = 200; // Approximate max height of leftover menu in pixels
+    const MARGIN = 8; // Safety margin from viewport edge
 
     $effect(() => {
         if (triggerRect) {
-            const right = window.innerWidth - triggerRect.right;
-            const top = triggerRect.bottom + 4;
-            style = `top: ${top}px; right: ${right}px; position: fixed;`;
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+
+            // Calculate available space below and above
+            const spaceBelow = viewportHeight - triggerRect.bottom - MARGIN;
+            const spaceAbove = triggerRect.top - MARGIN;
+
+            // Determine if we should flip to show above
+            const showAbove =
+                spaceBelow < MENU_HEIGHT && spaceAbove > spaceBelow;
+
+            // Calculate right alignment (menu right edge aligns with trigger right edge)
+            const right = viewportWidth - triggerRect.right;
+
+            if (showAbove) {
+                // Position above the trigger
+                const bottom = viewportHeight - triggerRect.top + 4;
+                style = `bottom: ${bottom}px; right: ${right}px; position: fixed;`;
+            } else {
+                // Position below the trigger (default)
+                const top = triggerRect.bottom + 4;
+                style = `top: ${top}px; right: ${right}px; position: fixed;`;
+            }
         }
     });
 </script>
