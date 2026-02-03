@@ -1,29 +1,25 @@
 <script lang="ts">
     import {
-        Refrigerator,
-        Utensils,
-        Trash2,
-        X as XIcon,
         AlertCircle,
-        EllipsisVertical,
-        UtensilsCrossed,
         Apple,
-        ChefHat,
-        Search,
+        Disc3Icon,
+        EllipsisVertical,
         Plus,
+        Search,
+        UtensilsCrossed,
+        X as XIcon,
     } from "lucide-svelte";
-    import { fade, slide } from "svelte/transition";
+    import {slide} from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import { leftovers, deleteLeftover } from "$lib/stores/leftovers";
-    import {
-        fridgeIngredients,
-        deleteIngredient,
-    } from "$lib/stores/fridgeIngredients";
-    import { isMealTimePast, parseWeekId } from "$lib/utils/mealtime";
-    import { formatAmount } from "$lib/utils/shopping";
-    import type { LeftoverItem, FridgeIngredient } from "$lib/types";
+    import {deleteLeftover, leftovers} from "$lib/stores/leftovers";
+    import {deleteIngredient, fridgeIngredients,} from "$lib/stores/fridgeIngredients";
+    import {isMealTimePast, parseWeekId} from "$lib/utils/mealtime";
+    import {formatAmount} from "$lib/utils/shopping";
+    import type {FridgeIngredient, LeftoverItem} from "$lib/types";
+    import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
+    import FridgeMenu from "$lib/components/FridgeMenu.svelte";
 
     // Tab state
     type TabType = "leftovers" | "ingredients";
@@ -225,9 +221,6 @@
             return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
         return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
     };
-
-    import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
-    import FridgeMenu from "$lib/components/FridgeMenu.svelte";
 
     let showAddIngredientModal = $state(false);
 
