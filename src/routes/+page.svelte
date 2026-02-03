@@ -111,6 +111,11 @@
 
     const mockQuickRecipes = [
         {
+            name: "Avocado Toast",
+            calorie: "290 kcal",
+            image: "/mockup/avocado.png",
+        },
+        {
             name: "15-min Pasta",
             calorie: "450 kcal",
             image: "/mockup/pasta.png",
@@ -120,11 +125,6 @@
             name: "Egg Fried Rice",
             calorie: "380 kcal",
             image: "/mockup/rice.png",
-        },
-        {
-            name: "Avocado Toast",
-            calorie: "290 kcal",
-            image: "/mockup/avocado.png",
         },
     ];
 
@@ -228,9 +228,9 @@
                 <p
                     class="text-base md:text-xl text-app-text-muted mb-6 max-w-4xl mx-auto leading-relaxed"
                 >
-                    A meal planner designed for the organized home. Track your
-                    fridge, log leftovers, and master your weekly menu in a
-                    clean, high-performance interface.
+                    Precision meal planning for the organized home. Track your
+                    fridge, log leftovers, and master your menu in a clean,
+                    high-performance interface.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center gap-4">
                     <a
@@ -591,6 +591,14 @@
                                                                     Grilled
                                                                     Veggies
                                                                 </p>
+                                                                <div
+                                                                    class="flex items-center gap-1 mt-0.5"
+                                                                >
+                                                                    <span
+                                                                        class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
+                                                                        >Leftover</span
+                                                                    >
+                                                                </div>
                                                             </div>
                                                         {/if}
                                                     </div>
@@ -1227,15 +1235,16 @@
             opacity: 0;
         }
 
-        /* 1. Move to Avocado Toast (Sidebar) */
+        /* 1. Move to Avocado Toast (Sidebar - 2nd item in Quick Recipes)
+           Approx top: 52% (Calculated: Leftovers + Header + 1st Item + Spacing) */
         5% {
-            top: 60%;
+            top: 52%;
             left: 8%;
             transform: translate(0, 0);
             opacity: 1;
         }
         7% {
-            top: 60%;
+            top: 52%;
             left: 8%;
             transform: scale(0.85);
         } /* Grab */
@@ -1297,13 +1306,13 @@
         0%,
         6.9% {
             opacity: 0;
-            top: 60%;
+            top: 52%;
             left: 8%;
             transform: translate(0, 0);
         }
         7% {
             opacity: 1;
-            top: 60%;
+            top: 52%;
             left: 8%;
             transform: rotate(-2deg);
         }
