@@ -11,6 +11,11 @@
         Clock,
         Pointer,
         ChevronDown,
+        MoreVertical,
+        ShoppingCart,
+        ChevronLeft,
+        ChevronRight,
+        Plus,
     } from "lucide-svelte";
 
     interface MockMeal {
@@ -143,6 +148,10 @@
     let ghostCard2: HTMLDivElement | undefined = $state();
     let dropRevealCard: HTMLDivElement | undefined = $state();
     let dropRevealCard2: HTMLDivElement | undefined = $state();
+
+    // Mobile carousel state
+    let mobileDayIndex = $state(0);
+    let mobileSwipeInterval: ReturnType<typeof setInterval> | null = null;
 
     // Animation state
     let animationFrame: number | null = null;
@@ -622,9 +631,9 @@
             <!-- Hero Mockup -->
             <div id="preview" class="mt-8 md:mt-12 scroll-mt-20">
                 <div class="relative">
-                    <!-- Browser Frame -->
+                    <!-- Desktop Browser Frame (hidden on mobile) -->
                     <div
-                        class="bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
+                        class="hidden md:block bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
                     >
                         <!-- Browser Chrome -->
                         <div
@@ -650,373 +659,562 @@
                             </div>
                         </div>
 
-                        <!-- Drag Animation Overlay -->
-                        {#key restartKey}
-                            <div
-                                bind:this={animationContainer}
-                                class="absolute inset-0 pointer-events-none z-50 overflow-hidden hidden md:block"
-                            >
-                                <!-- Ghost Card -->
+                        <!-- Full desktop layout (sidebar + grid) -->
+                        <div class="relative">
+                            <!-- Drag Animation Overlay -->
+                            {#key restartKey}
                                 <div
-                                    bind:this={ghostCard}
-                                    class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                    bind:this={animationContainer}
+                                    class="absolute inset-0 pointer-events-none z-10 overflow-hidden"
                                 >
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
-                                        >
-                                            <img
-                                                src="/mockup/avocado.png"
-                                                alt="Avocado Toast"
-                                                class="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-xs font-bold text-app-text leading-tight truncate"
-                                            >
-                                                Avocado Toast
-                                            </p>
-                                            <div
-                                                class="flex items-center gap-1 mt-0.5"
-                                            >
-                                                <Clock
-                                                    size={8}
-                                                    class="text-app-text-muted"
-                                                />
-                                                <span
-                                                    class="text-[8px] font-medium text-app-text-muted"
-                                                    >15m</span
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    bind:this={ghostCard2}
-                                    class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
-                                >
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
-                                        >
-                                            <img
-                                                src="/mockup/veggies.png"
-                                                alt="Grilled Veggies"
-                                                class="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-xs font-bold text-app-text leading-tight truncate"
-                                            >
-                                                Grilled Veggies
-                                            </p>
-                                            <div
-                                                class="flex items-center gap-1 mt-0.5"
-                                            >
-                                                <div
-                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-500"
-                                                ></div>
-                                                <span
-                                                    class="text-[8px] font-medium text-app-text-muted"
-                                                    >2d ago</span
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Pointer Cursor -->
-                                <div
-                                    bind:this={handCursor}
-                                    class="absolute opacity-0 drop-shadow-xl z-50"
-                                >
-                                    <Pointer
-                                        size={32}
-                                        fill="#fff"
-                                        strokeWidth={1.5}
-                                    />
+                                    <!-- Ghost Card -->
                                     <div
-                                        class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md scale-0 cursor-ping-pulse"
-                                    ></div>
-                                </div>
-                            </div>
-                        {/key}
-
-                        <!-- Mockup Content -->
-                        <div
-                            class="flex flex-row bg-app-bg min-h-100 overflow-hidden"
-                        >
-                            <!-- Mock Sidebar -->
-                            <div
-                                class="flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
-                            >
-                                <!-- Scrollable Sections -->
-                                <div class="flex-1 overflow-y-auto">
-                                    <!-- Leftovers Section -->
-                                    <div class="p-4 space-y-3">
-                                        <div
-                                            class="flex items-center justify-between"
-                                        >
-                                            <div
-                                                class="flex items-center gap-2"
-                                            >
-                                                <Refrigerator
-                                                    size={14}
-                                                    class="text-app-primary"
-                                                />
-                                                <span
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
-                                                    >Leftovers</span
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="space-y-1.5">
-                                            {#each mockLeftovers as item, index}
-                                                <div
-                                                    bind:this={
-                                                        leftoverRefs[index]
-                                                    }
-                                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:bg-app-surface-hover transition-all duration-300"
-                                                >
-                                                    {#if item.image}
-                                                        <div
-                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
-                                                        >
-                                                            <img
-                                                                src={item.image}
-                                                                alt={item.name}
-                                                                class="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                    {/if}
-                                                    <div class="flex-1 min-w-0">
-                                                        <p
-                                                            class="text-xs font-bold text-app-text leading-tight truncate"
-                                                        >
-                                                            {item.name}
-                                                        </p>
-                                                        <div
-                                                            class="flex items-center gap-1 mt-1"
-                                                        >
-                                                            <div
-                                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
-                                                            ></div>
-                                                            <span
-                                                                class="text-[8px] font-medium text-app-text-muted"
-                                                                >{item.date}</span
-                                                            >
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {/each}
-                                        </div>
-                                    </div>
-
-                                    <!-- Quick Recipes Section -->
-                                    <div
-                                        class="p-4 space-y-3 border-t border-app-border"
+                                        bind:this={ghostCard}
+                                        class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
                                     >
-                                        <div
-                                            class="flex items-center justify-between"
-                                        >
+                                        <div class="flex items-center gap-2">
                                             <div
-                                                class="flex items-center gap-2"
+                                                class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
                                             >
-                                                <Zap
-                                                    size={14}
-                                                    class="text-amber-500"
+                                                <img
+                                                    src="/mockup/avocado.png"
+                                                    alt="Avocado Toast"
+                                                    class="w-full h-full object-cover"
                                                 />
-                                                <span
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
-                                                    >Quick Recipes</span
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p
+                                                    class="text-xs font-bold text-app-text leading-tight truncate"
                                                 >
+                                                    Avocado Toast
+                                                </p>
+                                                <div
+                                                    class="flex items-center gap-1 mt-0.5"
+                                                >
+                                                    <Clock
+                                                        size={8}
+                                                        class="text-app-text-muted"
+                                                    />
+                                                    <span
+                                                        class="text-[8px] font-medium text-app-text-muted"
+                                                        >15m</span
+                                                    >
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="space-y-1.5">
-                                            {#each mockQuickRecipes as item, index}
-                                                <div
-                                                    bind:this={
-                                                        quickRecipeRefs[index]
-                                                    }
-                                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-app-primary/40 hover:bg-app-surface-hover transition-all duration-300 cursor-pointer group"
+                                    </div>
+                                    <div
+                                        bind:this={ghostCard2}
+                                        class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                    >
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
+                                            >
+                                                <img
+                                                    src="/mockup/veggies.png"
+                                                    alt="Grilled Veggies"
+                                                    class="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p
+                                                    class="text-xs font-bold text-app-text leading-tight truncate"
                                                 >
-                                                    {#if item.image}
-                                                        <div
-                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
-                                                        >
-                                                            <img
-                                                                src={item.image}
-                                                                alt={item.name}
-                                                                class="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                    {/if}
-                                                    <div class="flex-1 min-w-0">
-                                                        <p
-                                                            class="text-xs font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors truncate"
-                                                        >
-                                                            {item.name}
-                                                        </p>
-                                                        <div
-                                                            class="flex items-center gap-2 mt-1"
-                                                        >
+                                                    Grilled Veggies
+                                                </p>
+                                                <div
+                                                    class="flex items-center gap-1 mt-0.5"
+                                                >
+                                                    <div
+                                                        class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                                    ></div>
+                                                    <span
+                                                        class="text-[8px] font-medium text-app-text-muted"
+                                                        >2d ago</span
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Pointer Cursor -->
+                                    <div
+                                        bind:this={handCursor}
+                                        class="absolute opacity-0 drop-shadow-xl z-50"
+                                    >
+                                        <Pointer
+                                            size={32}
+                                            fill="#fff"
+                                            strokeWidth={1.5}
+                                        />
+                                        <div
+                                            class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md scale-0 cursor-ping-pulse"
+                                        ></div>
+                                    </div>
+                                </div>
+                            {/key}
+
+                            <div
+                                class="flex flex-row bg-app-bg min-h-100 overflow-hidden"
+                            >
+                                <!-- Mock Sidebar -->
+                                <div
+                                    class="flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
+                                >
+                                    <!-- Scrollable Sections -->
+                                    <div class="flex-1 overflow-y-auto">
+                                        <!-- Leftovers Section -->
+                                        <div class="p-4 space-y-3">
+                                            <div
+                                                class="flex items-center justify-between"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <Refrigerator
+                                                        size={14}
+                                                        class="text-app-primary"
+                                                    />
+                                                    <span
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-app-text"
+                                                        >Leftovers</span
+                                                    >
+                                                </div>
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                {#each mockLeftovers as item, index}
+                                                    <div
+                                                        bind:this={
+                                                            leftoverRefs[index]
+                                                        }
+                                                        class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:bg-app-surface-hover transition-all duration-300"
+                                                    >
+                                                        {#if item.image}
                                                             <div
-                                                                class="flex items-center gap-1"
+                                                                class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
                                                             >
-                                                                <Clock
-                                                                    size={8}
-                                                                    class="text-app-text-muted"
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt={item.name}
+                                                                    class="w-full h-full object-cover"
                                                                 />
+                                                            </div>
+                                                        {/if}
+                                                        <div
+                                                            class="flex-1 min-w-0"
+                                                        >
+                                                            <p
+                                                                class="text-xs font-bold text-app-text leading-tight truncate"
+                                                            >
+                                                                {item.name}
+                                                            </p>
+                                                            <div
+                                                                class="flex items-center gap-1 mt-1"
+                                                            >
+                                                                <div
+                                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
+                                                                ></div>
                                                                 <span
                                                                     class="text-[8px] font-medium text-app-text-muted"
-                                                                    >15m</span
+                                                                    >{item.date}</span
                                                                 >
                                                             </div>
-                                                            <span
-                                                                class="text-[8px] font-medium text-app-text-muted"
-                                                                >• {item.calorie}</span
-                                                            >
                                                         </div>
                                                     </div>
+                                                {/each}
+                                            </div>
+                                        </div>
+
+                                        <!-- Quick Recipes Section -->
+                                        <div
+                                            class="p-4 space-y-3 border-t border-app-border"
+                                        >
+                                            <div
+                                                class="flex items-center justify-between"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <Zap
+                                                        size={14}
+                                                        class="text-amber-500"
+                                                    />
+                                                    <span
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-app-text"
+                                                        >Quick Recipes</span
+                                                    >
                                                 </div>
-                                            {/each}
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                {#each mockQuickRecipes as item, index}
+                                                    <div
+                                                        bind:this={
+                                                            quickRecipeRefs[
+                                                                index
+                                                            ]
+                                                        }
+                                                        class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-app-primary/40 hover:bg-app-surface-hover transition-all duration-300 cursor-pointer group"
+                                                    >
+                                                        {#if item.image}
+                                                            <div
+                                                                class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
+                                                            >
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt={item.name}
+                                                                    class="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        {/if}
+                                                        <div
+                                                            class="flex-1 min-w-0"
+                                                        >
+                                                            <p
+                                                                class="text-xs font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors truncate"
+                                                            >
+                                                                {item.name}
+                                                            </p>
+                                                            <div
+                                                                class="flex items-center gap-2 mt-1"
+                                                            >
+                                                                <div
+                                                                    class="flex items-center gap-1"
+                                                                >
+                                                                    <Clock
+                                                                        size={8}
+                                                                        class="text-app-text-muted"
+                                                                    />
+                                                                    <span
+                                                                        class="text-[8px] font-medium text-app-text-muted"
+                                                                        >15m</span
+                                                                    >
+                                                                </div>
+                                                                <span
+                                                                    class="text-[8px] font-medium text-app-text-muted"
+                                                                    >• {item.calorie}</span
+                                                                >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {/each}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Main Grid -->
-                            <div
-                                class="flex-1 min-w-0 p-4 md:p-6 overflow-x-auto"
-                            >
-                                <!-- Simplified Week Grid Preview -->
+                                <!-- Main Grid -->
                                 <div
-                                    class="grid bg-app-border border border-app-border rounded-lg overflow-hidden"
-                                    style="grid-template-columns: repeat(7, minmax(140px, 1fr)); width: max-content; min-width: 100%;"
+                                    class="flex-1 min-w-0 p-4 md:p-6 overflow-x-auto"
                                 >
-                                    {#each mockPlan as day}
-                                        <div
-                                            class="flex flex-col bg-app-bg border-r border-app-border last:border-r-0"
-                                        >
-                                            <!-- Day Header -->
+                                    <!-- Simplified Week Grid Preview -->
+                                    <div
+                                        class="grid bg-app-border border border-app-border rounded-lg overflow-hidden"
+                                        style="grid-template-columns: repeat(7, minmax(140px, 1fr)); width: max-content; min-width: 100%;"
+                                    >
+                                        {#each mockPlan as day}
                                             <div
-                                                class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
+                                                class="flex flex-col bg-app-bg border-r border-app-border last:border-r-0"
                                             >
-                                                <span
-                                                    class="text-xs font-black text-app-text"
-                                                    >{day.day}</span
+                                                <!-- Day Header -->
+                                                <div
+                                                    class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
+                                                >
+                                                    <span
+                                                        class="text-xs font-black text-app-text"
+                                                        >{day.day}</span
+                                                    >
+                                                </div>
+
+                                                <!-- Meal Slots -->
+                                                {#each mealTypes as type}
+                                                    <div
+                                                        class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-25"
+                                                    >
+                                                        <!-- Slot Header -->
+                                                        <div
+                                                            class="flex items-center p-2 bg-app-bg/10"
+                                                        >
+                                                            <div
+                                                                class="w-2 h-2 rounded-full mr-2 {getLabelColor(
+                                                                    type,
+                                                                ).replace(
+                                                                    'text-',
+                                                                    'bg-',
+                                                                )}"
+                                                            ></div>
+                                                            <span
+                                                                class="text-[8px] font-bold uppercase tracking-widest text-app-text-muted truncate"
+                                                                >{type}</span
+                                                            >
+                                                        </div>
+
+                                                        <!-- Slot Content -->
+                                                        <div
+                                                            class="px-2 pb-2 flex flex-col gap-1.5"
+                                                        >
+                                                            {#each day.meals[type] as meal}
+                                                                <div
+                                                                    class="px-3 py-1.5 rounded-xl border shadow-sm transition-all {getMealStyles(
+                                                                        type,
+                                                                    )}"
+                                                                >
+                                                                    <p
+                                                                        class="text-xs font-bold leading-tight line-clamp-2"
+                                                                    >
+                                                                        {meal.name}
+                                                                    </p>
+                                                                </div>
+                                                            {/each}
+
+                                                            <!-- Animation Target Drop -->
+                                                            {#if day.day === "Wednesday" && type === "breakfast"}
+                                                                {#key restartKey}
+                                                                    <div
+                                                                        bind:this={
+                                                                            wedBreakfastTarget
+                                                                        }
+                                                                        class="wed-breakfast-target"
+                                                                    >
+                                                                        <div
+                                                                            bind:this={
+                                                                                dropRevealCard
+                                                                            }
+                                                                            class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
+                                                                                type,
+                                                                            )} opacity-0"
+                                                                        >
+                                                                            <p
+                                                                                class="text-xs font-bold leading-tight line-clamp-2"
+                                                                            >
+                                                                                Avocado
+                                                                                Toast
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                {/key}
+                                                            {/if}
+                                                            <!-- Animation Target Drop 2 (Lunch) -->
+                                                            {#if day.day === "Wednesday" && type === "lunch"}
+                                                                {#key restartKey}
+                                                                    <div
+                                                                        bind:this={
+                                                                            wedLunchTarget
+                                                                        }
+                                                                        class="wed-lunch-target"
+                                                                    >
+                                                                        <div
+                                                                            bind:this={
+                                                                                dropRevealCard2
+                                                                            }
+                                                                            class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
+                                                                                type,
+                                                                            )} opacity-0"
+                                                                        >
+                                                                            <p
+                                                                                class="text-xs font-bold leading-tight line-clamp-2"
+                                                                            >
+                                                                                Grilled
+                                                                                Veggies
+                                                                            </p>
+                                                                            <div
+                                                                                class="flex items-center gap-1 mt-0.5"
+                                                                            >
+                                                                                <span
+                                                                                    class="text-[8px] font-medium text-app-text-muted"
+                                                                                    >Leftover</span
+                                                                                >
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {/key}
+                                                            {/if}
+                                                        </div>
+                                                    </div>
+                                                {/each}
+                                            </div>
+                                        {/each}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile iPhone Mockup (Polished to match image) -->
+                    <div class="md:hidden flex justify-center py-6">
+                        <!-- iPhone Frame -->
+                        <div class="relative w-[340px]">
+                            <!-- iPhone outer shell -->
+                            <div
+                                class="bg-[#1a1a1b] rounded-[48px] p-2.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+                            >
+                                <!-- Dynamic Island -->
+                                <div
+                                    class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20"
+                                ></div>
+
+                                <!-- Screen -->
+                                <div
+                                    class="bg-white rounded-[40px] overflow-hidden relative z-0 isolate min-h-[720px]"
+                                >
+                                    <!-- Status bar -->
+                                    <div
+                                        class="flex items-center justify-between px-8 pt-4 pb-2 bg-white"
+                                    >
+                                        <span
+                                            class="text-[12px] font-bold text-black"
+                                            >9:41</span
+                                        >
+                                        <div class="flex items-center gap-1.5">
+                                            <div class="w-4 h-4 text-black">
+                                                <svg
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    ><path
+                                                        d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"
+                                                    /></svg
                                                 >
                                             </div>
-
-                                            <!-- Meal Slots -->
-                                            {#each mealTypes as type}
+                                            <div
+                                                class="w-6 h-3 bg-black rounded-[2px] relative"
+                                            >
                                                 <div
-                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-25"
+                                                    class="absolute right-[-1px] top-1/2 -translate-y-1/2 w-0.5 h-1.5 bg-black rounded-r-[1px]"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- App Toolbar (Redesigned to match image) -->
+                                    <div
+                                        class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100"
+                                    >
+                                        <span
+                                            class="text-2xl font-black text-app-primary"
+                                            >Plan</span
+                                        >
+
+                                        <!-- Date range pill -->
+                                        <div
+                                            class="flex items-center gap-2 px-3 py-2 bg-white border border-gray-100 rounded-full shadow-sm text-[11px] font-bold text-gray-700"
+                                        >
+                                            <ChevronLeft
+                                                size={14}
+                                                class="text-gray-400"
+                                            />
+                                            <span>Feb 02 - Feb 08</span>
+                                            <ChevronRight
+                                                size={14}
+                                                class="text-gray-400"
+                                            />
+                                        </div>
+
+                                        <div class="flex items-center gap-3">
+                                            <MoreVertical
+                                                size={20}
+                                                class="text-gray-400"
+                                            />
+                                            <div class="relative">
+                                                <ShoppingCart
+                                                    size={22}
+                                                    class="text-gray-600"
+                                                />
+                                                <div
+                                                    class="absolute -top-1.5 -right-1.5 bg-red-500 text-[9px] font-bold text-white w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white"
                                                 >
-                                                    <!-- Slot Header -->
+                                                    25
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Day Carousel (Compact non-scrollable) -->
+                                    <div
+                                        class="relative h-[600px] overflow-hidden bg-white"
+                                    >
+                                        {#each mockPlan as day, index}
+                                            <div
+                                                class="absolute inset-0 transition-transform duration-500 ease-in-out"
+                                                style="transform: translateX({(index -
+                                                    mobileDayIndex) *
+                                                    100}%);"
+                                            >
+                                                <!-- Day Content -->
+                                                <div
+                                                    class="h-full flex flex-col"
+                                                >
+                                                    <!-- Day Header -->
                                                     <div
-                                                        class="flex items-center p-2 bg-app-bg/10"
+                                                        class="py-2.5 text-center border-b border-gray-50 bg-white"
                                                     >
-                                                        <div
-                                                            class="w-2 h-2 rounded-full mr-2 {getLabelColor(
-                                                                type,
-                                                            ).replace(
-                                                                'text-',
-                                                                'bg-',
-                                                            )}"
-                                                        ></div>
                                                         <span
-                                                            class="text-[8px] font-bold uppercase tracking-widest text-app-text-muted truncate"
-                                                            >{type}</span
+                                                            class="text-base font-black text-gray-800"
+                                                            >{day.day}
+                                                            {day.date}</span
                                                         >
                                                     </div>
 
-                                                    <!-- Slot Content -->
+                                                    <!-- Meal Slots -->
                                                     <div
-                                                        class="px-2 pb-2 flex flex-col gap-1.5"
+                                                        class="flex-1 overflow-hidden px-4"
                                                     >
-                                                        {#each day.meals[type] as meal}
+                                                        {#each mealTypes as type}
                                                             <div
-                                                                class="px-3 py-1.5 rounded-xl border shadow-sm transition-all {getMealStyles(
-                                                                    type,
-                                                                )}"
+                                                                class="py-3 border-b border-gray-50 last:border-0"
                                                             >
-                                                                <p
-                                                                    class="text-xs font-bold leading-tight line-clamp-2"
+                                                                <div
+                                                                    class="flex items-center gap-2.5 mb-2"
                                                                 >
-                                                                    {meal.name}
-                                                                </p>
+                                                                    <div
+                                                                        class="w-2.5 h-2.5 rounded-full {type ===
+                                                                        'breakfast'
+                                                                            ? 'bg-orange-500'
+                                                                            : type ===
+                                                                                'lunch'
+                                                                              ? 'bg-emerald-500'
+                                                                              : type ===
+                                                                                  'dinner'
+                                                                                ? 'bg-purple-500'
+                                                                                : 'bg-amber-500'}"
+                                                                    ></div>
+                                                                    <span
+                                                                        class="text-[11px] font-bold text-gray-400 capitalize tracking-wider"
+                                                                        >{type}</span
+                                                                    >
+                                                                </div>
+
+                                                                <div
+                                                                    class="space-y-2"
+                                                                >
+                                                                    {#if day.meals && day.meals[type]}
+                                                                        {#each day.meals[type] as meal}
+                                                                            <div
+                                                                                class="flex items-center justify-between p-3.5 rounded-xl border border-orange-100 bg-orange-50/40 shadow-sm"
+                                                                            >
+                                                                                <span
+                                                                                    class="text-sm font-bold text-gray-800"
+                                                                                    >{meal?.name ||
+                                                                                        ""}</span
+                                                                                >
+                                                                                <MoreVertical
+                                                                                    size={16}
+                                                                                    class="text-gray-400"
+                                                                                />
+                                                                            </div>
+                                                                        {/each}
+                                                                    {/if}
+                                                                </div>
                                                             </div>
                                                         {/each}
-
-                                                        <!-- Animation Target Drop -->
-                                                        {#if day.day === "Wednesday" && type === "breakfast"}
-                                                            {#key restartKey}
-                                                                <div
-                                                                    bind:this={
-                                                                        wedBreakfastTarget
-                                                                    }
-                                                                    class="wed-breakfast-target"
-                                                                >
-                                                                    <div
-                                                                        bind:this={
-                                                                            dropRevealCard
-                                                                        }
-                                                                        class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
-                                                                            type,
-                                                                        )} opacity-0"
-                                                                    >
-                                                                        <p
-                                                                            class="text-xs font-bold leading-tight line-clamp-2"
-                                                                        >
-                                                                            Avocado
-                                                                            Toast
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            {/key}
-                                                        {/if}
-                                                        <!-- Animation Target Drop 2 (Lunch) -->
-                                                        {#if day.day === "Wednesday" && type === "lunch"}
-                                                            {#key restartKey}
-                                                                <div
-                                                                    bind:this={
-                                                                        wedLunchTarget
-                                                                    }
-                                                                    class="wed-lunch-target"
-                                                                >
-                                                                    <div
-                                                                        bind:this={
-                                                                            dropRevealCard2
-                                                                        }
-                                                                        class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
-                                                                            type,
-                                                                        )} opacity-0"
-                                                                    >
-                                                                        <p
-                                                                            class="text-xs font-bold leading-tight line-clamp-2"
-                                                                        >
-                                                                            Grilled
-                                                                            Veggies
-                                                                        </p>
-                                                                        <div
-                                                                            class="flex items-center gap-1 mt-0.5"
-                                                                        >
-                                                                            <span
-                                                                                class="text-[8px] font-medium text-app-text-muted"
-                                                                                >Leftover</span
-                                                                            >
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            {/key}
-                                                        {/if}
                                                     </div>
                                                 </div>
-                                            {/each}
-                                        </div>
-                                    {/each}
+                                            </div>
+                                        {/each}
+                                    </div>
+
+                                    <!-- Home Indicator -->
+                                    <div
+                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-200 rounded-full"
+                                    ></div>
                                 </div>
                             </div>
                         </div>
