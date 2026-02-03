@@ -5,6 +5,9 @@
         ChefHat,
         Refrigerator,
         Utensils,
+        Search,
+        Zap,
+        Clock,
     } from "lucide-svelte";
 
     interface MockMeal {
@@ -91,6 +94,18 @@
     ];
 
     const mealTypes = ["breakfast", "lunch", "dinner", "note"];
+
+    const mockLeftovers = [
+        { name: "Bolognese Sauce", date: "yesterday" },
+        { name: "Grilled Veggies", date: "2d ago" },
+    ];
+
+    const mockQuickRecipes = [
+        { name: "15-min Pasta", calorie: "450 kcal" },
+        { name: "Tuna Salad", calorie: "320 kcal" },
+        { name: "Egg Fried Rice", calorie: "380 kcal" },
+        { name: "Avocado Toast", calorie: "290 kcal" },
+    ];
 
     const getMealStyles = (type: string) => {
         switch (type) {
@@ -235,75 +250,185 @@
                         </div>
                         <!-- Mockup Content -->
                         <div
-                            class="p-6 bg-app-bg min-h-[300px] md:min-h-[400px]"
+                            class="flex flex-col md:flex-row bg-app-bg min-h-[400px]"
                         >
-                            <!-- Simplified Week Grid Preview -->
+                            <!-- Mock Sidebar -->
                             <div
-                                class="grid grid-cols-7 gap-px bg-app-border border border-app-border rounded-lg overflow-hidden"
+                                class="hidden md:flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
                             >
-                                {#each mockPlan as day}
-                                    <div
-                                        class="flex flex-col bg-app-bg min-w-0"
-                                    >
-                                        <!-- Day Header -->
+                                <!-- Scrollable Sections -->
+                                <div class="flex-1 overflow-y-auto">
+                                    <!-- Leftovers Section -->
+                                    <div class="p-4 space-y-3">
                                         <div
-                                            class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
+                                            class="flex items-center justify-between"
                                         >
-                                            <span
-                                                class="text-[10px] md:text-xs font-black text-app-text"
-                                                >{day.day}</span
-                                            >
-                                            <span
-                                                class="text-[8px] md:text-[10px] font-bold text-app-text/60"
-                                                >{day.date}</span
-                                            >
-                                        </div>
-
-                                        <!-- Meal Slots -->
-                                        {#each mealTypes as type}
                                             <div
-                                                class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-[60px] md:min-h-[100px]"
+                                                class="flex items-center gap-2"
                                             >
-                                                <!-- Slot Header -->
-                                                <div
-                                                    class="flex items-center p-1.5 md:p-2 bg-app-bg/10"
+                                                <Refrigerator
+                                                    size={14}
+                                                    class="text-app-primary"
+                                                />
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
+                                                    >Leftovers</span
                                                 >
-                                                    <div
-                                                        class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full mr-1.5 md:mr-2 {getLabelColor(
-                                                            type,
-                                                        ).replace(
-                                                            'text-',
-                                                            'bg-',
-                                                        )}"
-                                                    ></div>
-                                                    <span
-                                                        class="text-[6px] md:text-[8px] font-bold uppercase tracking-widest text-app-text-muted"
-                                                        >{type}</span
-                                                    >
-                                                </div>
-
-                                                <!-- Slot Content -->
-                                                <div
-                                                    class="px-1.5 pb-1.5 md:px-2 md:pb-2 flex flex-col gap-1 md:gap-1.5"
-                                                >
-                                                    {#each day.meals[type] as meal}
-                                                        <div
-                                                            class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm transition-all {getMealStyles(
-                                                                type,
-                                                            )}"
-                                                        >
-                                                            <p
-                                                                class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
-                                                            >
-                                                                {meal.name}
-                                                            </p>
-                                                        </div>
-                                                    {/each}
-                                                </div>
                                             </div>
-                                        {/each}
+                                        </div>
+                                        <div class="space-y-1.5">
+                                            {#each mockLeftovers as item}
+                                                <div
+                                                    class="p-2 bg-app-bg border border-app-border rounded-lg shadow-sm"
+                                                >
+                                                    <p
+                                                        class="text-[10px] font-bold text-app-text leading-tight"
+                                                    >
+                                                        {item.name}
+                                                    </p>
+                                                    <div
+                                                        class="flex items-center gap-1 mt-1"
+                                                    >
+                                                        <div
+                                                            class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                                        ></div>
+                                                        <span
+                                                            class="text-[8px] font-medium text-app-text-muted"
+                                                            >{item.date}</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                            {/each}
+                                        </div>
                                     </div>
-                                {/each}
+
+                                    <!-- Quick Recipes Section -->
+                                    <div
+                                        class="p-4 space-y-3 border-t border-app-border"
+                                    >
+                                        <div
+                                            class="flex items-center justify-between"
+                                        >
+                                            <div
+                                                class="flex items-center gap-2"
+                                            >
+                                                <Zap
+                                                    size={14}
+                                                    class="text-amber-500"
+                                                />
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
+                                                    >Quick Recipes</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1.5">
+                                            {#each mockQuickRecipes as item}
+                                                <div
+                                                    class="p-2 bg-app-bg border border-app-border rounded-lg shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer group"
+                                                >
+                                                    <p
+                                                        class="text-[10px] font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors"
+                                                    >
+                                                        {item.name}
+                                                    </p>
+                                                    <div
+                                                        class="flex items-center gap-2 mt-1"
+                                                    >
+                                                        <div
+                                                            class="flex items-center gap-1"
+                                                        >
+                                                            <Clock
+                                                                size={8}
+                                                                class="text-app-text-muted"
+                                                            />
+                                                            <span
+                                                                class="text-[8px] font-medium text-app-text-muted"
+                                                                >15m</span
+                                                            >
+                                                        </div>
+                                                        <span
+                                                            class="text-[8px] font-medium text-app-text-muted"
+                                                            >• {item.calorie}</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Grid -->
+                            <div class="flex-1 p-4 md:p-6 overflow-hidden">
+                                <!-- Simplified Week Grid Preview -->
+                                <div
+                                    class="grid grid-cols-7 gap-px bg-app-border border border-app-border rounded-lg overflow-hidden"
+                                >
+                                    {#each mockPlan as day}
+                                        <div
+                                            class="flex flex-col bg-app-bg min-w-0"
+                                        >
+                                            <!-- Day Header -->
+                                            <div
+                                                class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
+                                            >
+                                                <span
+                                                    class="text-[10px] md:text-xs font-black text-app-text"
+                                                    >{day.day}</span
+                                                >
+                                                <span
+                                                    class="text-[8px] md:text-[10px] font-bold text-app-text/60"
+                                                    >{day.date}</span
+                                                >
+                                            </div>
+
+                                            <!-- Meal Slots -->
+                                            {#each mealTypes as type}
+                                                <div
+                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-[60px] md:min-h-[100px]"
+                                                >
+                                                    <!-- Slot Header -->
+                                                    <div
+                                                        class="flex items-center p-1.5 md:p-2 bg-app-bg/10"
+                                                    >
+                                                        <div
+                                                            class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full mr-1.5 md:mr-2 {getLabelColor(
+                                                                type,
+                                                            ).replace(
+                                                                'text-',
+                                                                'bg-',
+                                                            )}"
+                                                        ></div>
+                                                        <span
+                                                            class="text-[6px] md:text-[8px] font-bold uppercase tracking-widest text-app-text-muted truncate"
+                                                            >{type}</span
+                                                        >
+                                                    </div>
+
+                                                    <!-- Slot Content -->
+                                                    <div
+                                                        class="px-1.5 pb-1.5 md:px-2 md:pb-2 flex flex-col gap-1 md:gap-1.5"
+                                                    >
+                                                        {#each day.meals[type] as meal}
+                                                            <div
+                                                                class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm transition-all {getMealStyles(
+                                                                    type,
+                                                                )}"
+                                                            >
+                                                                <p
+                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                >
+                                                                    {meal.name}
+                                                                </p>
+                                                            </div>
+                                                        {/each}
+                                                    </div>
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    {/each}
+                                </div>
                             </div>
                         </div>
                     </div>
