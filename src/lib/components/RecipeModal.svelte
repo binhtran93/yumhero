@@ -333,7 +333,7 @@
   {@const selected = isLeftoverSelected(leftover.id)}
   <div
     class={twMerge(
-      "flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
+      "flex items-center justify-between px-2 py-1 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2",
       selected ? colors.bgFaint : "bg-transparent hover:bg-app-surface-hover",
     )}
     onclick={() => handleLeftoverSelect(leftover)}
