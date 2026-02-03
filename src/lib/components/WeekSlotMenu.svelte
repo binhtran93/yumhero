@@ -152,7 +152,8 @@
             </button>
         </div>
 
-        <!-- Quantity Row -->
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
             class="w-full px-4 py-2.5 text-sm text-app-text flex items-center justify-between select-none cursor-default"
             onclick={(e) => e.stopPropagation()}
