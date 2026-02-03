@@ -285,98 +285,103 @@
     <Header title="Your Fridge" mobileTitle="Fridge" />
 
     <div class="flex-1 flex flex-col min-h-0 bg-app-bg">
-        <!-- Tab Bar -->
-        <div class="bg-app-bg border-b border-app-border shrink-0">
-            <div class="max-w-2xl mx-auto px-4 pt-4 pb-2">
-                <div
-                    class="relative flex gap-1 p-1 bg-app-surface-deep rounded-xl border border-app-border"
-                >
-                    <!-- Sliding background indicator -->
+        <!-- Controls Bar -->
+        <div
+            class="bg-app-bg border-b border-app-border shrink-0 transition-all px-4 md:px-6"
+        >
+            <div class="max-w-2xl mx-auto">
+                <!-- Tab Bar -->
+                <div class="pt-4 pb-2">
                     <div
-                        class="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-app-surface shadow-sm border border-app-border rounded-lg transition-transform duration-300 ease-out z-0"
-                        style="transform: translateX({activeTab === 'leftovers'
-                            ? '0'
-                            : 'calc(100% + 4px)'})"
-                    ></div>
+                        class="relative flex gap-1 p-1 bg-app-surface-deep rounded-xl border border-app-border"
+                    >
+                        <!-- Sliding background indicator -->
+                        <div
+                            class="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-app-surface shadow-sm border border-app-border rounded-lg transition-transform duration-300 ease-out z-0"
+                            style="transform: translateX({activeTab ===
+                            'leftovers'
+                                ? '0'
+                                : 'calc(100% + 4px)'})"
+                        ></div>
 
-                    <button
-                        class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
-                        'leftovers'
-                            ? 'text-app-text'
-                            : 'text-app-text-muted hover:text-app-text'}"
-                        onclick={() => (activeTab = "leftovers")}
-                    >
-                        <UtensilsCrossed size={16} />
-                        Leftovers
-                        {#if leftoverCount > 0}
-                            <span
-                                class="px-1.5 py-0.5 text-xs font-bold rounded-full {activeTab ===
-                                'leftovers'
-                                    ? 'bg-app-primary/10 text-app-primary'
-                                    : 'bg-app-text-muted/10 text-app-text-muted'}"
-                            >
-                                {leftoverCount}
-                            </span>
-                        {/if}
-                    </button>
-                    <button
-                        class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
-                        'ingredients'
-                            ? 'text-app-text'
-                            : 'text-app-text-muted hover:text-app-text'}"
-                        onclick={() => (activeTab = "ingredients")}
-                    >
-                        <Apple size={16} />
-                        Ingredients
-                        {#if ingredientCount > 0}
-                            <span
-                                class="px-1.5 py-0.5 text-xs font-bold rounded-full {activeTab ===
-                                'ingredients'
-                                    ? 'bg-app-primary/10 text-app-primary'
-                                    : 'bg-app-text-muted/10 text-app-text-muted'}"
-                            >
-                                {ingredientCount}
-                            </span>
-                        {/if}
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Search & Actions Bar -->
-        <div class="bg-app-bg border-b border-app-border shrink-0">
-            <div class="max-w-2xl mx-auto px-4 py-3 flex gap-2">
-                <div class="relative flex-1">
-                    <Search
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
-                        size={18}
-                    />
-                    <input
-                        type="text"
-                        bind:value={searchQuery}
-                        placeholder="Search {activeTab}..."
-                        class="w-full bg-app-surface border border-app-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all font-medium placeholder:text-app-text-muted/60"
-                        id="fridge-search"
-                    />
-                    {#if searchQuery}
                         <button
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-app-text-muted hover:text-app-text transition-colors"
-                            onclick={() => (searchQuery = "")}
-                            aria-label="Clear search"
+                            class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
+                            'leftovers'
+                                ? 'text-app-text'
+                                : 'text-app-text-muted hover:text-app-text'}"
+                            onclick={() => (activeTab = "leftovers")}
                         >
-                            <XIcon size={16} />
+                            <UtensilsCrossed size={16} />
+                            Leftovers
+                            {#if leftoverCount > 0}
+                                <span
+                                    class="px-1.5 py-0.5 text-xs font-bold rounded-full {activeTab ===
+                                    'leftovers'
+                                        ? 'bg-app-primary/10 text-app-primary'
+                                        : 'bg-app-text-muted/10 text-app-text-muted'}"
+                                >
+                                    {leftoverCount}
+                                </span>
+                            {/if}
+                        </button>
+                        <button
+                            class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
+                            'ingredients'
+                                ? 'text-app-text'
+                                : 'text-app-text-muted hover:text-app-text'}"
+                            onclick={() => (activeTab = "ingredients")}
+                        >
+                            <Apple size={16} />
+                            Ingredients
+                            {#if ingredientCount > 0}
+                                <span
+                                    class="px-1.5 py-0.5 text-xs font-bold rounded-full {activeTab ===
+                                    'ingredients'
+                                        ? 'bg-app-primary/10 text-app-primary'
+                                        : 'bg-app-text-muted/10 text-app-text-muted'}"
+                                >
+                                    {ingredientCount}
+                                </span>
+                            {/if}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search & Actions Bar -->
+                <div class="pb-4 pt-1 flex gap-2">
+                    <div class="relative flex-1">
+                        <Search
+                            class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
+                            size={18}
+                        />
+                        <input
+                            type="text"
+                            bind:value={searchQuery}
+                            placeholder="Search {activeTab}..."
+                            class="w-full bg-app-surface border border-app-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all font-medium placeholder:text-app-text-muted/60"
+                            id="fridge-search"
+                        />
+                        {#if searchQuery}
+                            <button
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-app-text-muted hover:text-app-text transition-colors"
+                                onclick={() => (searchQuery = "")}
+                                aria-label="Clear search"
+                            >
+                                <XIcon size={16} />
+                            </button>
+                        {/if}
+                    </div>
+
+                    {#if activeTab === "ingredients"}
+                        <button
+                            class="bg-app-primary text-white px-4 py-2 rounded-xl flex items-center gap-2 font-bold text-sm shadow-md shadow-app-primary/20 hover:bg-app-primary-hover transition-all active:scale-95 shrink-0"
+                            onclick={() => (showAddIngredientModal = true)}
+                        >
+                            <Plus size={18} />
+                            <span class="hidden sm:inline">Add</span>
                         </button>
                     {/if}
                 </div>
-
-                {#if activeTab === "ingredients"}
-                    <button
-                        class="bg-app-primary text-white px-4 py-2 rounded-xl flex items-center gap-2 font-bold text-sm shadow-md shadow-app-primary/20 hover:bg-app-primary-hover transition-all active:scale-95 shrink-0"
-                        onclick={() => (showAddIngredientModal = true)}
-                    >
-                        <Plus size={18} />
-                        <span class="hidden sm:inline">Add</span>
-                    </button>
-                {/if}
             </div>
         </div>
 
