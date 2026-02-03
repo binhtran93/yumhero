@@ -138,9 +138,16 @@ const syncShoppingListFromPlan = async (weekId: string, plan: WeeklyPlan): Promi
 
         if (recipeData) {
             const recipeSources = recipeData.sources.map(s => {
-                const existingSource = existingItem.sources.find(
-                    es => es.recipe_id === s.recipe_id && es.day === s.day
+                // First try to find exact match (same recipe, day, and meal type)
+                let existingSource = existingItem.sources.find(
+                    es => es.recipe_id === s.recipe_id && es.day === s.day && es.meal_type === s.meal_type
                 );
+                // If not found, try matching by recipe_id only (for moved recipes)
+                if (!existingSource) {
+                    existingSource = existingItem.sources.find(
+                        es => es.recipe_id === s.recipe_id
+                    );
+                }
                 return {
                     ...s,
                     is_checked: existingSource?.is_checked ?? false,
