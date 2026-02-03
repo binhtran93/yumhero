@@ -15,12 +15,29 @@
     import { fade } from "svelte/transition";
     import { userRecipes } from "$lib/stores/recipes";
     import { userTags } from "$lib/stores/tags";
+    import RecipeMenu from "$lib/components/RecipeMenu.svelte";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import { deleteDoc, doc } from "firebase/firestore";
+    import { db } from "$lib/firebase";
+    import { user } from "$lib/stores/auth";
+    import { toasts } from "$lib/stores/toasts";
 
     let searchQuery = $state("");
     let activeFilter = $state("All");
     let showAddModal = $state(false);
     let showAddDropdown = $state(false);
     let creationAction = $state<"import" | "paste" | null>(null);
+
+    // Filter & Menu State
+    let activeTriggerRect = $state<DOMRect | null>(null);
+    let selectedRecipeId = $state<string | null>(null);
+
+    // Delete State
+    let showDeleteConfirm = $state(false);
+    let isDeleting = $state(false);
+
+    // Edit State
+    let editingRecipe = $state<any | null>(null);
 
     // Reactive filtering
     let filteredRecipes = $derived(
@@ -33,6 +50,52 @@
                     (recipe.tags && recipe.tags.includes(activeFilter))),
         ),
     );
+
+    function handleShowOptions(e: MouseEvent, recipeId: string) {
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        activeTriggerRect = rect;
+        selectedRecipeId = recipeId;
+    }
+
+    function handleCloseOptions() {
+        activeTriggerRect = null;
+        selectedRecipeId = null;
+    }
+
+    function handleEditRecipe() {
+        if (!selectedRecipeId) return;
+        const recipe = $userRecipes.data.find((r) => r.id === selectedRecipeId);
+        if (recipe) {
+            editingRecipe = recipe;
+            showAddModal = true;
+        }
+        handleCloseOptions();
+    }
+
+    function handleDeleteClick() {
+        showDeleteConfirm = true;
+        handleCloseOptions(); // Close menu but keep ID for deletion
+    }
+
+    async function confirmDelete() {
+        if (!$user || !selectedRecipeId) return;
+        isDeleting = true;
+        try {
+            await deleteDoc(
+                doc(db, `users/${$user.uid}/recipes/${selectedRecipeId}`),
+            );
+            toasts.success("Recipe deleted");
+        } catch (error) {
+            console.error("Error deleting recipe:", error);
+            toasts.error("Failed to delete recipe");
+        } finally {
+            isDeleting = false;
+            showDeleteConfirm = false;
+            selectedRecipeId = null;
+        }
+    }
 </script>
 
 <SEO
@@ -146,8 +209,12 @@
 
 <RecipeEditModal
     isOpen={showAddModal}
-    onClose={() => (showAddModal = false)}
+    onClose={() => {
+        showAddModal = false;
+        editingRecipe = null;
+    }}
     initialAction={creationAction}
+    initialRecipe={editingRecipe}
 />
 
 <div class="h-full flex flex-col overflow-hidden relative">
@@ -186,6 +253,8 @@
                             totalTime={recipe.totalTime}
                             servings={recipe.servings || 1}
                             tags={recipe.tags}
+                            onShowOptions={(e) =>
+                                handleShowOptions(e, recipe.id)}
                         />
                     </div>
                 {/each}
@@ -216,3 +285,31 @@
         {/if}
     </div>
 </div>
+
+{#if activeTriggerRect && selectedRecipeId}
+    <RecipeMenu
+        triggerRect={activeTriggerRect}
+        onClose={handleCloseOptions}
+        onEdit={handleEditRecipe}
+        onDelete={handleDeleteClick}
+        onShare={() => {
+            // TODO: Share logic
+            toasts.success("Share functionality coming soon!");
+            handleCloseOptions();
+        }}
+    />
+{/if}
+
+<ConfirmModal
+    isOpen={showDeleteConfirm}
+    title="Delete Recipe"
+    message="Are you sure you want to delete this recipe? This cannot be undone."
+    confirmText="Delete"
+    isDestructive={true}
+    onConfirm={confirmDelete}
+    onClose={() => {
+        showDeleteConfirm = false;
+        selectedRecipeId = null;
+    }}
+    isLoading={isDeleting}
+/>

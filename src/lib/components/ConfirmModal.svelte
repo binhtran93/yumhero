@@ -11,6 +11,7 @@
         isDestructive?: boolean;
         onConfirm: () => void;
         onClose: () => void;
+        isLoading?: boolean;
     }
 
     let {
@@ -22,6 +23,7 @@
         isDestructive = false,
         onConfirm,
         onClose,
+        isLoading = false,
     }: Props = $props();
 </script>
 
@@ -53,11 +55,16 @@
             </button>
             <button
                 onclick={onConfirm}
-                class="px-4 py-2 text-sm font-bold text-white rounded-xl shadow-sm transition-all active:scale-95 {isDestructive
+                class="px-4 py-2 text-sm font-bold text-white rounded-xl shadow-sm transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed {isDestructive
                     ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
                     : 'bg-app-primary hover:bg-app-primary/90 shadow-action-primary/20'}"
+                disabled={isLoading}
             >
-                {confirmText}
+                {#if isLoading}
+                    Processing...
+                {:else}
+                    {confirmText}
+                {/if}
             </button>
         </div>
     </div>

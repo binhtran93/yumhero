@@ -2,9 +2,9 @@
     import { Clock, Users } from "lucide-svelte";
     import { formatServings } from "$lib/utils/recipe";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
-    import RecipeActionMenu from "$lib/components/RecipeActionMenu.svelte";
     import { userTags } from "$lib/stores/tags";
     import { goto } from "$app/navigation";
+    import { EllipsisVertical } from "lucide-svelte";
 
     interface Props {
         id: string;
@@ -13,9 +13,11 @@
         totalTime: number;
         servings: number;
         tags: string[];
+        onShowOptions?: (e: MouseEvent) => void;
     }
 
-    let { id, title, image, totalTime, servings, tags }: Props = $props();
+    let { id, title, image, totalTime, servings, tags, onShowOptions }: Props =
+        $props();
 
     function getTagName(tagId: string) {
         return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
@@ -89,7 +91,18 @@
     </div>
 
     <!-- Action Menu (Top Right) -->
-    <div class="absolute top-2 right-2">
-        <RecipeActionMenu recipeId={id} />
-    </div>
+    {#if onShowOptions}
+        <div class="absolute top-2 right-2">
+            <button
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onShowOptions(e);
+                }}
+                class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
+                aria-label="Options"
+            >
+                <EllipsisVertical size={20} />
+            </button>
+        </div>
+    {/if}
 </div>
