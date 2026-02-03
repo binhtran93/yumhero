@@ -48,10 +48,10 @@
             day: "Wed",
             date: "4",
             meals: {
-                breakfast: [{ name: "Oatmeal" }],
-                lunch: [{ name: "Pasta Salad" }],
-                dinner: [{ name: "Lentil Soup" }],
-                note: [{ name: "Clean fridge" }],
+                breakfast: [],
+                lunch: [],
+                dinner: [],
+                note: [],
             },
         },
         {
@@ -136,8 +136,8 @@
     let animationContainer: HTMLDivElement | undefined = $state();
     let leftoverRefs: (HTMLDivElement | undefined)[] = $state([]);
     let quickRecipeRefs: (HTMLDivElement | undefined)[] = $state([]);
-    let thuBreakfastTarget: HTMLDivElement | undefined = $state();
-    let thuLunchTarget: HTMLDivElement | undefined = $state();
+    let wedBreakfastTarget: HTMLDivElement | undefined = $state();
+    let wedLunchTarget: HTMLDivElement | undefined = $state();
     let handCursor: HTMLDivElement | undefined = $state();
     let ghostCard: HTMLDivElement | undefined = $state();
     let ghostCard2: HTMLDivElement | undefined = $state();
@@ -198,12 +198,12 @@
             leftoverRefs[1],
             animationContainer,
         );
-        const thuBreakfastPos = getRelativePosition(
-            thuBreakfastTarget,
+        const wedBreakfastPos = getRelativePosition(
+            wedBreakfastTarget,
             animationContainer,
         );
-        const thuLunchPos = getRelativePosition(
-            thuLunchTarget,
+        const wedLunchPos = getRelativePosition(
+            wedLunchTarget,
             animationContainer,
         );
 
@@ -223,8 +223,8 @@
             progress,
             avocadoPos,
             veggiesPos,
-            thuBreakfastPos,
-            thuLunchPos,
+            wedBreakfastPos,
+            wedLunchPos,
         );
 
         animationFrame = requestAnimationFrame(animate);
@@ -234,8 +234,8 @@
         progress: number,
         avocadoPos: Position,
         veggiesPos: Position,
-        thuBreakfastPos: Position,
-        thuLunchPos: Position,
+        wedBreakfastPos: Position,
+        wedLunchPos: Position,
     ) {
         // Hand cursor animation
         if (handCursor) {
@@ -259,21 +259,21 @@
             } else if (progress < 0.2) {
                 // Drag to Thursday Breakfast
                 const t = (progress - 0.07) / 0.13;
-                x = lerp(avocadoPos.x, thuBreakfastPos.x, easeInOutCubic(t));
-                y = lerp(avocadoPos.y, thuBreakfastPos.y, easeInOutCubic(t));
+                x = lerp(avocadoPos.x, wedBreakfastPos.x, easeInOutCubic(t));
+                y = lerp(avocadoPos.y, wedBreakfastPos.y, easeInOutCubic(t));
                 opacity = 1;
                 scale = 0.85;
             } else if (progress < 0.22) {
                 // Drop at Thursday Breakfast
-                x = thuBreakfastPos.x;
-                y = thuBreakfastPos.y;
+                x = wedBreakfastPos.x;
+                y = wedBreakfastPos.y;
                 opacity = 1;
                 scale = 1.1;
             } else if (progress < 0.35) {
                 // Move to Grilled Veggies
                 const t = (progress - 0.22) / 0.13;
-                x = lerp(thuBreakfastPos.x, veggiesPos.x, easeInOutCubic(t));
-                y = lerp(thuBreakfastPos.y, veggiesPos.y, easeInOutCubic(t));
+                x = lerp(wedBreakfastPos.x, veggiesPos.x, easeInOutCubic(t));
+                y = lerp(wedBreakfastPos.y, veggiesPos.y, easeInOutCubic(t));
                 opacity = 1;
                 scale = 1;
             } else if (progress < 0.37) {
@@ -285,21 +285,21 @@
             } else if (progress < 0.5) {
                 // Drag to Thursday Lunch
                 const t = (progress - 0.37) / 0.13;
-                x = lerp(veggiesPos.x, thuLunchPos.x, easeInOutCubic(t));
-                y = lerp(veggiesPos.y, thuLunchPos.y, easeInOutCubic(t));
+                x = lerp(veggiesPos.x, wedLunchPos.x, easeInOutCubic(t));
+                y = lerp(veggiesPos.y, wedLunchPos.y, easeInOutCubic(t));
                 opacity = 1;
                 scale = 0.85;
             } else if (progress < 0.52) {
                 // Drop at Thursday Lunch
-                x = thuLunchPos.x;
-                y = thuLunchPos.y;
+                x = wedLunchPos.x;
+                y = wedLunchPos.y;
                 opacity = 1;
                 scale = 1.1;
             } else if (progress < 0.6) {
                 // Fade out
                 const t = (progress - 0.52) / 0.08;
-                x = thuLunchPos.x + 50 * t;
-                y = thuLunchPos.y + 50 * t;
+                x = wedLunchPos.x + 50 * t;
+                y = wedLunchPos.y + 50 * t;
                 opacity = 1 - t;
                 scale = 1;
             } else {
@@ -321,10 +321,10 @@
                 // Visible during drag
                 const t = (progress - 0.07) / 0.13;
                 x =
-                    lerp(avocadoPos.x, thuBreakfastPos.x, easeInOutCubic(t)) -
+                    lerp(avocadoPos.x, wedBreakfastPos.x, easeInOutCubic(t)) -
                     96; // offset for card width
                 y =
-                    lerp(avocadoPos.y, thuBreakfastPos.y, easeInOutCubic(t)) -
+                    lerp(avocadoPos.y, wedBreakfastPos.y, easeInOutCubic(t)) -
                     20;
                 opacity = 1;
                 rotation = lerp(-2, 2, t);
@@ -346,8 +346,8 @@
             if (progress >= 0.37 && progress < 0.5) {
                 // Visible during drag
                 const t = (progress - 0.37) / 0.13;
-                x = lerp(veggiesPos.x, thuLunchPos.x, easeInOutCubic(t)) - 96;
-                y = lerp(veggiesPos.y, thuLunchPos.y, easeInOutCubic(t)) - 20;
+                x = lerp(veggiesPos.x, wedLunchPos.x, easeInOutCubic(t)) - 96;
+                y = lerp(veggiesPos.y, wedLunchPos.y, easeInOutCubic(t)) - 20;
                 opacity = 1;
                 rotation = lerp(-2, 2, t);
             } else {
@@ -954,13 +954,13 @@
                                                         {/each}
 
                                                         <!-- Animation Target Drop -->
-                                                        {#if day.day === "Thu" && type === "breakfast"}
+                                                        {#if day.day === "Wed" && type === "breakfast"}
                                                             {#key restartKey}
                                                                 <div
                                                                     bind:this={
-                                                                        thuBreakfastTarget
+                                                                        wedBreakfastTarget
                                                                     }
-                                                                    class="thu-breakfast-target"
+                                                                    class="wed-breakfast-target"
                                                                 >
                                                                     <div
                                                                         bind:this={
@@ -981,13 +981,13 @@
                                                             {/key}
                                                         {/if}
                                                         <!-- Animation Target Drop 2 (Lunch) -->
-                                                        {#if day.day === "Thu" && type === "lunch"}
+                                                        {#if day.day === "Wed" && type === "lunch"}
                                                             {#key restartKey}
                                                                 <div
                                                                     bind:this={
-                                                                        thuLunchTarget
+                                                                        wedLunchTarget
                                                                     }
-                                                                    class="thu-lunch-target"
+                                                                    class="wed-lunch-target"
                                                                 >
                                                                     <div
                                                                         bind:this={
