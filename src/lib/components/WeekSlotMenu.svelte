@@ -42,28 +42,6 @@
 
     let showTooltip = $state(false);
 
-    function clickOutside(node: HTMLElement) {
-        const handleClick = (event: MouseEvent) => {
-            if (node && !node.contains(event.target as Node)) {
-                // Check if the click was on the trigger element (to avoid double toggle)
-                // We optimize this by just handling the close. The parent toggle logic
-                // handles the re-opening/closing of the specific index.
-                onClose();
-            }
-        };
-
-        // Defer attachment to avoid immediate trigger from the opening click
-        setTimeout(() => {
-            document.addEventListener("click", handleClick);
-        }, 0);
-
-        return {
-            destroy() {
-                document.removeEventListener("click", handleClick);
-            },
-        };
-    }
-
     // Calculate position with smart flip logic
     // The menu will appear below the trigger by default,
     // but will flip to appear above if there's not enough space below.
@@ -151,182 +129,186 @@
 />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div
-    class="w-72 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-9999"
-    transition:fade={{ duration: 100 }}
-    use:portal
-    use:clickOutside
-    {style}
-    role="menu"
-    tabindex="-1"
-    onclick={(e) => e.stopPropagation()}
->
-    <!-- Menu Items -->
-    <div class="py-1">
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={handleCookingView}
-        >
-            <ChefHat size={18} />
-            <span class="font-medium">Cooking view</span>
-        </button>
-    </div>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div use:portal>
+    <div class="fixed inset-0 z-[9998] bg-transparent" onclick={onClose}></div>
 
-    <!-- Quantity Row -->
     <div
-        class="w-full px-4 py-2.5 text-sm text-app-text flex items-center justify-between select-none cursor-default"
+        class="w-72 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999]"
+        transition:fade={{ duration: 100 }}
+        {style}
+        role="menu"
+        tabindex="-1"
         onclick={(e) => e.stopPropagation()}
-        role="separator"
     >
-        <div class="flex items-center gap-3 text-app-text">
-            <Hash size={18} class="text-app-text-muted/80" />
-            <span class="font-medium">Quantity</span>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <!-- Counter -->
-            <div
-                class="flex items-center bg-app-surface-deep rounded-md border border-app-border h-8"
+        <!-- Menu Items -->
+        <div class="py-1">
+            <button
+                class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                onclick={handleCookingView}
             >
-                <button
-                    class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 disabled:pointer-events-none transition-colors rounded-l-md"
-                    onclick={(e) => {
-                        e.stopPropagation();
-                        handleQuantityChange(-1);
-                    }}
-                    disabled={quantity <= 1}
-                    aria-label="Decrease"
-                >
-                    <Minus size={14} />
-                </button>
-
-                <span
-                    class="w-8 text-center font-bold text-sm tabular-nums text-app-text"
-                >
-                    {quantity}
-                </span>
-
-                <button
-                    class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors rounded-r-md"
-                    onclick={(e) => {
-                        e.stopPropagation();
-                        handleQuantityChange(1);
-                    }}
-                    aria-label="Increase"
-                >
-                    <Plus size={14} />
-                </button>
-            </div>
-
-            <!-- Info Button -->
-            <div class="relative">
-                <button
-                    bind:this={infoButtonRef}
-                    class={twMerge(
-                        "w-8 h-8 rounded-full transition-colors flex items-center justify-center",
-                        showTooltip
-                            ? "bg-app-primary/10 text-app-primary"
-                            : "text-app-text-muted/60 hover:text-app-text hover:bg-app-surface-hover",
-                    )}
-                    onclick={(e) => {
-                        e.stopPropagation();
-                        toggleTooltip();
-                    }}
-                    aria-label="Serving Info"
-                >
-                    <Info size={16} strokeWidth={2} />
-                </button>
-            </div>
+                <ChefHat size={18} />
+                <span class="font-medium">Cooking view</span>
+            </button>
         </div>
-    </div>
 
-    <!-- Tooltip Portal -->
-    {#if showTooltip && baseServings && tooltipPosition}
-        {@const min = Math.floor(baseServings) * quantity}
-        {@const max = Math.ceil(baseServings) * quantity}
+        <!-- Quantity Row -->
         <div
-            class="fixed z-[10001] w-64 p-4 bg-app-surface border border-app-border rounded-xl shadow-xl pointer-events-none flex flex-col gap-3"
-            style="top: {tooltipPosition.top}px; left: {tooltipPosition.left}px;"
-            transition:fly={{ y: 5, duration: 200, opacity: 0 }}
-            use:portal
+            class="w-full px-4 py-2.5 text-sm text-app-text flex items-center justify-between select-none cursor-default"
+            onclick={(e) => e.stopPropagation()}
+            role="separator"
         >
-            <div class="flex items-start gap-3">
-                <div
-                    class="p-2 bg-blue-500/10 text-blue-500 rounded-lg shrink-0 mt-0.5"
-                >
-                    <Users size={16} />
-                </div>
-                <div class="flex flex-col gap-1">
-                    <h4
-                        class="text-xs font-bold text-app-text uppercase tracking-wide opacity-50"
-                    >
-                        Serving Guide
-                    </h4>
-                    <p class="text-sm text-app-text leading-snug">
-                        Each recipe batch is designed to serve <strong
-                            class="text-app-primary"
-                            >{Math.floor(baseServings) ===
-                            Math.ceil(baseServings)
-                                ? Math.floor(baseServings)
-                                : `${Math.floor(baseServings)}-${Math.ceil(baseServings)}`}</strong
-                        > people.
-                    </p>
-                </div>
+            <div class="flex items-center gap-3 text-app-text">
+                <Hash size={18} class="text-app-text-muted/80" />
+                <span class="font-medium">Quantity</span>
             </div>
 
-            <div class="w-full h-px bg-app-border/50"></div>
+            <div class="flex items-center gap-2">
+                <!-- Counter -->
+                <div
+                    class="flex items-center bg-app-surface-deep rounded-md border border-app-border h-8"
+                >
+                    <button
+                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 disabled:pointer-events-none transition-colors rounded-l-md"
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(-1);
+                        }}
+                        disabled={quantity <= 1}
+                        aria-label="Decrease"
+                    >
+                        <Minus size={14} />
+                    </button>
 
-            <div class="flex items-center justify-between px-1">
-                <span class="text-xs font-medium text-app-text-muted"
-                    >Total for {quantity} batch{quantity > 1 ? "es" : ""}</span
-                >
-                <span class="text-sm font-black text-app-text"
-                    >{min === max ? min : `${min}-${max}`} servings</span
-                >
+                    <span
+                        class="w-8 text-center font-bold text-sm tabular-nums text-app-text"
+                    >
+                        {quantity}
+                    </span>
+
+                    <button
+                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors rounded-r-md"
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(1);
+                        }}
+                        aria-label="Increase"
+                    >
+                        <Plus size={14} />
+                    </button>
+                </div>
+
+                <!-- Info Button -->
+                <div class="relative">
+                    <button
+                        bind:this={infoButtonRef}
+                        class={twMerge(
+                            "w-8 h-8 rounded-full transition-colors flex items-center justify-center",
+                            showTooltip
+                                ? "bg-app-primary/10 text-app-primary"
+                                : "text-app-text-muted/60 hover:text-app-text hover:bg-app-surface-hover",
+                        )}
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            toggleTooltip();
+                        }}
+                        aria-label="Serving Info"
+                    >
+                        <Info size={16} strokeWidth={2} />
+                    </button>
+                </div>
             </div>
         </div>
-    {/if}
 
-    {#if onAddToFridge}
+        <!-- Tooltip Portal -->
+        {#if showTooltip && baseServings && tooltipPosition}
+            {@const min = Math.floor(baseServings) * quantity}
+            {@const max = Math.ceil(baseServings) * quantity}
+            <div
+                class="fixed z-[10001] w-64 p-4 bg-app-surface border border-app-border rounded-xl shadow-xl pointer-events-none flex flex-col gap-3"
+                style="top: {tooltipPosition.top}px; left: {tooltipPosition.left}px;"
+                transition:fly={{ y: 5, duration: 200, opacity: 0 }}
+                use:portal
+            >
+                <div class="flex items-start gap-3">
+                    <div
+                        class="p-2 bg-blue-500/10 text-blue-500 rounded-lg shrink-0 mt-0.5"
+                    >
+                        <Users size={16} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <h4
+                            class="text-xs font-bold text-app-text uppercase tracking-wide opacity-50"
+                        >
+                            Serving Guide
+                        </h4>
+                        <p class="text-sm text-app-text leading-snug">
+                            Each recipe batch is designed to serve <strong
+                                class="text-app-primary"
+                                >{Math.floor(baseServings) ===
+                                Math.ceil(baseServings)
+                                    ? Math.floor(baseServings)
+                                    : `${Math.floor(baseServings)}-${Math.ceil(baseServings)}`}</strong
+                            > people.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="w-full h-px bg-app-border/50"></div>
+
+                <div class="flex items-center justify-between px-1">
+                    <span class="text-xs font-medium text-app-text-muted"
+                        >Total for {quantity} batch{quantity > 1
+                            ? "es"
+                            : ""}</span
+                    >
+                    <span class="text-sm font-black text-app-text"
+                        >{min === max ? min : `${min}-${max}`} servings</span
+                    >
+                </div>
+            </div>
+        {/if}
+
+        {#if onAddToFridge}
+            <button
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onAddToFridge(recipeTitle);
+                    onClose();
+                }}
+            >
+                <Refrigerator size={18} />
+                Put leftover to fridge
+            </button>
+        {/if}
+
+        {#if onRemove}
+            <div class="border-t border-app-border my-1"></div>
+            <button
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+                onclick={(e) => {
+                    e.stopPropagation();
+                    onRemove();
+                    onClose();
+                }}
+            >
+                <BrushCleaning size={18} />
+                Remove from plan
+            </button>
+        {/if}
+
+        <div class="border-t border-app-border my-1"></div>
+
         <button
             class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
             onclick={(e) => {
                 e.stopPropagation();
-                onAddToFridge(recipeTitle);
                 onClose();
             }}
         >
-            <Refrigerator size={18} />
-            Put leftover to fridge
+            <XIcon size={18} />
+            Close
         </button>
-    {/if}
-
-    {#if onRemove}
-        <div class="border-t border-app-border my-1"></div>
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
-            onclick={(e) => {
-                e.stopPropagation();
-                onRemove();
-                onClose();
-            }}
-        >
-            <BrushCleaning size={18} />
-            Remove from plan
-        </button>
-    {/if}
-
-    <div class="border-t border-app-border my-1"></div>
-
-    <button
-        class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-        onclick={(e) => {
-            e.stopPropagation();
-            onClose();
-        }}
-    >
-        <XIcon size={18} />
-        Close
-    </button>
+    </div>
 </div>
