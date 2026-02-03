@@ -2,8 +2,6 @@
 	import "../app.css";
 	import { theme } from "$lib/stores/theme";
 	import { user } from "$lib/stores/auth";
-	import Navbar from "$lib/components/Navbar.svelte";
-	import ToastContainer from "$lib/components/ToastContainer.svelte";
 	import SEO from "$lib/components/SEO.svelte";
 
 	let { children } = $props();
@@ -17,13 +15,5 @@
 <SEO />
 
 {#if mounted}
-	<div
-		class="h-screen w-screen bg-app-bg text-app-text overflow-hidden flex flex-col md:flex-row font-display transition-all duration-300"
-	>
-		<Navbar />
-		<main class="flex-1 overflow-hidden h-full order-first md:order-last">
-			{@render children()}
-		</main>
-		<ToastContainer />
-	</div>
+	{@render children()}
 {/if}
