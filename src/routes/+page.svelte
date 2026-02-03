@@ -8,6 +8,7 @@
         Search,
         Zap,
         Clock,
+        Pointer,
     } from "lucide-svelte";
 
     interface MockMeal {
@@ -268,6 +269,61 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Drag Animation Overlay -->
+                        <div
+                            class="absolute inset-0 pointer-events-none z-50 overflow-hidden hidden md:block"
+                        >
+                            <!-- Ghost Card -->
+                            <div
+                                class="ghost-card absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
+                                    >
+                                        <img
+                                            src="/mockup/avocado.png"
+                                            alt="Avocado Toast"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p
+                                            class="text-xs font-bold text-app-text leading-tight truncate"
+                                        >
+                                            Avocado Toast
+                                        </p>
+                                        <div
+                                            class="flex items-center gap-1 mt-0.5"
+                                        >
+                                            <Clock
+                                                size={8}
+                                                class="text-app-text-muted"
+                                            />
+                                            <span
+                                                class="text-[8px] font-medium text-app-text-muted"
+                                                >15m</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Pointer Cursor -->
+                            <div
+                                class="hand-cursor absolute opacity-0 drop-shadow-xl z-50"
+                            >
+                                <Pointer
+                                    size={32}
+                                    fill="#fff"
+                                    strokeWidth={1.5}
+                                />
+                                <div
+                                    class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md scale-0 cursor-ping-pulse"
+                                ></div>
+                            </div>
+                        </div>
+
                         <!-- Mockup Content -->
                         <div
                             class="flex flex-col md:flex-row bg-app-bg min-h-[400px]"
@@ -469,6 +525,22 @@
                                                                 </p>
                                                             </div>
                                                         {/each}
+
+                                                        <!-- Animation Target Drop -->
+                                                        {#if day.day === "Thu" && type === "breakfast"}
+                                                            <div
+                                                                class="drop-reveal-card px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                    type,
+                                                                )} opacity-0"
+                                                            >
+                                                                <p
+                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                >
+                                                                    Avocado
+                                                                    Toast
+                                                                </p>
+                                                            </div>
+                                                        {/if}
                                                     </div>
                                                 </div>
                                             {/each}
@@ -1063,3 +1135,94 @@
         </div>
     </footer>
 </div>
+
+<style>
+    :global(.hand-cursor) {
+        animation: hand-grab-drag 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        left: 0;
+        top: 0;
+        pointer-events: none;
+    }
+
+    :global(.ghost-card) {
+        animation: ghost-card-drag 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        left: 0;
+        top: 0;
+        z-index: 40;
+        pointer-events: none;
+    }
+
+    :global(.drop-reveal-card) {
+        animation: drop-reveal 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes hand-grab-drag {
+        0% {
+            transform: translate(600px, 450px);
+            opacity: 0;
+        }
+        5% {
+            transform: translate(500px, 400px);
+            opacity: 1;
+        }
+        /* Move to Avocado Toast in sidebar */
+        20% {
+            transform: translate(120px, 380px);
+            opacity: 1;
+        }
+        25% {
+            transform: translate(120px, 380px) scale(0.85);
+        }
+        /* Drag to Thursday Breakfast grid area */
+        /* Thursday is 4th col. 256px + 3 * ~100px */
+        50% {
+            transform: translate(580px, 140px) scale(0.85);
+        }
+        55% {
+            transform: translate(580px, 140px) scale(1.1);
+            opacity: 1;
+        }
+        65% {
+            transform: translate(650px, 200px);
+            opacity: 0;
+        }
+        100% {
+            transform: translate(650px, 450px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes ghost-card-drag {
+        0%,
+        24.9% {
+            opacity: 0;
+            transform: translate(120px, 380px);
+        }
+        25% {
+            opacity: 1;
+            transform: translate(120px, 380px) rotate(-2deg);
+        }
+        50% {
+            opacity: 1;
+            transform: translate(580px, 140px) rotate(2deg);
+        }
+        50.1%,
+        100% {
+            opacity: 0;
+            transform: translate(580px, 140px);
+        }
+    }
+
+    @keyframes drop-reveal {
+        0%,
+        50% {
+            opacity: 0;
+            transform: scale(0.9) translateY(4px);
+        }
+        53%,
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
