@@ -1162,36 +1162,45 @@
 
     @keyframes hand-grab-drag {
         0% {
-            transform: translate(600px, 450px);
+            transform: translate(40vw, 40vh);
             opacity: 0;
         }
         5% {
-            transform: translate(500px, 400px);
+            transform: translate(30vw, 35vh);
             opacity: 1;
         }
-        /* Move to Avocado Toast in sidebar */
+        /* Move to Avocado Toast in sidebar (approx 8% x, 35% y relative to container) */
         20% {
-            transform: translate(120px, 380px);
+            top: 60%;
+            left: 8%;
+            transform: translate(0, 0);
             opacity: 1;
         }
         25% {
-            transform: translate(120px, 380px) scale(0.85);
+            top: 60%;
+            left: 8%;
+            transform: scale(0.85);
         }
-        /* Drag to Thursday Breakfast grid area */
-        /* Thursday is 4th col. 256px + 3 * ~100px */
+        /* Drag to Thursday Breakfast grid area (approx 55% x, 25% y relative to container) */
         50% {
-            transform: translate(580px, 140px) scale(0.85);
+            top: 25%;
+            left: 55%;
+            transform: scale(0.85);
         }
         55% {
-            transform: translate(580px, 140px) scale(1.1);
+            top: 25%;
+            left: 55%;
+            transform: scale(1.1);
             opacity: 1;
         }
         65% {
-            transform: translate(650px, 200px);
+            top: 30%;
+            left: 60%;
             opacity: 0;
         }
         100% {
-            transform: translate(650px, 450px);
+            top: 60%;
+            left: 60%;
             opacity: 0;
         }
     }
@@ -1200,20 +1209,28 @@
         0%,
         24.9% {
             opacity: 0;
-            transform: translate(120px, 380px);
+            top: 60%;
+            left: 8%;
+            transform: translate(0, 0);
         }
         25% {
             opacity: 1;
-            transform: translate(120px, 380px) rotate(-2deg);
+            top: 60%;
+            left: 8%;
+            transform: rotate(-2deg);
         }
         50% {
             opacity: 1;
-            transform: translate(580px, 140px) rotate(2deg);
+            top: 25%;
+            left: 55%;
+            transform: rotate(2deg);
         }
         50.1%,
         100% {
             opacity: 0;
-            transform: translate(580px, 140px);
+            top: 25%;
+            left: 55%;
+            transform: translate(0, 0);
         }
     }
 
