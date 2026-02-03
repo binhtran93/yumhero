@@ -271,7 +271,7 @@
                     <!-- Recipe Selection Modal -->
                     {#if showModal}
                         <div
-                            class="absolute inset-x-4 top-[30%] bg-white rounded-2xl shadow-2xl p-4 z-30 animate-in fade-in zoom-in-95 duration-300 border border-gray-100"
+                            class="absolute inset-x-4 top-[37%] bg-white rounded-2xl shadow-2xl p-4 z-30 animate-in fade-in zoom-in-95 duration-300 border border-gray-100"
                         >
                             <h3
                                 class="text-sm font-bold text-app-text mb-3 px-1"
