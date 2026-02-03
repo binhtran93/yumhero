@@ -29,7 +29,7 @@ const RecipeSchema = z.object({
     mealTypes: z.array(z.enum(['breakfast', 'lunch', 'dinner', 'snack'])).describe('The categorical meal types this recipe is suitable for. Pick ONE OR MANY from: breakfast, lunch, dinner, snack.'),
     cuisine: z.string().optional().describe('Cuisine type, e.g. Italian, Mexican'),
     mainIngredient: z.string().optional().describe('The main ingredient of the dish'),
-    tags: z.array(z.string()).describe('List of smart tags for the recipe, e.g. "Healthy", "Weeknight Dinner", "Quick", "Vegan", "Gluten-Free", "Kid-Friendly"')
+
 });
 
 import { scrapeText } from '$lib/server/curlScraper';
@@ -42,7 +42,7 @@ export async function POST({ request }) {
     });
 
     try {
-        const { url, text: pastedText, userTags } = await request.json();
+        const { url, text: pastedText } = await request.json();
 
         if (!url && !pastedText) {
             return json({ error: 'URL or text is required' }, { status: 400 });
@@ -136,8 +136,7 @@ export async function POST({ request }) {
             FOR EACH VARIANT, try to find a specific image URL that represents that specific version.
             If you cannot find a specific image for a variant, leave the image field empty (null/undefined).
 
-            Generate relevant tags based on the recipe's characteristics such as main ingredient, dietary restrictions, cooking style, and cuisine.
-            DO NOT include meal types (breakfast, lunch, dinner, snack) or meal times in the tags, as these are handled separately.
+
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
             
             CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.
@@ -148,13 +147,10 @@ export async function POST({ request }) {
             If the servings amount is provided as a range (e.g. "4-6"), you MUST calculate the average and return a SINGLE NUMBER (e.g. 5).
             Do not return a string or a range. Servings must always be a number.
 
-            IMPORTANT FOR TAGS:
-            Generate up to 5 relevant tags (e.g., "High Protein", "Vegan", "Egg-based") in the SAME LANGUAGE as the recipe content. 
-            Prioritize the user's saved tags (${userTags?.length > 0 ? userTags.join(', ') : 'None'}) if they fit, but you may create new highly relevant ones. 
-            CRITICAL: Focus ONLY on characteristics like ingredients, dietary needs, or cooking styles. YOU MUST EXCLUDE all meal types (e.g., breakfast, lunch, dinner, snack, brunch) from the tags field, as these are handled separately.
+
 
             8. For 'mealTypes', categorize the recipe into ALL suitable categories from: breakfast, lunch, dinner, snack. If a recipe is versatile (e.g. a granola that works for breakfast or a snack, or a dish suitable for both lunch and dinner), YOU MUST include all relevant types in the array.
-            9. Return the final list of up to 5 tags in the 'tags' field.
+
         `;
 
         const { output } = await generateText({
@@ -176,17 +172,10 @@ export async function POST({ request }) {
         // Post-process recipes to deduplicate and clean
         const recipes = output.recipes.map(recipe => {
             const mealTypes = Array.from(new Set(recipe.mealTypes || []));
-            const tags = Array.from(new Set(recipe.tags || []))
-                .filter(tag => {
-                    const t = tag.toLowerCase();
-                    const mealRelated = ['breakfast', 'lunch', 'dinner', 'snack', 'brunch', 'meal', 'course'];
-                    return !mealRelated.some(m => t.includes(m));
-                });
-
             return {
                 ...recipe,
                 mealTypes,
-                tags
+                tags: []
             };
         });
 
