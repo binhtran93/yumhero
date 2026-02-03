@@ -11,6 +11,7 @@
         ChevronDown,
         Link,
         FileText,
+        EllipsisVertical,
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { userRecipes } from "$lib/stores/recipes";
@@ -26,6 +27,7 @@
 
     let showAddModal = $state(false);
     let showAddDropdown = $state(false);
+    let showMenuDropdown = $state(false);
     let creationAction = $state<"import" | "paste" | null>(null);
 
     // Filter & Menu State
@@ -115,7 +117,39 @@
 />
 
 <!-- Header -->
-<Header title="Recipes" />
+<Header title="Recipes">
+    <div class="relative z-30">
+        <button
+            onclick={() => (showMenuDropdown = !showMenuDropdown)}
+            class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+            aria-label="More options"
+        >
+            <EllipsisVertical size={24} />
+        </button>
+
+        {#if showMenuDropdown}
+            <div
+                transition:fade={{ duration: 100 }}
+                class="absolute right-0 top-full mt-2 w-48 bg-app-surface rounded-xl border border-app-border shadow-lg overflow-hidden z-50 py-1"
+            >
+                <a
+                    href="/recipes/tags"
+                    class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                >
+                    <FileText size={16} />
+                    Manage Tags
+                </a>
+            </div>
+
+            <!-- Backdrop to close dropdown -->
+            <div
+                class="fixed inset-0 z-40"
+                onclick={() => (showMenuDropdown = false)}
+                aria-hidden="true"
+            ></div>
+        {/if}
+    </div>
+</Header>
 
 <RecipeEditModal
     isOpen={showAddModal}
