@@ -169,6 +169,7 @@
 
         // Format date as "Mon, Jan 1"
         const dateStr = item.sourceDate.toLocaleDateString("en-US", {
+            weekday: "short",
             month: "short",
             day: "numeric",
         });
@@ -200,6 +201,7 @@
             const plannedDate = new Date(weekStart);
             plannedDate.setDate(weekStart.getDate() + dayIndex);
             const dateStr = plannedDate.toLocaleDateString("en-US", {
+                weekday: "short",
                 month: "short",
                 day: "numeric",
             });
@@ -563,7 +565,7 @@
                                                             {item.title}
                                                         </span>
                                                         <div
-                                                            class="flex items-center gap-2"
+                                                            class="flex items-start gap-2"
                                                         >
                                                             <span
                                                                 class="text-xs text-app-text-muted block"
