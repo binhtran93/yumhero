@@ -34,8 +34,10 @@
     let carouselRef: HTMLDivElement | undefined = $state();
     let addLunchRef: HTMLDivElement | undefined = $state();
     let addDinnerRef: HTMLDivElement | undefined = $state();
+    let addSnackRef: HTMLDivElement | undefined = $state();
     let recipeTunaRef: HTMLDivElement | undefined = $state();
     let recipeRiceRef: HTMLDivElement | undefined = $state();
+    let recipeSnackRef: HTMLDivElement | undefined = $state();
 
     function updateCursorTarget(target: HTMLElement | undefined) {
         if (!target || !carouselRef) return { x: 0, y: 0 };
@@ -227,6 +229,11 @@
                                                                                 ...day,
                                                                                 meals: {
                                                                                     ...day.meals,
+                                                                                    lunch: [
+                                                                                        {
+                                                                                            name: "Tuna Salad",
+                                                                                        },
+                                                                                    ],
                                                                                     dinner: [
                                                                                         {
                                                                                             name: "Egg Fried Rice",
@@ -239,7 +246,7 @@
                                                                     },
                                                                 );
 
-                                                            // Move cursor away and loop
+                                                            // --- STEP 3: Add Snack ---
                                                             demoTimeout =
                                                                 setTimeout(
                                                                     () => {
@@ -247,21 +254,11 @@
                                                                             hasInteracted
                                                                         )
                                                                             return;
-                                                                        if (
-                                                                            carouselRef
-                                                                        ) {
-                                                                            const rect =
-                                                                                carouselRef.getBoundingClientRect();
-                                                                            cursorPos =
-                                                                                {
-                                                                                    x:
-                                                                                        rect.width /
-                                                                                        2,
-                                                                                    y:
-                                                                                        rect.height +
-                                                                                        50,
-                                                                                };
-                                                                        }
+                                                                        cursorPos =
+                                                                            updateCursorTarget(
+                                                                                addSnackRef,
+                                                                            );
+
                                                                         demoTimeout =
                                                                             setTimeout(
                                                                                 () => {
@@ -269,13 +266,147 @@
                                                                                         hasInteracted
                                                                                     )
                                                                                         return;
-                                                                                    runDemo();
+                                                                                    isCursorClicking = true;
+                                                                                    isAddButtonActive = true;
+                                                                                    activeAddType =
+                                                                                        "snack";
+
+                                                                                    demoTimeout =
+                                                                                        setTimeout(
+                                                                                            () => {
+                                                                                                if (
+                                                                                                    hasInteracted
+                                                                                                )
+                                                                                                    return;
+                                                                                                isCursorClicking = false;
+                                                                                                isAddButtonActive = false;
+                                                                                                showModal = true;
+
+                                                                                                demoTimeout =
+                                                                                                    setTimeout(
+                                                                                                        () => {
+                                                                                                            if (
+                                                                                                                hasInteracted
+                                                                                                            )
+                                                                                                                return;
+                                                                                                            cursorPos =
+                                                                                                                updateCursorTarget(
+                                                                                                                    recipeSnackRef,
+                                                                                                                );
+
+                                                                                                            demoTimeout =
+                                                                                                                setTimeout(
+                                                                                                                    () => {
+                                                                                                                        if (
+                                                                                                                            hasInteracted
+                                                                                                                        )
+                                                                                                                            return;
+                                                                                                                        isCursorClicking = true;
+                                                                                                                        isRecipeActive = true;
+                                                                                                                        activeRecipeName =
+                                                                                                                            "Greek Yogurt";
+
+                                                                                                                        demoTimeout =
+                                                                                                                            setTimeout(
+                                                                                                                                () => {
+                                                                                                                                    if (
+                                                                                                                                        hasInteracted
+                                                                                                                                    )
+                                                                                                                                        return;
+                                                                                                                                    isCursorClicking = false;
+                                                                                                                                    isRecipeActive = false;
+                                                                                                                                    showModal = false;
+
+                                                                                                                                    localPlan =
+                                                                                                                                        localPlan.map(
+                                                                                                                                            (
+                                                                                                                                                day,
+                                                                                                                                            ) => {
+                                                                                                                                                if (
+                                                                                                                                                    day.day ===
+                                                                                                                                                    "Monday"
+                                                                                                                                                ) {
+                                                                                                                                                    return {
+                                                                                                                                                        ...day,
+                                                                                                                                                        meals: {
+                                                                                                                                                            ...day.meals,
+                                                                                                                                                            lunch: [
+                                                                                                                                                                {
+                                                                                                                                                                    name: "Tuna Salad",
+                                                                                                                                                                },
+                                                                                                                                                            ],
+                                                                                                                                                            dinner: [
+                                                                                                                                                                {
+                                                                                                                                                                    name: "Egg Fried Rice",
+                                                                                                                                                                },
+                                                                                                                                                            ],
+                                                                                                                                                            snack: [
+                                                                                                                                                                {
+                                                                                                                                                                    name: "Greek Yogurt",
+                                                                                                                                                                },
+                                                                                                                                                            ],
+                                                                                                                                                        },
+                                                                                                                                                    };
+                                                                                                                                                }
+                                                                                                                                                return day;
+                                                                                                                                            },
+                                                                                                                                        );
+
+                                                                                                                                    // Move cursor away and loop
+                                                                                                                                    demoTimeout =
+                                                                                                                                        setTimeout(
+                                                                                                                                            () => {
+                                                                                                                                                if (
+                                                                                                                                                    hasInteracted
+                                                                                                                                                )
+                                                                                                                                                    return;
+                                                                                                                                                if (
+                                                                                                                                                    carouselRef
+                                                                                                                                                ) {
+                                                                                                                                                    const rect =
+                                                                                                                                                        carouselRef.getBoundingClientRect();
+                                                                                                                                                    cursorPos =
+                                                                                                                                                        {
+                                                                                                                                                            x:
+                                                                                                                                                                rect.width /
+                                                                                                                                                                2,
+                                                                                                                                                            y:
+                                                                                                                                                                rect.height +
+                                                                                                                                                                50,
+                                                                                                                                                        };
+                                                                                                                                                }
+                                                                                                                                                demoTimeout =
+                                                                                                                                                    setTimeout(
+                                                                                                                                                        () => {
+                                                                                                                                                            if (
+                                                                                                                                                                hasInteracted
+                                                                                                                                                            )
+                                                                                                                                                                return;
+                                                                                                                                                            runDemo();
+                                                                                                                                                        },
+                                                                                                                                                        2000,
+                                                                                                                                                    );
+                                                                                                                                            },
+                                                                                                                                            500,
+                                                                                                                                        );
+                                                                                                                                },
+                                                                                                                                300,
+                                                                                                                            );
+                                                                                                                    },
+                                                                                                                    800,
+                                                                                                                );
+                                                                                                        },
+                                                                                                        500,
+                                                                                                    );
+                                                                                            },
+                                                                                            300,
+                                                                                        );
                                                                                 },
-                                                                                2000,
+                                                                                1000,
                                                                             );
                                                                     },
-                                                                    500,
-                                                                );
+                                                                    800,
+                                                                ); // Wait for Dinner add animation
                                                         },
                                                         300,
                                                     );
@@ -458,6 +589,22 @@
                                                                 >Add Dinner</span
                                                             >
                                                         </div>
+                                                    {:else if type === "snack"}
+                                                        <div
+                                                            bind:this={
+                                                                addSnackRef
+                                                            }
+                                                            class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {activeAddType ===
+                                                                'snack' &&
+                                                            isAddButtonActive
+                                                                ? 'scale-95 bg-gray-50'
+                                                                : ''}"
+                                                        >
+                                                            <span
+                                                                class="text-xs font-bold text-gray-400"
+                                                                >Add Snack</span
+                                                            >
+                                                        </div>
                                                     {:else}
                                                         <div
                                                             class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center"
@@ -563,6 +710,43 @@
                                             <span
                                                 class="text-[10px] font-medium text-app-primary/70"
                                                 >• 12m</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    bind:this={recipeSnackRef}
+                                    class="group flex items-center gap-3 p-2.5 rounded-2xl border transition-all duration-300 {isRecipeActive &&
+                                    activeRecipeName === 'Greek Yogurt'
+                                        ? 'bg-app-primary/15 border-app-primary/30 scale-[0.98] shadow-inner'
+                                        : 'bg-gray-50/50 border-gray-100 hover:border-app-primary/20 hover:bg-app-primary/5'}"
+                                >
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-white shrink-0 overflow-hidden shadow-sm border border-gray-100"
+                                    >
+                                        <img
+                                            src="/mockup/yogurt.png"
+                                            alt="Yogurt"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                    </div>
+                                    <div class="flex-1">
+                                        <p
+                                            class="text-[13px] font-black text-gray-800"
+                                        >
+                                            Greek Yogurt
+                                        </p>
+                                        <div
+                                            class="flex items-center gap-2 mt-0.5"
+                                        >
+                                            <span
+                                                class="text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md"
+                                                >1 serving</span
+                                            >
+                                            <span
+                                                class="text-[10px] font-medium text-app-primary/70"
+                                                >• 2m</span
                                             >
                                         </div>
                                     </div>
