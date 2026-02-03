@@ -739,10 +739,11 @@
     const handleDrop = (
         source: {
             day?: string;
-            type: MealType | "sidebar-recipe";
+            type: MealType | "sidebar-recipe" | "sidebar-leftover";
             index?: number;
             isRecipe?: boolean;
             recipeId?: string;
+            leftoverId?: string;
         },
         target: { day: string; type: MealType },
     ) => {
@@ -751,12 +752,18 @@
         if (
             source.type !== "note" &&
             source.type !== "sidebar-recipe" &&
+            source.type !== "sidebar-leftover" &&
             target.type === "note"
         )
             return;
-        if (source.type === "sidebar-recipe" && target.type === "note") return;
+        if (
+            (source.type === "sidebar-recipe" ||
+                source.type === "sidebar-leftover") &&
+            target.type === "note"
+        )
+            return;
 
-        // Handle Sidebar Drop
+        // Handle Sidebar Recipe Drop
         if (source.type === "sidebar-recipe" && source.recipeId) {
             const targetDayIndex = plan.findIndex((d) => d.day === target.day);
             if (targetDayIndex === -1) return;
@@ -786,6 +793,42 @@
                     quantity: 1, // Default quantity when dragging from sidebar
                 });
             }
+
+            saveWeekPlan(weekId, plan);
+            return;
+        }
+
+        // Handle Sidebar Leftover Drop
+        if (source.type === "sidebar-leftover" && source.leftoverId) {
+            const targetDayIndex = plan.findIndex((d) => d.day === target.day);
+            if (targetDayIndex === -1) return;
+
+            const leftoversVal = get(leftovers);
+            const leftover = leftoversVal.data.find(
+                (l) => l.id === source.leftoverId,
+            );
+            if (!leftover) return;
+
+            const targetList = plan[targetDayIndex].meals[target.type];
+
+            // Check if already in this slot
+            // @ts-ignore
+            if (targetList.some((item) => item.leftoverId === leftover.id))
+                return;
+
+            // Add to plan
+            // @ts-ignore
+            targetList.unshift({
+                id: crypto.randomUUID(),
+                leftoverId: leftover.id,
+                title: leftover.title,
+                imageUrl: leftover.imageUrl,
+                sourceRecipeId: leftover.sourceRecipeId,
+                isLeftover: true,
+            });
+
+            // Mark as planned in store
+            setLeftoverPlanned(leftover.id, weekId, target.day, target.type);
 
             saveWeekPlan(weekId, plan);
             return;

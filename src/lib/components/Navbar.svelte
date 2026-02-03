@@ -13,9 +13,12 @@
     import { fade } from "svelte/transition";
     import { sidebarExpanded } from "$lib/stores/ui";
     import { userRecipes } from "$lib/stores/recipes";
-    import { totalLeftoversCount } from "$lib/stores/leftovers";
+    import {
+        availableLeftovers,
+        totalLeftoversCount,
+    } from "$lib/stores/leftovers";
     import { fridgeIngredientsCount } from "$lib/stores/fridgeIngredients";
-    import type { Recipe } from "$lib/types";
+    import type { Recipe, LeftoverItem } from "$lib/types";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
     // Navigation Items (with optional badge support)
@@ -72,6 +75,18 @@
             JSON.stringify({
                 type: "sidebar-recipe",
                 recipeId: recipe.id,
+            }),
+        );
+    };
+
+    const handleLeftoverDragStart = (e: DragEvent, leftover: LeftoverItem) => {
+        if (!e.dataTransfer) return;
+        e.dataTransfer.effectAllowed = "all";
+        e.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({
+                type: "sidebar-leftover",
+                leftoverId: leftover.id,
             }),
         );
     };
@@ -159,6 +174,52 @@
         <div
             class="hidden md:flex flex-col flex-1 min-h-0 mt-4 px-4 pb-2 border-t border-app-border pt-4"
         >
+            {#if $availableLeftovers.length > 0}
+                <div class="flex flex-col mb-6">
+                    <h3
+                        class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
+                    >
+                        Leftovers
+                    </h3>
+                    <div
+                        class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
+                    >
+                        {#each $availableLeftovers as leftover}
+                            <!-- svelte-ignore a11y_no_static_element_interactions -->
+                            <div
+                                class="flex items-center gap-3 p-2 rounded-xl bg-app-surface cursor-grab active:cursor-grabbing transition-all duration-200 group border border-transparent hover:border-app-border"
+                                draggable="true"
+                                ondragstart={(e) =>
+                                    handleLeftoverDragStart(e, leftover)}
+                            >
+                                <RecipeThumbnail
+                                    src={leftover.imageUrl}
+                                    alt={leftover.title}
+                                    class="w-8 h-8 rounded-lg shadow-sm"
+                                />
+                                <div class="flex flex-col min-w-0">
+                                    <span
+                                        class="text-xs font-semibold text-app-text line-clamp-1 group-hover:text-app-primary transition-colors"
+                                    >
+                                        {leftover.title}
+                                    </span>
+                                    <span
+                                        class="text-[10px] text-app-text-muted"
+                                    >
+                                        {new Date(
+                                            leftover.createdAt,
+                                        ).toLocaleDateString(undefined, {
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
+                                    </span>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+
             <h3
                 class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
             >
@@ -182,7 +243,7 @@
                 {#each filteredRecipes as recipe}
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div
-                        class="flex items-center gap-3 p-2 rounded-xl bg-app-surface cursor-grab active:cursor-grabbing transition-all duration-200 group"
+                        class="flex items-center gap-3 p-2 rounded-xl bg-app-surface cursor-grab active:cursor-grabbing transition-all duration-200 group border border-transparent hover:border-app-border"
                         draggable="true"
                         ondragstart={(e) => handleDragStart(e, recipe)}
                     >
