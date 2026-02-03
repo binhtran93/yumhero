@@ -43,6 +43,7 @@
         onToggleDropdown?: (index: number, rect: DOMRect) => void;
         onCloseDropdown?: () => void;
         availableRecipes?: Recipe[];
+        isPrinting?: boolean;
     }
 
     let {
@@ -65,6 +66,7 @@
         onToggleDropdown,
         onCloseDropdown,
         availableRecipes = [],
+        isPrinting = false,
     }: Props = $props();
 
     const isEatenStatus = (leftoverId: string) => {
@@ -216,7 +218,10 @@
         </div>
         <button
             type="button"
-            class="hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:!text-app-text-muted/100 pointer-events-auto"
+            class={twMerge(
+                "hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:!text-app-text-muted/100 pointer-events-auto",
+                isPrinting && "!hidden",
+            )}
             onclick={onClick}
             aria-label={`Add to ${type}`}
         >
@@ -370,17 +375,26 @@
 
         {#if items.length === 0 && !isLoading}
             <div
-                class="flex-1 flex items-center justify-center -mt-2 md:mt-0 md:block"
+                class={twMerge(
+                    "flex-1 flex items-center justify-center -mt-2 md:mt-0 md:block",
+                    isPrinting && "!hidden",
+                )}
             >
                 <Plus
                     size={16}
-                    class="text-app-text-muted/80 md:hidden transition-colors"
+                    class={twMerge(
+                        "text-app-text-muted/80 md:hidden transition-colors",
+                        isPrinting && "!hidden",
+                    )}
                 />
             </div>
         {:else}
             <!-- Bottom Plus: Show only on mobile, remove from desktop -->
             <div
-                class="flex-1 flex items-center justify-center min-h-8 md:hidden"
+                class={twMerge(
+                    "flex-1 flex items-center justify-center min-h-8 md:hidden",
+                    isPrinting && "!hidden",
+                )}
             >
                 <Plus size={16} class="text-app-text-muted/80" />
             </div>

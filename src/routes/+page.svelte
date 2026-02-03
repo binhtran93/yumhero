@@ -941,18 +941,18 @@
         isPrinting = true;
 
         try {
-            // Need to ensure the element is fully expanded if it's currently scrolling
-            // html-to-image captures the element as it is.
-            // Since it's a grid, it should have its full width if we target the right div.
+            // Force a standard desktop-like width for the capture to ensure 7 columns look correct
+            const captureWidth = 1400;
 
             const dataUrl = await toPng(printRef, {
-                backgroundColor: "#fffdfc",
+                backgroundColor: "#ffffff",
                 quality: 1,
-                pixelRatio: 2, // Higher resolution
+                pixelRatio: 2,
+                width: captureWidth,
                 style: {
                     margin: "0",
                     padding: "0",
-                    // Reset any transforms or scroll states if needed
+                    width: `${captureWidth}px`,
                 },
             });
 
@@ -961,42 +961,56 @@
                 printWindow.document.write(`
                     <html>
                     <head>
-                        <title></title>
+                        <title>YumHero Meal Plan</title>
                         <style>
                             @page { 
                                 size: landscape; 
-                                margin: 0; 
+                                margin: 5mm; 
+                            }
+                            * {
+                                box-sizing: border-box;
                             }
                             body { 
                                 margin: 0; 
-                                padding: 10mm;
+                                padding: 0;
+                                width: 100%;
                                 display: flex; 
                                 flex-direction: column;
-                                align-items: center; 
+                                align-items: stretch; 
                                 background: white; 
-                                font-family: sans-serif;
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
                             }
                             .header {
                                 width: 100%;
                                 display: flex;
                                 justify-content: space-between;
-                                align-items: center;
-                                padding: 10px 0;
-                                box-sizing: border-box;
+                                align-items: baseline;
+                                padding-bottom: 5px;
                                 border-bottom: 2px solid #c2410c;
-                                margin-bottom: 15px;
+                                margin-bottom: 10px;
                             }
-                            .header h1 { color: #c2410c; margin: 0; font-size: 24px; }
-                            .header p { color: #57534e; margin: 0; font-weight: bold; }
-                            img { max-width: 100%; height: auto; display: block; border: 1px solid #e7e5e4; }
+                            .header h1 { color: #c2410c; margin: 0; font-size: 22px; font-weight: 900; }
+                            .header p { color: #57534e; margin: 0; font-weight: bold; font-size: 14px; }
+                            .content {
+                                width: 100%;
+                                flex: 1;
+                            }
+                            img { 
+                                width: 100%; 
+                                height: auto; 
+                                display: block; 
+                                border: 1px solid #e7e5e4; 
+                            }
                         </style>
                     </head>
-                    <body onload="setTimeout(() => { window.print(); window.close(); }, 500)">
+                    <body onload="setTimeout(() => { window.print(); window.close(); }, 800)">
                         <div class="header">
                             <h1>YumHero Meal Plan</h1>
                             <p>${formatDate(weekRange.start)} - ${formatDate(weekRange.end)}, ${weekRange.start.getFullYear()}</p>
                         </div>
-                        <img src="${dataUrl}" />
+                        <div class="content">
+                            <img src="${dataUrl}" />
+                        </div>
                     </body>
                     </html>
                 `);
@@ -1019,7 +1033,6 @@
 />
 
 <div class="h-full flex flex-col">
-    <!-- Header -->
     <!-- Header -->
     <Header title="Plan Your Meal" mobileTitle="Plan">
         <div class="flex items-center gap-2">
@@ -1081,18 +1094,33 @@
         >
             <div
                 bind:this={printRef}
-                class="flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
+                class={twMerge(
+                    "flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30",
+                    isPrinting &&
+                        "printing-mode !grid !w-[1400px] !min-w-[1400px] !bg-white grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,auto)]",
+                )}
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
-                    <div class="w-screen flex flex-col md:contents snap-start">
+                    <div
+                        class={twMerge(
+                            "w-screen flex flex-col md:contents snap-start",
+                            isPrinting && "!contents",
+                        )}
+                    >
                         <!-- Header -->
                         <div
-                            class="sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0"
+                            class={twMerge(
+                                "sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0",
+                                isPrinting && "!h-15 !py-0",
+                            )}
                             bind:this={dayRefs[i]}
                         >
                             <!-- Mobile View: Horizontal Layout -->
                             <div
-                                class="flex md:hidden items-center justify-center gap-1.5"
+                                class={twMerge(
+                                    "flex md:hidden items-center justify-center gap-1.5",
+                                    isPrinting && "!hidden",
+                                )}
                             >
                                 <span
                                     class="font-display font-black text-app-text text-sm"
@@ -1110,7 +1138,12 @@
                             </div>
 
                             <!-- Desktop View: Existing Layout -->
-                            <div class="hidden md:flex items-center gap-2">
+                            <div
+                                class={twMerge(
+                                    "hidden md:flex items-center gap-2",
+                                    isPrinting && "!flex",
+                                )}
+                            >
                                 <span
                                     class="font-display font-black transition-all text-app-text text-base"
                                 >
@@ -1126,7 +1159,10 @@
                             </div>
 
                             <span
-                                class="hidden md:block text-xs text-app-text font-bold opacity-70"
+                                class={twMerge(
+                                    "hidden md:block text-xs text-app-text font-bold opacity-70",
+                                    isPrinting && "!block",
+                                )}
                             >
                                 {getDayDate(i).split(" ")[1]}
                             </span>
@@ -1226,6 +1262,7 @@
                                         )}
                                     onCloseDropdown={handleCloseDropdown}
                                     {availableRecipes}
+                                    {isPrinting}
                                 />
 
                                 <!-- Today Flash Overlay for each cell -->
