@@ -3,6 +3,7 @@
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import RecipeFilterDropdown from "$lib/components/RecipeFilterDropdown.svelte";
+    import SEO from "$lib/components/SEO.svelte";
     import {
         Search,
         Plus,
@@ -33,6 +34,11 @@
         ),
     );
 </script>
+
+<SEO
+    title="Recipes"
+    description="Browse your saved recipes. Search, filter, and add recipes to your meal plan."
+/>
 
 <!-- Header -->
 <Header title="Recipes">

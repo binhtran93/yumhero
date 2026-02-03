@@ -10,6 +10,7 @@
     } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import Modal from "$lib/components/Modal.svelte";
+    import SEO from "$lib/components/SEO.svelte";
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
     import {
@@ -848,6 +849,11 @@
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />
+
+<SEO
+    title="Weekly Meal Plan"
+    description="Plan your weekly meals with YumHero. Organize breakfast, lunch, dinner, and snacks for the entire week."
+/>
 
 <div class="h-full flex flex-col">
     <!-- Header -->

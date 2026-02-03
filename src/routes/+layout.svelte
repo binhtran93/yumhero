@@ -4,6 +4,7 @@
 	import { user } from "$lib/stores/auth";
 	import Navbar from "$lib/components/Navbar.svelte";
 	import ToastContainer from "$lib/components/ToastContainer.svelte";
+	import SEO from "$lib/components/SEO.svelte";
 
 	let { children } = $props();
 	let mounted = $state(false);
@@ -12,6 +13,8 @@
 		mounted = true;
 	});
 </script>
+
+<SEO />
 
 {#if mounted}
 	<div

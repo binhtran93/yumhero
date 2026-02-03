@@ -9,6 +9,7 @@
     import { formatServings } from "$lib/utils/recipe";
     import Header from "$lib/components/Header.svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
+    import SEO from "$lib/components/SEO.svelte";
     import {
         Clock,
         Users,
@@ -55,7 +56,58 @@
     function getTagName(tagId: string) {
         return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
     }
+
+    // Generate SEO description from recipe
+    let seoDescription = $derived(
+        recipe?.description ||
+            (recipe
+                ? `${recipe.title} - Ready in ${recipe.totalTime} minutes. Serves ${formatServings(recipe.servings)} people.`
+                : ""),
+    );
+
+    // Generate JSON-LD structured data for Recipe schema
+    let jsonLd = $derived(
+        recipe
+            ? {
+                  "@context": "https://schema.org/",
+                  "@type": "Recipe",
+                  name: recipe.title,
+                  description:
+                      recipe.description ||
+                      `A delicious ${recipe.title} recipe`,
+                  image: recipe.image || undefined,
+                  totalTime: `PT${recipe.totalTime}M`,
+                  recipeYield: `${formatServings(recipe.servings)} servings`,
+                  recipeIngredient: recipe.ingredients.map((i) =>
+                      `${formatAmount(i.amount)} ${i.unit || ""} ${i.name}`.trim(),
+                  ),
+                  recipeInstructions: recipe.instructions.map(
+                      (step, index) => ({
+                          "@type": "HowToStep",
+                          position: index + 1,
+                          text: step,
+                      }),
+                  ),
+                  ...(recipe.calories
+                      ? {
+                            nutrition: {
+                                "@type": "NutritionInformation",
+                                calories: `${recipe.calories} calories`,
+                            },
+                        }
+                      : {}),
+              }
+            : null,
+    );
 </script>
+
+<SEO
+    title={recipe?.title || "Recipe Details"}
+    description={seoDescription || "View recipe details on YumHero"}
+    image={recipe?.image}
+    type="article"
+    {jsonLd}
+/>
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden">
     <!-- Header (Visible on all screens) -->

@@ -19,6 +19,7 @@
     import Avatar from "$lib/components/Avatar.svelte";
     import { theme } from "$lib/stores/theme";
     import { sidebarExpanded } from "$lib/stores/ui";
+    import SEO from "$lib/components/SEO.svelte";
 
     let email = $state("");
     let message = $state("");
@@ -67,6 +68,11 @@
     import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
 </script>
+
+<SEO
+    title="Profile"
+    description="Manage your YumHero account settings and preferences."
+/>
 
 <!-- Header -->
 <Header title="Profile" />

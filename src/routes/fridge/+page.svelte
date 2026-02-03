@@ -15,6 +15,7 @@
     import { fade, slide } from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import SEO from "$lib/components/SEO.svelte";
     import { leftovers, deleteLeftover } from "$lib/stores/leftovers";
     import {
         fridgeIngredients,
@@ -273,6 +274,11 @@
 <svelte:window
     onclick={() => showActionMenu && closeActionMenu()}
     onkeydown={(e) => e.key === "Escape" && closeActionMenu()}
+/>
+
+<SEO
+    title="My Fridge"
+    description="Track leftovers and ingredients in your fridge. Never waste food again."
 />
 
 <div class="h-full flex flex-col">
