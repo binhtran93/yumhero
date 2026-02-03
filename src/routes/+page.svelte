@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import {
         ArrowRight,
         Calendar,
@@ -131,9 +132,332 @@
 
     let restartKey = $state(0);
 
-    const restartAnimation = () => {
+    // Element references for dynamic position calculation
+    let animationContainer: HTMLDivElement | undefined = $state();
+    let leftoverRefs: (HTMLDivElement | undefined)[] = $state([]);
+    let quickRecipeRefs: (HTMLDivElement | undefined)[] = $state([]);
+    let thuBreakfastTarget: HTMLDivElement | undefined = $state();
+    let thuLunchTarget: HTMLDivElement | undefined = $state();
+    let handCursor: HTMLDivElement | undefined = $state();
+    let ghostCard: HTMLDivElement | undefined = $state();
+    let ghostCard2: HTMLDivElement | undefined = $state();
+    let dropRevealCard: HTMLDivElement | undefined = $state();
+    let dropRevealCard2: HTMLDivElement | undefined = $state();
+
+    // Animation state
+    let animationFrame: number | null = null;
+    let animationStartTime: number = 0;
+    const ANIMATION_DURATION = 20000; // 20 seconds total cycle
+
+    interface Position {
+        x: number;
+        y: number;
+    }
+
+    // Calculate position relative to animation container
+    function getRelativePosition(
+        element: HTMLElement | undefined,
+        container: HTMLElement | undefined,
+    ): Position {
+        if (!element || !container) return { x: 0, y: 0 };
+
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        return {
+            x: elementRect.left - containerRect.left + elementRect.width / 2,
+            y: elementRect.top - containerRect.top + elementRect.height / 2,
+        };
+    }
+
+    // Easing function for smooth animation
+    function easeInOutCubic(t: number): number {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    // Linear interpolation
+    function lerp(start: number, end: number, t: number): number {
+        return start + (end - start) * t;
+    }
+
+    // Main animation loop
+    function animate(timestamp: number) {
+        if (!animationStartTime) animationStartTime = timestamp;
+
+        const elapsed = (timestamp - animationStartTime) % ANIMATION_DURATION;
+        const progress = elapsed / ANIMATION_DURATION;
+
+        // Get current positions (recalculated each frame in case of resize)
+        // Avocado Toast is first item (index 0) in Quick Recipes
+        // Grilled Veggies is second item (index 1) in Leftovers
+        const avocadoPos = getRelativePosition(
+            quickRecipeRefs[0],
+            animationContainer,
+        );
+        const veggiesPos = getRelativePosition(
+            leftoverRefs[1],
+            animationContainer,
+        );
+        const thuBreakfastPos = getRelativePosition(
+            thuBreakfastTarget,
+            animationContainer,
+        );
+        const thuLunchPos = getRelativePosition(
+            thuLunchTarget,
+            animationContainer,
+        );
+
+        // Animation timeline (percentages of 20s cycle):
+        // 0-5%: Cursor fades in, moves to avocado toast
+        // 5-7%: Cursor clicks (grab)
+        // 7-20%: Drag to Thursday Breakfast
+        // 20-22%: Drop
+        // 22-35%: Move to Grilled Veggies
+        // 35-37%: Grab
+        // 37-50%: Drag to Thursday Lunch
+        // 50-52%: Drop
+        // 52-60%: Fade out
+        // 60-100%: Hidden
+
+        animateElements(
+            progress,
+            avocadoPos,
+            veggiesPos,
+            thuBreakfastPos,
+            thuLunchPos,
+        );
+
+        animationFrame = requestAnimationFrame(animate);
+    }
+
+    function animateElements(
+        progress: number,
+        avocadoPos: Position,
+        veggiesPos: Position,
+        thuBreakfastPos: Position,
+        thuLunchPos: Position,
+    ) {
+        // Hand cursor animation
+        if (handCursor) {
+            let x = 0,
+                y = 0,
+                opacity = 0,
+                scale = 1;
+
+            if (progress < 0.05) {
+                // Fade in and move to avocado
+                const t = progress / 0.05;
+                opacity = t;
+                x = lerp(avocadoPos.x + 100, avocadoPos.x, easeInOutCubic(t));
+                y = lerp(avocadoPos.y + 100, avocadoPos.y, easeInOutCubic(t));
+            } else if (progress < 0.07) {
+                // At avocado, grabbing
+                x = avocadoPos.x;
+                y = avocadoPos.y;
+                opacity = 1;
+                scale = 0.85;
+            } else if (progress < 0.2) {
+                // Drag to Thursday Breakfast
+                const t = (progress - 0.07) / 0.13;
+                x = lerp(avocadoPos.x, thuBreakfastPos.x, easeInOutCubic(t));
+                y = lerp(avocadoPos.y, thuBreakfastPos.y, easeInOutCubic(t));
+                opacity = 1;
+                scale = 0.85;
+            } else if (progress < 0.22) {
+                // Drop at Thursday Breakfast
+                x = thuBreakfastPos.x;
+                y = thuBreakfastPos.y;
+                opacity = 1;
+                scale = 1.1;
+            } else if (progress < 0.35) {
+                // Move to Grilled Veggies
+                const t = (progress - 0.22) / 0.13;
+                x = lerp(thuBreakfastPos.x, veggiesPos.x, easeInOutCubic(t));
+                y = lerp(thuBreakfastPos.y, veggiesPos.y, easeInOutCubic(t));
+                opacity = 1;
+                scale = 1;
+            } else if (progress < 0.37) {
+                // At veggies, grabbing
+                x = veggiesPos.x;
+                y = veggiesPos.y;
+                opacity = 1;
+                scale = 0.85;
+            } else if (progress < 0.5) {
+                // Drag to Thursday Lunch
+                const t = (progress - 0.37) / 0.13;
+                x = lerp(veggiesPos.x, thuLunchPos.x, easeInOutCubic(t));
+                y = lerp(veggiesPos.y, thuLunchPos.y, easeInOutCubic(t));
+                opacity = 1;
+                scale = 0.85;
+            } else if (progress < 0.52) {
+                // Drop at Thursday Lunch
+                x = thuLunchPos.x;
+                y = thuLunchPos.y;
+                opacity = 1;
+                scale = 1.1;
+            } else if (progress < 0.6) {
+                // Fade out
+                const t = (progress - 0.52) / 0.08;
+                x = thuLunchPos.x + 50 * t;
+                y = thuLunchPos.y + 50 * t;
+                opacity = 1 - t;
+                scale = 1;
+            } else {
+                opacity = 0;
+            }
+
+            handCursor.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+            handCursor.style.opacity = String(opacity);
+        }
+
+        // Ghost card 1 (Avocado Toast)
+        if (ghostCard) {
+            let x = 0,
+                y = 0,
+                opacity = 0,
+                rotation = 0;
+
+            if (progress >= 0.07 && progress < 0.2) {
+                // Visible during drag
+                const t = (progress - 0.07) / 0.13;
+                x =
+                    lerp(avocadoPos.x, thuBreakfastPos.x, easeInOutCubic(t)) -
+                    96; // offset for card width
+                y =
+                    lerp(avocadoPos.y, thuBreakfastPos.y, easeInOutCubic(t)) -
+                    20;
+                opacity = 1;
+                rotation = lerp(-2, 2, t);
+            } else {
+                opacity = 0;
+            }
+
+            ghostCard.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+            ghostCard.style.opacity = String(opacity);
+        }
+
+        // Ghost card 2 (Grilled Veggies)
+        if (ghostCard2) {
+            let x = 0,
+                y = 0,
+                opacity = 0,
+                rotation = 0;
+
+            if (progress >= 0.37 && progress < 0.5) {
+                // Visible during drag
+                const t = (progress - 0.37) / 0.13;
+                x = lerp(veggiesPos.x, thuLunchPos.x, easeInOutCubic(t)) - 96;
+                y = lerp(veggiesPos.y, thuLunchPos.y, easeInOutCubic(t)) - 20;
+                opacity = 1;
+                rotation = lerp(-2, 2, t);
+            } else {
+                opacity = 0;
+            }
+
+            ghostCard2.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+            ghostCard2.style.opacity = String(opacity);
+        }
+
+        // Drop reveal card 1 (Avocado Toast in Thursday Breakfast)
+        if (dropRevealCard) {
+            let opacity = 0,
+                scale = 0.9,
+                translateY = 4;
+
+            if (progress >= 0.205 && progress < 0.23) {
+                // Reveal animation
+                const t = (progress - 0.205) / 0.025;
+                opacity = t;
+                scale = lerp(0.9, 1, easeInOutCubic(t));
+                translateY = lerp(4, 0, easeInOutCubic(t));
+            } else if (progress >= 0.23 && progress < 0.9) {
+                // Visible
+                opacity = 1;
+                scale = 1;
+                translateY = 0;
+            } else if (progress >= 0.9) {
+                // Fade out
+                const t = (progress - 0.9) / 0.1;
+                opacity = 1 - t;
+                scale = 1;
+                translateY = 0;
+            }
+
+            dropRevealCard.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            dropRevealCard.style.opacity = String(opacity);
+        }
+
+        // Drop reveal card 2 (Grilled Veggies in Thursday Lunch)
+        if (dropRevealCard2) {
+            let opacity = 0,
+                scale = 0.9,
+                translateY = 4;
+
+            if (progress >= 0.505 && progress < 0.53) {
+                // Reveal animation
+                const t = (progress - 0.505) / 0.025;
+                opacity = t;
+                scale = lerp(0.9, 1, easeInOutCubic(t));
+                translateY = lerp(4, 0, easeInOutCubic(t));
+            } else if (progress >= 0.53 && progress < 0.9) {
+                // Visible
+                opacity = 1;
+                scale = 1;
+                translateY = 0;
+            } else if (progress >= 0.9) {
+                // Fade out
+                const t = (progress - 0.9) / 0.1;
+                opacity = 1 - t;
+                scale = 1;
+                translateY = 0;
+            }
+
+            dropRevealCard2.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            dropRevealCard2.style.opacity = String(opacity);
+        }
+    }
+
+    function startAnimation() {
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+        animationStartTime = 0;
+        animationFrame = requestAnimationFrame(animate);
+    }
+
+    function stopAnimation() {
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+    }
+
+    const restartAnimationHandler = () => {
         restartKey += 1;
+        // Small delay to ensure elements are rendered
+        setTimeout(() => {
+            startAnimation();
+        }, 50);
     };
+
+    onMount(() => {
+        // Start animation when component mounts
+        const timer = setTimeout(() => {
+            startAnimation();
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+            stopAnimation();
+        };
+    });
+
+    // Restart animation when restartKey changes
+    $effect(() => {
+        if (restartKey > 0) {
+            startAnimation();
+        }
+    });
 
     const getMealStyles = (type: string) => {
         switch (type) {
@@ -263,7 +587,7 @@
                 >
                     <button
                         on:click={() => {
-                            restartAnimation();
+                            restartAnimationHandler();
                             document.getElementById("preview")?.scrollIntoView({
                                 behavior: "smooth",
                                 block: "center",
@@ -318,11 +642,13 @@
                         <!-- Drag Animation Overlay -->
                         {#key restartKey}
                             <div
+                                bind:this={animationContainer}
                                 class="absolute inset-0 pointer-events-none z-50 overflow-hidden hidden md:block"
                             >
                                 <!-- Ghost Card -->
                                 <div
-                                    class="ghost-card absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                    bind:this={ghostCard}
+                                    class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
                                 >
                                     <div class="flex items-center gap-2">
                                         <div
@@ -356,7 +682,8 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="ghost-card-2 absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                    bind:this={ghostCard2}
+                                    class="absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
                                 >
                                     <div class="flex items-center gap-2">
                                         <div
@@ -390,7 +717,8 @@
                                 </div>
                                 <!-- Pointer Cursor -->
                                 <div
-                                    class="hand-cursor absolute opacity-0 drop-shadow-xl z-50 transition-none"
+                                    bind:this={handCursor}
+                                    class="absolute opacity-0 drop-shadow-xl z-50"
                                 >
                                     <Pointer
                                         size={32}
@@ -406,7 +734,7 @@
 
                         <!-- Mockup Content -->
                         <div
-                            class="flex flex-col md:flex-row bg-app-bg min-h-[400px]"
+                            class="flex flex-col md:flex-row bg-app-bg min-h-[400px] overflow-hidden"
                         >
                             <!-- Mock Sidebar -->
                             <div
@@ -433,8 +761,11 @@
                                             </div>
                                         </div>
                                         <div class="space-y-1.5">
-                                            {#each mockLeftovers as item}
+                                            {#each mockLeftovers as item, index}
                                                 <div
+                                                    bind:this={
+                                                        leftoverRefs[index]
+                                                    }
                                                     class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:bg-app-surface-hover transition-all duration-300"
                                                 >
                                                     {#if item.image}
@@ -492,8 +823,11 @@
                                             </div>
                                         </div>
                                         <div class="space-y-1.5">
-                                            {#each mockQuickRecipes as item}
+                                            {#each mockQuickRecipes as item, index}
                                                 <div
+                                                    bind:this={
+                                                        quickRecipeRefs[index]
+                                                    }
                                                     class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-app-primary/40 hover:bg-app-surface-hover transition-all duration-300 cursor-pointer group"
                                                 >
                                                     {#if item.image}
@@ -542,14 +876,16 @@
                             </div>
 
                             <!-- Main Grid -->
-                            <div class="flex-1 p-4 md:p-6 overflow-hidden">
+                            <div
+                                class="flex-1 min-w-0 p-4 md:p-6 overflow-x-auto"
+                            >
                                 <!-- Simplified Week Grid Preview -->
                                 <div
-                                    class="grid grid-cols-7 gap-px bg-app-border border border-app-border rounded-lg overflow-hidden"
+                                    class="grid grid-cols-7 bg-app-border border border-app-border rounded-lg overflow-hidden min-w-[1400px]"
                                 >
                                     {#each mockPlan as day}
                                         <div
-                                            class="flex flex-col bg-app-bg min-w-0"
+                                            class="flex flex-col bg-app-bg min-w-[200px] border-r border-app-border last:border-r-0"
                                         >
                                             <!-- Day Header -->
                                             <div
@@ -610,16 +946,26 @@
                                                         {#if day.day === "Thu" && type === "breakfast"}
                                                             {#key restartKey}
                                                                 <div
-                                                                    class="drop-reveal-card px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
-                                                                        type,
-                                                                    )} opacity-0"
+                                                                    bind:this={
+                                                                        thuBreakfastTarget
+                                                                    }
+                                                                    class="thu-breakfast-target"
                                                                 >
-                                                                    <p
-                                                                        class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                    <div
+                                                                        bind:this={
+                                                                            dropRevealCard
+                                                                        }
+                                                                        class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                            type,
+                                                                        )} opacity-0"
                                                                     >
-                                                                        Avocado
-                                                                        Toast
-                                                                    </p>
+                                                                        <p
+                                                                            class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                        >
+                                                                            Avocado
+                                                                            Toast
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             {/key}
                                                         {/if}
@@ -627,23 +973,33 @@
                                                         {#if day.day === "Thu" && type === "lunch"}
                                                             {#key restartKey}
                                                                 <div
-                                                                    class="drop-reveal-card-2 px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
-                                                                        type,
-                                                                    )} opacity-0"
+                                                                    bind:this={
+                                                                        thuLunchTarget
+                                                                    }
+                                                                    class="thu-lunch-target"
                                                                 >
-                                                                    <p
-                                                                        class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
-                                                                    >
-                                                                        Grilled
-                                                                        Veggies
-                                                                    </p>
                                                                     <div
-                                                                        class="flex items-center gap-1 mt-0.5"
+                                                                        bind:this={
+                                                                            dropRevealCard2
+                                                                        }
+                                                                        class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                            type,
+                                                                        )} opacity-0"
                                                                     >
-                                                                        <span
-                                                                            class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
-                                                                            >Leftover</span
+                                                                        <p
+                                                                            class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
                                                                         >
+                                                                            Grilled
+                                                                            Veggies
+                                                                        </p>
+                                                                        <div
+                                                                            class="flex items-center gap-1 mt-0.5"
+                                                                        >
+                                                                            <span
+                                                                                class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
+                                                                                >Leftover</span
+                                                                            >
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             {/key}
@@ -1244,203 +1600,6 @@
 </div>
 
 <style>
-    :global(.hand-cursor) {
-        animation: hand-grab-drag 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
-        left: 0;
-        top: 0;
-        pointer-events: none;
-    }
-
-    :global(.ghost-card) {
-        animation: ghost-card-drag 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
-        left: 0;
-        top: 0;
-        z-index: 40;
-        pointer-events: none;
-    }
-
-    :global(.ghost-card-2) {
-        animation: ghost-card-drag-2 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
-        left: 0;
-        top: 0;
-        z-index: 40;
-        pointer-events: none;
-    }
-
-    :global(.drop-reveal-card) {
-        animation: drop-reveal 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    :global(.drop-reveal-card-2) {
-        animation: drop-reveal-2 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes hand-grab-drag {
-        /* ----- SEGMENT 1: Avocado Toast to Thus Breakfast ----- */
-        0% {
-            transform: translate(40vw, 40vh);
-            opacity: 0;
-        }
-
-        /* 1. Move to Avocado Toast (Sidebar - 1st item in Quick Recipes) */
-        5% {
-            top: 53%;
-            left: 8%;
-            transform: translate(0, 0);
-            opacity: 1;
-        }
-        7% {
-            top: 53%;
-            left: 8%;
-            transform: scale(0.85);
-        } /* Grab */
-
-        /* 2. Drag to Thursday Breakfast */
-        20% {
-            top: 27%;
-            left: 55%;
-            transform: scale(0.85);
-        }
-        22% {
-            top: 27%;
-            left: 55%;
-            transform: scale(1.1);
-        } /* Drop */
-
-        /* ----- SEGMENT 2: Grilled Veggies to Thus Lunch ----- */
-        /* 3. Move to Grilled Veggies (Sidebar - it's 2nd item in Leftovers) */
-        35% {
-            top: 30%;
-            left: 8%;
-            transform: translate(0, 0);
-        }
-        37% {
-            top: 30%;
-            left: 8%;
-            transform: scale(0.85);
-        } /* Grab */
-
-        /* 4. Drag to Thursday Lunch (Below Breakfast)
-           Approx top: 42%, left: 55% */
-        50% {
-            top: 42%;
-            left: 55%;
-            transform: scale(0.85);
-        }
-        52% {
-            top: 42%;
-            left: 55%;
-            transform: scale(1.1);
-        } /* Drop */
-
-        /* End / Fade out */
-        60% {
-            top: 45%;
-            left: 60%;
-            opacity: 0;
-        }
-        100% {
-            top: 45%;
-            left: 60%;
-            opacity: 0;
-        }
-    }
-
-    @keyframes ghost-card-drag {
-        /* Avocado Toast Ghost */
-        0%,
-        6.9% {
-            opacity: 0;
-            top: 53%;
-            left: 8%;
-            transform: translate(0, 0);
-        }
-        7% {
-            opacity: 1;
-            top: 53%;
-            left: 8%;
-            transform: rotate(-2deg);
-        }
-        20% {
-            opacity: 1;
-            top: 27%;
-            left: 55%;
-            transform: rotate(2deg);
-        }
-        20.1%,
-        100% {
-            opacity: 0;
-            top: 27%;
-            left: 55%;
-            transform: translate(0, 0);
-        }
-    }
-
-    @keyframes ghost-card-drag-2 {
-        /* Grilled Veggies Ghost */
-        0%,
-        36.9% {
-            opacity: 0;
-            top: 30%;
-            left: 8%;
-            transform: translate(0, 0);
-        }
-        37% {
-            opacity: 1;
-            top: 30%;
-            left: 8%;
-            transform: rotate(-2deg);
-        }
-        50% {
-            opacity: 1;
-            top: 42%;
-            left: 55%;
-            transform: rotate(2deg);
-        }
-        50.1%,
-        100% {
-            opacity: 0;
-            top: 42%;
-            left: 55%;
-            transform: translate(0, 0);
-        }
-    }
-
-    @keyframes drop-reveal {
-        /* Avocado Toast Reveal */
-        0%,
-        20.5% {
-            opacity: 0;
-            transform: scale(0.9) translateY(4px);
-        }
-        23%,
-        90% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-        95%,
-        100% {
-            opacity: 0;
-            transform: scale(1) translateY(0);
-        }
-    }
-
-    @keyframes drop-reveal-2 {
-        /* Grilled Veggies Reveal */
-        0%,
-        50.5% {
-            opacity: 0;
-            transform: scale(0.9) translateY(4px);
-        }
-        53%,
-        90% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-        95%,
-        100% {
-            opacity: 0;
-            transform: scale(1) translateY(0);
-        }
-    }
+    /* Animation elements are now controlled via JavaScript */
+    /* These styles provide base positioning */
 </style>
