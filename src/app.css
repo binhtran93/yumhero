@@ -46,10 +46,10 @@
 
     /* Note - Neutral Pale Gray (Non-food) */
     --color-accent-note: #64748b;
-    --color-accent-note-bg: #f8fafc;
-    --color-accent-note-hover: #f1f5f9;
-    --color-accent-note-text: #475569;
-    --color-accent-note-border: #f1f5f9;
+    --color-accent-note-bg: #f1f5f9;
+    --color-accent-note-hover: #e2e8f0;
+    --color-accent-note-text: #334155;
+    --color-accent-note-border: #e2e8f0;
 
     /* Overlay colors for buttons on images */
     --overlay-bg: rgba(28, 25, 23, 0.5);
@@ -108,10 +108,10 @@
 
     /* Note - Deep Neutral Gray */
     --color-accent-note: #94a3b8;
-    --color-accent-note-bg: #0f172a;
-    --color-accent-note-hover: #1e293b;
-    --color-accent-note-text: #f8fafc;
-    --color-accent-note-border: #1e293b;
+    --color-accent-note-bg: #1e293b;
+    --color-accent-note-hover: #334155;
+    --color-accent-note-text: #f1f5f9;
+    --color-accent-note-border: #334155;
 
     /* Overlay colors for buttons on images */
     --overlay-bg: rgba(22, 20, 18, 0.6);
