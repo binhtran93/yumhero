@@ -172,7 +172,7 @@
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto"
             >
                 {#each filteredRecipes as recipe (recipe.id)}
-                    <div in:fade={{ duration: 300 }}>
+                    <div in:fade={{ duration: 300 }} class="h-full">
                         <RecipeCard
                             id={recipe.id}
                             title={recipe.title}
