@@ -613,7 +613,7 @@
                 <div class="relative">
                     <!-- Browser Frame -->
                     <div
-                        class="bg-app-surface border border-app-border rounded-xl shadow-2xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
+                        class="bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
                     >
                         <!-- Browser Chrome -->
                         <div
@@ -1015,7 +1015,7 @@
                     </div>
                     <!-- Shadow/Glow Effect -->
                     <div
-                        class="absolute -inset-4 bg-gradient-to-r from-app-primary/10 via-transparent to-app-primary/10 rounded-2xl -z-10 blur-xl"
+                        class="absolute -inset-4 bg-gradient-to-r from-app-primary/5 via-transparent to-app-primary/5 rounded-2xl -z-10 blur-xl opacity-50"
                     ></div>
                 </div>
             </div>
