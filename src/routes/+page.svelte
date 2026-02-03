@@ -25,7 +25,7 @@
 
     const mockPlan: MockDay[] = [
         {
-            day: "Mon",
+            day: "Monday",
             date: "2",
             meals: {
                 breakfast: [{ name: "Avocado Toast" }],
@@ -35,7 +35,7 @@
             },
         },
         {
-            day: "Tue",
+            day: "Tuesday",
             date: "3",
             meals: {
                 breakfast: [{ name: "Greek Yogurt" }],
@@ -45,7 +45,7 @@
             },
         },
         {
-            day: "Wed",
+            day: "Wednesday",
             date: "4",
             meals: {
                 breakfast: [],
@@ -55,7 +55,7 @@
             },
         },
         {
-            day: "Thu",
+            day: "Thursday",
             date: "5",
             meals: {
                 breakfast: [],
@@ -65,7 +65,7 @@
             },
         },
         {
-            day: "Fri",
+            day: "Friday",
             date: "6",
             meals: {
                 breakfast: [],
@@ -75,7 +75,7 @@
             },
         },
         {
-            day: "Sat",
+            day: "Saturday",
             date: "7",
             meals: {
                 breakfast: [],
@@ -85,7 +85,7 @@
             },
         },
         {
-            day: "Sun",
+            day: "Sunday",
             date: "8",
             meals: {
                 breakfast: [],
@@ -792,7 +792,7 @@
                                                     {/if}
                                                     <div class="flex-1 min-w-0">
                                                         <p
-                                                            class="text-[10px] font-bold text-app-text leading-tight truncate"
+                                                            class="text-xs font-bold text-app-text leading-tight truncate"
                                                         >
                                                             {item.name}
                                                         </p>
@@ -854,7 +854,7 @@
                                                     {/if}
                                                     <div class="flex-1 min-w-0">
                                                         <p
-                                                            class="text-[10px] font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors truncate"
+                                                            class="text-xs font-bold text-app-text leading-tight group-hover:text-app-primary transition-colors truncate"
                                                         >
                                                             {item.name}
                                                         </p>
@@ -892,7 +892,7 @@
                             >
                                 <!-- Simplified Week Grid Preview -->
                                 <div
-                                    class="grid bg-app-border border border-app-border rounded-lg"
+                                    class="grid bg-app-border border border-app-border rounded-lg overflow-hidden"
                                     style="grid-template-columns: repeat(7, minmax(140px, 1fr)); width: max-content; min-width: 100%;"
                                 >
                                     {#each mockPlan as day}
@@ -906,10 +906,6 @@
                                                 <span
                                                     class="text-xs font-black text-app-text"
                                                     >{day.day}</span
-                                                >
-                                                <span
-                                                    class="text-[10px] font-bold text-app-text/60"
-                                                    >{day.date}</span
                                                 >
                                             </div>
 
@@ -955,7 +951,7 @@
                                                         {/each}
 
                                                         <!-- Animation Target Drop -->
-                                                        {#if day.day === "Wed" && type === "breakfast"}
+                                                        {#if day.day === "Wednesday" && type === "breakfast"}
                                                             {#key restartKey}
                                                                 <div
                                                                     bind:this={
@@ -982,7 +978,7 @@
                                                             {/key}
                                                         {/if}
                                                         <!-- Animation Target Drop 2 (Lunch) -->
-                                                        {#if day.day === "Wed" && type === "lunch"}
+                                                        {#if day.day === "Wednesday" && type === "lunch"}
                                                             {#key restartKey}
                                                                 <div
                                                                     bind:this={
