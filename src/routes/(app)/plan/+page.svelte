@@ -1,41 +1,37 @@
 <script lang="ts">
-    import type {
-        MealType,
-        Recipe,
-        WeeklyPlan,
-        DayPlan,
-        PlannedRecipe,
-        LeftoverItem,
-        PlannedLeftover,
-    } from "$lib/types";
+    import type {LeftoverItem, MealType, PlannedLeftover, PlannedRecipe, Recipe, WeeklyPlan,} from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
-    import { userRecipes } from "$lib/stores/recipes";
+    import {getWeekPlan, saveWeekPlan} from "$lib/stores/plans";
+    import {userRecipes} from "$lib/stores/recipes";
     import {
         addLeftoverToFridge,
-        setLeftoverPlanned,
-        setLeftoverNotPlanned,
         deleteLeftover,
+        leftovers,
+        setLeftoverNotPlanned,
+        setLeftoverPlanned,
     } from "$lib/stores/leftovers";
-    import { getBoughtIngredientsForRecipe } from "$lib/stores/shoppingList";
-    import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
+    import {getBoughtIngredientsForRecipe, getWeekShoppingList} from "$lib/stores/shoppingList";
+    import {addIngredientsToFridge} from "$lib/stores/fridgeIngredients";
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
-    import { onMount } from "svelte";
-    import { fade, scale } from "svelte/transition";
-    import {BrushCleaning, ChevronLeft, ChevronRight, Printer, TimerReset, Trash2} from "lucide-svelte";
+    import {onMount} from "svelte";
+    import {fade} from "svelte/transition";
+    import {BrushCleaning, ChevronLeft, ChevronRight, EllipsisVertical, Printer,} from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
+    import PlanMenu from "$lib/components/PlanMenu.svelte";
     import CookingView from "$lib/components/CookingView.svelte";
-    import { twMerge } from "tailwind-merge";
-    import { documentStore, type DocumentState } from "$lib/stores/firestore";
-    import { user } from "$lib/stores/auth";
-    import { derived } from "svelte/store";
-    import { X } from "lucide-svelte";
-    import { toasts } from "$lib/stores/toasts";
+    import {twMerge} from "tailwind-merge";
+    import {type DocumentState, documentStore} from "$lib/stores/firestore";
+    import {user} from "$lib/stores/auth";
+    import {derived, get, writable} from "svelte/store";
+    import {toasts} from "$lib/stores/toasts";
+    import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
+    import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
+    import {toPng} from "html-to-image";
 
     const DAYS = [
         "Monday",
@@ -121,9 +117,6 @@
         recipeId: null,
     });
 
-    // Derived store to fetch the specific recipe for the mode modal
-    // We need to bridge Runes state to Store for documentStore
-    import { get, writable } from "svelte/store";
     let activeRecipeIdStore = writable<string | null>(null);
 
     $effect(() => {
@@ -149,6 +142,14 @@
     let modeLoading = $derived($modeRecipeStore.loading);
 
     let isResetModalOpen = $state(false);
+
+    let planMenu = $state<{
+        isOpen: boolean;
+        triggerRect: DOMRect | null;
+    }>({
+        isOpen: false,
+        triggerRect: null,
+    });
 
     // Week Navigation logic
     let currentDate = $state(new Date());
@@ -258,8 +259,6 @@
             .map((pl) => leftoversVal.data.find((l) => l.id === pl.leftoverId))
             .filter(Boolean) as LeftoverItem[];
     };
-
-    import { leftovers } from "$lib/stores/leftovers";
 
     const handleRecipeSelect = (recipes: Recipe[]) => {
         const { day, mealType } = modal;
@@ -635,6 +634,14 @@
         };
     }
 
+    const handleOpenPlanMenu = (e: MouseEvent) => {
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        planMenu = {
+            isOpen: true,
+            triggerRect: rect,
+        };
+    };
+
     function handleCloseRecipeMode() {
         recipeModeModal = {
             ...recipeModeModal,
@@ -947,10 +954,6 @@
 
         saveWeekPlan(weekId, plan);
     };
-    import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
-    import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
-    import { getWeekShoppingList } from "$lib/stores/shoppingList";
-    import { toPng } from "html-to-image";
 
     // Shopping List State
     let isShoppingListOpen = $state(false);
@@ -1071,7 +1074,7 @@
                     <ChevronLeft size={18} />
                 </button>
                 <span
-                    class="text-xs font-bold text-center text-app-text min-w-[90px]"
+                    class="text-xs font-bold text-center text-app-text min-w-22.5"
                 >
                     {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
                 </span>
@@ -1083,34 +1086,47 @@
                 </button>
             </div>
 
-            <button
-                class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
-                onclick={() => (isResetModalOpen = true)}
-                disabled={isPrinting}
-                aria-label="Clear Week Plan"
-            >
-                <BrushCleaning
-                    size={22}
-                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                />
-            </button>
-
-            <button
-                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group disabled:opacity-50"
-                onclick={handlePrint}
-                disabled={isPrinting}
-                aria-label="Print Week Plan"
-            >
-                {#if isPrinting}
-                    <div
-                        class="w-6 h-6 border-2 border-app-primary border-t-transparent rounded-full animate-spin"
-                    ></div>
-                {:else}
-                    <Printer
-                        size={24}
+            <div class="hidden md:flex items-center gap-2">
+                <button
+                    class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
+                    onclick={() => (isResetModalOpen = true)}
+                    disabled={isPrinting}
+                    aria-label="Clear Week Plan"
+                >
+                    <BrushCleaning
+                        size={20}
                         class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
                     />
-                {/if}
+                </button>
+
+                <button
+                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group disabled:opacity-50"
+                    onclick={handlePrint}
+                    disabled={isPrinting}
+                    aria-label="Print Week Plan"
+                >
+                    {#if isPrinting}
+                        <div
+                            class="w-6 h-6 border-2 border-app-primary border-t-transparent rounded-full animate-spin"
+                        ></div>
+                    {:else}
+                        <Printer
+                            size={20}
+                            class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                        />
+                    {/if}
+                </button>
+            </div>
+
+            <button
+                class="md:hidden p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group"
+                onclick={handleOpenPlanMenu}
+                aria-label="More options"
+            >
+                <EllipsisVertical
+                    size={24}
+                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                />
             </button>
 
             <ShoppingCartButton
@@ -1134,21 +1150,21 @@
                 class={twMerge(
                     "flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30",
                     isPrinting &&
-                        "printing-mode !grid !w-[1400px] !min-w-[1400px] !bg-white grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,auto)]",
+                        "printing-mode grid! w-350! min-w-350! bg-white! grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,auto)]",
                 )}
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
                     <div
                         class={twMerge(
                             "w-screen flex flex-col md:contents snap-start",
-                            isPrinting && "!contents",
+                            isPrinting && "contents!",
                         )}
                     >
                         <!-- Header -->
                         <div
                             class={twMerge(
                                 "sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0",
-                                isPrinting && "!h-15 !py-0",
+                                isPrinting && "h-15! py-0!",
                             )}
                             bind:this={dayRefs[i]}
                         >
@@ -1156,7 +1172,7 @@
                             <div
                                 class={twMerge(
                                     "flex md:hidden items-center justify-center gap-1.5",
-                                    isPrinting && "!hidden",
+                                    isPrinting && "hidden!",
                                 )}
                             >
                                 <span
@@ -1178,7 +1194,7 @@
                             <div
                                 class={twMerge(
                                     "hidden md:flex items-center gap-2",
-                                    isPrinting && "!flex",
+                                    isPrinting && "flex!",
                                 )}
                             >
                                 <span
@@ -1198,7 +1214,7 @@
                             <span
                                 class={twMerge(
                                     "hidden md:block text-xs text-app-text font-bold opacity-70",
-                                    isPrinting && "!block",
+                                    isPrinting && "block!",
                                 )}
                             >
                                 {getDayDate(i).split(" ")[1]}
@@ -1413,3 +1429,13 @@
     onConfirm={handleResetPlan}
     onClose={() => (isResetModalOpen = false)}
 />
+
+{#if planMenu.isOpen && planMenu.triggerRect}
+    <PlanMenu
+        triggerRect={planMenu.triggerRect}
+        onClose={() => (planMenu.isOpen = false)}
+        onPrint={handlePrint}
+        onClear={() => (isResetModalOpen = true)}
+        {isPrinting}
+    />
+{/if}
