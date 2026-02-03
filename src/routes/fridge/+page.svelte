@@ -9,15 +9,18 @@
         UtensilsCrossed,
         X as XIcon,
     } from "lucide-svelte";
-    import {slide} from "svelte/transition";
+    import { slide } from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import {deleteLeftover, leftovers} from "$lib/stores/leftovers";
-    import {deleteIngredient, fridgeIngredients,} from "$lib/stores/fridgeIngredients";
-    import {isMealTimePast, parseWeekId} from "$lib/utils/mealtime";
-    import {formatAmount} from "$lib/utils/shopping";
-    import type {FridgeIngredient, LeftoverItem} from "$lib/types";
+    import { deleteLeftover, leftovers } from "$lib/stores/leftovers";
+    import {
+        deleteIngredient,
+        fridgeIngredients,
+    } from "$lib/stores/fridgeIngredients";
+    import { isMealTimePast, parseWeekId } from "$lib/utils/mealtime";
+    import { formatAmount } from "$lib/utils/shopping";
+    import type { FridgeIngredient, LeftoverItem } from "$lib/types";
     import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
     import FridgeMenu from "$lib/components/FridgeMenu.svelte";
 
@@ -51,16 +54,25 @@
     // Search state
     let searchQuery = $state("");
 
+    function normalizeText(text: string) {
+        return text
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toLowerCase();
+    }
+
     // Filtered data
     let filteredLeftovers = $derived(
         $leftovers.data.filter((item) =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase()),
+            normalizeText(item.title).includes(normalizeText(searchQuery)),
         ),
     );
 
     let filteredIngredientsList = $derived(
         $fridgeIngredients.data.filter((item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+            normalizeText(item.name).includes(normalizeText(searchQuery)),
         ),
     );
 
