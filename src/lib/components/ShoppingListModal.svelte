@@ -237,11 +237,11 @@
             class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 border-b border-app-border flex items-center justify-between"
         >
             <h2
-                class="text-xl sm:text-2xl font-display font-black text-app-text flex items-baseline gap-2"
+                class="text-xl sm:text-2xl font-display font-black text-app-text flex items-center gap-2"
             >
                 Shopping List
                 {#if itemCount > 0}
-                    <span class="text-sm font-bold text-app-text-muted">
+                    <span class="text-sm font-bold text-app-text-muted mt-0.5">
                         ({checkedCount}/{itemCount})
                     </span>
                 {/if}
