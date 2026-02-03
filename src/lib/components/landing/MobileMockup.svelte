@@ -7,7 +7,7 @@
         getMealStyles,
     } from "$lib/data/landingData";
 
-    import { onMount, onDestroy } from "svelte";
+    import { onMount, onDestroy, tick } from "svelte";
 
     // Mobile carousel state
     let mobileDayIndex = $state(0);
@@ -95,10 +95,76 @@
     }
 
     // Demo Animation Loop
-    let demoTimeout: NodeJS.Timeout;
+    let demoAbortController: AbortController | null = null;
 
-    function runDemo() {
-        // Reset ALL demo state
+    // Timing constants for animation steps (in ms)
+    const TIMING = {
+        INITIAL_DELAY: 500,
+        CURSOR_MOVE: 1000,
+        CLICK_START: 300,
+        MODAL_OPEN: 500,
+        RECIPE_HOVER: 800,
+        RECIPE_CLICK: 300,
+        AFTER_ADD: 800,
+        CURSOR_EXIT: 500,
+        LOOP_DELAY: 2000,
+    } as const;
+
+    // Helper to create a cancellable delay
+    function delay(ms: number, signal: AbortSignal): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(resolve, ms);
+            signal.addEventListener("abort", () => {
+                clearTimeout(timeout);
+                reject(new DOMException("Aborted", "AbortError"));
+            });
+        });
+    }
+
+    // Helper to check if demo should continue
+    function shouldContinue(): boolean {
+        return !hasInteracted;
+    }
+
+    // Helper to wait for an element to be rendered and get its position
+    async function waitForElementAndGetPosition(
+        getRef: () => HTMLDivElement | undefined,
+        signal: AbortSignal,
+        maxAttempts = 20,
+    ): Promise<{ x: number; y: number }> {
+        for (let i = 0; i < maxAttempts; i++) {
+            await tick();
+            const ref = getRef();
+            if (ref && carouselRef) {
+                const targetRect = ref.getBoundingClientRect();
+                // Check if element has valid dimensions (is rendered)
+                if (targetRect.width > 0 && targetRect.height > 0) {
+                    const carouselRect = carouselRef.getBoundingClientRect();
+                    return {
+                        x:
+                            targetRect.left -
+                            carouselRect.left +
+                            targetRect.width / 2,
+                        y:
+                            targetRect.top -
+                            carouselRect.top +
+                            targetRect.height / 2,
+                    };
+                }
+            }
+            // Wait a frame and try again
+            await delay(50, signal);
+        }
+        // Fallback to center of carousel
+        if (carouselRef) {
+            const rect = carouselRef.getBoundingClientRect();
+            return { x: rect.width / 2, y: rect.height / 2 };
+        }
+        return { x: 0, y: 0 };
+    }
+
+    // Reset all demo state to initial values
+    function resetDemoState() {
         localPlan = mockPlan.map((day) => {
             if (day.day === "Monday") {
                 return {
@@ -121,8 +187,6 @@
         activeAddType = null;
         isRecipeActive = false;
         activeRecipeName = null;
-
-        // Ensure we are on Monday for the demo
         mobileDayIndex = 0;
 
         // Start position (off-bottom center)
@@ -130,297 +194,166 @@
             const rect = carouselRef.getBoundingClientRect();
             cursorPos = { x: rect.width / 2, y: rect.height + 50 };
         }
+    }
 
-        // --- STEP 1: Add Lunch ---
-        demoTimeout = setTimeout(() => {
-            if (hasInteracted) return;
+    // Update Monday's meals in localPlan
+    function updateMondayMeals(meals: {
+        lunch?: Array<{ name: string }>;
+        dinner?: Array<{ name: string }>;
+        snack?: Array<{ name: string }>;
+    }) {
+        localPlan = localPlan.map((day) => {
+            if (day.day === "Monday") {
+                return {
+                    ...day,
+                    meals: {
+                        ...day.meals,
+                        ...meals,
+                    },
+                };
+            }
+            return day;
+        });
+    }
+
+    // Animate adding a single meal
+    async function animateMealAddition(
+        signal: AbortSignal,
+        getAddButtonRef: () => HTMLDivElement | undefined,
+        getRecipeRef: () => HTMLDivElement | undefined,
+        mealType: string,
+        recipeName: string,
+        mealsAfterAdd: {
+            lunch?: Array<{ name: string }>;
+            dinner?: Array<{ name: string }>;
+            snack?: Array<{ name: string }>;
+        },
+    ): Promise<void> {
+        // Move cursor to add button
+        // We wait a bit for the button to ensure it's mounted if it was just rendered
+        await tick();
+        cursorPos = updateCursorTarget(getAddButtonRef());
+        await delay(TIMING.CURSOR_MOVE, signal);
+        if (!shouldContinue()) return;
+
+        // Click the add button
+        isCursorClicking = true;
+        isAddButtonActive = true;
+        activeAddType = mealType;
+        await delay(TIMING.CLICK_START, signal);
+        if (!shouldContinue()) return;
+
+        // Release click and show modal
+        isCursorClicking = false;
+        isAddButtonActive = false;
+        showModal = true;
+        await delay(TIMING.MODAL_OPEN, signal);
+        if (!shouldContinue()) return;
+
+        // Move cursor to recipe (wait for element to be rendered in modal)
+        cursorPos = await waitForElementAndGetPosition(getRecipeRef, signal);
+        await delay(TIMING.RECIPE_HOVER, signal);
+        if (!shouldContinue()) return;
+
+        // Click the recipe
+        isCursorClicking = true;
+        isRecipeActive = true;
+        activeRecipeName = recipeName;
+        await delay(TIMING.RECIPE_CLICK, signal);
+        if (!shouldContinue()) return;
+
+        // Complete selection and close modal
+        isCursorClicking = false;
+        isRecipeActive = false;
+        showModal = false;
+        updateMondayMeals(mealsAfterAdd);
+        await delay(TIMING.AFTER_ADD, signal);
+    }
+
+    async function runDemoSequence(signal: AbortSignal): Promise<void> {
+        try {
+            // Initial delay before starting
+            await delay(TIMING.INITIAL_DELAY, signal);
+            if (!shouldContinue()) return;
+
+            // Show cursor
             showCursor = true;
-            cursorPos = updateCursorTarget(addLunchRef);
 
-            demoTimeout = setTimeout(() => {
-                if (hasInteracted) return;
-                isCursorClicking = true;
-                isAddButtonActive = true;
-                activeAddType = "lunch";
+            // Step 1: Add Lunch
+            await animateMealAddition(
+                signal,
+                () => addLunchRef,
+                () => recipeTunaRef,
+                "lunch",
+                "Tuna Salad",
+                { lunch: [{ name: "Tuna Salad" }] },
+            );
+            if (!shouldContinue()) return;
 
-                demoTimeout = setTimeout(() => {
-                    if (hasInteracted) return;
-                    isCursorClicking = false;
-                    isAddButtonActive = false;
-                    showModal = true;
+            // Step 2: Add Dinner
+            await animateMealAddition(
+                signal,
+                () => addDinnerRef,
+                () => recipeRiceRef,
+                "dinner",
+                "Egg Fried Rice",
+                {
+                    lunch: [{ name: "Tuna Salad" }],
+                    dinner: [{ name: "Egg Fried Rice" }],
+                },
+            );
+            if (!shouldContinue()) return;
 
-                    demoTimeout = setTimeout(() => {
-                        if (hasInteracted) return;
-                        cursorPos = updateCursorTarget(recipeTunaRef);
+            // Step 3: Add Snack
+            await animateMealAddition(
+                signal,
+                () => addSnackRef,
+                () => recipeSnackRef,
+                "snack",
+                "Greek Yogurt",
+                {
+                    lunch: [{ name: "Tuna Salad" }],
+                    dinner: [{ name: "Egg Fried Rice" }],
+                    snack: [{ name: "Greek Yogurt" }],
+                },
+            );
+            if (!shouldContinue()) return;
 
-                        demoTimeout = setTimeout(() => {
-                            if (hasInteracted) return;
-                            isCursorClicking = true;
-                            isRecipeActive = true;
-                            activeRecipeName = "Tuna Salad";
+            // Move cursor away
+            if (carouselRef) {
+                const rect = carouselRef.getBoundingClientRect();
+                cursorPos = { x: rect.width / 2, y: rect.height + 50 };
+            }
+            await delay(TIMING.CURSOR_EXIT, signal);
+            if (!shouldContinue()) return;
 
-                            demoTimeout = setTimeout(() => {
-                                if (hasInteracted) return;
-                                isCursorClicking = false;
-                                isRecipeActive = false;
-                                showModal = false;
+            // Wait before looping
+            await delay(TIMING.LOOP_DELAY, signal);
+            if (!shouldContinue()) return;
 
-                                localPlan = localPlan.map((day) => {
-                                    if (day.day === "Monday") {
-                                        return {
-                                            ...day,
-                                            meals: {
-                                                ...day.meals,
-                                                lunch: [{ name: "Tuna Salad" }],
-                                            },
-                                        };
-                                    }
-                                    return day;
-                                });
+            // Loop the demo
+            runDemo();
+        } catch (error) {
+            // AbortError is expected when demo is cancelled
+            if (error instanceof DOMException && error.name === "AbortError") {
+                return;
+            }
+            throw error;
+        }
+    }
 
-                                // --- STEP 2: Add Dinner ---
-                                demoTimeout = setTimeout(() => {
-                                    if (hasInteracted) return;
-                                    cursorPos =
-                                        updateCursorTarget(addDinnerRef);
+    function runDemo() {
+        // Cancel any existing demo
+        if (demoAbortController) {
+            demoAbortController.abort();
+        }
 
-                                    demoTimeout = setTimeout(() => {
-                                        if (hasInteracted) return;
-                                        isCursorClicking = true;
-                                        isAddButtonActive = true;
-                                        activeAddType = "dinner";
+        // Reset state
+        resetDemoState();
 
-                                        demoTimeout = setTimeout(() => {
-                                            if (hasInteracted) return;
-                                            isCursorClicking = false;
-                                            isAddButtonActive = false;
-                                            showModal = true;
-
-                                            demoTimeout = setTimeout(() => {
-                                                if (hasInteracted) return;
-                                                cursorPos =
-                                                    updateCursorTarget(
-                                                        recipeRiceRef,
-                                                    );
-
-                                                demoTimeout = setTimeout(() => {
-                                                    if (hasInteracted) return;
-                                                    isCursorClicking = true;
-                                                    isRecipeActive = true;
-                                                    activeRecipeName =
-                                                        "Egg Fried Rice";
-
-                                                    demoTimeout = setTimeout(
-                                                        () => {
-                                                            if (hasInteracted)
-                                                                return;
-                                                            isCursorClicking = false;
-                                                            isRecipeActive = false;
-                                                            showModal = false;
-
-                                                            localPlan =
-                                                                localPlan.map(
-                                                                    (day) => {
-                                                                        if (
-                                                                            day.day ===
-                                                                            "Monday"
-                                                                        ) {
-                                                                            return {
-                                                                                ...day,
-                                                                                meals: {
-                                                                                    ...day.meals,
-                                                                                    lunch: [
-                                                                                        {
-                                                                                            name: "Tuna Salad",
-                                                                                        },
-                                                                                    ],
-                                                                                    dinner: [
-                                                                                        {
-                                                                                            name: "Egg Fried Rice",
-                                                                                        },
-                                                                                    ],
-                                                                                },
-                                                                            };
-                                                                        }
-                                                                        return day;
-                                                                    },
-                                                                );
-
-                                                            // --- STEP 3: Add Snack ---
-                                                            demoTimeout =
-                                                                setTimeout(
-                                                                    () => {
-                                                                        if (
-                                                                            hasInteracted
-                                                                        )
-                                                                            return;
-                                                                        cursorPos =
-                                                                            updateCursorTarget(
-                                                                                addSnackRef,
-                                                                            );
-
-                                                                        demoTimeout =
-                                                                            setTimeout(
-                                                                                () => {
-                                                                                    if (
-                                                                                        hasInteracted
-                                                                                    )
-                                                                                        return;
-                                                                                    isCursorClicking = true;
-                                                                                    isAddButtonActive = true;
-                                                                                    activeAddType =
-                                                                                        "snack";
-
-                                                                                    demoTimeout =
-                                                                                        setTimeout(
-                                                                                            () => {
-                                                                                                if (
-                                                                                                    hasInteracted
-                                                                                                )
-                                                                                                    return;
-                                                                                                isCursorClicking = false;
-                                                                                                isAddButtonActive = false;
-                                                                                                showModal = true;
-
-                                                                                                demoTimeout =
-                                                                                                    setTimeout(
-                                                                                                        () => {
-                                                                                                            if (
-                                                                                                                hasInteracted
-                                                                                                            )
-                                                                                                                return;
-                                                                                                            cursorPos =
-                                                                                                                updateCursorTarget(
-                                                                                                                    recipeSnackRef,
-                                                                                                                );
-
-                                                                                                            demoTimeout =
-                                                                                                                setTimeout(
-                                                                                                                    () => {
-                                                                                                                        if (
-                                                                                                                            hasInteracted
-                                                                                                                        )
-                                                                                                                            return;
-                                                                                                                        isCursorClicking = true;
-                                                                                                                        isRecipeActive = true;
-                                                                                                                        activeRecipeName =
-                                                                                                                            "Greek Yogurt";
-
-                                                                                                                        demoTimeout =
-                                                                                                                            setTimeout(
-                                                                                                                                () => {
-                                                                                                                                    if (
-                                                                                                                                        hasInteracted
-                                                                                                                                    )
-                                                                                                                                        return;
-                                                                                                                                    isCursorClicking = false;
-                                                                                                                                    isRecipeActive = false;
-                                                                                                                                    showModal = false;
-
-                                                                                                                                    localPlan =
-                                                                                                                                        localPlan.map(
-                                                                                                                                            (
-                                                                                                                                                day,
-                                                                                                                                            ) => {
-                                                                                                                                                if (
-                                                                                                                                                    day.day ===
-                                                                                                                                                    "Monday"
-                                                                                                                                                ) {
-                                                                                                                                                    return {
-                                                                                                                                                        ...day,
-                                                                                                                                                        meals: {
-                                                                                                                                                            ...day.meals,
-                                                                                                                                                            lunch: [
-                                                                                                                                                                {
-                                                                                                                                                                    name: "Tuna Salad",
-                                                                                                                                                                },
-                                                                                                                                                            ],
-                                                                                                                                                            dinner: [
-                                                                                                                                                                {
-                                                                                                                                                                    name: "Egg Fried Rice",
-                                                                                                                                                                },
-                                                                                                                                                            ],
-                                                                                                                                                            snack: [
-                                                                                                                                                                {
-                                                                                                                                                                    name: "Greek Yogurt",
-                                                                                                                                                                },
-                                                                                                                                                            ],
-                                                                                                                                                        },
-                                                                                                                                                    };
-                                                                                                                                                }
-                                                                                                                                                return day;
-                                                                                                                                            },
-                                                                                                                                        );
-
-                                                                                                                                    // Move cursor away and loop
-                                                                                                                                    demoTimeout =
-                                                                                                                                        setTimeout(
-                                                                                                                                            () => {
-                                                                                                                                                if (
-                                                                                                                                                    hasInteracted
-                                                                                                                                                )
-                                                                                                                                                    return;
-                                                                                                                                                if (
-                                                                                                                                                    carouselRef
-                                                                                                                                                ) {
-                                                                                                                                                    const rect =
-                                                                                                                                                        carouselRef.getBoundingClientRect();
-                                                                                                                                                    cursorPos =
-                                                                                                                                                        {
-                                                                                                                                                            x:
-                                                                                                                                                                rect.width /
-                                                                                                                                                                2,
-                                                                                                                                                            y:
-                                                                                                                                                                rect.height +
-                                                                                                                                                                50,
-                                                                                                                                                        };
-                                                                                                                                                }
-                                                                                                                                                demoTimeout =
-                                                                                                                                                    setTimeout(
-                                                                                                                                                        () => {
-                                                                                                                                                            if (
-                                                                                                                                                                hasInteracted
-                                                                                                                                                            )
-                                                                                                                                                                return;
-                                                                                                                                                            runDemo();
-                                                                                                                                                        },
-                                                                                                                                                        2000,
-                                                                                                                                                    );
-                                                                                                                                            },
-                                                                                                                                            500,
-                                                                                                                                        );
-                                                                                                                                },
-                                                                                                                                300,
-                                                                                                                            );
-                                                                                                                    },
-                                                                                                                    800,
-                                                                                                                );
-                                                                                                        },
-                                                                                                        500,
-                                                                                                    );
-                                                                                            },
-                                                                                            300,
-                                                                                        );
-                                                                                },
-                                                                                1000,
-                                                                            );
-                                                                    },
-                                                                    800,
-                                                                ); // Wait for Dinner add animation
-                                                        },
-                                                        300,
-                                                    );
-                                                }, 800);
-                                            }, 500);
-                                        }, 300);
-                                    }, 1000);
-                                }, 800); // Wait for Lunch add animation
-                            }, 300);
-                        }, 800);
-                    }, 500);
-                }, 300);
-            }, 1000);
-        }, 500);
+        // Start new demo sequence
+        demoAbortController = new AbortController();
+        runDemoSequence(demoAbortController.signal);
     }
 
     onMount(() => {
@@ -429,12 +362,16 @@
     });
 
     onDestroy(() => {
-        clearTimeout(demoTimeout);
+        if (demoAbortController) {
+            demoAbortController.abort();
+        }
     });
 
     $effect(() => {
         if (hasInteracted) {
-            clearTimeout(demoTimeout);
+            if (demoAbortController) {
+                demoAbortController.abort();
+            }
             showModal = false;
             showCursor = false;
             localPlan = mockPlan; // Restore full plan
