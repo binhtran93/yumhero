@@ -616,7 +616,7 @@
                                 block: "center",
                             });
                         }}
-                        class="hidden items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
                     >
                         See it in action
                         <ChevronDown size={18} />
@@ -1096,26 +1096,7 @@
                                             >Plan</span
                                         >
 
-                                        <!-- Date range pill -->
-                                        <div
-                                            class="flex items-center gap-2 px-3 py-2 bg-white border border-gray-100 rounded-full shadow-sm text-[11px] font-bold text-gray-700"
-                                        >
-                                            <ChevronLeft
-                                                size={14}
-                                                class="text-gray-400"
-                                            />
-                                            <span>Feb 02 - Feb 08</span>
-                                            <ChevronRight
-                                                size={14}
-                                                class="text-gray-400"
-                                            />
-                                        </div>
-
                                         <div class="flex items-center gap-3">
-                                            <MoreVertical
-                                                size={20}
-                                                class="text-gray-400"
-                                            />
                                             <div class="relative">
                                                 <ShoppingCart
                                                     size={22}
