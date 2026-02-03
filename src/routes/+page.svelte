@@ -962,11 +962,15 @@
                 printWindow.document.write(`
                     <html>
                     <head>
-                        <title>Week Plan ${weekId}</title>
+                        <title></title>
                         <style>
-                            @page { size: landscape; margin: 10mm; }
+                            @page { 
+                                size: landscape; 
+                                margin: 0; 
+                            }
                             body { 
                                 margin: 0; 
+                                padding: 10mm;
                                 display: flex; 
                                 flex-direction: column;
                                 align-items: center; 
@@ -978,7 +982,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                padding: 10px 20px;
+                                padding: 10px 0;
                                 box-sizing: border-box;
                                 border-bottom: 2px solid #c2410c;
                                 margin-bottom: 15px;
