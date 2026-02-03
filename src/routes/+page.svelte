@@ -415,6 +415,17 @@
             dropRevealCard2.style.transform = `scale(${scale}) translateY(${translateY}px)`;
             dropRevealCard2.style.opacity = String(opacity);
         }
+
+        // Source element visibility (Mimic real life: moved leftovers are "gone")
+        if (leftoverRefs[1]) {
+            if (progress >= 0.37 && progress < 0.9) {
+                leftoverRefs[1].style.opacity = "0";
+                leftoverRefs[1].style.pointerEvents = "none";
+            } else {
+                leftoverRefs[1].style.opacity = "1";
+                leftoverRefs[1].style.pointerEvents = "auto";
+            }
+        }
     }
 
     function startAnimation() {
