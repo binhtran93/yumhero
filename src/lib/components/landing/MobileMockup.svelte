@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ShoppingCart, Hand } from "lucide-svelte";
+    import { ShoppingCart } from "lucide-svelte";
     import {
         mockPlan,
         mealTypes,
@@ -20,13 +20,29 @@
     let showModal = $state(false);
 
     // Cursor Simulation State
-    let cursorPos = $state({ x: 100, y: 100 }); // percent
+    let cursorPos = $state({ x: 0, y: 0 }); // px relative to screenRef
     let isCursorClicking = $state(false);
     let showCursor = $state(false);
 
     // UI Interaction States (visual feedback)
     let isAddButtonActive = $state(false);
     let isRecipeActive = $state(false);
+
+    // DOM References for exact coordinates
+    let screenRef: HTMLDivElement | undefined = $state();
+    let addLunchRef: HTMLDivElement | undefined = $state();
+    let recipeRef: HTMLDivElement | undefined = $state();
+
+    function updateCursorTarget(target: HTMLElement | undefined) {
+        if (!target || !screenRef) return { x: 0, y: 0 };
+        const screenRect = screenRef.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        return {
+            x: targetRect.left - screenRect.left + targetRect.width / 2,
+            y: targetRect.top - screenRect.top + targetRect.height / 2,
+        };
+    }
 
     // Initialize local plan with Monday meals empty
     let localPlan = $state(
@@ -97,14 +113,19 @@
         isCursorClicking = false;
         isAddButtonActive = false;
         isRecipeActive = false;
-        cursorPos = { x: 50, y: 110 }; // Start off-screen bottom
+
+        // Start position (off-bottom center)
+        if (screenRef) {
+            const rect = screenRef.getBoundingClientRect();
+            cursorPos = { x: rect.width / 2, y: rect.height + 50 };
+        }
 
         // 1. Cursor enters and moves to "Add Lunch"
         demoTimeout = setTimeout(() => {
             if (hasInteracted) return;
             showCursor = true;
-            // Target: Monday Lunch "Add" button (approximate coords)
-            cursorPos = { x: 50, y: 42 };
+            // Calculate target dynamically
+            cursorPos = updateCursorTarget(addLunchRef);
 
             // 2. Click "Add Lunch"
             demoTimeout = setTimeout(() => {
@@ -119,11 +140,11 @@
                     isAddButtonActive = false;
                     showModal = true;
 
-                    // 4. Move to "Tuna Salad" recipe
+                    // 4. Move to "Tuna Salad" recipe (wait for modal render)
                     demoTimeout = setTimeout(() => {
                         if (hasInteracted) return;
-                        // Target: Tuna Salad item in modal (approx coords)
-                        cursorPos = { x: 50, y: 48 };
+                        // Calculate target dynamically - recipeRef should be mounted now
+                        cursorPos = updateCursorTarget(recipeRef);
 
                         // 5. Click "Tuna Salad"
                         demoTimeout = setTimeout(() => {
@@ -158,7 +179,14 @@
                                 // 7. Move cursor away
                                 demoTimeout = setTimeout(() => {
                                     if (hasInteracted) return;
-                                    cursorPos = { x: 50, y: 110 };
+                                    if (screenRef) {
+                                        const rect =
+                                            screenRef.getBoundingClientRect();
+                                        cursorPos = {
+                                            x: rect.width / 2,
+                                            y: rect.height + 50,
+                                        };
+                                    }
 
                                     // 8. Loop
                                     demoTimeout = setTimeout(() => {
@@ -175,7 +203,8 @@
     }
 
     onMount(() => {
-        runDemo();
+        // Wait a tick for layout
+        setTimeout(runDemo, 100);
     });
 
     onDestroy(() => {
@@ -204,6 +233,7 @@
 
             <!-- Screen -->
             <div
+                bind:this={screenRef}
                 class="bg-white rounded-[40px] overflow-hidden relative z-0 isolate min-h-[720px]"
             >
                 <!-- Status bar -->
@@ -307,6 +337,7 @@
                                                 {:else if day.day === "Monday" && type === "lunch"}
                                                     <!-- Empty Slot Placeholder -->
                                                     <div
+                                                        bind:this={addLunchRef}
                                                         class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {isAddButtonActive
                                                             ? 'scale-95 bg-gray-50'
                                                             : ''}"
@@ -337,6 +368,7 @@
                             </h3>
                             <div class="space-y-2">
                                 <div
+                                    bind:this={recipeRef}
                                     class="flex items-center gap-3 p-2 rounded-xl border border-app-primary/20 transition-all duration-200 {isRecipeActive
                                         ? 'bg-app-primary/20 scale-[0.98]'
                                         : 'bg-app-primary/5'}"
@@ -387,23 +419,21 @@
                         </div>
                     {/if}
 
-                    <!-- Simulated Cursor -->
+                    <!-- Simulated Touch Cursor -->
                     <div
-                        class="absolute transition-all duration-700 ease-in-out z-50 pointer-events-none drop-shadow-xl"
+                        class="absolute transition-all duration-700 ease-in-out z-50 pointer-events-none"
                         style="
-                            left: {cursorPos.x}%; 
-                            top: {cursorPos.y}%; 
+                            left: {cursorPos.x}px; 
+                            top: {cursorPos.y}px; 
                             opacity: {showCursor ? 1 : 0};
-                            transform: translate(-30%, -10%) scale({isCursorClicking
+                            transform: translate(-50%, -50%) scale({isCursorClicking
                             ? 0.8
                             : 1});
                         "
                     >
                         <div
-                            class="bg-white/80 p-2 rounded-full backdrop-blur-sm border border-black/10"
-                        >
-                            <Hand class="text-black w-6 h-6 fill-black/10" />
-                        </div>
+                            class="w-8 h-8 rounded-full bg-gray-400/30 border border-gray-400/50 backdrop-blur-sm shadow-xl"
+                        ></div>
                     </div>
                 </div>
 
