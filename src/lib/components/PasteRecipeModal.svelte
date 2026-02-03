@@ -100,7 +100,7 @@
                 bind:value={recipeText}
                 disabled={isLoading}
                 placeholder="Paste recipe here..."
-                class="w-full h-64 p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 resize-none"
+                class="w-full h-64 p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 resize-none"
             ></textarea>
             {#if error}
                 <p class="text-sm text-red-500 pl-1">{error}</p>
@@ -111,7 +111,7 @@
             <button
                 onclick={onClose}
                 disabled={isLoading}
-                class="flex-1 py-3 rounded-xl bg-app-surface-deep border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
+                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
             >
                 Cancel
             </button>

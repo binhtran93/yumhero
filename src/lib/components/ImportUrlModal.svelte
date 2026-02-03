@@ -123,7 +123,7 @@
                 onkeydown={handleKeydown}
                 disabled={isLoading}
                 placeholder="https://example.com/recipe"
-                class="w-full h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50"
+                class="w-full h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50"
             />
             {#if error}
                 <p class="text-sm text-red-500 pl-1">{error}</p>
@@ -134,7 +134,7 @@
             <button
                 onclick={onClose}
                 disabled={isLoading}
-                class="flex-1 py-3 rounded-xl bg-app-surface-deep border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
+                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
             >
                 Cancel
             </button>

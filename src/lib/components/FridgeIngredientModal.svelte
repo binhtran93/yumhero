@@ -64,7 +64,7 @@
                 type="text"
                 bind:value={name}
                 placeholder="e.g. Milk, Eggs, Onions"
-                class="w-full h-12 px-4 bg-app-surface border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
+                class="w-full h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
                 autocomplete="off"
             />
         </div>
@@ -85,7 +85,7 @@
                     placeholder="0"
                     min="0"
                     step="0.1"
-                    class="w-full h-12 px-4 bg-app-surface border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
+                    class="w-full h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
                 />
             </div>
 
@@ -105,7 +105,7 @@
                     type="text"
                     bind:value={unit}
                     placeholder="kg, pcs, cups"
-                    class="w-full h-12 px-4 bg-app-surface border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
+                    class="w-full h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:ring-2 focus:ring-app-primary/50 transition-all font-medium"
                     autocomplete="off"
                 />
             </div>

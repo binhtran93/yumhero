@@ -726,7 +726,7 @@
         <button
             onclick={onClose}
             disabled={isSaving}
-            class="px-6 py-3 border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-auto"
+            class="px-6 py-3 bg-app-bg border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-auto"
         >
             Cancel
         </button>
@@ -781,7 +781,7 @@
                                 class="w-full px-4 py-2 rounded-full text-sm font-bold border transition-all truncate {activeVariantIndex ===
                                 i
                                     ? 'bg-app-primary text-white border-app-primary shadow-md'
-                                    : 'bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50'}"
+                                    : 'bg-app-bg text-app-text-muted border-app-border hover:border-app-primary/50'}"
                                 title={variant.title || `Variant ${i + 1}`}
                             >
                                 {variant.title || `Variant ${i + 1}`}
@@ -813,7 +813,7 @@
                         bind:value={title}
                         disabled={isSaving}
                         placeholder="Recipe Name *"
-                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                 </div>
 
@@ -828,7 +828,7 @@
                                     "px-4 py-2 rounded-full text-xs font-bold border transition-all disabled:opacity-50",
                                     mealTypes.includes(type as MealType)
                                         ? "bg-app-primary text-white border-app-primary shadow-sm"
-                                        : "bg-white dark:bg-gray-800 text-app-text-muted border-app-border hover:border-app-primary/50",
+                                        : "bg-app-bg text-app-text-muted border-app-border hover:border-app-primary/50",
                                 )}
                             >
                                 <span class="capitalize">{type}</span>
@@ -866,7 +866,7 @@
                         </div>
                     {:else}
                         <div
-                            class="p-2 md:p-3 bg-white dark:bg-gray-800 rounded-full shadow-sm group-hover:scale-110 transition-transform"
+                            class="p-2 md:p-3 bg-app-bg rounded-full shadow-sm group-hover:scale-110 transition-transform"
                         >
                             <Camera
                                 size={20}
@@ -918,7 +918,7 @@
                         rows="4"
                         disabled={isSaving}
                         placeholder="Description"
-                        class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors disabled:opacity-50"
+                        class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors disabled:opacity-50"
                     ></textarea>
                 </div>
 
@@ -933,7 +933,7 @@
                         bind:value={source}
                         disabled={isSaving}
                         placeholder="Website URL or cookbook name"
-                        class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                 </div>
 
@@ -950,7 +950,7 @@
                             bind:value={prepTime}
                             disabled={isSaving}
                             placeholder="e.g. 15 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -964,7 +964,7 @@
                             bind:value={cookTime}
                             disabled={isSaving}
                             placeholder="e.g. 30 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -978,7 +978,7 @@
                             bind:value={servings}
                             disabled={isSaving}
                             placeholder="e.g. 4"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                     <div class="space-y-2">
@@ -992,7 +992,7 @@
                             bind:value={yields}
                             disabled={isSaving}
                             placeholder="e.g. 12"
-                            class="w-full h-10 md:h-12 px-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
                         />
                     </div>
                 </div>
@@ -1004,7 +1004,7 @@
                     >
                     <div class="relative">
                         <div
-                            class="flex flex-wrap gap-2 p-2 bg-white dark:bg-gray-800 border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
+                            class="flex flex-wrap gap-2 p-2 bg-app-bg border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
                         >
                             {#each tags as tag, i}
                                 <span
@@ -1036,7 +1036,7 @@
 
                         {#if tagSuggestions.length > 0}
                             <div
-                                class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-app-border rounded-xl shadow-xl z-[100] overflow-hidden py-1"
+                                class="absolute left-0 right-0 top-full mt-1 bg-app-bg border border-app-border rounded-xl shadow-xl z-[100] overflow-hidden py-1"
                             >
                                 {#each tagSuggestions as suggestion, i}
                                     <button
@@ -1071,7 +1071,7 @@
                     disabled={isSaving}
                     class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
                     'line'
-                        ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
+                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
                         : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
                 >
                     Line-item Input
@@ -1081,7 +1081,7 @@
                     disabled={isSaving}
                     class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
                     'bulk'
-                        ? 'bg-white dark:bg-gray-800 text-app-primary shadow-sm border-app-primary/10'
+                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
                         : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
                 >
                     Bulk Input
@@ -1115,14 +1115,14 @@
                                 bind:value={ing.amount}
                                 disabled={isSaving}
                                 placeholder="Qty"
-                                class="w-14 md:w-20 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                                class="w-14 md:w-20 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
                             />
                             <input
                                 type="text"
                                 bind:value={ing.unit}
                                 disabled={isSaving}
                                 placeholder="Unit"
-                                class="w-14 md:w-24 h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                                class="w-14 md:w-24 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
                             />
                             <div class="flex-1 min-w-0">
                                 <input
@@ -1130,7 +1130,7 @@
                                     bind:value={ing.name}
                                     disabled={isSaving}
                                     placeholder="Ingredient"
-                                    class="w-full h-11 px-3 bg-white dark:bg-gray-800 border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
+                                    class="w-full h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
                                 />
                             </div>
                             <button
@@ -1156,7 +1156,7 @@
                     rows="10"
                     disabled={isSaving}
                     placeholder="1 cup flour&#10;2 eggs&#10;..."
-                    class="w-full p-4 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
+                    class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
                 ></textarea>
             {/if}
         </div>
@@ -1171,7 +1171,7 @@
                 rows="8"
                 disabled={isSaving}
                 placeholder="Step-by-step directions..."
-                class="w-full p-5 bg-white dark:bg-gray-800 border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
+                class="w-full p-5 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
             ></textarea>
         </div>
     </div>
