@@ -88,13 +88,13 @@
                         />
                         <!-- Gradient overlay for text readability -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                            class="absolute inset-0 bg-gradient-to-t from-overlay-gradient-from via-overlay-gradient-via to-transparent"
                         ></div>
 
                         <!-- Back button overlay -->
                         <a
                             href="/recipes"
-                            class="absolute top-3 left-3 w-9 h-9 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-full text-white"
+                            class="absolute top-3 left-3 w-9 h-9 flex items-center justify-center bg-overlay-bg hover:bg-overlay-bg-hover backdrop-blur-sm rounded-full text-overlay-text transition-colors"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@
                         <div class="absolute top-3 right-3">
                             <RecipeActionMenu
                                 recipeId={data.id}
-                                class="[&>button]:bg-black/40 [&>button]:backdrop-blur-sm [&>button]:text-white [&>button]:hover:bg-black/60 [&>button]:hover:text-white [&>button]:mr-0"
+                                class="[&>button]:bg-overlay-bg [&>button]:backdrop-blur-sm [&>button]:text-overlay-text [&>button]:hover:bg-overlay-bg-hover [&>button]:mr-0"
                             />
                         </div>
 
