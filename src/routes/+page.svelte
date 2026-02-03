@@ -147,7 +147,7 @@
     // Animation state
     let animationFrame: number | null = null;
     let animationStartTime: number = 0;
-    const ANIMATION_DURATION = 20000; // 20 seconds total cycle
+    const ANIMATION_DURATION = 15000; // 10 seconds total cycle
 
     interface Position {
         x: number;
