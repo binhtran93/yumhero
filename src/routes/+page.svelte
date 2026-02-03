@@ -299,11 +299,11 @@
                                         <div class="space-y-1.5">
                                             {#each mockLeftovers as item}
                                                 <div
-                                                    class="flex items-center gap-3 p-2 bg-app-bg border border-app-border rounded-lg shadow-sm"
+                                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:bg-app-surface-hover transition-all duration-300"
                                                 >
                                                     {#if item.image}
                                                         <div
-                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
                                                         >
                                                             <img
                                                                 src={item.image}
@@ -322,7 +322,7 @@
                                                             class="flex items-center gap-1 mt-1"
                                                         >
                                                             <div
-                                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
                                                             ></div>
                                                             <span
                                                                 class="text-[8px] font-medium text-app-text-muted"
@@ -358,11 +358,11 @@
                                         <div class="space-y-1.5">
                                             {#each mockQuickRecipes as item}
                                                 <div
-                                                    class="flex items-center gap-3 p-2 bg-app-bg border border-app-border rounded-lg shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer group"
+                                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-app-primary/40 hover:bg-app-surface-hover transition-all duration-300 cursor-pointer group"
                                                 >
                                                     {#if item.image}
                                                         <div
-                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
                                                         >
                                                             <img
                                                                 src={item.image}
