@@ -253,7 +253,7 @@
                 >
                     <p
                         class={twMerge(
-                            "font-bold leading-tight text-sm md:text-xs 2xl:text-sm",
+                            "font-bold leading-tight text-sm md:text-xs",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
