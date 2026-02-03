@@ -14,6 +14,7 @@
     import { sidebarExpanded } from "$lib/stores/ui";
     import { userRecipes } from "$lib/stores/recipes";
     import { totalLeftoversCount } from "$lib/stores/leftovers";
+    import { fridgeIngredientsCount } from "$lib/stores/fridgeIngredients";
     import type { Recipe } from "$lib/types";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
@@ -31,7 +32,10 @@
             href: "/fridge",
             label: "Fridge",
             icon: Refrigerator,
-            badge: $totalLeftoversCount > 0 ? $totalLeftoversCount : undefined,
+            badge:
+                $totalLeftoversCount + $fridgeIngredientsCount > 0
+                    ? $totalLeftoversCount + $fridgeIngredientsCount
+                    : undefined,
         },
         { href: "/recipes", label: "Recipes", icon: Book },
         { href: "/profile", label: "Profile", icon: User },

@@ -214,7 +214,7 @@
 
     const getDaysInFridge = (date: Date) => {
         const diff = now.getTime() - date.getTime();
-        return Math.floor(diff / (1000 * 60 * 60 * 24));
+        return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
     };
 
     const getDaysBadgeClass = (days: number) => {
@@ -476,11 +476,14 @@
                                                                 days,
                                                             )}"
                                                         >
-                                                            {days}
-                                                            {days === 1 ||
-                                                            days === 0
-                                                                ? "day"
-                                                                : "days"}
+                                                            {#if days === 0}
+                                                                Today
+                                                            {:else}
+                                                                {days}
+                                                                {days === 1
+                                                                    ? "day"
+                                                                    : "days"}
+                                                            {/if}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -570,11 +573,14 @@
                                                                     days,
                                                                 )}"
                                                             >
-                                                                {days}
-                                                                {days === 1 ||
-                                                                days === 0
-                                                                    ? "day"
-                                                                    : "days"}
+                                                                {#if days === 0}
+                                                                    Today
+                                                                {:else}
+                                                                    {days}
+                                                                    {days === 1
+                                                                        ? "day"
+                                                                        : "days"}
+                                                                {/if}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -710,10 +716,14 @@
                                                         days,
                                                     )}"
                                                 >
-                                                    {days}
-                                                    {days === 1 || days === 0
-                                                        ? "day"
-                                                        : "days"}
+                                                    {#if days === 0}
+                                                        Today
+                                                    {:else}
+                                                        {days}
+                                                        {days === 1
+                                                            ? "day"
+                                                            : "days"}
+                                                    {/if}
                                                 </span>
                                             </div>
                                         </div>
