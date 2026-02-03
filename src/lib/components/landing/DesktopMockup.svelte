@@ -245,17 +245,6 @@
             dropRevealCard2.style.opacity = String(opacity);
         }
 
-        // Source element visibility
-        if (quickRecipeRefs[0]) {
-            if (progress >= 0.07 && progress < 0.6) {
-                quickRecipeRefs[0].style.opacity = "0";
-                quickRecipeRefs[0].style.pointerEvents = "none";
-            } else {
-                quickRecipeRefs[0].style.opacity = "1";
-                quickRecipeRefs[0].style.pointerEvents = "auto";
-            }
-        }
-
         if (leftoverRefs[1]) {
             if (progress >= 0.37 && progress < 0.9) {
                 leftoverRefs[1].style.opacity = "0";
