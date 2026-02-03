@@ -1196,44 +1196,32 @@
 <Modal
     isOpen={recipeModeModal.isOpen}
     onClose={handleCloseRecipeMode}
-    class="max-w-3xl"
+    title="Cooking Mode"
+    class="max-w-3xl h-[85vh]"
 >
-    <div class="h-[90vh] flex flex-col relative bg-app-bg">
-        <button
-            class="absolute top-4 right-4 z-50 p-2 bg-black/10 hover:bg-black/20 rounded-full transition-colors hidden md:block"
-            onclick={handleCloseRecipeMode}
-        >
-            <X size={20} />
-        </button>
-
-        {#if modeLoading}
-            <div class="flex items-center justify-center h-full">
-                <div
-                    class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
-                ></div>
-            </div>
-        {:else if modeRecipe}
-            <CookingView
-                recipe={modeRecipe}
-                onBack={handleCloseRecipeMode}
-                onDone={handleCloseRecipeMode}
-            />
-        {:else}
+    {#if modeLoading}
+        <div class="flex items-center justify-center h-full">
             <div
-                class="flex flex-col items-center justify-center h-full text-center"
+                class="w-10 h-10 border-4 border-app-primary border-t-transparent rounded-full animate-spin"
+            ></div>
+        </div>
+    {:else if modeRecipe}
+        <CookingView recipe={modeRecipe} onDone={handleCloseRecipeMode} />
+    {:else}
+        <div
+            class="flex flex-col items-center justify-center h-full text-center"
+        >
+            <p class="text-lg font-medium text-app-text-muted">
+                Recipe not found
+            </p>
+            <button
+                class="mt-4 text-app-primary font-bold"
+                onclick={handleCloseRecipeMode}
             >
-                <p class="text-lg font-medium text-app-text-muted">
-                    Recipe not found
-                </p>
-                <button
-                    class="mt-4 text-app-primary font-bold"
-                    onclick={handleCloseRecipeMode}
-                >
-                    Close
-                </button>
-            </div>
-        {/if}
-    </div>
+                Close
+            </button>
+        </div>
+    {/if}
 </Modal>
 
 <!-- Bought Ingredients Confirmation Modal -->

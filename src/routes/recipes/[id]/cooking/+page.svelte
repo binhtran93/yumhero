@@ -6,6 +6,7 @@
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
     import CookingView from "$lib/components/CookingView.svelte";
+    import Header from "$lib/components/Header.svelte";
 
     let recipeId = $derived($page.params.id);
 
@@ -34,6 +35,11 @@
 </script>
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
+    <Header
+        title="Cooking Mode"
+        showBack={true}
+        onBack={() => goto(`/recipes/${recipeId}`)}
+    />
     {#if loading}
         <div class="flex items-center justify-center h-full">
             <div
@@ -41,11 +47,7 @@
             ></div>
         </div>
     {:else if recipe}
-        <CookingView
-            {recipe}
-            onBack={() => goto(`/recipes/${recipeId}`)}
-            onDone={() => goto(`/recipes/${recipeId}`)}
-        />
+        <CookingView {recipe} onDone={() => goto(`/recipes/${recipeId}`)} />
     {:else}
         <div
             class="flex-1 flex flex-col items-center justify-center text-center px-4"

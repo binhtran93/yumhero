@@ -1,21 +1,13 @@
 <script lang="ts">
-    import {
-        ChefHat,
-        Check,
-        ChevronLeft,
-        ChevronRight,
-        X,
-    } from "lucide-svelte";
+    import { ChefHat, Check, ChevronLeft, ChevronRight } from "lucide-svelte";
     import type { Recipe } from "$lib/types";
-    import Header from "./Header.svelte";
 
     interface Props {
         recipe: Recipe;
-        onBack: () => void;
         onDone: () => void;
     }
 
-    let { recipe, onBack, onDone }: Props = $props();
+    let { recipe, onDone }: Props = $props();
 
     // Track completed steps
     let completedSteps = $state<boolean[]>([]);
@@ -65,25 +57,6 @@
         }
     }
 
-    // Original Logic: let allDone = $derived(recipe && completedCount === recipe.instructions.length);
-    // But original logic didn't seem to have a "check step" UI in the code I saw, only navigation.
-    // Wait, I saw toggleStep but it wasn't used in the template.
-    // The original template used "Next Step" button.
-    // Let's stick to the visible behavior: Last step reached? Or specific "All Done" state?
-    // The original code had:
-    // let allDone = $derived(recipe && completedCount === recipe.instructions.length);
-    // But `completedCount` relied on `completedSteps` which was only updated by `toggleStep`.
-    // And `toggleStep` was NOT CALLED in the template provided.
-    // So `allDone` might have been broken or I missed something.
-    // However, `nextStep` just increments index.
-    // Let's assume reaching the end is enough or add a "Finish" button on last step.
-    // Actually looking at the original template again...
-    // It shows "All Done!" overlay if `allDone` is true.
-    // And `allDone` is true if `completedCount === total`.
-    // But where is completion happening?
-    // Ah, I might have missed `toggleStep` usage or it was intended but not implemented fully.
-    // Let's implement a logical "Finish" flow. When on last step, "Next Step" becomes "Finish".
-
     function handleNextOrFinish() {
         if (currentStepIndex < recipe.instructions.length - 1) {
             nextStep();
@@ -95,9 +68,6 @@
 </script>
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
-    <!-- Header -->
-    <Header title="Cooking Mode" showBack={true} {onBack} />
-
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-h-0 bg-app-bg">
         <div
