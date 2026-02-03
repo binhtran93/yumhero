@@ -3,12 +3,6 @@ import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
-import type { ShoppingListItem, FridgeIngredient } from '$lib/types';
-
-// Schema for AI response - Optimized for token savings
-const MatchResultSchema = z.object({
-    matches: z.array(z.array(z.string())).describe('Groups of IDs. Format: [fridgeIngredientId, shoppingItemId1, shoppingItemId2, ...]')
-});
 
 interface MinimalIngredient {
     id: string;
@@ -63,45 +57,53 @@ export async function POST({ request }) {
         // 2. AI Fuzzy Matching (only if there are items left)
         let aiMatches: any[] = [];
         if (unmatchedShoppingItems.length > 0 && fridgeIngredients.length > 0) {
+            // Map to short IDs to reduce cognitive load/token noise for the model
+            const sMap = unmatchedShoppingItems.map((item, i) => ({ ...item, shortId: `S${i}` }));
+            const fMap = fridgeIngredients.map((item, i) => ({ ...item, shortId: `F${i}` }));
+
             const prompt = `
-                ACT AS A STRICT KITCHEN INVENTORY MANAGER. Match shopping items to fridge ingredients.
-                
+                ACT AS A STRICT, EXHAUSTIVE KITCHEN INVENTORY MANAGER. 
+                Your goal is to find EVERY shopping item that is already in the fridge.
+
                 Shopping List:
-                ${unmatchedShoppingItems.map(item => `- ${item.id}: ${item.name} (unit: ${item.unit || 'none'})`).join('\n')}
+                ${sMap.map(item => `- ${item.shortId}: ${item.name}`).join('\n')}
 
                 Fridge:
-                ${fridgeIngredients.map(item => `- ${item.id}: ${item.name} (unit: ${item.unit || 'none'})`).join('\n')}
+                ${fMap.map(item => `- ${item.shortId}: ${item.name}`).join('\n')}
+
+                EXECUTION INSTRUCTIONS (Chain of Thought):
+                1. Go through the shopping list item-by-item.
+                2. For each item, check if its identity, translation, or synonym exists in the fridge list.
+                3. EXHAUSTIVE MODE: Do not stop until every single item has been checked. I expect a complete list of matches.
+                4. One fridge item can satisfy multiple shopping list entries (e.g., "tomatoes" and "cà chua" both match "cà chua").
 
                 CRITICAL RULES:
-                1. IDENTITY MATCH ONLY: Match if they are the SAME ingredient (e.g., "tomatoes" and "cà chua"). 
-                   Ignore differences in preparations, units, or forms (e.g., "sliced", "minced", "cloves", "bulbs", "pieces" are all the SAME ingredient).
-                2. UNIVERSAL LANGUAGE AGNOSTICISM: Recognize synonyms/translations across ALL languages. 
-                3. DO NOT MATCH SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots. Different ingredients are NOT matches.
-                4. CONFIDENCE > 0.95: Be extremely strict about the ingredient's nature.
-                5. EXHAUSTIVE: One fridge item can and SHOULD group multiple shopping items. Find EVERYTHING that matches.
-                6. FORMAT: Return groups where first ID is Fridge ID, and remaining IDs are Shopping Item IDs.
-                   Example: [[fridgeId1, shoppingId1, shoppingId2], [fridgeId2, shoppingId3]]
+                - IDENTITY MATCH ONLY: Match if they are the SAME ingredient (regardless of language, prep, or form).
+                - NO SUBSTITUTIONS: Onion is NOT tomato. Garlic is NOT shallots.
+                - FORMAT: Return groups of Short IDs. [[FridgeShortID, ShoppingShortID1, ShoppingShortID2, ...], ...]
             `;
 
             const { output } = await generateText({
                 model: google('gemini-2.0-flash-lite'),
                 experimental_output: Output.object({
-                    schema: MatchResultSchema
+                    schema: z.object({
+                        matches: z.array(z.array(z.string())).describe('Groups of Short IDs')
+                    })
                 }),
-                system: 'You are a strict, precise kitchen assistant. You only match identical ingredients across languages and forms. You are EXHAUSTIVE and always find ALL possible matches for every item listed.',
+                system: 'You are a precise kitchen assistant. You perform a complete, exhaustive check of every item to find all identical ingredients across languages.',
                 messages: [{ role: 'user', content: prompt }]
             });
 
             aiMatches = (output.matches || []).flatMap((group: string[]) => {
                 if (group.length < 2) return [];
-                const fId = group[0];
-                const sIds = group.slice(1);
+                const fShortId = group[0];
+                const sShortIds = group.slice(1);
 
-                const fItem = fridgeIngredients.find(f => f.id === fId);
+                const fItem = fMap.find(f => f.shortId === fShortId);
                 if (!fItem) return [];
 
-                return sIds.map(sId => {
-                    const sItem = shoppingList.find(s => s.id === sId);
+                return sShortIds.map(sId => {
+                    const sItem = sMap.find(s => s.shortId === sId);
                     if (!sItem) return null;
 
                     return {
@@ -119,8 +121,12 @@ export async function POST({ request }) {
             });
         }
 
+        // Deduplicate matches to prevent client-side key errors
+        const allMatches = [...exactMatches, ...aiMatches];
+        const uniqueMatches = Array.from(new Map(allMatches.map(m => [m.shoppingItemId, m])).values());
+
         return json({
-            matches: [...exactMatches, ...aiMatches]
+            matches: uniqueMatches
         });
 
     } catch (error: any) {
