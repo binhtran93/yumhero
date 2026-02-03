@@ -114,7 +114,7 @@
                                 >
                                     <span
                                         class="text-base font-black text-gray-800"
-                                        >{day.day} {day.date}</span
+                                        >{day.day}</span
                                     >
                                 </div>
                                 <div class="flex-1 overflow-hidden">
