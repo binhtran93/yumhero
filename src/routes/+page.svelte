@@ -348,7 +348,7 @@
                             </div>
                             <!-- Pointer Cursor -->
                             <div
-                                class="hand-cursor absolute opacity-0 drop-shadow-xl z-50"
+                                class="hand-cursor absolute opacity-0 drop-shadow-xl z-50 transition-none"
                             >
                                 <Pointer
                                     size={32}
@@ -1235,16 +1235,15 @@
             opacity: 0;
         }
 
-        /* 1. Move to Avocado Toast (Sidebar - 2nd item in Quick Recipes)
-           Approx top: 52% (Calculated: Leftovers + Header + 1st Item + Spacing) */
+        /* 1. Move to Avocado Toast (Sidebar - 1st item in Quick Recipes) */
         5% {
-            top: 52%;
+            top: 48%;
             left: 8%;
             transform: translate(0, 0);
             opacity: 1;
         }
         7% {
-            top: 52%;
+            top: 48%;
             left: 8%;
             transform: scale(0.85);
         } /* Grab */
@@ -1262,8 +1261,7 @@
         } /* Drop */
 
         /* ----- SEGMENT 2: Grilled Veggies to Thus Lunch ----- */
-        /* 3. Move to Grilled Veggies (Sidebar - it's above Quick Recipes)
-           Approx top: 30%, left: 8% */
+        /* 3. Move to Grilled Veggies (Sidebar - it's 2nd item in Leftovers) */
         35% {
             top: 30%;
             left: 8%;
@@ -1306,13 +1304,13 @@
         0%,
         6.9% {
             opacity: 0;
-            top: 52%;
+            top: 48%;
             left: 8%;
             transform: translate(0, 0);
         }
         7% {
             opacity: 1;
-            top: 52%;
+            top: 48%;
             left: 8%;
             transform: rotate(-2deg);
         }
@@ -1369,8 +1367,13 @@
             transform: scale(0.9) translateY(4px);
         }
         23%,
-        100% {
+        90% {
             opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        95%,
+        100% {
+            opacity: 0;
             transform: scale(1) translateY(0);
         }
     }
@@ -1383,8 +1386,13 @@
             transform: scale(0.9) translateY(4px);
         }
         53%,
-        100% {
+        90% {
             opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        95%,
+        100% {
+            opacity: 0;
             transform: scale(1) translateY(0);
         }
     }
