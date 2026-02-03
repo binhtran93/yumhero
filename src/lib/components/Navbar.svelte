@@ -30,7 +30,7 @@
     };
 
     let navItems = $derived<NavItem[]>([
-        { href: "/", label: "Plan", icon: Calendar },
+        { href: "/plan", label: "Plan", icon: Calendar },
         {
             href: "/fridge",
             label: "Fridge",
@@ -46,8 +46,9 @@
 
     // Check if a link is active
     const isActive = (path: string) => {
-        if (path === "/" && $page.url.pathname === "/") return true;
-        if (path !== "/" && $page.url.pathname.startsWith(path)) return true;
+        if (path === "/plan" && $page.url.pathname === "/plan") return true;
+        if (path !== "/plan" && $page.url.pathname.startsWith(path))
+            return true;
         return false;
     };
 
@@ -170,7 +171,7 @@
     </nav>
 
     <!-- Draggable Recipes List (Only when expanded AND on Plan page) -->
-    {#if $sidebarExpanded && $page.url.pathname === "/"}
+    {#if $sidebarExpanded && $page.url.pathname === "/plan"}
         <div
             class="hidden md:flex flex-col flex-1 min-h-0 mt-4 px-4 pb-2 border-t border-app-border pt-4"
         >
