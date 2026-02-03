@@ -214,13 +214,32 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-20 pb-6 md:pt-28 md:pb-10">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="relative pt-20 pb-6 md:pt-28 md:pb-10 overflow-hidden">
+        <!-- Premium Glow Effects -->
+        <div
+            class="absolute top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden"
+        >
+            <!-- Main amber glow (top-left) -->
             <div
-                class="max-w-4xl mx-auto text-center flex flex-col items-center"
+                class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.12)_0%,transparent_70%)] blur-[100px]"
+            ></div>
+            <!-- Secondary subtle glow (middle-right) -->
+            <div
+                class="absolute top-[20%] -right-[10%] w-[50%] h-[50%] bg-[radial-gradient(circle_at_center,rgba(194,65,12,0.08)_0%,transparent_70%)] blur-[80px]"
+            ></div>
+        </div>
+
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div
+                class="max-w-4xl mx-auto text-center flex flex-col items-center relative"
             >
+                <!-- Concentrated Heading Glow -->
+                <div
+                    class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18)_0%,transparent_60%)] blur-[120px] -z-10 pointer-events-none"
+                ></div>
+
                 <h1
-                    class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-4 tracking-tight"
+                    class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-4 tracking-tight relative"
                 >
                     Plan with Precision.<br />
                     <span class="text-app-primary">Eat with Intent.</span>
