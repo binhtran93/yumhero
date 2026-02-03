@@ -40,11 +40,26 @@
     let editingRecipe = $state<any | null>(null);
 
     // Reactive filtering
-    // Reactive filtering
+    function normalizeText(text: string) {
+        return text
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toLowerCase();
+    }
+
     let filteredRecipes = $derived(
-        ($userRecipes.data || []).filter((recipe) =>
-            recipe.title.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
+        ($userRecipes.data || []).filter((recipe) => {
+            const query = normalizeText(searchQuery);
+            return (
+                normalizeText(recipe.title).includes(query) ||
+                (recipe.tags &&
+                    recipe.tags.some((tag: string) =>
+                        normalizeText(tag).includes(query),
+                    ))
+            );
+        }),
     );
 
     function handleShowOptions(e: MouseEvent, recipeId: string) {
