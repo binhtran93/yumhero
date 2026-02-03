@@ -893,7 +893,7 @@
                                 <!-- Simplified Week Grid Preview -->
                                 <div
                                     class="grid bg-app-border border border-app-border rounded-lg"
-                                    style="grid-template-columns: repeat(7, minmax(140px, 1fr));"
+                                    style="grid-template-columns: repeat(7, minmax(140px, 1fr)); width: max-content; min-width: 100%;"
                                 >
                                     {#each mockPlan as day}
                                         <div
@@ -904,11 +904,11 @@
                                                 class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
                                             >
                                                 <span
-                                                    class="text-[10px] md:text-xs font-black text-app-text"
+                                                    class="text-xs font-black text-app-text"
                                                     >{day.day}</span
                                                 >
                                                 <span
-                                                    class="text-[8px] md:text-[10px] font-bold text-app-text/60"
+                                                    class="text-[10px] font-bold text-app-text/60"
                                                     >{day.date}</span
                                                 >
                                             </div>
@@ -916,14 +916,14 @@
                                             <!-- Meal Slots -->
                                             {#each mealTypes as type}
                                                 <div
-                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-15 md:min-h-25"
+                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-25"
                                                 >
                                                     <!-- Slot Header -->
                                                     <div
-                                                        class="flex items-center p-1.5 md:p-2 bg-app-bg/10"
+                                                        class="flex items-center p-2 bg-app-bg/10"
                                                     >
                                                         <div
-                                                            class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full mr-1.5 md:mr-2 {getLabelColor(
+                                                            class="w-2 h-2 rounded-full mr-2 {getLabelColor(
                                                                 type,
                                                             ).replace(
                                                                 'text-',
@@ -931,23 +931,23 @@
                                                             )}"
                                                         ></div>
                                                         <span
-                                                            class="text-[6px] md:text-[8px] font-bold uppercase tracking-widest text-app-text-muted truncate"
+                                                            class="text-[8px] font-bold uppercase tracking-widest text-app-text-muted truncate"
                                                             >{type}</span
                                                         >
                                                     </div>
 
                                                     <!-- Slot Content -->
                                                     <div
-                                                        class="px-1.5 pb-1.5 md:px-2 md:pb-2 flex flex-col gap-1 md:gap-1.5"
+                                                        class="px-2 pb-2 flex flex-col gap-1.5"
                                                     >
                                                         {#each day.meals[type] as meal}
                                                             <div
-                                                                class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm transition-all {getMealStyles(
+                                                                class="px-3 py-1.5 rounded-xl border shadow-sm transition-all {getMealStyles(
                                                                     type,
                                                                 )}"
                                                             >
                                                                 <p
-                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                    class="text-[10px] font-bold leading-tight line-clamp-2"
                                                                 >
                                                                     {meal.name}
                                                                 </p>
@@ -967,12 +967,12 @@
                                                                         bind:this={
                                                                             dropRevealCard
                                                                         }
-                                                                        class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                        class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
                                                                             type,
                                                                         )} opacity-0"
                                                                     >
                                                                         <p
-                                                                            class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                            class="text-[10px] font-bold leading-tight line-clamp-2"
                                                                         >
                                                                             Avocado
                                                                             Toast
@@ -994,12 +994,12 @@
                                                                         bind:this={
                                                                             dropRevealCard2
                                                                         }
-                                                                        class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                        class="px-3 py-1.5 rounded-xl border shadow-sm {getMealStyles(
                                                                             type,
                                                                         )} opacity-0"
                                                                     >
                                                                         <p
-                                                                            class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                            class="text-[10px] font-bold leading-tight line-clamp-2"
                                                                         >
                                                                             Grilled
                                                                             Veggies
@@ -1008,7 +1008,7 @@
                                                                             class="flex items-center gap-1 mt-0.5"
                                                                         >
                                                                             <span
-                                                                                class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
+                                                                                class="text-[8px] font-medium text-app-text-muted"
                                                                                 >Leftover</span
                                                                             >
                                                                         </div>
