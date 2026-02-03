@@ -348,7 +348,7 @@
                         type="text"
                         bind:value={searchQuery}
                         placeholder="Search {activeTab}..."
-                        class="w-full bg-app-surface border border-app-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all font-medium placeholder:text-app-text-muted/60"
+                        class="w-full bg-app-surface border border-app-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all font-medium placeholder:text-app-text-muted/60"
                         id="fridge-search"
                     />
                     {#if searchQuery}
