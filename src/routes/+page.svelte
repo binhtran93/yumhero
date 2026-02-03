@@ -36,6 +36,7 @@
                 breakfast: [{ name: "Avocado Toast" }],
                 lunch: [{ name: "Quinoa Bowl" }],
                 dinner: [{ name: "Baked Salmon" }],
+                snack: [{ name: "Apple & Almonds" }],
                 note: [{ name: "Buy fresh herbs" }],
             },
         },
@@ -46,6 +47,7 @@
                 breakfast: [{ name: "Greek Yogurt" }],
                 lunch: [{ name: "Chicken Wrap" }],
                 dinner: [{ name: "Beef Stir-fry" }],
+                snack: [],
                 note: [],
             },
         },
@@ -56,6 +58,7 @@
                 breakfast: [],
                 lunch: [],
                 dinner: [],
+                snack: [],
                 note: [],
             },
         },
@@ -101,7 +104,7 @@
         },
     ];
 
-    const mealTypes = ["breakfast", "lunch", "dinner", "note"];
+    const mealTypes = ["breakfast", "lunch", "dinner", "snack", "note"];
 
     const mockLeftovers = [
         {
@@ -613,7 +616,7 @@
                                 block: "center",
                             });
                         }}
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
+                        class="hidden items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
                     >
                         See it in action
                         <ChevronDown size={18} />
@@ -1167,14 +1170,17 @@
                                                                     <div
                                                                         class="w-2.5 h-2.5 rounded-full {type ===
                                                                         'breakfast'
-                                                                            ? 'bg-orange-500'
+                                                                            ? 'bg-accent-breakfast'
                                                                             : type ===
                                                                                 'lunch'
-                                                                              ? 'bg-emerald-500'
+                                                                              ? 'bg-accent-lunch'
                                                                               : type ===
                                                                                   'dinner'
-                                                                                ? 'bg-purple-500'
-                                                                                : 'bg-amber-500'}"
+                                                                                ? 'bg-accent-dinner'
+                                                                                : type ===
+                                                                                    'snack'
+                                                                                  ? 'bg-accent-snack'
+                                                                                  : 'bg-accent-note'}"
                                                                     ></div>
                                                                     <span
                                                                         class="text-[11px] font-bold text-gray-400 capitalize tracking-wider"
@@ -1188,7 +1194,19 @@
                                                                     {#if day.meals && day.meals[type]}
                                                                         {#each day.meals[type] as meal}
                                                                             <div
-                                                                                class="flex items-center justify-between p-3.5 rounded-xl border border-orange-100 bg-orange-50/40 shadow-sm"
+                                                                                class="flex items-center justify-between p-3.5 rounded-xl border shadow-sm {type ===
+                                                                                'breakfast'
+                                                                                    ? 'bg-accent-breakfast-bg/40 border-accent-breakfast-border/40'
+                                                                                    : type ===
+                                                                                        'lunch'
+                                                                                      ? 'bg-accent-lunch-bg/40 border-accent-lunch-border/40'
+                                                                                      : type ===
+                                                                                          'dinner'
+                                                                                        ? 'bg-accent-dinner-bg/40 border-accent-dinner-border/40'
+                                                                                        : type ===
+                                                                                            'snack'
+                                                                                          ? 'bg-accent-snack-bg/40 border-accent-snack-border/40'
+                                                                                          : 'bg-accent-note-bg/40 border-accent-note-border/40'}"
                                                                             >
                                                                                 <span
                                                                                     class="text-sm font-bold text-gray-800"
