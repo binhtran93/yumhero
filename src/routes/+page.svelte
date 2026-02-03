@@ -154,6 +154,36 @@
 
     // Mobile carousel state
     let mobileDayIndex = $state(0);
+    let touchStartX = 0;
+    let touchDiff = $state(0);
+    let isSwiping = $state(false);
+
+    function handleTouchStart(e: TouchEvent) {
+        touchStartX = e.touches[0].clientX;
+        touchDiff = 0;
+        isSwiping = true;
+    }
+
+    function handleTouchMove(e: TouchEvent) {
+        touchDiff = e.touches[0].clientX - touchStartX;
+    }
+
+    function handleTouchEnd() {
+        const SWIPE_THRESHOLD = 50;
+
+        if (touchDiff > SWIPE_THRESHOLD && mobileDayIndex > 0) {
+            mobileDayIndex--;
+        } else if (
+            touchDiff < -SWIPE_THRESHOLD &&
+            mobileDayIndex < mockPlan.length - 1
+        ) {
+            mobileDayIndex++;
+        }
+
+        touchDiff = 0;
+        isSwiping = false;
+    }
+
     let mobileSwipeInterval: ReturnType<typeof setInterval> | null = null;
 
     // Animation state
@@ -609,7 +639,7 @@
                     class="flex flex-col flex-col-reverse sm:flex-row items-center gap-4"
                 >
                     <button
-                        on:click={() => {
+                        onclick={() => {
                             restartAnimationHandler();
                             document.getElementById("preview")?.scrollIntoView({
                                 behavior: "smooth",
@@ -1114,13 +1144,18 @@
                                     <!-- Day Carousel (Compact non-scrollable) -->
                                     <div
                                         class="relative h-[600px] overflow-hidden bg-white"
+                                        ontouchstart={handleTouchStart}
+                                        ontouchmove={handleTouchMove}
+                                        ontouchend={handleTouchEnd}
                                     >
                                         {#each mockPlan as day, index}
                                             <div
-                                                class="absolute inset-0 transition-transform duration-500 ease-in-out"
-                                                style="transform: translateX({(index -
+                                                class="absolute inset-0 {isSwiping
+                                                    ? ''
+                                                    : 'transition-transform duration-500 ease-out'}"
+                                                style="transform: translateX(calc({(index -
                                                     mobileDayIndex) *
-                                                    100}%);"
+                                                    100}% + {touchDiff}px));"
                                             >
                                                 <!-- Day Content -->
                                                 <div
