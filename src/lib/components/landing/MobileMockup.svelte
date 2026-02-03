@@ -26,12 +26,16 @@
 
     // UI Interaction States (visual feedback)
     let isAddButtonActive = $state(false);
+    let activeAddType = $state<string | null>(null);
     let isRecipeActive = $state(false);
+    let activeRecipeName = $state<string | null>(null);
 
     // DOM References for exact coordinates
     let carouselRef: HTMLDivElement | undefined = $state();
     let addLunchRef: HTMLDivElement | undefined = $state();
-    let recipeRef: HTMLDivElement | undefined = $state();
+    let addDinnerRef: HTMLDivElement | undefined = $state();
+    let recipeTunaRef: HTMLDivElement | undefined = $state();
+    let recipePastaRef: HTMLDivElement | undefined = $state();
 
     function updateCursorTarget(target: HTMLElement | undefined) {
         if (!target || !carouselRef) return { x: 0, y: 0 };
@@ -112,7 +116,9 @@
         showCursor = false;
         isCursorClicking = false;
         isAddButtonActive = false;
+        activeAddType = null;
         isRecipeActive = false;
+        activeRecipeName = null;
 
         // Ensure we are on Monday for the demo
         mobileDayIndex = 0;
@@ -123,86 +129,167 @@
             cursorPos = { x: rect.width / 2, y: rect.height + 50 };
         }
 
-        // 1. Cursor enters and moves to "Add Lunch"
+        // --- STEP 1: Add Lunch ---
         demoTimeout = setTimeout(() => {
             if (hasInteracted) return;
             showCursor = true;
-            // Calculate target dynamically
             cursorPos = updateCursorTarget(addLunchRef);
 
-            // 2. Click "Add Lunch"
             demoTimeout = setTimeout(() => {
                 if (hasInteracted) return;
                 isCursorClicking = true;
                 isAddButtonActive = true;
+                activeAddType = "lunch";
 
-                // 3. Release click & Open Modal
                 demoTimeout = setTimeout(() => {
                     if (hasInteracted) return;
                     isCursorClicking = false;
                     isAddButtonActive = false;
                     showModal = true;
 
-                    // 4. Move to "Tuna Salad" recipe (wait for modal render)
                     demoTimeout = setTimeout(() => {
                         if (hasInteracted) return;
-                        // Calculate target dynamically - recipeRef should be mounted now
-                        cursorPos = updateCursorTarget(recipeRef);
+                        cursorPos = updateCursorTarget(recipeTunaRef);
 
-                        // 5. Click "Tuna Salad"
                         demoTimeout = setTimeout(() => {
                             if (hasInteracted) return;
                             isCursorClicking = true;
                             isRecipeActive = true;
+                            activeRecipeName = "Tuna Salad";
 
-                            // 6. Action: Fill Slot & Close Modal
                             demoTimeout = setTimeout(() => {
                                 if (hasInteracted) return;
                                 isCursorClicking = false;
                                 isRecipeActive = false;
                                 showModal = false;
 
-                                // Update Data
-                                localPlan = mockPlan.map((day) => {
+                                localPlan = localPlan.map((day) => {
                                     if (day.day === "Monday") {
                                         return {
                                             ...day,
                                             meals: {
                                                 ...day.meals,
                                                 lunch: [{ name: "Tuna Salad" }],
-                                                dinner: [],
-                                                snack: [],
-                                                note: [],
                                             },
                                         };
                                     }
                                     return day;
                                 });
 
-                                // 7. Move cursor away
+                                // --- STEP 2: Add Dinner ---
                                 demoTimeout = setTimeout(() => {
                                     if (hasInteracted) return;
-                                    if (carouselRef) {
-                                        const rect =
-                                            carouselRef.getBoundingClientRect();
-                                        cursorPos = {
-                                            x: rect.width / 2,
-                                            y: rect.height + 50,
-                                        };
-                                    }
+                                    cursorPos =
+                                        updateCursorTarget(addDinnerRef);
 
-                                    // 8. Loop
                                     demoTimeout = setTimeout(() => {
                                         if (hasInteracted) return;
-                                        runDemo();
-                                    }, 2000);
-                                }, 500);
-                            }, 300); // Short click hold
-                        }, 800); // Travel time to recipe
-                    }, 500); // Wait for modal animation
-                }, 300); // Short click hold
-            }, 1000); // Travel time to add button
-        }, 500); // Init delay
+                                        isCursorClicking = true;
+                                        isAddButtonActive = true;
+                                        activeAddType = "dinner";
+
+                                        demoTimeout = setTimeout(() => {
+                                            if (hasInteracted) return;
+                                            isCursorClicking = false;
+                                            isAddButtonActive = false;
+                                            showModal = true;
+
+                                            demoTimeout = setTimeout(() => {
+                                                if (hasInteracted) return;
+                                                cursorPos =
+                                                    updateCursorTarget(
+                                                        recipePastaRef,
+                                                    );
+
+                                                demoTimeout = setTimeout(() => {
+                                                    if (hasInteracted) return;
+                                                    isCursorClicking = true;
+                                                    isRecipeActive = true;
+                                                    activeRecipeName =
+                                                        "15-min Pasta";
+
+                                                    demoTimeout = setTimeout(
+                                                        () => {
+                                                            if (hasInteracted)
+                                                                return;
+                                                            isCursorClicking = false;
+                                                            isRecipeActive = false;
+                                                            showModal = false;
+
+                                                            localPlan =
+                                                                localPlan.map(
+                                                                    (day) => {
+                                                                        if (
+                                                                            day.day ===
+                                                                            "Monday"
+                                                                        ) {
+                                                                            return {
+                                                                                ...day,
+                                                                                meals: {
+                                                                                    ...day.meals,
+                                                                                    dinner: [
+                                                                                        {
+                                                                                            name: "15-min Pasta",
+                                                                                        },
+                                                                                    ],
+                                                                                },
+                                                                            };
+                                                                        }
+                                                                        return day;
+                                                                    },
+                                                                );
+
+                                                            // Move cursor away and loop
+                                                            demoTimeout =
+                                                                setTimeout(
+                                                                    () => {
+                                                                        if (
+                                                                            hasInteracted
+                                                                        )
+                                                                            return;
+                                                                        if (
+                                                                            carouselRef
+                                                                        ) {
+                                                                            const rect =
+                                                                                carouselRef.getBoundingClientRect();
+                                                                            cursorPos =
+                                                                                {
+                                                                                    x:
+                                                                                        rect.width /
+                                                                                        2,
+                                                                                    y:
+                                                                                        rect.height +
+                                                                                        50,
+                                                                                };
+                                                                        }
+                                                                        demoTimeout =
+                                                                            setTimeout(
+                                                                                () => {
+                                                                                    if (
+                                                                                        hasInteracted
+                                                                                    )
+                                                                                        return;
+                                                                                    runDemo();
+                                                                                },
+                                                                                2000,
+                                                                            );
+                                                                    },
+                                                                    500,
+                                                                );
+                                                        },
+                                                        300,
+                                                    );
+                                                }, 800);
+                                            }, 500);
+                                        }, 300);
+                                    }, 1000);
+                                }, 800); // Wait for Lunch add animation
+                            }, 300);
+                        }, 800);
+                    }, 500);
+                }, 300);
+            }, 1000);
+        }, 500);
     }
 
     onMount(() => {
@@ -337,19 +424,56 @@
                                                             >
                                                         </div>
                                                     {/each}
-                                                {:else if day.day === "Monday" && type === "lunch"}
+                                                {:else if day.day === "Monday"}
                                                     <!-- Empty Slot Placeholder -->
-                                                    <div
-                                                        bind:this={addLunchRef}
-                                                        class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {isAddButtonActive
-                                                            ? 'scale-95 bg-gray-50'
-                                                            : ''}"
-                                                    >
-                                                        <span
-                                                            class="text-xs font-bold text-gray-400"
-                                                            >Add Lunch</span
+                                                    {#if type === "lunch"}
+                                                        <div
+                                                            bind:this={
+                                                                addLunchRef
+                                                            }
+                                                            class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {activeAddType ===
+                                                                'lunch' &&
+                                                            isAddButtonActive
+                                                                ? 'scale-95 bg-gray-50'
+                                                                : ''}"
                                                         >
-                                                    </div>
+                                                            <span
+                                                                class="text-xs font-bold text-gray-400"
+                                                                >Add Lunch</span
+                                                            >
+                                                        </div>
+                                                    {:else if type === "dinner"}
+                                                        <div
+                                                            bind:this={
+                                                                addDinnerRef
+                                                            }
+                                                            class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {activeAddType ===
+                                                                'dinner' &&
+                                                            isAddButtonActive
+                                                                ? 'scale-95 bg-gray-50'
+                                                                : ''}"
+                                                        >
+                                                            <span
+                                                                class="text-xs font-bold text-gray-400"
+                                                                >Add Dinner</span
+                                                            >
+                                                        </div>
+                                                    {:else}
+                                                        <div
+                                                            class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center"
+                                                        >
+                                                            <span
+                                                                class="text-xs font-bold text-gray-400"
+                                                            >
+                                                                Add {type
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                    type.slice(
+                                                                        1,
+                                                                    )}
+                                                            </span>
+                                                        </div>
+                                                    {/if}
                                                 {/if}
                                             </div>
                                         </div>
@@ -371,10 +495,11 @@
                             </h3>
                             <div class="space-y-2">
                                 <div
-                                    bind:this={recipeRef}
-                                    class="flex items-center gap-3 p-2 rounded-xl border border-app-primary/20 transition-all duration-200 {isRecipeActive
+                                    bind:this={recipeTunaRef}
+                                    class="flex items-center gap-3 p-2 rounded-xl border transition-all duration-200 {isRecipeActive &&
+                                    activeRecipeName === 'Tuna Salad'
                                         ? 'bg-app-primary/20 scale-[0.98]'
-                                        : 'bg-app-primary/5'}"
+                                        : 'bg-app-primary/5 border-app-primary/20'}"
                                 >
                                     <div
                                         class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
@@ -399,7 +524,11 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="flex items-center gap-3 p-2 rounded-xl transition-colors opacity-50"
+                                    bind:this={recipePastaRef}
+                                    class="flex items-center gap-3 p-2 rounded-xl border transition-all duration-200 {isRecipeActive &&
+                                    activeRecipeName === '15-min Pasta'
+                                        ? 'bg-app-primary/20 scale-[0.98]'
+                                        : 'bg-app-primary/5 border-app-primary/20'}"
                                 >
                                     <div
                                         class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
@@ -415,6 +544,11 @@
                                             class="text-xs font-bold text-app-text"
                                         >
                                             15-min Pasta
+                                        </p>
+                                        <p
+                                            class="text-[10px] text-gray-500 mt-0.5"
+                                        >
+                                            450 kcal • 15m
                                         </p>
                                     </div>
                                 </div>
