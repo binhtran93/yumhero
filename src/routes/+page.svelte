@@ -9,6 +9,7 @@
         Zap,
         Clock,
         Pointer,
+        ChevronDown,
     } from "lucide-svelte";
 
     interface MockMeal {
@@ -252,6 +253,19 @@
                     high-performance interface.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <button
+                        on:click={() =>
+                            document
+                                .getElementById("preview")
+                                ?.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "center",
+                                })}
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
+                    >
+                        View the Demo
+                        <ChevronDown size={18} />
+                    </button>
                     <a
                         href="/plan"
                         class="inline-flex items-center gap-2 px-6 py-3 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-base md:text-lg shadow-lg hover:shadow-app-primary/25"
@@ -263,7 +277,7 @@
             </div>
 
             <!-- Hero Mockup -->
-            <div class="mt-8 md:mt-12">
+            <div id="preview" class="mt-8 md:mt-12 scroll-mt-20">
                 <div class="relative">
                     <!-- Browser Frame -->
                     <div
