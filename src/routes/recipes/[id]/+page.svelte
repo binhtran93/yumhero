@@ -112,11 +112,10 @@
 
                         <!-- Action menu overlay -->
                         <div class="absolute top-3 right-3">
-                            <div
-                                class="bg-black/40 backdrop-blur-sm rounded-full text-white"
-                            >
-                                <RecipeActionMenu recipeId={data.id} />
-                            </div>
+                            <RecipeActionMenu
+                                recipeId={data.id}
+                                class="[&>button]:bg-black/40 [&>button]:backdrop-blur-sm [&>button]:text-white [&>button]:hover:bg-black/60 [&>button]:hover:text-white [&>button]:mr-0"
+                            />
                         </div>
 
                         <!-- Title overlay at bottom -->
