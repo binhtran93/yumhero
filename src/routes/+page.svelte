@@ -1321,14 +1321,14 @@
         } /* Grab */
 
         /* 4. Drag to Thursday Lunch (Below Breakfast)
-           Approx top: 40%, left: 55% */
+           Approx top: 42%, left: 55% */
         50% {
-            top: 40%;
+            top: 42%;
             left: 55%;
             transform: scale(0.85);
         }
         52% {
-            top: 40%;
+            top: 42%;
             left: 55%;
             transform: scale(1.1);
         } /* Drop */
@@ -1393,14 +1393,14 @@
         }
         50% {
             opacity: 1;
-            top: 40%;
+            top: 42%;
             left: 55%;
             transform: rotate(2deg);
         }
         50.1%,
         100% {
             opacity: 0;
-            top: 40%;
+            top: 42%;
             left: 55%;
             transform: translate(0, 0);
         }
