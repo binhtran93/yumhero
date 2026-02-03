@@ -129,6 +129,12 @@
         },
     ];
 
+    let restartKey = $state(0);
+
+    const restartAnimation = () => {
+        restartKey += 1;
+    };
+
     const getMealStyles = (type: string) => {
         switch (type) {
             case "breakfast":
@@ -252,18 +258,18 @@
                     fridge, log leftovers, and master your menu in a clean,
                     high-performance interface.
                 </p>
-                <div class="flex flex-col sm:flex-row items-center gap-4">
+                <div class="flex flex-col flex-col-reverse sm:flex-row items-center gap-4">
                     <button
-                        on:click={() =>
-                            document
-                                .getElementById("preview")
-                                ?.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "center",
-                                })}
+                        on:click={() => {
+                            restartAnimation();
+                            document.getElementById("preview")?.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center",
+                            });
+                        }}
                         class="inline-flex items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
                     >
-                        View the Demo
+                        See it in action
                         <ChevronDown size={18} />
                     </button>
                     <a
@@ -308,91 +314,93 @@
                         </div>
 
                         <!-- Drag Animation Overlay -->
-                        <div
-                            class="absolute inset-0 pointer-events-none z-50 overflow-hidden hidden md:block"
-                        >
-                            <!-- Ghost Card -->
+                        {#key restartKey}
                             <div
-                                class="ghost-card absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                class="absolute inset-0 pointer-events-none z-50 overflow-hidden hidden md:block"
                             >
-                                <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
-                                    >
-                                        <img
-                                            src="/mockup/avocado.png"
-                                            alt="Avocado Toast"
-                                            class="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p
-                                            class="text-xs font-bold text-app-text leading-tight truncate"
-                                        >
-                                            Avocado Toast
-                                        </p>
-                                        <div
-                                            class="flex items-center gap-1 mt-0.5"
-                                        >
-                                            <Clock
-                                                size={8}
-                                                class="text-app-text-muted"
-                                            />
-                                            <span
-                                                class="text-[8px] font-medium text-app-text-muted"
-                                                >15m</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="ghost-card-2 absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
-                            >
-                                <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
-                                    >
-                                        <img
-                                            src="/mockup/veggies.png"
-                                            alt="Grilled Veggies"
-                                            class="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p
-                                            class="text-xs font-bold text-app-text leading-tight truncate"
-                                        >
-                                            Grilled Veggies
-                                        </p>
-                                        <div
-                                            class="flex items-center gap-1 mt-0.5"
-                                        >
-                                            <div
-                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500"
-                                            ></div>
-                                            <span
-                                                class="text-[8px] font-medium text-app-text-muted"
-                                                >2d ago</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Pointer Cursor -->
-                            <div
-                                class="hand-cursor absolute opacity-0 drop-shadow-xl z-50 transition-none"
-                            >
-                                <Pointer
-                                    size={32}
-                                    fill="#fff"
-                                    strokeWidth={1.5}
-                                />
+                                <!-- Ghost Card -->
                                 <div
-                                    class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md scale-0 cursor-ping-pulse"
-                                ></div>
+                                    class="ghost-card absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
+                                        >
+                                            <img
+                                                src="/mockup/avocado.png"
+                                                alt="Avocado Toast"
+                                                class="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p
+                                                class="text-xs font-bold text-app-text leading-tight truncate"
+                                            >
+                                                Avocado Toast
+                                            </p>
+                                            <div
+                                                class="flex items-center gap-1 mt-0.5"
+                                            >
+                                                <Clock
+                                                    size={8}
+                                                    class="text-app-text-muted"
+                                                />
+                                                <span
+                                                    class="text-[8px] font-medium text-app-text-muted"
+                                                    >15m</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="ghost-card-2 absolute w-48 p-2 bg-app-surface border border-app-primary/40 rounded-xl shadow-xl opacity-0"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-app-border/30"
+                                        >
+                                            <img
+                                                src="/mockup/veggies.png"
+                                                alt="Grilled Veggies"
+                                                class="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p
+                                                class="text-xs font-bold text-app-text leading-tight truncate"
+                                            >
+                                                Grilled Veggies
+                                            </p>
+                                            <div
+                                                class="flex items-center gap-1 mt-0.5"
+                                            >
+                                                <div
+                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                                ></div>
+                                                <span
+                                                    class="text-[8px] font-medium text-app-text-muted"
+                                                    >2d ago</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Pointer Cursor -->
+                                <div
+                                    class="hand-cursor absolute opacity-0 drop-shadow-xl z-50 transition-none"
+                                >
+                                    <Pointer
+                                        size={32}
+                                        fill="#fff"
+                                        strokeWidth={1.5}
+                                    />
+                                    <div
+                                        class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md scale-0 cursor-ping-pulse"
+                                    ></div>
+                                </div>
                             </div>
-                        </div>
+                        {/key}
 
                         <!-- Mockup Content -->
                         <div
@@ -598,41 +606,45 @@
 
                                                         <!-- Animation Target Drop -->
                                                         {#if day.day === "Thu" && type === "breakfast"}
-                                                            <div
-                                                                class="drop-reveal-card px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
-                                                                    type,
-                                                                )} opacity-0"
-                                                            >
-                                                                <p
-                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                            {#key restartKey}
+                                                                <div
+                                                                    class="drop-reveal-card px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                        type,
+                                                                    )} opacity-0"
                                                                 >
-                                                                    Avocado
-                                                                    Toast
-                                                                </p>
-                                                            </div>
+                                                                    <p
+                                                                        class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                                    >
+                                                                        Avocado
+                                                                        Toast
+                                                                    </p>
+                                                                </div>
+                                                            {/key}
                                                         {/if}
                                                         <!-- Animation Target Drop 2 (Lunch) -->
                                                         {#if day.day === "Thu" && type === "lunch"}
-                                                            <div
-                                                                class="drop-reveal-card-2 px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
-                                                                    type,
-                                                                )} opacity-0"
-                                                            >
-                                                                <p
-                                                                    class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
-                                                                >
-                                                                    Grilled
-                                                                    Veggies
-                                                                </p>
+                                                            {#key restartKey}
                                                                 <div
-                                                                    class="flex items-center gap-1 mt-0.5"
+                                                                    class="drop-reveal-card-2 px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm {getMealStyles(
+                                                                        type,
+                                                                    )} opacity-0"
                                                                 >
-                                                                    <span
-                                                                        class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
-                                                                        >Leftover</span
+                                                                    <p
+                                                                        class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
                                                                     >
+                                                                        Grilled
+                                                                        Veggies
+                                                                    </p>
+                                                                    <div
+                                                                        class="flex items-center gap-1 mt-0.5"
+                                                                    >
+                                                                        <span
+                                                                            class="text-[6px] md:text-[8px] font-medium text-app-text-muted"
+                                                                            >Leftover</span
+                                                                        >
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            {/key}
                                                         {/if}
                                                     </div>
                                                 </div>
