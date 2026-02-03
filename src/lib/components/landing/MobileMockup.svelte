@@ -117,10 +117,10 @@
                                         >{day.day} {day.date}</span
                                     >
                                 </div>
-                                <div class="flex-1 overflow-hidden px-4">
+                                <div class="flex-1 overflow-hidden">
                                     {#each mealTypes as type}
                                         <div
-                                            class="py-3 border-b border-gray-50 last:border-0"
+                                            class="py-3 px-4 border-b border-app-border last:border-0"
                                         >
                                             <div
                                                 class="flex items-center gap-2.5 mb-2"
