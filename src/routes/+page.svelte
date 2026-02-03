@@ -24,7 +24,7 @@
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
     import { onMount } from "svelte";
     import { fade, scale } from "svelte/transition";
-    import { ChevronLeft, ChevronRight } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight, Printer } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
@@ -966,7 +966,16 @@
                 </button>
             </div>
 
-            <div class="w-px h-6 bg-app-border mx-1"></div>
+            <button
+                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group"
+                onclick={() => window.print()}
+                aria-label="Print Week Plan"
+            >
+                <Printer
+                    size={24}
+                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                />
+            </button>
 
             <ShoppingCartButton
                 onclick={() => (isShoppingListOpen = true)}
