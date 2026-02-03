@@ -10,6 +10,7 @@
     } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import Modal from "$lib/components/Modal.svelte";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
     import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
@@ -24,7 +25,7 @@
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
     import { onMount } from "svelte";
     import { fade, scale } from "svelte/transition";
-    import { ChevronLeft, ChevronRight, Printer } from "lucide-svelte";
+    import {BrushCleaning, ChevronLeft, ChevronRight, Printer, TimerReset, Trash2} from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
@@ -146,6 +147,8 @@
 
     let modeRecipe = $derived($modeRecipeStore.data);
     let modeLoading = $derived($modeRecipeStore.loading);
+
+    let isResetModalOpen = $state(false);
 
     // Week Navigation logic
     let currentDate = $state(new Date());
@@ -640,6 +643,28 @@
         };
     }
 
+    const handleResetPlan = async () => {
+        // Iterate over the current plan and unplan leftovers
+        for (const dayPlan of plan) {
+            for (const mealType of Object.keys(dayPlan.meals) as MealType[]) {
+                const items = dayPlan.meals[mealType];
+                for (const item of items) {
+                    if (
+                        "isLeftover" in item &&
+                        item.isLeftover &&
+                        item.leftoverId
+                    ) {
+                        await setLeftoverNotPlanned(item.leftoverId);
+                    }
+                }
+            }
+        }
+
+        plan = createEmptyPlan(DAYS[0]);
+        saveWeekPlan(weekId, plan);
+        isResetModalOpen = false;
+    };
+
     const currentDayName =
         DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
 
@@ -1059,6 +1084,18 @@
             </div>
 
             <button
+                class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
+                onclick={() => (isResetModalOpen = true)}
+                disabled={isPrinting}
+                aria-label="Clear Week Plan"
+            >
+                <BrushCleaning
+                    size={22}
+                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                />
+            </button>
+
+            <button
                 class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group disabled:opacity-50"
                 onclick={handlePrint}
                 disabled={isPrinting}
@@ -1365,4 +1402,14 @@
     onConfirm={handleConfirmAddToFridge}
     onSkip={handleSkipAddToFridge}
     onClose={() => (boughtIngredientsModal.isOpen = false)}
+/>
+
+<ConfirmModal
+    isOpen={isResetModalOpen}
+    title="Clear Week Plan"
+    message="Are you sure you want to remove all planned recipes for this week? This action cannot be undone."
+    confirmText="Clear All"
+    isDestructive={true}
+    onConfirm={handleResetPlan}
+    onClose={() => (isResetModalOpen = false)}
 />
