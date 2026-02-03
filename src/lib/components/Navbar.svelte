@@ -113,7 +113,7 @@
                 href={item.href}
                 class="flex flex-col md:flex-row items-center justify-center {$sidebarExpanded
                     ? 'md:justify-start md:gap-3 lg:justify-start lg:gap-3'
-                    : 'md:justify-center lg:justify-center'} px-1 py-1 md:px-2 md:py-3 rounded-xl transition-all duration-200 group relative overflow-hidden w-full
+                    : 'md:justify-center lg:justify-center'} px-1 py-1 md:px-2 md:py-3 rounded-xl transition-all duration-200 group relative w-full
         {active
                     ? 'text-app-primary font-bold bg-transparent md:bg-app-surface-hover shadow-none md:shadow-sm'
                     : 'text-app-text-muted hover:text-app-text hover:bg-app-surface-hover/50'}"
@@ -136,7 +136,7 @@
                         <span
                             class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold text-white bg-app-primary rounded-full"
                         >
-                            {item.badge > 9 ? "9+" : item.badge}
+                            {item.badge > 99 ? "99+" : item.badge}
                         </span>
                     {/if}
                 </div>

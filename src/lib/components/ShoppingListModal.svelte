@@ -237,9 +237,14 @@
             class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 border-b border-app-border flex items-center justify-between"
         >
             <h2
-                class="text-xl sm:text-2xl font-display font-black text-app-text"
+                class="text-xl sm:text-2xl font-display font-black text-app-text flex items-baseline gap-2"
             >
                 Shopping List
+                {#if itemCount > 0}
+                    <span class="text-sm font-bold text-app-text-muted">
+                        ({checkedCount}/{itemCount})
+                    </span>
+                {/if}
             </h2>
             <button
                 class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all disabled:opacity-50"

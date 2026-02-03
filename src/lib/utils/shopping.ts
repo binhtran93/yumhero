@@ -70,7 +70,8 @@ const parseFraction = (frac: string): number => {
 
 // Use this to display back to user if needed, or simple toFixed(2)
 export const formatAmount = (num: number | null | undefined): string => {
-    if (num === null || num === undefined || num === 0) return "";
+    if (num === null || num === undefined) return "";
+    if (num === 0) return "0";
 
     // Round to max 2 decimal places and remove trailing zeros
     // e.g. 1.222 -> 1.22, 2.500 -> 2.5, 1.000 -> 1
