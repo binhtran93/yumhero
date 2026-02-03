@@ -892,7 +892,8 @@
                             >
                                 <!-- Simplified Week Grid Preview -->
                                 <div
-                                    class="grid grid-cols-7 bg-app-border border border-app-border rounded-lg overflow-hidden"
+                                    class="grid bg-app-border border border-app-border rounded-lg"
+                                    style="grid-template-columns: repeat(7, minmax(140px, 1fr));"
                                 >
                                     {#each mockPlan as day}
                                         <div
@@ -1562,27 +1563,6 @@
                             >
                         </li>
                     </ul>
-                </div>
-
-                <!-- Newsletter -->
-                <div>
-                    <h4 class="font-bold text-app-text mb-4">Stay Updated</h4>
-                    <p class="text-sm text-app-text-muted mb-3">
-                        Get a weekly meal-prep logic breakdown.
-                    </p>
-                    <form class="flex gap-2">
-                        <input
-                            type="email"
-                            placeholder="your@email.com"
-                            class="flex-1 px-3 py-2 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary text-app-text placeholder:text-app-text-muted"
-                        />
-                        <button
-                            type="submit"
-                            class="px-4 py-2 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-colors"
-                        >
-                            Subscribe
-                        </button>
-                    </form>
                 </div>
             </div>
 
