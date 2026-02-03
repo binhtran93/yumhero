@@ -20,7 +20,7 @@
     let showModal = $state(false);
 
     // Cursor Simulation State
-    let cursorPos = $state({ x: 0, y: 0 }); // px relative to screenRef
+    let cursorPos = $state({ x: 0, y: 0 }); // px relative to carouselRef
     let isCursorClicking = $state(false);
     let showCursor = $state(false);
 
@@ -29,18 +29,18 @@
     let isRecipeActive = $state(false);
 
     // DOM References for exact coordinates
-    let screenRef: HTMLDivElement | undefined = $state();
+    let carouselRef: HTMLDivElement | undefined = $state();
     let addLunchRef: HTMLDivElement | undefined = $state();
     let recipeRef: HTMLDivElement | undefined = $state();
 
     function updateCursorTarget(target: HTMLElement | undefined) {
-        if (!target || !screenRef) return { x: 0, y: 0 };
-        const screenRect = screenRef.getBoundingClientRect();
+        if (!target || !carouselRef) return { x: 0, y: 0 };
+        const carouselRect = carouselRef.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
 
         return {
-            x: targetRect.left - screenRect.left + targetRect.width / 2,
-            y: targetRect.top - screenRect.top + targetRect.height / 2,
+            x: targetRect.left - carouselRect.left + targetRect.width / 2,
+            y: targetRect.top - carouselRect.top + targetRect.height / 2,
         };
     }
 
@@ -114,9 +114,12 @@
         isAddButtonActive = false;
         isRecipeActive = false;
 
+        // Ensure we are on Monday for the demo
+        mobileDayIndex = 0;
+
         // Start position (off-bottom center)
-        if (screenRef) {
-            const rect = screenRef.getBoundingClientRect();
+        if (carouselRef) {
+            const rect = carouselRef.getBoundingClientRect();
             cursorPos = { x: rect.width / 2, y: rect.height + 50 };
         }
 
@@ -179,9 +182,9 @@
                                 // 7. Move cursor away
                                 demoTimeout = setTimeout(() => {
                                     if (hasInteracted) return;
-                                    if (screenRef) {
+                                    if (carouselRef) {
                                         const rect =
-                                            screenRef.getBoundingClientRect();
+                                            carouselRef.getBoundingClientRect();
                                         cursorPos = {
                                             x: rect.width / 2,
                                             y: rect.height + 50,
@@ -204,7 +207,7 @@
 
     onMount(() => {
         // Wait a tick for layout
-        setTimeout(runDemo, 100);
+        setTimeout(runDemo, 500);
     });
 
     onDestroy(() => {
@@ -233,7 +236,6 @@
 
             <!-- Screen -->
             <div
-                bind:this={screenRef}
                 class="bg-white rounded-[40px] overflow-hidden relative z-0 isolate min-h-[720px]"
             >
                 <!-- Status bar -->
@@ -278,6 +280,7 @@
 
                 <!-- Day Carousel -->
                 <div
+                    bind:this={carouselRef}
                     class="relative h-[600px] overflow-hidden bg-white"
                     ontouchstart={handleTouchStart}
                     ontouchmove={handleTouchMove}
