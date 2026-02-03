@@ -101,8 +101,8 @@
 <Modal
     {isOpen}
     {onClose}
-    title="Fridge Match Results"
-    description="Check the items you already have in your fridge to skip shopping for them."
+    title="We found these in your fridge"
+    description="Select the items you already have to skip adding them to your shopping list."
     class="max-w-2xl"
 >
     <div class="p-6 pt-2">
@@ -144,10 +144,10 @@
                             </p>
                         </div>
 
-                        <div class="space-y-3">
+                        <div class="">
                             {#each group as match (match.shoppingItemId)}
                                 <button
-                                    class="w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left bg-app-bg border border-app-border hover:border-app-primary/50 group/item relative overflow-hidden"
+                                    class="w-full flex items-start gap-4 p-2 rounded-2xl transition-all text-left bg-app-bg hover:border-app-primary/70 hover:bg-app-primary/5 group/item relative overflow-hidden"
                                     onclick={() =>
                                         toggleMatch(match.shoppingItemId)}
                                 >
@@ -159,7 +159,7 @@
 
                                     <div class="shrink-0 relative z-10">
                                         <div
-                                            class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all
+                                            class="w-6 h-6 rounded-md border flex items-center justify-center transition-all
                                             {selectedMatches.has(
                                                 match.shoppingItemId,
                                             )
@@ -171,28 +171,14 @@
                                     </div>
 
                                     <div class="flex-1 min-w-0 relative z-10">
-                                        <div
-                                            class="flex items-center gap-2 mb-0.5"
-                                        >
-                                            <p
-                                                class="text-app-text font-black text-lg leading-tight truncate"
-                                            >
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-app-text font-black line-clamp-2">
                                                 {match.name}
-                                            </p>
-                                            {#if match.name.toLowerCase() !== group[0].fridgeName.toLowerCase()}
-                                                <span
-                                                    class="text-[10px] px-2 py-0.5 rounded-full bg-app-primary/10 text-app-primary font-bold uppercase tracking-wider"
-                                                >
-                                                    Match
+                                                <span class="text-app-text-muted font-medium text-sm">
+                                                    (Need {formatAmount(match.amount)} {match.unit || ""})
                                                 </span>
-                                            {/if}
+                                            </p>
                                         </div>
-                                        <p
-                                            class="text-app-text-muted font-medium"
-                                        >
-                                            Need {formatAmount(match.amount)}
-                                            {match.unit || ""}
-                                        </p>
                                     </div>
                                 </button>
                             {/each}
