@@ -1136,7 +1136,7 @@
                             <button
                                 onclick={() => removeIngredientRow(i)}
                                 disabled={isSaving}
-                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
+                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
                             >
                                 <X size={16} />
                             </button>

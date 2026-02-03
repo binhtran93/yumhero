@@ -2,7 +2,7 @@
     import Header from "$lib/components/Header.svelte";
     import RecipeCard from "$lib/components/RecipeCard.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
-    import RecipeFilterDropdown from "$lib/components/RecipeFilterDropdown.svelte";
+
     import SEO from "$lib/components/SEO.svelte";
     import {
         Search,
@@ -14,7 +14,7 @@
     } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { userRecipes } from "$lib/stores/recipes";
-    import { userTags } from "$lib/stores/tags";
+
     import RecipeMenu from "$lib/components/RecipeMenu.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import { deleteDoc, doc } from "firebase/firestore";
@@ -23,7 +23,7 @@
     import { toasts } from "$lib/stores/toasts";
 
     let searchQuery = $state("");
-    let activeFilter = $state("All");
+
     let showAddModal = $state(false);
     let showAddDropdown = $state(false);
     let creationAction = $state<"import" | "paste" | null>(null);
@@ -40,14 +40,10 @@
     let editingRecipe = $state<any | null>(null);
 
     // Reactive filtering
+    // Reactive filtering
     let filteredRecipes = $derived(
-        ($userRecipes.data || []).filter(
-            (recipe) =>
-                recipe.title
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) &&
-                (activeFilter === "All" ||
-                    (recipe.tags && recipe.tags.includes(activeFilter))),
+        ($userRecipes.data || []).filter((recipe) =>
+            recipe.title.toLowerCase().includes(searchQuery.toLowerCase()),
         ),
     );
 
@@ -104,108 +100,7 @@
 />
 
 <!-- Header -->
-<Header title="Recipes">
-    <div
-        class="flex items-center gap-2 flex-1 justify-end md:justify-center w-full md:w-auto"
-    >
-        <!-- Search -->
-        <div class="relative w-full max-w-[200px] md:max-w-xs hidden sm:block">
-            <Search
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
-                size={16}
-            />
-            <input
-                type="text"
-                bind:value={searchQuery}
-                placeholder="Search..."
-                class="w-full pl-9 pr-3 py-1.5 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
-            />
-        </div>
-
-        <!-- Filter -->
-        <RecipeFilterDropdown bind:activeFilter tags={$userTags.data} />
-
-        <!-- Add Button & Dropdown -->
-        <div class="relative">
-            <div
-                class="flex items-center bg-app-primary rounded-lg shadow-sm hover:bg-app-primary/90 transition-all active:scale-95 shrink-0 text-white group"
-            >
-                <!-- Main Action: Add Manually -->
-                <button
-                    onclick={() => {
-                        showAddModal = true;
-                        creationAction = null;
-                        showAddDropdown = false;
-                    }}
-                    class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/20 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
-                    aria-label="Add Recipe Manually"
-                >
-                    <Plus size={20} />
-                    <span class="hidden md:inline font-bold whitespace-nowrap"
-                        >Add Recipe</span
-                    >
-                </button>
-
-                <!-- Dropdown Trigger -->
-                <button
-                    onclick={() => (showAddDropdown = !showAddDropdown)}
-                    class="p-2 hover:bg-black/10 transition-colors rounded-r-lg"
-                    aria-label="More Options"
-                >
-                    <ChevronDown size={16} class="opacity-70" />
-                </button>
-            </div>
-
-            {#if showAddDropdown}
-                <div
-                    transition:fade={{ duration: 100 }}
-                    class="absolute right-0 top-full mt-2 w-48 bg-app-surface rounded-xl border border-app-border shadow-lg overflow-hidden z-50 py-1"
-                >
-                    <button
-                        onclick={() => {
-                            showAddDropdown = false;
-                            creationAction = null;
-                            showAddModal = true;
-                        }}
-                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
-                    >
-                        <Plus size={16} />
-                        Add Manually
-                    </button>
-                    <button
-                        onclick={() => {
-                            showAddDropdown = false;
-                            creationAction = "import";
-                            showAddModal = true;
-                        }}
-                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
-                    >
-                        <Link size={16} />
-                        Import from URL
-                    </button>
-                    <button
-                        onclick={() => {
-                            showAddDropdown = false;
-                            creationAction = "paste";
-                            showAddModal = true;
-                        }}
-                        class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
-                    >
-                        <FileText size={16} />
-                        Paste Recipe Text
-                    </button>
-                </div>
-
-                <!-- Backdrop to close dropdown -->
-                <div
-                    class="fixed inset-0 z-40"
-                    onclick={() => (showAddDropdown = false)}
-                    aria-hidden="true"
-                ></div>
-            {/if}
-        </div>
-    </div>
-</Header>
+<Header title="Recipes" />
 
 <RecipeEditModal
     isOpen={showAddModal}
@@ -218,19 +113,106 @@
 />
 
 <div class="h-full flex flex-col overflow-hidden relative">
-    <!-- Mobile Search (Visible only on small screens) -->
-    <div class="px-4 py-2 sm:hidden bg-app-surface border-b border-app-border">
-        <div class="relative">
-            <Search
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
-                size={16}
-            />
-            <input
-                type="text"
-                bind:value={searchQuery}
-                placeholder="Search recipes..."
-                class="w-full pl-9 pr-3 py-3 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
-            />
+    <div class="bg-app-surface border-b border-app-border px-4 py-4 md:px-6">
+        <div
+            class="max-w-7xl mx-auto flex flex-row gap-3 justify-between items-center w-full"
+        >
+            <!-- Search -->
+            <div class="relative flex-1 min-w-0">
+                <Search
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
+                    size={16}
+                />
+                <input
+                    type="text"
+                    bind:value={searchQuery}
+                    placeholder="Search..."
+                    class="w-full pl-9 pr-3 py-2 text-sm bg-app-bg border border-app-border rounded-lg focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary/10 text-app-text placeholder:text-app-text-muted/50 transition-all"
+                />
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Add Button & Dropdown -->
+                <div class="relative z-10">
+                    <div
+                        class="flex items-center bg-app-primary rounded-lg shadow-sm hover:bg-app-primary/90 transition-all active:scale-95 shrink-0 text-white group"
+                    >
+                        <!-- Main Action: Add Manually -->
+                        <button
+                            onclick={() => {
+                                showAddModal = true;
+                                creationAction = null;
+                                showAddDropdown = false;
+                            }}
+                            class="flex items-center gap-2 pl-4 pr-3 py-2 border-r border-black/20 hover:bg-black/10 transition-colors rounded-l-lg font-bold"
+                            aria-label="Add Recipe Manually"
+                        >
+                            <Plus size={20} />
+                            <span
+                                class="hidden md:inline font-bold whitespace-nowrap"
+                                >Add Recipe</span
+                            >
+                        </button>
+
+                        <!-- Dropdown Trigger -->
+                        <button
+                            onclick={() => (showAddDropdown = !showAddDropdown)}
+                            class="p-2 hover:bg-black/10 transition-colors rounded-r-lg"
+                            aria-label="More Options"
+                        >
+                            <ChevronDown size={16} class="opacity-70" />
+                        </button>
+                    </div>
+
+                    {#if showAddDropdown}
+                        <div
+                            transition:fade={{ duration: 100 }}
+                            class="absolute right-0 top-full mt-2 w-48 bg-app-surface rounded-xl border border-app-border shadow-lg overflow-hidden z-50 py-1"
+                        >
+                            <button
+                                onclick={() => {
+                                    showAddDropdown = false;
+                                    creationAction = null;
+                                    showAddModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                            >
+                                <Plus size={16} />
+                                Add Manually
+                            </button>
+                            <button
+                                onclick={() => {
+                                    showAddDropdown = false;
+                                    creationAction = "import";
+                                    showAddModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                            >
+                                <Link size={16} />
+                                Import from URL
+                            </button>
+                            <button
+                                onclick={() => {
+                                    showAddDropdown = false;
+                                    creationAction = "paste";
+                                    showAddModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                            >
+                                <FileText size={16} />
+                                Paste Recipe Text
+                            </button>
+                        </div>
+
+                        <!-- Backdrop to close dropdown -->
+                        <div
+                            class="fixed inset-0 z-40"
+                            onclick={() => (showAddDropdown = false)}
+                            aria-hidden="true"
+                        ></div>
+                    {/if}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -269,13 +251,10 @@
                     <Search size={32} />
                 </div>
                 <p class="text-lg font-bold text-app-text">No recipes found</p>
-                <p class="text-app-text-muted">
-                    Try adjusting your search or filters.
-                </p>
+                <p class="text-app-text-muted">Try adjusting your search.</p>
                 <button
                     onclick={() => {
                         searchQuery = "";
-                        activeFilter = "All";
                     }}
                     class="mt-4 text-app-primary font-bold hover:underline"
                 >
