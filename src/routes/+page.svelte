@@ -1089,7 +1089,7 @@
 
                                     <!-- App Toolbar (Redesigned to match image) -->
                                     <div
-                                        class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100"
+                                        class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200"
                                     >
                                         <span
                                             class="text-2xl font-black text-app-primary"
@@ -1128,7 +1128,7 @@
                                                 >
                                                     <!-- Day Header -->
                                                     <div
-                                                        class="py-2.5 text-center border-b border-gray-50 bg-white"
+                                                        class="py-2.5 text-center border-b border-app-border bg-white"
                                                     >
                                                         <span
                                                             class="text-base font-black text-gray-800"
@@ -1175,7 +1175,7 @@
                                                                     {#if day.meals && day.meals[type]}
                                                                         {#each day.meals[type] as meal}
                                                                             <div
-                                                                                class="flex items-center justify-between p-3.5 rounded-xl border shadow-sm {getMealStyles(
+                                                                                class="flex items-center justify-between p-2 rounded-xl border shadow-sm {getMealStyles(
                                                                                     type,
                                                                                 )}"
                                                                             >
@@ -1184,10 +1184,6 @@
                                                                                     >{meal?.name ||
                                                                                         ""}</span
                                                                                 >
-                                                                                <MoreVertical
-                                                                                    size={16}
-                                                                                    class="text-gray-400"
-                                                                                />
                                                                             </div>
                                                                         {/each}
                                                                     {/if}
