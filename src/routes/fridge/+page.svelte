@@ -214,6 +214,46 @@
     import { Plus } from "lucide-svelte";
 
     let showAddIngredientModal = $state(false);
+
+    // Swipe handling
+    let touchStartX = 0;
+    let touchDeltaX = $state(0);
+    let isDragging = $state(false);
+
+    const handleTouchStart = (e: TouchEvent) => {
+        touchStartX = e.touches[0].clientX;
+        touchDeltaX = 0;
+        isDragging = true;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+        if (!isDragging) return;
+        const currentX = e.touches[0].clientX;
+        const dx = currentX - touchStartX;
+
+        // Constrain delta to prevent over-swiping at boundaries
+        if (activeTab === "leftovers" && dx > 0) {
+            touchDeltaX = dx * 0.2; // Resist overscroll
+        } else if (activeTab === "ingredients" && dx < 0) {
+            touchDeltaX = dx * 0.2; // Resist overscroll
+        } else {
+            touchDeltaX = dx;
+        }
+    };
+
+    const handleTouchEnd = () => {
+        if (!isDragging) return;
+
+        const threshold = 100;
+        if (touchDeltaX < -threshold && activeTab === "leftovers") {
+            activeTab = "ingredients";
+        } else if (touchDeltaX > threshold && activeTab === "ingredients") {
+            activeTab = "leftovers";
+        }
+
+        touchDeltaX = 0;
+        isDragging = false;
+    };
 </script>
 
 <svelte:window
@@ -224,17 +264,25 @@
 <div class="h-full flex flex-col">
     <Header title="Your Fridge" mobileTitle="Fridge" />
 
-    <div class="flex-1 overflow-auto bg-app-bg">
+    <div class="flex-1 flex flex-col min-h-0 bg-app-bg">
         <!-- Tab Bar -->
-        <div class="sticky top-0 z-10 bg-app-bg border-b border-app-border">
+        <div class="bg-app-bg border-b border-app-border shrink-0">
             <div class="max-w-2xl mx-auto px-4 pt-4 pb-2">
                 <div
-                    class="flex gap-1 p-1 bg-app-surface-deep rounded-xl border border-app-border"
+                    class="relative flex gap-1 p-1 bg-app-surface-deep rounded-xl border border-app-border"
                 >
+                    <!-- Sliding background indicator -->
+                    <div
+                        class="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-app-surface shadow-sm border border-app-border rounded-lg transition-transform duration-300 ease-out z-0"
+                        style="transform: translateX({activeTab === 'leftovers'
+                            ? '0'
+                            : 'calc(100% + 4px)'})"
+                    ></div>
+
                     <button
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-all {activeTab ===
+                        class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
                         'leftovers'
-                            ? 'bg-app-surface text-app-text shadow-sm border border-app-border'
+                            ? 'text-app-text'
                             : 'text-app-text-muted hover:text-app-text'}"
                         onclick={() => (activeTab = "leftovers")}
                     >
@@ -252,9 +300,9 @@
                         {/if}
                     </button>
                     <button
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-all {activeTab ===
+                        class="flex-1 relative z-10 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-colors {activeTab ===
                         'ingredients'
-                            ? 'bg-app-surface text-app-text shadow-sm border border-app-border'
+                            ? 'text-app-text'
                             : 'text-app-text-muted hover:text-app-text'}"
                         onclick={() => (activeTab = "ingredients")}
                     >
@@ -276,133 +324,67 @@
         </div>
 
         <!-- Content -->
-        <div class="p-4 md:p-6">
-            {#if activeTab === "leftovers"}
-                <!-- Leftovers Tab -->
-                {#if $leftovers.loading}
-                    <div class="flex items-center justify-center h-64">
-                        <div
-                            class="w-8 h-8 border-3 border-app-primary border-t-transparent rounded-full animate-spin"
-                        ></div>
-                    </div>
-                {:else if $leftovers.data.length === 0}
-                    <div
-                        class="flex flex-col items-center justify-center h-64 text-center p-8"
-                    >
-                        <div class="p-4 bg-app-surface-deep rounded-2xl mb-4">
-                            <UtensilsCrossed
-                                size={48}
-                                class="text-app-text-muted/50"
-                            />
+        <div class="flex-1 overflow-hidden relative">
+            <div
+                class="h-full flex {isDragging
+                    ? ''
+                    : 'transition-transform duration-300 ease-out'}"
+                style="width: 200%; transform: translateX(calc({activeTab ===
+                'leftovers'
+                    ? '0%'
+                    : '-50%'} + {touchDeltaX}px))"
+                ontouchstart={handleTouchStart}
+                ontouchmove={handleTouchMove}
+                ontouchend={handleTouchEnd}
+            >
+                <div class="w-1/2 h-full overflow-y-auto p-4 md:p-6">
+                    <!-- Leftovers Tab -->
+                    {#if $leftovers.loading}
+                        <div class="flex items-center justify-center h-64">
+                            <div
+                                class="w-8 h-8 border-3 border-app-primary border-t-transparent rounded-full animate-spin"
+                            ></div>
                         </div>
-                        <h3 class="text-lg font-bold text-app-text mb-2">
-                            No leftovers yet
-                        </h3>
-                        <p class="text-sm text-app-text-muted max-w-xs">
-                            Add leftovers from your meal plan to track what you
-                            have available.
-                        </p>
-                    </div>
-                {:else}
-                    <div class="max-w-2xl mx-auto space-y-6">
-                        <!-- Available Section -->
-                        {#if availableItems.length > 0}
-                            <div>
-                                <h2
-                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider mb-3 px-1"
-                                >
-                                    Available ({availableItems.length})
-                                </h2>
-                                <div class="space-y-2">
-                                    {#each availableItems as item (item.id)}
-                                        {@const days = getDaysInFridge(
-                                            item.createdAt,
-                                        )}
-                                        <div
-                                            class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
-                                            transition:slide={{ duration: 200 }}
-                                        >
-                                            {#if item.imageUrl}
-                                                <div
-                                                    class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
-                                                >
-                                                    <img
-                                                        src={item.imageUrl}
-                                                        alt={item.title}
-                                                        class="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                            {:else}
-                                                <div
-                                                    class="w-10 h-10 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
-                                                >
-                                                    <UtensilsCrossed
-                                                        size={14}
-                                                        class="text-app-text-muted/60"
-                                                    />
-                                                </div>
-                                            {/if}
-                                            <div class="flex-1 min-w-0">
-                                                <span
-                                                    class="font-medium text-app-text text-sm truncate block"
-                                                >
-                                                    {item.title}
-                                                </span>
-                                                <div
-                                                    class="flex items-center gap-2"
-                                                >
-                                                    <span
-                                                        class="text-xs text-app-text-muted"
-                                                    >
-                                                        {formatSource(item)}
-                                                    </span>
-                                                    <span
-                                                        class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
-                                                            days,
-                                                        )}"
-                                                    >
-                                                        {days}
-                                                        {days === 1 ||
-                                                        days === 0
-                                                            ? "day"
-                                                            : "days"}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <button
-                                                class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
-                                                onclick={(e) =>
-                                                    handleItemClick(item, e)}
-                                                aria-label="Options"
-                                            >
-                                                <EllipsisVertical size={18} />
-                                            </button>
-                                        </div>
-                                    {/each}
-                                </div>
+                    {:else if $leftovers.data.length === 0}
+                        <div
+                            class="flex flex-col items-center justify-center h-64 text-center p-8"
+                        >
+                            <div
+                                class="p-4 bg-app-surface-deep rounded-2xl mb-4"
+                            >
+                                <UtensilsCrossed
+                                    size={48}
+                                    class="text-app-text-muted/50"
+                                />
                             </div>
-                        {/if}
-
-                        <!-- Planned Section -->
-                        {#if plannedItems.length > 0}
-                            <div>
-                                <h2
-                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider mb-3 px-1"
-                                >
-                                    Planned ({plannedItems.length})
-                                </h2>
-                                <div class="space-y-2">
-                                    {#each plannedItems as item (item.id)}
-                                        {@const isPast = isTimePast(item)}
-                                        {@const days = getDaysInFridge(
-                                            item.createdAt,
-                                        )}
-                                        <div
-                                            class="relative"
-                                            transition:slide={{ duration: 200 }}
-                                        >
+                            <h3 class="text-lg font-bold text-app-text mb-2">
+                                No leftovers yet
+                            </h3>
+                            <p class="text-sm text-app-text-muted max-w-xs">
+                                Add leftovers from your meal plan to track what
+                                you have available.
+                            </p>
+                        </div>
+                    {:else}
+                        <div class="max-w-2xl mx-auto space-y-6">
+                            <!-- Available Section -->
+                            {#if availableItems.length > 0}
+                                <div>
+                                    <h2
+                                        class="text-xs font-bold text-app-text-muted uppercase tracking-wider mb-3 px-1"
+                                    >
+                                        Available ({availableItems.length})
+                                    </h2>
+                                    <div class="space-y-2">
+                                        {#each availableItems as item (item.id)}
+                                            {@const days = getDaysInFridge(
+                                                item.createdAt,
+                                            )}
                                             <div
                                                 class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
+                                                transition:slide={{
+                                                    duration: 200,
+                                                }}
                                             >
                                                 {#if item.imageUrl}
                                                     <div
@@ -434,12 +416,9 @@
                                                         class="flex items-center gap-2"
                                                     >
                                                         <span
-                                                            class="text-xs text-app-text-muted block"
+                                                            class="text-xs text-app-text-muted"
                                                         >
                                                             {formatSource(item)}
-                                                            → {formatPlannedDate(
-                                                                item,
-                                                            )}
                                                         </span>
                                                         <span
                                                             class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
@@ -454,39 +433,6 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
-                                                {#if isPast}
-                                                    <!-- svelte-ignore a11y_no_static_element_interactions -->
-                                                    <div
-                                                        class="flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
-                                                        role="button"
-                                                        tabindex="0"
-                                                        onclick={(e) => {
-                                                            e.stopPropagation();
-                                                            handlePastTimeConfirm(
-                                                                item,
-                                                            );
-                                                        }}
-                                                        onkeydown={(e) => {
-                                                            if (
-                                                                e.key ===
-                                                                    "Enter" ||
-                                                                e.key === " "
-                                                            ) {
-                                                                e.stopPropagation();
-                                                                handlePastTimeConfirm(
-                                                                    item,
-                                                                );
-                                                            }
-                                                        }}
-                                                    >
-                                                        <AlertCircle
-                                                            size={12}
-                                                        />
-                                                        Eaten?
-                                                    </div>
-                                                {/if}
-
                                                 <button
                                                     class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
                                                     onclick={(e) =>
@@ -501,104 +447,240 @@
                                                     />
                                                 </button>
                                             </div>
-                                        </div>
-                                    {/each}
+                                        {/each}
+                                    </div>
                                 </div>
-                            </div>
-                        {/if}
-                    </div>
-                {/if}
-            {:else}
-                <!-- Ingredients Tab -->
-                {#if $fridgeIngredients.loading}
-                    <div class="flex items-center justify-center h-64">
-                        <div
-                            class="w-8 h-8 border-3 border-app-primary border-t-transparent rounded-full animate-spin"
-                        ></div>
-                    </div>
-                {:else if ingredientsList.length === 0}
-                    <div
-                        class="flex flex-col items-center justify-center h-64 text-center p-8"
-                    >
-                        <div class="p-4 bg-app-surface-deep rounded-2xl mb-4">
-                            <Apple size={48} class="text-app-text-muted/50" />
-                        </div>
-                        <h3 class="text-lg font-bold text-app-text mb-2">
-                            No ingredients tracked
-                        </h3>
-                        <p class="text-sm text-app-text-muted max-w-xs">
-                            When you remove a recipe after buying ingredients,
-                            you can save them here.
-                        </p>
-                    </div>
-                {:else}
-                    <div class="max-w-2xl mx-auto">
-                        <div class="space-y-2">
-                            {#each ingredientsList as ingredient (ingredient.id)}
-                                {@const days = getDaysInFridge(
-                                    ingredient.addedAt,
-                                )}
-                                <div
-                                    class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
-                                    transition:slide={{ duration: 200 }}
-                                >
-                                    <div class="flex-1 min-w-0">
-                                        <div
-                                            class="flex items-center justify-between gap-3"
-                                        >
+                            {/if}
+
+                            <!-- Planned Section -->
+                            {#if plannedItems.length > 0}
+                                <div>
+                                    <h2
+                                        class="text-xs font-bold text-app-text-muted uppercase tracking-wider mb-3 px-1"
+                                    >
+                                        Planned ({plannedItems.length})
+                                    </h2>
+                                    <div class="space-y-2">
+                                        {#each plannedItems as item (item.id)}
+                                            {@const isPast = isTimePast(item)}
+                                            {@const days = getDaysInFridge(
+                                                item.createdAt,
+                                            )}
                                             <div
-                                                class="flex-1 min-w-0 flex items-baseline gap-1"
+                                                class="relative"
+                                                transition:slide={{
+                                                    duration: 200,
+                                                }}
                                             >
-                                                <span
-                                                    class="font-bold text-app-text tabular-nums text-sm"
+                                                <div
+                                                    class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
                                                 >
-                                                    {formatAmount(
-                                                        ingredient.amount,
-                                                    )}
-                                                </span>
-                                                {#if ingredient.unit}
-                                                    <span
-                                                        class="text-[13px] font-medium text-app-text-muted"
+                                                    {#if item.imageUrl}
+                                                        <div
+                                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border"
+                                                        >
+                                                            <img
+                                                                src={item.imageUrl}
+                                                                alt={item.title}
+                                                                class="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                    {:else}
+                                                        <div
+                                                            class="w-10 h-10 rounded-lg bg-app-surface-deep flex items-center justify-center shrink-0 border border-app-border"
+                                                        >
+                                                            <UtensilsCrossed
+                                                                size={14}
+                                                                class="text-app-text-muted/60"
+                                                            />
+                                                        </div>
+                                                    {/if}
+                                                    <div class="flex-1 min-w-0">
+                                                        <span
+                                                            class="font-medium text-app-text text-sm truncate block"
+                                                        >
+                                                            {item.title}
+                                                        </span>
+                                                        <div
+                                                            class="flex items-center gap-2"
+                                                        >
+                                                            <span
+                                                                class="text-xs text-app-text-muted block"
+                                                            >
+                                                                {formatSource(
+                                                                    item,
+                                                                )}
+                                                                → {formatPlannedDate(
+                                                                    item,
+                                                                )}
+                                                            </span>
+                                                            <span
+                                                                class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                                    days,
+                                                                )}"
+                                                            >
+                                                                {days}
+                                                                {days === 1 ||
+                                                                days === 0
+                                                                    ? "day"
+                                                                    : "days"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {#if isPast}
+                                                        <!-- svelte-ignore a11y_no_static_element_interactions -->
+                                                        <div
+                                                            class="flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
+                                                            role="button"
+                                                            tabindex="0"
+                                                            onclick={(e) => {
+                                                                e.stopPropagation();
+                                                                handlePastTimeConfirm(
+                                                                    item,
+                                                                );
+                                                            }}
+                                                            onkeydown={(e) => {
+                                                                if (
+                                                                    e.key ===
+                                                                        "Enter" ||
+                                                                    e.key ===
+                                                                        " "
+                                                                ) {
+                                                                    e.stopPropagation();
+                                                                    handlePastTimeConfirm(
+                                                                        item,
+                                                                    );
+                                                                }
+                                                            }}
+                                                        >
+                                                            <AlertCircle
+                                                                size={12}
+                                                            />
+                                                            Eaten?
+                                                        </div>
+                                                    {/if}
+
+                                                    <button
+                                                        class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
+                                                        onclick={(e) =>
+                                                            handleItemClick(
+                                                                item,
+                                                                e,
+                                                            )}
+                                                        aria-label="Options"
                                                     >
-                                                        {ingredient.unit}
-                                                    </span>
-                                                {/if}
-                                                <span
-                                                    class="font-bold text-app-primary text-sm capitalize truncate"
+                                                        <EllipsisVertical
+                                                            size={18}
+                                                        />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                    {/if}
+                </div>
+
+                <div class="w-1/2 h-full overflow-y-auto p-4 md:p-6">
+                    <!-- Ingredients Tab -->
+                    {#if $fridgeIngredients.loading}
+                        <div class="flex items-center justify-center h-64">
+                            <div
+                                class="w-8 h-8 border-3 border-app-primary border-t-transparent rounded-full animate-spin"
+                            ></div>
+                        </div>
+                    {:else if ingredientsList.length === 0}
+                        <div
+                            class="flex flex-col items-center justify-center h-64 text-center p-8"
+                        >
+                            <div
+                                class="p-4 bg-app-surface-deep rounded-2xl mb-4"
+                            >
+                                <Apple
+                                    size={48}
+                                    class="text-app-text-muted/50"
+                                />
+                            </div>
+                            <h3 class="text-lg font-bold text-app-text mb-2">
+                                No ingredients tracked
+                            </h3>
+                            <p class="text-sm text-app-text-muted max-w-xs">
+                                When you remove a recipe after buying
+                                ingredients, you can save them here.
+                            </p>
+                        </div>
+                    {:else}
+                        <div class="max-w-2xl mx-auto">
+                            <div class="space-y-2">
+                                {#each ingredientsList as ingredient (ingredient.id)}
+                                    {@const days = getDaysInFridge(
+                                        ingredient.addedAt,
+                                    )}
+                                    <div
+                                        class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
+                                        transition:slide={{ duration: 200 }}
+                                    >
+                                        <div class="flex-1 min-w-0">
+                                            <div
+                                                class="flex items-center justify-between gap-3"
+                                            >
+                                                <div
+                                                    class="flex-1 min-w-0 flex items-baseline gap-1"
                                                 >
-                                                    {ingredient.name}
+                                                    <span
+                                                        class="font-bold text-app-text tabular-nums text-sm"
+                                                    >
+                                                        {formatAmount(
+                                                            ingredient.amount,
+                                                        )}
+                                                    </span>
+                                                    {#if ingredient.unit}
+                                                        <span
+                                                            class="text-[13px] font-medium text-app-text-muted"
+                                                        >
+                                                            {ingredient.unit}
+                                                        </span>
+                                                    {/if}
+                                                    <span
+                                                        class="font-bold text-app-primary text-sm capitalize truncate"
+                                                    >
+                                                        {ingredient.name}
+                                                    </span>
+                                                </div>
+
+                                                <span
+                                                    class="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                        days,
+                                                    )}"
+                                                >
+                                                    {days}
+                                                    {days === 1 || days === 0
+                                                        ? "day"
+                                                        : "days"}
                                                 </span>
                                             </div>
-
-                                            <span
-                                                class="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
-                                                    days,
-                                                )}"
-                                            >
-                                                {days}
-                                                {days === 1 || days === 0
-                                                    ? "day"
-                                                    : "days"}
-                                            </span>
                                         </div>
+                                        <button
+                                            class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
+                                            onclick={(e) =>
+                                                handleIngredientClick(
+                                                    ingredient,
+                                                    e,
+                                                )}
+                                            aria-label="Options"
+                                        >
+                                            <EllipsisVertical size={18} />
+                                        </button>
                                     </div>
-                                    <button
-                                        class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
-                                        onclick={(e) =>
-                                            handleIngredientClick(
-                                                ingredient,
-                                                e,
-                                            )}
-                                        aria-label="Options"
-                                    >
-                                        <EllipsisVertical size={18} />
-                                    </button>
-                                </div>
-                            {/each}
+                                {/each}
+                            </div>
                         </div>
-                    </div>
-                {/if}
-            {/if}
+                    {/if}
+                </div>
+            </div>
         </div>
     </div>
 </div>
