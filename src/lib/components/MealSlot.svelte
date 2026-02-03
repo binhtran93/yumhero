@@ -262,6 +262,7 @@
                     <p
                         class={twMerge(
                             "font-bold leading-tight text-sm md:text-xs",
+                            isPrinting && "!text-[11px]",
                             type === "breakfast"
                                 ? "text-accent-breakfast-text"
                                 : type === "lunch"
@@ -276,8 +277,11 @@
                         {getLabel(item)}
 
                         {#if "quantity" in item && item.quantity > 1}
-                            <span class="opacity-60 font-medium ml-1 text-xs"
-                                >x{item.quantity}</span
+                            <span
+                                class={twMerge(
+                                    "opacity-60 font-medium ml-1 text-xs",
+                                    isPrinting && "text-[10px]",
+                                )}>x{item.quantity}</span
                             >
                         {/if}
                     </p>
