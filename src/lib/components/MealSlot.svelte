@@ -2,6 +2,7 @@
     import { Plus, EllipsisVertical, Loader } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
     import LeftoverSlotMenu from "$lib/components/LeftoverSlotMenu.svelte";
+    import NoteSlotMenu from "$lib/components/NoteSlotMenu.svelte";
     import type {
         Recipe,
         MealType,
@@ -24,6 +25,7 @@
         onDrop?: (source: any, target: { day: string; type: MealType }) => void;
         onUpdate?: (index: number, newQuantity: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
+        onEditNote?: (index: number, rect: DOMRect) => void;
         onAddToFridge?: (
             title: string,
             recipeId: string,
@@ -53,6 +55,7 @@
         onDrop,
         onUpdate,
         onOpenRecipeMode,
+        onEditNote,
         onAddToFridge,
         onRemoveLeftoverFromPlan,
         onMarkLeftoverAsEaten,
@@ -295,7 +298,6 @@
                     {#if itemIsLeftover}
                         <!-- Leftover menu (simplified) -->
                         <LeftoverSlotMenu
-                            leftoverId={item.leftoverId}
                             triggerRect={activeTriggerRect}
                             isEaten={isEatenStatus(item.leftoverId)}
                             onClose={handleMenuClose}
@@ -330,6 +332,15 @@
                                 ? (title) =>
                                       onAddToFridge(title, item.id, item.image)
                                 : undefined}
+                        />
+                    {:else if !itemIsLeftover && !("quantity" in item) && "text" in item}
+                        <NoteSlotMenu
+                            triggerRect={activeTriggerRect}
+                            onClose={handleMenuClose}
+                            onEdit={() =>
+                                activeTriggerRect &&
+                                onEditNote?.(i, activeTriggerRect)}
+                            onRemove={() => onRemove?.(i)}
                         />
                     {/if}
                 {/if}

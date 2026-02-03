@@ -5,13 +5,25 @@
     interface Props {
         isOpen: boolean;
         position: { x: number; y: number };
+        initialText?: string;
         onClose: () => void;
         onSave: (text: string) => void;
     }
 
-    let { isOpen, position, onClose, onSave }: Props = $props();
+    let {
+        isOpen,
+        position,
+        initialText = "",
+        onClose,
+        onSave,
+    }: Props = $props();
 
-    let text = $state("");
+    let text = $state(initialText);
+
+    // Update text when initialText changes (e.g. when opening for a different note)
+    $effect(() => {
+        text = initialText;
+    });
     let popoverRef: HTMLDivElement | null = $state(null);
 
     // Click outside handler

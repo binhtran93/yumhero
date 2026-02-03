@@ -92,10 +92,14 @@
         isOpen: boolean;
         day: string | null;
         position: { x: number; y: number };
+        editIndex: number | null;
+        initialText: string;
     }>({
         isOpen: false,
         day: null,
         position: { x: 0, y: 0 },
+        editIndex: null,
+        initialText: "",
     });
 
     // Global Active Dropdown State
@@ -216,6 +220,8 @@
 
             noteModal.isOpen = true;
             noteModal.day = day;
+            noteModal.editIndex = null;
+            noteModal.initialText = "";
             noteModal.position = {
                 x: x,
                 y: rect.top,
@@ -728,12 +734,47 @@
 
         const dayIndex = plan.findIndex((d) => d.day === noteModal.day);
         if (dayIndex !== -1) {
-            plan[dayIndex].meals.note.push({
-                id: crypto.randomUUID(),
-                text: text,
-            });
+            if (noteModal.editIndex !== null) {
+                // Update existing note
+                plan[dayIndex].meals.note[noteModal.editIndex].text = text;
+            } else {
+                // Add new note
+                plan[dayIndex].meals.note.push({
+                    id: crypto.randomUUID(),
+                    text: text,
+                });
+            }
             saveWeekPlan(weekId, plan);
         }
+    };
+
+    const handleEditNote = (day: string, index: number, rect: DOMRect) => {
+        const dayPlan = plan.find((d) => d.day === day);
+        if (!dayPlan) return;
+
+        const note = dayPlan.meals.note[index];
+        if (!note) return;
+
+        // Calculate position (similar to handleMealClick)
+        const POPOVER_WIDTH = 300;
+        const windowWidth = window.innerWidth;
+
+        let x = rect.right + 10;
+        if (x + POPOVER_WIDTH > windowWidth) {
+            x = rect.left - POPOVER_WIDTH - 10;
+        }
+        if (x < 10) {
+            x = windowWidth - POPOVER_WIDTH - 10;
+        }
+
+        noteModal.isOpen = true;
+        noteModal.day = day;
+        noteModal.editIndex = index;
+        noteModal.initialText = note.text;
+        noteModal.position = {
+            x: x,
+            y: rect.top,
+        };
     };
 
     const handleDrop = (
@@ -1035,6 +1076,8 @@
                                             idx,
                                             newQuantity,
                                         )}
+                                    onEditNote={(idx, rect) =>
+                                        handleEditNote(dayPlan.day, idx, rect)}
                                     onOpenRecipeMode={handleOpenRecipeMode}
                                     onAddToFridge={(
                                         title,
@@ -1136,6 +1179,7 @@
 <NotePopover
     isOpen={noteModal.isOpen}
     position={noteModal.position}
+    initialText={noteModal.initialText}
     onClose={() => (noteModal.isOpen = false)}
     onSave={handleNoteSave}
 />
