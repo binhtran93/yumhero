@@ -947,7 +947,7 @@
                                                                 )}"
                                                             >
                                                                 <p
-                                                                    class="text-[10px] font-bold leading-tight line-clamp-2"
+                                                                    class="text-xs font-bold leading-tight line-clamp-2"
                                                                 >
                                                                     {meal.name}
                                                                 </p>
@@ -972,7 +972,7 @@
                                                                         )} opacity-0"
                                                                     >
                                                                         <p
-                                                                            class="text-[10px] font-bold leading-tight line-clamp-2"
+                                                                            class="text-xs font-bold leading-tight line-clamp-2"
                                                                         >
                                                                             Avocado
                                                                             Toast
@@ -999,7 +999,7 @@
                                                                         )} opacity-0"
                                                                     >
                                                                         <p
-                                                                            class="text-[10px] font-bold leading-tight line-clamp-2"
+                                                                            class="text-xs font-bold leading-tight line-clamp-2"
                                                                         >
                                                                             Grilled
                                                                             Veggies
