@@ -1297,12 +1297,12 @@
 
         /* 2. Drag to Thursday Breakfast */
         20% {
-            top: 25%;
+            top: 27%;
             left: 55%;
             transform: scale(0.85);
         }
         22% {
-            top: 25%;
+            top: 27%;
             left: 55%;
             transform: scale(1.1);
         } /* Drop */
@@ -1363,14 +1363,14 @@
         }
         20% {
             opacity: 1;
-            top: 25%;
+            top: 27%;
             left: 55%;
             transform: rotate(2deg);
         }
         20.1%,
         100% {
             opacity: 0;
-            top: 25%;
+            top: 27%;
             left: 55%;
             transform: translate(0, 0);
         }
