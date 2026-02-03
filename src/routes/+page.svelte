@@ -6,6 +6,125 @@
         Refrigerator,
         Utensils,
     } from "lucide-svelte";
+
+    interface MockMeal {
+        name: string;
+    }
+
+    interface MockDay {
+        day: string;
+        date: string;
+        meals: Record<string, MockMeal[]>;
+    }
+
+    const mockPlan: MockDay[] = [
+        {
+            day: "Mon",
+            date: "2",
+            meals: {
+                breakfast: [{ name: "Avocado Toast" }],
+                lunch: [{ name: "Quinoa Bowl" }],
+                dinner: [{ name: "Baked Salmon" }],
+                note: [{ name: "Buy fresh herbs" }],
+            },
+        },
+        {
+            day: "Tue",
+            date: "3",
+            meals: {
+                breakfast: [{ name: "Greek Yogurt" }],
+                lunch: [{ name: "Chicken Wrap" }],
+                dinner: [{ name: "Beef Stir-fry" }],
+                note: [],
+            },
+        },
+        {
+            day: "Wed",
+            date: "4",
+            meals: {
+                breakfast: [{ name: "Oatmeal" }],
+                lunch: [{ name: "Pasta Salad" }],
+                dinner: [{ name: "Lentil Soup" }],
+                note: [{ name: "Clean fridge" }],
+            },
+        },
+        {
+            day: "Thu",
+            date: "5",
+            meals: {
+                breakfast: [{ name: "Smoothie" }],
+                lunch: [{ name: "Turkey Club" }],
+                dinner: [{ name: "Roasted Chicken" }],
+                note: [],
+            },
+        },
+        {
+            day: "Fri",
+            date: "6",
+            meals: {
+                breakfast: [{ name: "Pancakes" }],
+                lunch: [{ name: "Miso Ramen" }],
+                dinner: [{ name: "Homemade Pizza" }],
+                note: [],
+            },
+        },
+        {
+            day: "Sat",
+            date: "7",
+            meals: {
+                breakfast: [{ name: "Fruit Bowl" }],
+                lunch: [{ name: "Burger" }],
+                dinner: [{ name: "Carbonara" }],
+                note: [],
+            },
+        },
+        {
+            day: "Sun",
+            date: "8",
+            meals: {
+                breakfast: [{ name: "Omelette" }],
+                lunch: [{ name: "Fish Tacos" }],
+                dinner: [{ name: "Steak & Veg" }],
+                note: [],
+            },
+        },
+    ];
+
+    const mealTypes = ["breakfast", "lunch", "dinner", "note"];
+
+    const getMealStyles = (type: string) => {
+        switch (type) {
+            case "breakfast":
+                return "bg-accent-breakfast-bg text-accent-breakfast-text border-accent-breakfast/10";
+            case "lunch":
+                return "bg-accent-lunch-bg text-accent-lunch-text border-accent-lunch/10";
+            case "dinner":
+                return "bg-accent-dinner-bg text-accent-dinner-text border-accent-dinner/10";
+            case "snack":
+                return "bg-accent-snack-bg text-accent-snack-text border-accent-snack/10";
+            case "note":
+                return "bg-accent-note-bg text-accent-note-text border-accent-note/10";
+            default:
+                return "";
+        }
+    };
+
+    const getLabelColor = (type: string) => {
+        switch (type) {
+            case "breakfast":
+                return "text-accent-breakfast";
+            case "lunch":
+                return "text-accent-lunch";
+            case "dinner":
+                return "text-accent-dinner";
+            case "snack":
+                return "text-accent-snack";
+            case "note":
+                return "text-accent-note";
+            default:
+                return "";
+        }
+    };
 </script>
 
 <div class="min-h-screen bg-app-bg text-app-text font-display">
@@ -119,27 +238,70 @@
                             class="p-6 bg-app-bg min-h-[300px] md:min-h-[400px]"
                         >
                             <!-- Simplified Week Grid Preview -->
-                            <div class="grid grid-cols-7 gap-2">
-                                {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as day}
-                                    <div class="text-center">
+                            <div
+                                class="grid grid-cols-7 gap-px bg-app-border border border-app-border rounded-lg overflow-hidden"
+                            >
+                                {#each mockPlan as day}
+                                    <div
+                                        class="flex flex-col bg-app-bg min-w-0"
+                                    >
+                                        <!-- Day Header -->
                                         <div
-                                            class="text-xs font-bold text-app-text-muted mb-2"
+                                            class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
                                         >
-                                            {day}
+                                            <span
+                                                class="text-[10px] md:text-xs font-black text-app-text"
+                                                >{day.day}</span
+                                            >
+                                            <span
+                                                class="text-[8px] md:text-[10px] font-bold text-app-text/60"
+                                                >{day.date}</span
+                                            >
                                         </div>
-                                        <div
-                                            class="bg-app-surface border border-app-border rounded-lg p-2 min-h-[120px] md:min-h-[200px] space-y-2"
-                                        >
+
+                                        <!-- Meal Slots -->
+                                        {#each mealTypes as type}
                                             <div
-                                                class="h-4 md:h-6 bg-accent-breakfast-bg rounded"
-                                            ></div>
-                                            <div
-                                                class="h-4 md:h-6 bg-accent-lunch-bg rounded"
-                                            ></div>
-                                            <div
-                                                class="h-4 md:h-6 bg-accent-dinner-bg rounded"
-                                            ></div>
-                                        </div>
+                                                class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-[60px] md:min-h-[100px]"
+                                            >
+                                                <!-- Slot Header -->
+                                                <div
+                                                    class="flex items-center p-1.5 md:p-2 bg-app-bg/10"
+                                                >
+                                                    <div
+                                                        class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full mr-1.5 md:mr-2 {getLabelColor(
+                                                            type,
+                                                        ).replace(
+                                                            'text-',
+                                                            'bg-',
+                                                        )}"
+                                                    ></div>
+                                                    <span
+                                                        class="text-[6px] md:text-[8px] font-bold uppercase tracking-widest text-app-text-muted"
+                                                        >{type}</span
+                                                    >
+                                                </div>
+
+                                                <!-- Slot Content -->
+                                                <div
+                                                    class="px-1.5 pb-1.5 md:px-2 md:pb-2 flex flex-col gap-1 md:gap-1.5"
+                                                >
+                                                    {#each day.meals[type] as meal}
+                                                        <div
+                                                            class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border shadow-sm transition-all {getMealStyles(
+                                                                type,
+                                                            )}"
+                                                        >
+                                                            <p
+                                                                class="text-[8px] md:text-[10px] font-bold leading-tight line-clamp-2"
+                                                            >
+                                                                {meal.name}
+                                                            </p>
+                                                        </div>
+                                                    {/each}
+                                                </div>
+                                            </div>
+                                        {/each}
                                     </div>
                                 {/each}
                             </div>
