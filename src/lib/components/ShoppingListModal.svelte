@@ -6,10 +6,12 @@
         Plus,
         RotateCcw,
         Refrigerator,
+        Printer,
     } from "lucide-svelte";
     import type { Recipe, ShoppingListItem } from "$lib/types";
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
     import Modal from "./Modal.svelte";
+    import { toPng } from "html-to-image";
     import {
         getWeekShoppingList,
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
@@ -55,6 +57,7 @@
     let manualItemUnit = $state("");
     let editItemAmount = $state("");
     let editItemUnit = $state("");
+    let isPrinting = $state(false);
 
     // Subscribe to week-scoped shopping list
     let weekShoppingListStore = $derived(getWeekShoppingList(weekId));
@@ -224,6 +227,104 @@
             isMatching = false;
         }
     };
+
+    const handlePrint = async () => {
+        if (shoppingList.length === 0) return;
+        isPrinting = true;
+
+        try {
+            // Create a wrapper that clips the container from view
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "fixed";
+            wrapper.style.left = "0";
+            wrapper.style.top = "0";
+            wrapper.style.width = "1px";
+            wrapper.style.height = "1px";
+            wrapper.style.overflow = "hidden";
+            wrapper.style.zIndex = "-1";
+
+            const container = document.createElement("div");
+            container.style.position = "absolute";
+            container.style.left = "0";
+            container.style.top = "0";
+            container.style.width = "900px";
+            container.style.backgroundColor = "white";
+            container.style.padding = "40px";
+            container.style.fontFamily = "system-ui, sans-serif";
+
+            const itemsHtml = displayedItems
+                .map((item) => {
+                    const totalAmount = item.sources.reduce(
+                        (sum, s) => sum + (s.amount || 0),
+                        0,
+                    );
+                    const unit = item.sources[0]?.unit || "";
+                    const amountText =
+                        totalAmount > 0 ? `${totalAmount} ${unit}`.trim() : "";
+                    return `
+                        <div style="break-inside: avoid; margin-bottom: 6px; padding: 6px 0;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <div style="width: 14px; height: 14px; border: 2px solid #78716c; margin-top: 2px; flex-shrink: 0;"></div>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 13px; color: #1c1917; text-transform: capitalize;">${item.ingredient_name}</div>
+                                    ${amountText ? `<div style="font-size: 11px; color: #78716c;">${amountText}</div>` : ""}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join("");
+
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 20px;">
+                    <h1 style="margin: 0; color: #c2410c; font-size: 24px; font-weight: 900;">Shopping List</h1>
+                    <p style="margin: 0; color: #57534e; font-weight: 700; font-size: 13px;">Week: ${weekId}</p>
+                </div>
+                <div style="column-count: 3; column-gap: 24px;">
+                    ${itemsHtml}
+                </div>
+            `;
+
+            wrapper.appendChild(container);
+            document.body.appendChild(wrapper);
+
+            // Wait a frame for rendering
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+
+            const dataUrl = await toPng(container, {
+                backgroundColor: "white",
+                quality: 1,
+                pixelRatio: 2,
+            });
+
+            document.body.removeChild(wrapper);
+
+            const printWindow = window.open("", "_blank");
+            if (printWindow) {
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title> </title>
+                        <style>
+                            @page { size: auto; margin: 0; }
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            html, body { width: 100%; height: auto; background: white; }
+                            img { width: 100%; height: auto; display: block; padding: 10mm; }
+                        </style>
+                    </head>
+                    <body onload="setTimeout(() => { window.print(); window.close(); }, 500)">
+                        <img src="${dataUrl}" />
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            }
+        } catch (error) {
+            console.error("Failed to print shopping list:", error);
+        } finally {
+            isPrinting = false;
+        }
+    };
 </script>
 
 <Modal
@@ -280,6 +381,20 @@
                         <Refrigerator size={16} />
                     {/if}
                     <span class="hidden sm:inline">Check Fridge</span>
+                </button>
+                <button
+                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
+                    onclick={handlePrint}
+                    disabled={isPrinting || shoppingList.length === 0}
+                >
+                    {#if isPrinting}
+                        <div
+                            class="w-4 h-4 border-2 border-app-text-muted/30 border-t-app-text-muted rounded-full animate-spin"
+                        ></div>
+                    {:else}
+                        <Printer size={16} />
+                    {/if}
+                    <span class="hidden sm:inline">Print</span>
                 </button>
                 <button
                     class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"

@@ -939,7 +939,6 @@
         if (!printRef) return;
 
         isPrinting = true;
-        toasts.info("Preparing print view...", 0); // No auto-remove
 
         try {
             // Need to ensure the element is fully expanded if it's currently scrolling
@@ -1003,7 +1002,6 @@
                 `);
                 printWindow.document.close();
             }
-            toasts.success("Print view ready");
         } catch (error) {
             console.error("Print failed:", error);
             toasts.error("Failed to generate print view");
