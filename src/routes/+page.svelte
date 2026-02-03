@@ -807,13 +807,19 @@
         if (!item) return;
 
         // Check if recipe already exists in target list
-        // @ts-ignore
-        const existingIndex = targetList.findIndex((r) => r.id === item.id);
+        // @ts-ignore - Check for existing item with same ID, but not the item itself if in the same list
+        const existingIndex = targetList.findIndex(
+            (r: any, idx: number) =>
+                r.id === item.id &&
+                (sourceList !== targetList || idx !== source.index),
+        );
 
         if (existingIndex !== -1) {
             // Recipe exists in target, merge quantities
             // @ts-ignore
-            targetList[existingIndex].quantity += item.quantity;
+            targetList[existingIndex].quantity =
+                (targetList[existingIndex].quantity || 1) +
+                (item.quantity || 1);
 
             // Remove from source
             // @ts-ignore
