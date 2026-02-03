@@ -32,8 +32,8 @@
     // State for action menu
     let selectedItem = $state<LeftoverItem | null>(null);
     let selectedIngredient = $state<FridgeIngredient | null>(null);
-    let showActionMenu = $state(false);
-    let actionMenuPosition = $state({ x: 0, y: 0 });
+
+    let activeTriggerRect = $state<DOMRect | null>(null);
 
     // State for confirmation modal
     let showConfirmDelete = $state(false);
@@ -98,8 +98,7 @@
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
         selectedItem = item;
         selectedIngredient = null;
-        actionMenuPosition = { x: rect.right - 200, y: rect.bottom + 8 };
-        showActionMenu = true;
+        activeTriggerRect = rect;
     };
 
     const handleIngredientClick = (item: FridgeIngredient, e: MouseEvent) => {
@@ -107,12 +106,11 @@
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
         selectedIngredient = item;
         selectedItem = null;
-        actionMenuPosition = { x: rect.right - 200, y: rect.bottom + 8 };
-        showActionMenu = true;
+        activeTriggerRect = rect;
     };
 
     const closeActionMenu = () => {
-        showActionMenu = false;
+        activeTriggerRect = null;
         selectedItem = null;
         selectedIngredient = null;
     };
@@ -227,6 +225,7 @@
     };
 
     import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
+    import FridgeMenu from "$lib/components/FridgeMenu.svelte";
 
     let showAddIngredientModal = $state(false);
 
@@ -271,10 +270,7 @@
     };
 </script>
 
-<svelte:window
-    onclick={() => showActionMenu && closeActionMenu()}
-    onkeydown={(e) => e.key === "Escape" && closeActionMenu()}
-/>
+<svelte:window onkeydown={(e) => e.key === "Escape" && closeActionMenu()} />
 
 <SEO
     title="My Fridge"
@@ -760,72 +756,24 @@
     </div>
 </div>
 
-<!-- Leftover Action Menu -->
-{#if showActionMenu && selectedItem}
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div
-        class="fixed z-50 w-52 bg-app-surface rounded-xl shadow-lg border border-app-border py-1 overflow-hidden"
-        style="left: {actionMenuPosition.x}px; top: {actionMenuPosition.y}px;"
-        transition:fade={{ duration: 100 }}
-        onclick={(e) => e.stopPropagation()}
-    >
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={handleMarkAsEaten}
-        >
-            <Utensils size={18} />
-            <span class="font-medium">Mark as Eaten</span>
-        </button>
-
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
-            onclick={handleDeleteLeftover}
-        >
-            <Trash2 size={18} />
-            <span class="font-medium">Throw away</span>
-        </button>
-
-        <div class="border-t border-app-border my-1"></div>
-
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={closeActionMenu}
-        >
-            <XIcon size={18} />
-            <span class="font-medium">Close</span>
-        </button>
-    </div>
-{/if}
-
-<!-- Ingredient Action Menu -->
-{#if showActionMenu && selectedIngredient}
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div
-        class="fixed z-50 w-52 bg-app-surface rounded-xl shadow-lg border border-app-border py-1 overflow-hidden"
-        style="left: {actionMenuPosition.x}px; top: {actionMenuPosition.y}px;"
-        transition:fade={{ duration: 100 }}
-        onclick={(e) => e.stopPropagation()}
-    >
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
-            onclick={handleDeleteIngredient}
-        >
-            <Trash2 size={18} />
-            <span class="font-medium">Throw away</span>
-        </button>
-
-        <div class="border-t border-app-border my-1"></div>
-
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={closeActionMenu}
-        >
-            <XIcon size={18} />
-            <span class="font-medium">Close</span>
-        </button>
-    </div>
+<!-- Action Menu -->
+{#if activeTriggerRect}
+    {#if selectedItem}
+        <FridgeMenu
+            triggerRect={activeTriggerRect}
+            type="leftover"
+            onClose={closeActionMenu}
+            onMarkAsEaten={handleMarkAsEaten}
+            onDelete={handleDeleteLeftover}
+        />
+    {:else if selectedIngredient}
+        <FridgeMenu
+            triggerRect={activeTriggerRect}
+            type="ingredient"
+            onClose={closeActionMenu}
+            onDelete={handleDeleteIngredient}
+        />
+    {/if}
 {/if}
 
 <!-- Confirm Modal -->
