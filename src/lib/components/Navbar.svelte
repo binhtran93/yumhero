@@ -182,7 +182,7 @@
                         Leftovers
                     </h3>
                     <div
-                        class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
+                        class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 -mx-2 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
                     >
                         {#each $availableLeftovers as leftover}
                             <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -238,7 +238,7 @@
             </div>
 
             <div
-                class="flex-1 overflow-y-auto pr-1 pb-4 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
+                class="flex-1 overflow-y-auto pr-1 pb-3 -mx-2 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
             >
                 {#each filteredRecipes as recipe}
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
