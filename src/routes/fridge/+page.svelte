@@ -9,6 +9,8 @@
         UtensilsCrossed,
         Apple,
         ChefHat,
+        Search,
+        Plus,
     } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
     import Header from "$lib/components/Header.svelte";
@@ -49,17 +51,30 @@
         return () => clearInterval(interval);
     });
 
+    // Search state
+    let searchQuery = $state("");
+
+    // Filtered data
+    let filteredLeftovers = $derived(
+        $leftovers.data.filter((item) =>
+            item.title.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
+    );
+
+    let filteredIngredientsList = $derived(
+        $fridgeIngredients.data.filter((item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
+    );
+
     // Categorize leftovers
     let availableItems = $derived(
-        $leftovers.data.filter((item) => item.status === "not_planned"),
+        filteredLeftovers.filter((item) => item.status === "not_planned"),
     );
 
     let plannedItems = $derived(
-        $leftovers.data.filter((item) => item.status === "planned"),
+        filteredLeftovers.filter((item) => item.status === "planned"),
     );
-
-    // Ingredients data
-    let ingredientsList = $derived($fridgeIngredients.data);
 
     // Counts for tab badges
     let leftoverCount = $derived($leftovers.data.length);
@@ -211,7 +226,6 @@
     };
 
     import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
-    import { Plus } from "lucide-svelte";
 
     let showAddIngredientModal = $state(false);
 
@@ -320,6 +334,43 @@
                         {/if}
                     </button>
                 </div>
+            </div>
+        </div>
+        <!-- Search & Actions Bar -->
+        <div class="bg-app-bg border-b border-app-border shrink-0">
+            <div class="max-w-2xl mx-auto px-4 py-3 flex gap-2">
+                <div class="relative flex-1">
+                    <Search
+                        class="absolute left-3 top-1/2 -translate-y-1/2 text-app-text-muted"
+                        size={18}
+                    />
+                    <input
+                        type="text"
+                        bind:value={searchQuery}
+                        placeholder="Search {activeTab}..."
+                        class="w-full bg-app-surface border border-app-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all font-medium placeholder:text-app-text-muted/60"
+                        id="fridge-search"
+                    />
+                    {#if searchQuery}
+                        <button
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-app-text-muted hover:text-app-text transition-colors"
+                            onclick={() => (searchQuery = "")}
+                            aria-label="Clear search"
+                        >
+                            <XIcon size={16} />
+                        </button>
+                    {/if}
+                </div>
+
+                {#if activeTab === "ingredients"}
+                    <button
+                        class="bg-app-primary text-white px-4 py-2 rounded-xl flex items-center gap-2 font-bold text-sm shadow-md shadow-app-primary/20 hover:bg-app-primary-hover transition-all active:scale-95 shrink-0"
+                        onclick={() => (showAddIngredientModal = true)}
+                    >
+                        <Plus size={18} />
+                        <span class="hidden sm:inline">Add</span>
+                    </button>
+                {/if}
             </div>
         </div>
 
@@ -592,7 +643,7 @@
                                 class="w-8 h-8 border-3 border-app-primary border-t-transparent rounded-full animate-spin"
                             ></div>
                         </div>
-                    {:else if ingredientsList.length === 0}
+                    {:else if filteredIngredientsList.length === 0}
                         <div
                             class="flex flex-col items-center justify-center h-64 text-center p-8"
                         >
@@ -605,17 +656,20 @@
                                 />
                             </div>
                             <h3 class="text-lg font-bold text-app-text mb-2">
-                                No ingredients tracked
+                                {searchQuery
+                                    ? "No matches found"
+                                    : "No ingredients tracked"}
                             </h3>
                             <p class="text-sm text-app-text-muted max-w-xs">
-                                When you remove a recipe after buying
-                                ingredients, you can save them here.
+                                {searchQuery
+                                    ? `Could't find any ingredients matching "${searchQuery}"`
+                                    : "When you remove a recipe after buying ingredients, you can save them here."}
                             </p>
                         </div>
                     {:else}
                         <div class="max-w-2xl mx-auto">
                             <div class="space-y-2">
-                                {#each ingredientsList as ingredient (ingredient.id)}
+                                {#each filteredIngredientsList as ingredient (ingredient.id)}
                                     {@const days = getDaysInFridge(
                                         ingredient.addedAt,
                                     )}
@@ -786,18 +840,3 @@
     isOpen={showAddIngredientModal}
     onClose={() => (showAddIngredientModal = false)}
 />
-
-{#if activeTab === "ingredients"}
-    <div
-        class="fixed bottom-6 right-6 z-30"
-        transition:fade={{ duration: 150 }}
-    >
-        <button
-            class="w-14 h-14 bg-app-primary text-white rounded-full shadow-lg shadow-app-primary/25 flex items-center justify-center hover:bg-app-primary-hover transition-all active:scale-95"
-            onclick={() => (showAddIngredientModal = true)}
-            aria-label="Add Ingredient"
-        >
-            <Plus size={28} />
-        </button>
-    </div>
-{/if}
