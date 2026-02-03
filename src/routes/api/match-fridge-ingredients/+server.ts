@@ -3,6 +3,11 @@ import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
+import { REDIS_URL } from '$env/static/private';
+import Redis from 'ioredis';
+import { createHash } from 'crypto';
+
+const redis = new Redis(REDIS_URL);
 
 interface MinimalIngredient {
     id: string;
@@ -21,6 +26,23 @@ export async function POST({ request }) {
 
         if (!shoppingList || !fridgeIngredients) {
             return json({ error: 'Missing shoppingList or fridgeIngredients' }, { status: 400 });
+        }
+
+        // Generate a fast hash for caching
+        // Sorting items to ensure the same list always produces the same hash
+        const sortedShoppingList = [...shoppingList].sort((a, b) => a.id.localeCompare(b.id));
+        const sortedFridgeIngredients = [...fridgeIngredients].sort((a, b) => a.id.localeCompare(b.id));
+
+        const hashInput = JSON.stringify({
+            s: sortedShoppingList,
+            f: sortedFridgeIngredients
+        });
+        const cacheKey = `fridge_match:${createHash('md5').update(hashInput).digest('hex')}`;
+
+        // Check cache
+        const cachedResult = await redis.get(cacheKey);
+        if (cachedResult) {
+            return json(JSON.parse(cachedResult));
         }
 
         const exactMatches = [];
@@ -125,9 +147,14 @@ export async function POST({ request }) {
         const allMatches = [...exactMatches, ...aiMatches];
         const uniqueMatches = Array.from(new Map(allMatches.map(m => [m.shoppingItemId, m])).values());
 
-        return json({
+        const result = {
             matches: uniqueMatches
-        });
+        };
+
+        // Store in cache for 24 hours
+        await redis.set(cacheKey, JSON.stringify(result), 'EX', 86400);
+
+        return json(result);
 
     } catch (error: any) {
         console.error('Error matching ingredients:', error);
