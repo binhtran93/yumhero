@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ShoppingCart } from "lucide-svelte";
+    import { ShoppingCart, Hand } from "lucide-svelte";
     import {
         mockPlan,
         mealTypes,
@@ -18,6 +18,16 @@
 
     // Demo state
     let showModal = $state(false);
+
+    // Cursor Simulation State
+    let cursorPos = $state({ x: 100, y: 100 }); // percent
+    let isCursorClicking = $state(false);
+    let showCursor = $state(false);
+
+    // UI Interaction States (visual feedback)
+    let isAddButtonActive = $state(false);
+    let isRecipeActive = $state(false);
+
     // Initialize local plan with Monday meals empty
     let localPlan = $state(
         mockPlan.map((day) => {
@@ -66,7 +76,7 @@
     let demoTimeout: NodeJS.Timeout;
 
     function runDemo() {
-        // Reset to empty
+        // Reset ALL demo state
         localPlan = mockPlan.map((day) => {
             if (day.day === "Monday") {
                 return {
@@ -83,41 +93,85 @@
             return day;
         });
         showModal = false;
+        showCursor = false;
+        isCursorClicking = false;
+        isAddButtonActive = false;
+        isRecipeActive = false;
+        cursorPos = { x: 50, y: 110 }; // Start off-screen bottom
 
-        // Step 1: Open Modal after 1s
+        // 1. Cursor enters and moves to "Add Lunch"
         demoTimeout = setTimeout(() => {
             if (hasInteracted) return;
-            showModal = true;
+            showCursor = true;
+            // Target: Monday Lunch "Add" button (approximate coords)
+            cursorPos = { x: 50, y: 42 };
 
-            // Step 2: Select item & fill slot after 1.5s
+            // 2. Click "Add Lunch"
             demoTimeout = setTimeout(() => {
                 if (hasInteracted) return;
-                showModal = false;
+                isCursorClicking = true;
+                isAddButtonActive = true;
 
-                // Fill with Tuna Salad
-                localPlan = mockPlan.map((day) => {
-                    if (day.day === "Monday") {
-                        return {
-                            ...day,
-                            meals: {
-                                ...day.meals,
-                                lunch: [{ name: "Tuna Salad" }],
-                                dinner: [], // Keep empty
-                                snack: [], // Keep empty
-                                note: [], // Keep empty
-                            },
-                        };
-                    }
-                    return day;
-                });
-
-                // Step 3: Reset loop after 3s
+                // 3. Release click & Open Modal
                 demoTimeout = setTimeout(() => {
                     if (hasInteracted) return;
-                    runDemo();
-                }, 3000);
-            }, 1500);
-        }, 1000);
+                    isCursorClicking = false;
+                    isAddButtonActive = false;
+                    showModal = true;
+
+                    // 4. Move to "Tuna Salad" recipe
+                    demoTimeout = setTimeout(() => {
+                        if (hasInteracted) return;
+                        // Target: Tuna Salad item in modal (approx coords)
+                        cursorPos = { x: 50, y: 48 };
+
+                        // 5. Click "Tuna Salad"
+                        demoTimeout = setTimeout(() => {
+                            if (hasInteracted) return;
+                            isCursorClicking = true;
+                            isRecipeActive = true;
+
+                            // 6. Action: Fill Slot & Close Modal
+                            demoTimeout = setTimeout(() => {
+                                if (hasInteracted) return;
+                                isCursorClicking = false;
+                                isRecipeActive = false;
+                                showModal = false;
+
+                                // Update Data
+                                localPlan = mockPlan.map((day) => {
+                                    if (day.day === "Monday") {
+                                        return {
+                                            ...day,
+                                            meals: {
+                                                ...day.meals,
+                                                lunch: [{ name: "Tuna Salad" }],
+                                                dinner: [],
+                                                snack: [],
+                                                note: [],
+                                            },
+                                        };
+                                    }
+                                    return day;
+                                });
+
+                                // 7. Move cursor away
+                                demoTimeout = setTimeout(() => {
+                                    if (hasInteracted) return;
+                                    cursorPos = { x: 50, y: 110 };
+
+                                    // 8. Loop
+                                    demoTimeout = setTimeout(() => {
+                                        if (hasInteracted) return;
+                                        runDemo();
+                                    }, 2000);
+                                }, 500);
+                            }, 300); // Short click hold
+                        }, 800); // Travel time to recipe
+                    }, 500); // Wait for modal animation
+                }, 300); // Short click hold
+            }, 1000); // Travel time to add button
+        }, 500); // Init delay
     }
 
     onMount(() => {
@@ -132,6 +186,7 @@
         if (hasInteracted) {
             clearTimeout(demoTimeout);
             showModal = false;
+            showCursor = false;
             localPlan = mockPlan; // Restore full plan
         }
     });
@@ -252,7 +307,9 @@
                                                 {:else if day.day === "Monday" && type === "lunch"}
                                                     <!-- Empty Slot Placeholder -->
                                                     <div
-                                                        class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center animate-pulse"
+                                                        class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {isAddButtonActive
+                                                            ? 'scale-95 bg-gray-50'
+                                                            : ''}"
                                                     >
                                                         <span
                                                             class="text-xs font-bold text-gray-400"
@@ -280,7 +337,9 @@
                             </h3>
                             <div class="space-y-2">
                                 <div
-                                    class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors bg-app-primary/5 border border-app-primary/20"
+                                    class="flex items-center gap-3 p-2 rounded-xl border border-app-primary/20 transition-all duration-200 {isRecipeActive
+                                        ? 'bg-app-primary/20 scale-[0.98]'
+                                        : 'bg-app-primary/5'}"
                                 >
                                     <div
                                         class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
@@ -305,7 +364,7 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors opacity-50"
+                                    class="flex items-center gap-3 p-2 rounded-xl transition-colors opacity-50"
                                 >
                                     <div
                                         class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
@@ -327,6 +386,25 @@
                             </div>
                         </div>
                     {/if}
+
+                    <!-- Simulated Cursor -->
+                    <div
+                        class="absolute transition-all duration-700 ease-in-out z-50 pointer-events-none drop-shadow-xl"
+                        style="
+                            left: {cursorPos.x}%; 
+                            top: {cursorPos.y}%; 
+                            opacity: {showCursor ? 1 : 0};
+                            transform: translate(-30%, -10%) scale({isCursorClicking
+                            ? 0.8
+                            : 1});
+                        "
+                    >
+                        <div
+                            class="bg-white/80 p-2 rounded-full backdrop-blur-sm border border-black/10"
+                        >
+                            <Hand class="text-black w-6 h-6 fill-black/10" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Home Indicator -->
