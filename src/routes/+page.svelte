@@ -745,11 +745,11 @@
 
                         <!-- Mockup Content -->
                         <div
-                            class="flex flex-col md:flex-row bg-app-bg min-h-[400px] overflow-hidden"
+                            class="flex flex-row bg-app-bg min-h-100 overflow-hidden"
                         >
                             <!-- Mock Sidebar -->
                             <div
-                                class="hidden md:flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
+                                class="flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
                             >
                                 <!-- Scrollable Sections -->
                                 <div class="flex-1 overflow-y-auto">
@@ -892,11 +892,11 @@
                             >
                                 <!-- Simplified Week Grid Preview -->
                                 <div
-                                    class="grid grid-cols-7 bg-app-border border border-app-border rounded-lg overflow-hidden min-w-[1400px]"
+                                    class="grid grid-cols-7 bg-app-border border border-app-border rounded-lg overflow-hidden"
                                 >
                                     {#each mockPlan as day}
                                         <div
-                                            class="flex flex-col bg-app-bg min-w-[200px] border-r border-app-border last:border-r-0"
+                                            class="flex flex-col bg-app-bg border-r border-app-border last:border-r-0"
                                         >
                                             <!-- Day Header -->
                                             <div
@@ -915,7 +915,7 @@
                                             <!-- Meal Slots -->
                                             {#each mealTypes as type}
                                                 <div
-                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-[60px] md:min-h-[100px]"
+                                                    class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-15 md:min-h-25"
                                                 >
                                                     <!-- Slot Header -->
                                                     <div
