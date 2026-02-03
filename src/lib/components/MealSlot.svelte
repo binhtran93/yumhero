@@ -239,7 +239,7 @@
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 class={twMerge(
-                    "pointer-events-auto group/item relative flex items-center gap-2 pl-3 pr-2 py-1 rounded-xl shadow-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
+                    "pointer-events-auto group/item relative flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl shadow-sm transition-all border cursor-pointer active:cursor-grabbing select-none",
                     type === "breakfast"
                         ? "bg-accent-breakfast-bg hover:bg-accent-breakfast-hover border-accent-breakfast-border"
                         : type === "lunch"
