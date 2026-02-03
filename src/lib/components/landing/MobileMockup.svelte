@@ -7,13 +7,38 @@
         getMealStyles,
     } from "$lib/data/landingData";
 
+    import { onMount, onDestroy } from "svelte";
+
     // Mobile carousel state
     let mobileDayIndex = $state(0);
     let touchStartX = 0;
     let touchDiff = $state(0);
     let isSwiping = $state(false);
+    let hasInteracted = $state(false);
+
+    // Demo state
+    let showModal = $state(false);
+    // Initialize local plan with Monday meals empty
+    let localPlan = $state(
+        mockPlan.map((day) => {
+            if (day.day === "Monday") {
+                return {
+                    ...day,
+                    meals: {
+                        ...day.meals,
+                        lunch: [],
+                        dinner: [],
+                        snack: [],
+                        note: [],
+                    },
+                };
+            }
+            return day;
+        }),
+    );
 
     function handleTouchStart(e: TouchEvent) {
+        hasInteracted = true;
         touchStartX = e.touches[0].clientX;
         touchDiff = 0;
         isSwiping = true;
@@ -36,6 +61,80 @@
         touchDiff = 0;
         isSwiping = false;
     }
+
+    // Demo Animation Loop
+    let demoTimeout: NodeJS.Timeout;
+
+    function runDemo() {
+        // Reset to empty
+        localPlan = mockPlan.map((day) => {
+            if (day.day === "Monday") {
+                return {
+                    ...day,
+                    meals: {
+                        ...day.meals,
+                        lunch: [],
+                        dinner: [],
+                        snack: [],
+                        note: [],
+                    },
+                };
+            }
+            return day;
+        });
+        showModal = false;
+
+        // Step 1: Open Modal after 1s
+        demoTimeout = setTimeout(() => {
+            if (hasInteracted) return;
+            showModal = true;
+
+            // Step 2: Select item & fill slot after 1.5s
+            demoTimeout = setTimeout(() => {
+                if (hasInteracted) return;
+                showModal = false;
+
+                // Fill with Tuna Salad
+                localPlan = mockPlan.map((day) => {
+                    if (day.day === "Monday") {
+                        return {
+                            ...day,
+                            meals: {
+                                ...day.meals,
+                                lunch: [{ name: "Tuna Salad" }],
+                                dinner: [], // Keep empty
+                                snack: [], // Keep empty
+                                note: [], // Keep empty
+                            },
+                        };
+                    }
+                    return day;
+                });
+
+                // Step 3: Reset loop after 3s
+                demoTimeout = setTimeout(() => {
+                    if (hasInteracted) return;
+                    runDemo();
+                }, 3000);
+            }, 1500);
+        }, 1000);
+    }
+
+    onMount(() => {
+        runDemo();
+    });
+
+    onDestroy(() => {
+        clearTimeout(demoTimeout);
+    });
+
+    $effect(() => {
+        if (hasInteracted) {
+            clearTimeout(demoTimeout);
+            showModal = false;
+            localPlan = mockPlan; // Restore full plan
+        }
+    });
 </script>
 
 <div class="md:hidden flex justify-center py-6">
@@ -99,7 +198,7 @@
                     ontouchmove={handleTouchMove}
                     ontouchend={handleTouchEnd}
                 >
-                    {#each mockPlan as day, index}
+                    {#each localPlan as day, index}
                         <div
                             class="absolute inset-0 {isSwiping
                                 ? ''
@@ -136,12 +235,12 @@
                                                 >
                                             </div>
                                             <div class="space-y-2">
-                                                {#if day.meals && day.meals[type]}
+                                                {#if day.meals && day.meals[type] && day.meals[type].length > 0}
                                                     {#each day.meals[type] as meal}
                                                         <div
-                                                            class="flex items-center justify-between p-2 rounded-xl border shadow-sm {getMealStyles(
+                                                            class="flex items-center justify-between p-2 rounded-xl border shadow-sm transition-all duration-500 {getMealStyles(
                                                                 type,
-                                                            )}"
+                                                            )} animate-in fade-in slide-in-from-bottom-2"
                                                         >
                                                             <span
                                                                 class="text-sm font-bold text-gray-800"
@@ -150,6 +249,16 @@
                                                             >
                                                         </div>
                                                     {/each}
+                                                {:else if day.day === "Monday" && type === "lunch"}
+                                                    <!-- Empty Slot Placeholder -->
+                                                    <div
+                                                        class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center animate-pulse"
+                                                    >
+                                                        <span
+                                                            class="text-xs font-bold text-gray-400"
+                                                            >Add Lunch</span
+                                                        >
+                                                    </div>
                                                 {/if}
                                             </div>
                                         </div>
@@ -158,6 +267,66 @@
                             </div>
                         </div>
                     {/each}
+
+                    <!-- Recipe Selection Modal -->
+                    {#if showModal}
+                        <div
+                            class="absolute inset-x-4 top-[30%] bg-white rounded-2xl shadow-2xl p-4 z-30 animate-in fade-in zoom-in-95 duration-300 border border-gray-100"
+                        >
+                            <h3
+                                class="text-sm font-bold text-app-text mb-3 px-1"
+                            >
+                                Select Recipe
+                            </h3>
+                            <div class="space-y-2">
+                                <div
+                                    class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors bg-app-primary/5 border border-app-primary/20"
+                                >
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
+                                    >
+                                        <img
+                                            src="/mockup/tuna.png"
+                                            alt="Tuna Salad"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div class="flex-1">
+                                        <p
+                                            class="text-xs font-bold text-app-text"
+                                        >
+                                            Tuna Salad
+                                        </p>
+                                        <p
+                                            class="text-[10px] text-gray-500 mt-0.5"
+                                        >
+                                            320 kcal • 10m
+                                        </p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors opacity-50"
+                                >
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden"
+                                    >
+                                        <img
+                                            src="/mockup/pasta.png"
+                                            alt="Pasta"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div class="flex-1">
+                                        <p
+                                            class="text-xs font-bold text-app-text"
+                                        >
+                                            15-min Pasta
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {/if}
                 </div>
 
                 <!-- Home Indicator -->
