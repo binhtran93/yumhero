@@ -214,33 +214,37 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 md:pt-40 md:pb-32">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12">
-            <div class="max-w-3xl">
+    <section class="pt-20 pb-6 md:pt-28 md:pb-10">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+                class="max-w-4xl mx-auto text-center flex flex-col items-center"
+            >
                 <h1
-                    class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-6"
+                    class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-4 tracking-tight"
                 >
                     Plan with Precision.<br />
                     <span class="text-app-primary">Eat with Intent.</span>
                 </h1>
                 <p
-                    class="text-lg md:text-xl text-app-text-muted mb-8 max-w-2xl"
+                    class="text-base md:text-xl text-app-text-muted mb-6 max-w-2xl mx-auto leading-relaxed"
                 >
                     A meal planner designed for the organized home. Track your
                     fridge, log leftovers, and master your weekly menu in a
                     clean, high-performance interface.
                 </p>
-                <a
-                    href="/plan"
-                    class="inline-flex items-center gap-2 px-8 py-4 bg-app-primary text-white font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95 text-lg"
-                >
-                    Start Planning for Free
-                    <ArrowRight size={20} />
-                </a>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <a
+                        href="/plan"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-base md:text-lg shadow-lg hover:shadow-app-primary/25"
+                    >
+                        Start Planning for Free
+                        <ArrowRight size={18} />
+                    </a>
+                </div>
             </div>
 
             <!-- Hero Mockup -->
-            <div class="mt-16 md:mt-20">
+            <div class="mt-8 md:mt-12">
                 <div class="relative">
                     <!-- Browser Frame -->
                     <div
