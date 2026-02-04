@@ -45,22 +45,20 @@
                 fridge, log leftovers, and master your menu in a clean,
                 high-performance interface.
             </p>
-            <div
-                class="flex flex-col flex-col-reverse sm:flex-row items-center gap-4"
-            >
+            <div class="flex items-center justify-center gap-3">
                 <button
                     onclick={onSeeItInAction}
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-base md:text-lg shadow-sm"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-sm md:text-lg md:px-6 md:py-3 shadow-sm whitespace-nowrap"
                 >
-                    See it in action
-                    <ChevronDown size={18} />
+                    Demo
+                    <ChevronDown size={16} class="md:w-5 md:h-5" />
                 </button>
                 <a
                     href="/plan"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-base md:text-lg shadow-lg hover:shadow-app-primary/25"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-sm md:text-lg md:px-6 md:py-3 shadow-lg hover:shadow-app-primary/25 whitespace-nowrap"
                 >
-                    Start Planning for Free
-                    <ArrowRight size={18} />
+                    Start Planning
+                    <ArrowRight size={16} class="md:w-5 md:h-5" />
                 </a>
             </div>
         </div>
