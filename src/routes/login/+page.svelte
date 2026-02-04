@@ -2,6 +2,7 @@
     import {
         signInWithGoogle,
         sendMagicLink,
+        signInWithLiveLink,
         user,
         loading,
     } from "$lib/stores/auth";
@@ -22,6 +23,24 @@
     let error = $state("");
     let emailSent = $state(false);
     let isLoading = $state(false);
+
+    onMount(async () => {
+        // Handle Magic Link sign-in
+        if (window.location.href.includes("oobCode")) {
+            isLoading = true;
+            message = "Verifying magic link...";
+            try {
+                await signInWithLiveLink(window.location.href);
+                message = "Success! Signing you in...";
+            } catch (e: any) {
+                console.error("Magic link error:", e);
+                error = e.message || "Failed to sign in with magic link.";
+                message = "";
+            } finally {
+                isLoading = false;
+            }
+        }
+    });
 
     // Redirect if already logged in
     $effect(() => {
