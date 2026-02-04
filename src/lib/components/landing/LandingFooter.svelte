@@ -21,6 +21,7 @@
                 <div class="flex items-center gap-4">
                     <a
                         href="#"
+                        rel="noopener noreferrer"
                         class="text-app-text-muted hover:text-app-primary transition-colors"
                         aria-label="Twitter"
                     >
@@ -41,6 +42,7 @@
                     </a>
                     <a
                         href="#"
+                        rel="noopener noreferrer"
                         class="text-app-text-muted hover:text-app-primary transition-colors"
                         aria-label="GitHub"
                     >
@@ -61,6 +63,7 @@
                     </a>
                     <a
                         href="#"
+                        rel="noopener noreferrer"
                         class="text-app-text-muted hover:text-app-primary transition-colors"
                         aria-label="LinkedIn"
                     >
