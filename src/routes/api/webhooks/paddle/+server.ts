@@ -39,16 +39,22 @@ export const POST = async ({ request }) => {
 
             if (userId) {
                 console.log(`Processing subscription for User ID: ${userId}`);
-
-                // Update Firestore
-                await adminDb.collection('users').doc(userId).set({
+                const data: any = {
                     hasUsedTrial: true,
                     isSubscribed: true,
-                    subscriptionId: eventData.data.id, // Store subscription ID
                     updatedAt: new Date().toISOString(),
                     paddleCustomerId: eventData.data.customerId,
                     status: eventData.data.status
-                }, { merge: true });
+                };
+
+                if (eventType === EventName.SubscriptionCreated) {
+                    data.subscriptionId = eventData.data.id;
+                    data.trialEndedAt = eventData.data.items[0].trialDates?.endsAt;
+                    data.trialstartedAt = eventData.data.items[0].trialDates?.startsAt;
+                }
+
+                // Update Firestore
+                await adminDb.collection('users').doc(userId).set(data, { merge: true });
 
                 console.log(`Successfully updated user ${userId} subscription status.`);
             } else {
