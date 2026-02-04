@@ -225,13 +225,74 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <div
-                                class="h-2 w-3/4 bg-gray-100 rounded-full"
-                            ></div>
-                            <div
-                                class="h-2 w-1/2 bg-gray-100 rounded-full"
-                            ></div>
+                        <div class="space-y-3 pt-2">
+                            <div>
+                                <h4
+                                    class="text-[10px] uppercase font-bold text-app-text-muted mb-2"
+                                >
+                                    Ingredients
+                                </h4>
+                                <ul class="space-y-1.5">
+                                    <li
+                                        class="flex items-center gap-2 text-xs font-medium text-app-text"
+                                    >
+                                        <div
+                                            class="w-1 h-1 rounded-full bg-app-primary"
+                                        ></div>
+                                        1lb Ground beef
+                                    </li>
+                                    <li
+                                        class="flex items-center gap-2 text-xs font-medium text-app-text"
+                                    >
+                                        <div
+                                            class="w-1 h-1 rounded-full bg-app-primary"
+                                        ></div>
+                                        8 Corn tortillas
+                                    </li>
+                                    <li
+                                        class="flex items-center gap-2 text-xs font-medium text-app-text"
+                                    >
+                                        <div
+                                            class="w-1 h-1 rounded-full bg-app-primary"
+                                        ></div>
+                                        Taco seasoning
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4
+                                    class="text-[10px] uppercase font-bold text-app-text-muted mb-2"
+                                >
+                                    Instructions
+                                </h4>
+                                <div class="space-y-1.5">
+                                    <div class="flex gap-2">
+                                        <span
+                                            class="text-[10px] font-bold text-app-primary bg-app-primary/10 w-4 h-4 rounded flex items-center justify-center shrink-0"
+                                            >1</span
+                                        >
+                                        <p
+                                            class="text-[10px] leading-relaxed text-app-text-muted"
+                                        >
+                                            Brown the beef in a skillet over
+                                            medium-high heat...
+                                        </p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <span
+                                            class="text-[10px] font-bold text-app-primary bg-app-primary/10 w-4 h-4 rounded flex items-center justify-center shrink-0"
+                                            >2</span
+                                        >
+                                        <p
+                                            class="text-[10px] leading-relaxed text-app-text-muted"
+                                        >
+                                            Warm tortillas and serve with
+                                            toppings.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
