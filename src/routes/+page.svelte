@@ -70,10 +70,10 @@
                     <div
                         class="relative w-full flex items-start justify-center overflow-hidden"
                         style="height: {activeMockup === 'desktop'
-                            ? 820 * scale
-                            : 760}px; min-height: {activeMockup === 'desktop'
+                            ? 740 * scale
+                            : 740}px; min-height: {activeMockup === 'desktop'
                             ? 0
-                            : '720px'}; transition: height 0.4s ease-out;"
+                            : '700px'}; transition: height 0.4s ease-out;"
                     >
                         {#if activeMockup === "desktop"}
                             <button
@@ -110,9 +110,8 @@
                         ></div>
                     </div>
 
-                    <!-- Mockup Switcher -->
                     <div
-                        class="mt-12 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
+                        class="mt-6 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
                     >
                         <button
                             onclick={() => switchMockup("desktop")}
