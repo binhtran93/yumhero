@@ -293,7 +293,7 @@
         <!-- Scrollable Area -->
         <div
             bind:this={animationContainer}
-            class="h-[450px] overflow-hidden bg-white/50 relative"
+            class="h-[380px] overflow-hidden bg-white/50 relative"
         >
             <div class="space-y-3 p-6">
                 {#each activeItems as item (item.id)}
@@ -400,7 +400,7 @@
             </div>
             <div class="flex items-center gap-2">
                 <AlertCircle size={14} class="text-amber-500" />
-                <span>1 item needs to be used soon</span>
+                <span>1 urgent</span>
             </div>
         </div>
     </div>
