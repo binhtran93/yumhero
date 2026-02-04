@@ -74,7 +74,10 @@
             resetAnimation();
         }
 
-        const btnPos = getRelativePosition(checkFridgeBtn, animationContainer);
+        const targetPos = getRelativePosition(
+            checkFridgeBtn,
+            animationContainer,
+        );
 
         if (handCursor) {
             let x = 0,
@@ -82,31 +85,37 @@
                 opacity = 0,
                 scale = 1;
 
+            // Start position (bottom right-ish)
+            const startX = targetPos.x + 300;
+            const startY = targetPos.y + 400;
+
             if (progress < 0.15) {
                 // Move towards button
                 const t = progress / 0.15;
-                x = lerp(400, btnPos.x, easeInOutCubic(t));
-                y = lerp(400, btnPos.y, easeInOutCubic(t));
-                opacity = t * 2;
-            } else if (progress < 0.2) {
-                // Click animation
-                x = btnPos.x;
-                y = btnPos.y;
+                x = lerp(startX, targetPos.x, easeInOutCubic(t));
+                y = lerp(startY, targetPos.y, easeInOutCubic(t));
+                opacity = Math.min(1, t * 5);
+            } else if (progress < 0.25) {
+                // Click and wait
+                x = targetPos.x;
+                y = targetPos.y;
                 opacity = 1;
-                scale = 0.9;
-                if (!isChecking) isChecking = true;
-            } else if (progress < 0.3) {
+                const clickT = (progress - 0.15) / 0.1;
+                // Scale down slightly to simulate press
+                scale = clickT < 0.3 ? 0.85 : 1;
+                if (clickT > 0.1 && !isChecking) isChecking = true;
+            } else if (progress < 0.4) {
                 // Move away
-                const t = (progress - 0.2) / 0.1;
-                x = lerp(btnPos.x, btnPos.x + 100, easeInOutCubic(t));
-                y = lerp(btnPos.y, btnPos.y + 50, easeInOutCubic(t));
+                const t = (progress - 0.25) / 0.15;
+                x = lerp(targetPos.x, targetPos.x + 150, easeInOutCubic(t));
+                y = lerp(targetPos.y, targetPos.y + 100, easeInOutCubic(t));
                 opacity = 1 - t;
             } else {
                 opacity = 0;
             }
 
-            handCursor.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-            handCursor.style.opacity = String(Math.min(1, opacity));
+            handCursor.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+            handCursor.style.opacity = String(opacity);
         }
 
         // Handle item logic
@@ -289,19 +298,35 @@
                     {/if}
                 </div>
 
-                <!-- Cursor Animation Layer -->
+                <!-- Cursor/Touch Animation Layer -->
                 <div
                     bind:this={handCursor}
-                    class="absolute pointer-events-none z-50 opacity-0"
+                    class="absolute top-0 left-0 pointer-events-none z-[100] opacity-0 will-change-transform"
                 >
-                    <Pointer
-                        size={32}
-                        fill="#fff"
-                        strokeWidth={1.5}
-                        class="drop-shadow-2xl"
-                    />
+                    <!-- Desktop Hand Icon -->
+                    <div class="hidden md:block">
+                        <Pointer
+                            size={32}
+                            fill="#fff"
+                            strokeWidth={1.5}
+                            class="drop-shadow-2xl"
+                        />
+                    </div>
+
+                    <!-- Mobile Touch Circle -->
                     <div
-                        class="absolute top-2 left-2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-app-primary/30 rounded-full blur-md animate-ping"
+                        class="md:hidden w-10 h-10 border-2 border-white/50 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-[2px]"
+                    >
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+
+                    <!-- Click Effect Ping -->
+                    <div
+                        class="absolute top-2 left-2 md:top-2 md:left-2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-app-primary/40 rounded-full blur-md opacity-0 transition-opacity duration-200"
+                        class:opacity-100={isChecking}
+                        style="transform: scale({isChecking
+                            ? 1.5
+                            : 0.5}); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"
                     ></div>
                 </div>
             </div>
