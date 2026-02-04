@@ -46,7 +46,7 @@ export const POST = async ({ request }) => {
                     isSubscribed: true,
                     subscriptionId: eventData.data.id,
                     nextBilledAt: eventData.data.nextBilledAt,
-                    trialStartedAt: eventData.data.items[0].trialDates?.startsAt,
+                    billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
                     updatedAt: new Date().toISOString(),
                     paddleCustomerId: eventData.data.customerId,
                     status: eventData.data.status
@@ -55,6 +55,21 @@ export const POST = async ({ request }) => {
                 console.log(`Successfully updated user ${userId} subscription status.`);
             } else {
                 console.warn('No userId found in custom_data');
+            }
+        }
+
+        if (eventType === EventName.SubscriptionActivated || eventType === EventName.SubscriptionUpdated) {
+            const customData = eventData.data.customData;
+            const userId = customData?.userId;
+
+            if (userId && ['active', 'trialing'].includes(eventData.data.status)) {
+                await adminDb.collection('users').doc(userId).set({
+                    isSubscribed: true,
+                    status: eventData.data.status,
+                    nextBilledAt: eventData.data.nextBilledAt,
+                    billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
+                    updatedAt: new Date().toISOString(),
+                }, { merge: true });
             }
         }
 
@@ -68,20 +83,6 @@ export const POST = async ({ request }) => {
                     isSubscribed: false,
                     status: eventData.data.status,
                     updatedAt: new Date().toISOString()
-                }, { merge: true });
-            }
-        }
-
-        if (eventType == EventName.SubscriptionActivated) {
-            const customData = eventData.data.customData;
-            const userId = customData?.userId;
-
-            if (userId) {
-                await adminDb.collection('users').doc(userId).set({
-                    isSubscribed: true,
-                    status: eventData.data.status,
-                    nextBilledAt: eventData.data.nextBilledAt,
-                    updatedAt: new Date().toISOString(),
                 }, { merge: true });
             }
         }
