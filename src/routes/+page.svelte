@@ -19,7 +19,7 @@
     let isFullscreen = $state(false);
 
     let containerWidth = $state(0);
-    const DESKTOP_BASE_WIDTH = 1400;
+    const DESKTOP_BASE_WIDTH = 1500;
     let scale = $derived(
         containerWidth > 0 && containerWidth < DESKTOP_BASE_WIDTH
             ? containerWidth / DESKTOP_BASE_WIDTH
@@ -61,7 +61,7 @@
                 class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_50%_20%,rgba(251,146,60,0.08)_0%,transparent_60%)] blur-[100px]"
             ></div>
         </div>
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div id="preview" class="scroll-mt-20">
                 <div
                     bind:clientWidth={containerWidth}
