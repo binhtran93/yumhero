@@ -227,12 +227,15 @@
                 opacity = t;
                 scale = lerp(0.8, 1, easeInOutCubic(t));
                 translateY = lerp(10, 0, easeInOutCubic(t));
-            } else if (progress >= 0.22 && progress < 0.6) {
+            } else if (progress >= 0.22 && progress < 0.9) {
                 opacity = 1;
                 scale = 1;
                 translateY = 0;
-            } else if (progress >= 0.6) {
-                opacity = 0;
+            } else if (progress >= 0.9) {
+                const t = (progress - 0.9) / 0.1;
+                opacity = 1 - t;
+                scale = 1;
+                translateY = 0;
             }
             dropRevealCard.style.transform = `scale(${scale}) translateY(${translateY}px)`;
             dropRevealCard.style.opacity = String(opacity);
@@ -263,7 +266,7 @@
         }
 
         if (leftoverRefs[1]) {
-            if (progress >= 0.37 && progress < 0.9) {
+            if (progress >= 0.37 && progress < 0.95) {
                 leftoverRefs[1].style.opacity = "0";
                 leftoverRefs[1].style.pointerEvents = "none";
             } else {
