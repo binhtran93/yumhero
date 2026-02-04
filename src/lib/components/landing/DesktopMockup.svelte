@@ -12,9 +12,15 @@
 
     interface Props {
         restartKey?: number;
+        forceShow?: boolean;
+        scale?: number;
     }
 
-    let { restartKey = 0 }: Props = $props();
+    let {
+        restartKey = 0,
+        forceShow = false,
+        scale: activeScale = 1,
+    }: Props = $props();
 
     // Animation state
     let animationContainer: HTMLDivElement | undefined = $state();
@@ -46,8 +52,14 @@
         const elementRect = element.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         return {
-            x: elementRect.left - containerRect.left + elementRect.width / 2,
-            y: elementRect.top - containerRect.top + elementRect.height / 2,
+            x:
+                (elementRect.left -
+                    containerRect.left +
+                    elementRect.width / 2) /
+                activeScale,
+            y:
+                (elementRect.top - containerRect.top + elementRect.height / 2) /
+                activeScale,
         };
     }
 
@@ -287,7 +299,9 @@
 </script>
 
 <div
-    class="hidden md:block bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
+    class="{forceShow
+        ? 'block'
+        : 'hidden md:block'} bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300"
 >
     <!-- Browser Chrome -->
     <div

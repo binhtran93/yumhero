@@ -203,4 +203,21 @@ html {
     ::-webkit-scrollbar-thumb:hover {
         @apply bg-app-border;
     }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-app-border-strong/30 rounded-full;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-app-border-strong/60;
+    }
 }
