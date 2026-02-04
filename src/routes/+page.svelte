@@ -13,6 +13,8 @@
     import { Monitor, Smartphone } from "lucide-svelte";
     import { fade } from "svelte/transition";
 
+    import { tick } from "svelte";
+
     let restartKey = $state(0);
     let activeMockup = $state("desktop");
 
@@ -29,12 +31,19 @@
             : `${DESKTOP_BASE_WIDTH}px`,
     );
 
+    const switchMockup = (view: string) => {
+        activeMockup = view;
+        setTimeout(() => {
+            document.getElementById("preview")?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }, 50);
+    };
+
     const handleSeeItInAction = () => {
         restartKey += 1;
-        document.getElementById("preview")?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-        });
+        switchMockup("desktop");
     };
 </script>
 
@@ -44,6 +53,14 @@
 
     <!-- Hero Mockup Section -->
     <section class="relative pb-10 md:pb-20 overflow-hidden">
+        <!-- Persistent Atmosphere -->
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none -z-10"
+        >
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_50%_20%,rgba(251,146,60,0.08)_0%,transparent_60%)] blur-[100px]"
+            ></div>
+        </div>
         <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div id="preview" class="scroll-mt-20">
                 <div
@@ -51,7 +68,7 @@
                     class="flex flex-col items-center w-full"
                 >
                     <div
-                        class="relative w-full flex items-center justify-center overflow-hidden"
+                        class="relative w-full flex items-start justify-center overflow-hidden"
                         style="height: {activeMockup === 'desktop'
                             ? 820 * scale
                             : 760}px; min-height: {activeMockup === 'desktop'
@@ -71,14 +88,19 @@
                                 />
                             </div>
                         {:else}
-                            <div in:fade={{ duration: 400 }}>
+                            <div
+                                class="absolute top-0 left-1/2 -translate-x-1/2"
+                                in:fade={{ duration: 400 }}
+                            >
                                 <MobileMockup forceShow={true} />
                             </div>
                         {/if}
 
                         <!-- Shadow/Glow Effect -->
                         <div
-                            class="absolute -inset-4 bg-gradient-to-r from-app-primary/5 via-transparent to-app-primary/5 rounded-2xl -z-10 blur-xl opacity-50"
+                            class="absolute {activeMockup === 'desktop'
+                                ? '-inset-4'
+                                : 'inset-x-[20%] -inset-y-4'} bg-gradient-to-r from-app-primary/5 via-transparent to-app-primary/5 rounded-2xl -z-10 blur-xl opacity-50 transition-all duration-500"
                         ></div>
                     </div>
 
@@ -87,7 +109,7 @@
                         class="mt-12 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
                     >
                         <button
-                            onclick={() => (activeMockup = "desktop")}
+                            onclick={() => switchMockup("desktop")}
                             class="flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 {activeMockup ===
                             'desktop'
                                 ? 'bg-app-primary text-white shadow-md'
@@ -97,7 +119,7 @@
                             <span class="text-sm font-bold">Desktop View</span>
                         </button>
                         <button
-                            onclick={() => (activeMockup = "mobile")}
+                            onclick={() => switchMockup("mobile")}
                             class="flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 {activeMockup ===
                             'mobile'
                                 ? 'bg-app-primary text-white shadow-md'

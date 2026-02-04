@@ -29,7 +29,7 @@
         >
             <!-- Concentrated Heading Glow -->
             <div
-                class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18)_0%,transparent_60%)] blur-[120px] -z-10 pointer-events-none"
+                class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[150%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.15)_0%,transparent_60%)] blur-[120px] -z-10 pointer-events-none"
             ></div>
 
             <h1

@@ -404,7 +404,7 @@
 <div class="{forceShow ? 'flex' : 'md:hidden flex'} justify-center py-6">
     <div class="relative w-[85vw] max-w-[375px] mx-auto">
         <div
-            class="bg-[#1a1a1b] rounded-[48px] p-2.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+            class="bg-[#1a1a1b] rounded-[48px] p-2.5 shadow-md ring-1 ring-white/10"
         >
             <!-- Dynamic Island -->
             <div
