@@ -14,23 +14,17 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
             <div>
-                <div
-                    class="inline-flex items-center gap-2 px-3 py-1 bg-app-primary/10 rounded-full text-app-primary text-xs font-bold uppercase tracking-widest mb-6"
-                >
-                    <Refrigerator size={14} />
-                    <span>Real-time Inventory</span>
-                </div>
                 <h2
-                    class="text-4xl md:text-5xl font-black text-app-text mb-6 tracking-tight leading-[1.1]"
+                    class="text-3xl lg:text-5xl font-black text-app-text mb-6 tracking-tight leading-[1.1]"
                 >
                     Stop wondering what's in the <span class="text-app-primary"
                         >back of the shelf.</span
                     >
                 </h2>
                 <p
-                    class="text-lg text-app-text-muted mb-8 leading-relaxed font-medium"
+                    class="text-base md:text-lg text-app-text-muted mb-8 leading-relaxed font-medium"
                 >
                     YumHero digitizes your kitchen, making sure every leftover
                     and ingredient has a purpose. No more forgotten chicken or
@@ -38,38 +32,48 @@
                 </p>
 
                 <div class="grid sm:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
+                    <!-- Leftover Tracking Card -->
+                    <div
+                        class="group p-6 md:p-8 bg-app-surface border border-app-border rounded-2xl md:rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
+                    >
+                        <div class="flex items-center gap-4 mb-4 md:mb-5">
                             <div
-                                class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"
+                                class="w-10 h-10 md:w-11 md:h-11 bg-blue-50 rounded-xl md:rounded-2xl flex items-center justify-center text-blue-600 transition-transform duration-500 group-hover:scale-110"
                             >
-                                <History size={20} />
+                                <History size={20} strokeWidth={2.5} />
                             </div>
-                            <h4 class="font-black text-app-text tracking-tight">
+                            <h4
+                                class="text-base md:text-lg font-black text-app-text tracking-tight"
+                            >
                                 Leftover Tracking
                             </h4>
                         </div>
                         <p
-                            class="text-[14px] text-app-text-muted leading-relaxed"
+                            class="text-[13px] md:text-[14px] text-app-text-muted leading-relaxed font-medium"
                         >
                             Tuesday's dinner becomes Wednesday's lunch with one
                             click. Smart alerts remind you before things expire.
                         </p>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
+                    <!-- Zero Waste Cleanup Card -->
+                    <div
+                        class="group p-6 md:p-8 bg-app-surface border border-app-border rounded-2xl md:rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5 active:scale-[0.98]"
+                    >
+                        <div class="flex items-center gap-4 mb-4 md:mb-5">
                             <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"
+                                class="w-10 h-10 md:w-11 md:h-11 bg-emerald-50 rounded-xl md:rounded-2xl flex items-center justify-center text-emerald-600 transition-transform duration-500 group-hover:scale-110"
                             >
-                                <Zap size={20} />
+                                <Zap size={20} strokeWidth={2.5} />
                             </div>
-                            <h4 class="font-black text-app-text tracking-tight">
+                            <h4
+                                class="text-base md:text-lg font-black text-app-text tracking-tight"
+                            >
                                 Zero Waste Cleanup
                             </h4>
                         </div>
                         <p
-                            class="text-[14px] text-app-text-muted leading-relaxed"
+                            class="text-[13px] md:text-[14px] text-app-text-muted leading-relaxed font-medium"
                         >
                             Quickly purge your digital fridge as you use or
                             discard items. One tap maintains a perfect digital

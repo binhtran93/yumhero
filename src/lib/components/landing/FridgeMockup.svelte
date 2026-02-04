@@ -240,26 +240,30 @@
     >
         <!-- Top Toolbar -->
         <div
-            class="bg-white border-b border-app-border px-6 py-4 flex items-center justify-between"
+            class="bg-white border-b border-app-border px-4 md:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
         >
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-app-primary/10 text-app-primary rounded-lg">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div
+                    class="p-2 bg-app-primary/10 text-app-primary rounded-lg shrink-0"
+                >
                     <Refrigerator size={20} />
                 </div>
                 <div>
-                    <h3 class="font-black text-app-text tracking-tight">
+                    <h3
+                        class="font-black text-app-text tracking-tight whitespace-nowrap"
+                    >
                         Fridge Inventory
                     </h3>
                 </div>
             </div>
 
-            <!-- Tab Switcher (Premium Pill Design) -->
+            <!-- Tab Switcher -->
             <div
-                class="flex p-1 bg-app-surface/80 backdrop-blur-sm border border-app-border rounded-xl"
+                class="flex p-1 bg-app-surface border border-app-border rounded-xl w-full sm:w-auto overflow-x-auto"
             >
                 <button
                     onclick={() => (activeTab = "leftover")}
-                    class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
+                    class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
                     'leftover'
                         ? 'bg-app-primary text-white shadow-lg font-black'
                         : 'text-app-text-muted hover:text-app-text font-bold'}"
@@ -268,11 +272,11 @@
                         size={16}
                         class={activeTab === "leftover" ? "text-white" : ""}
                     />
-                    Leftovers
+                    <span class="whitespace-nowrap">Leftovers</span>
                 </button>
                 <button
                     onclick={() => (activeTab = "ingredient")}
-                    class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
+                    class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
                     'ingredient'
                         ? 'bg-app-primary text-white shadow-lg font-black'
                         : 'text-app-text-muted hover:text-app-text font-bold'}"
@@ -281,7 +285,7 @@
                         size={16}
                         class={activeTab === "ingredient" ? "text-white" : ""}
                     />
-                    Ingredients
+                    <span class="whitespace-nowrap">Ingredients</span>
                 </button>
             </div>
         </div>
