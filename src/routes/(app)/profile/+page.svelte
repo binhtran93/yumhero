@@ -7,6 +7,36 @@
     import SEO from "$lib/components/SEO.svelte";
     import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
+    import { status } from "$lib/stores/subscription";
+
+    const getStatusConfig = (s: string | null) => {
+        switch (s) {
+            case "active":
+                return {
+                    label: "Active",
+                    classes: "bg-green-100 text-green-700",
+                };
+            case "trialing":
+                return {
+                    label: "Free Trial",
+                    classes: "bg-blue-100 text-blue-700",
+                };
+            case "past_due":
+                return {
+                    label: "Past Due",
+                    classes: "bg-orange-100 text-orange-700",
+                };
+            case "canceled":
+                return {
+                    label: "Canceled",
+                    classes: "bg-gray-100 text-gray-700",
+                };
+            default:
+                return { label: "Free", classes: "bg-gray-100 text-gray-700" };
+        }
+    };
+
+    const statusConfig = $derived(getStatusConfig($status));
 
     const handleSignOut = async () => {
         await signOut();
@@ -78,15 +108,13 @@
                                 <p class="text-sm font-bold text-app-text">
                                     Current Plan
                                 </p>
-                                <p class="text-xs text-app-text-muted">
-                                    Free Trial
-                                </p>
                             </div>
                         </div>
                         <span
-                            class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full"
-                            >Active</span
+                            class="px-3 py-1 {statusConfig.classes} text-xs font-bold rounded-full"
                         >
+                            {statusConfig.label}
+                        </span>
                     </div>
 
                     <!-- Appearance / Theme Toggle -->
