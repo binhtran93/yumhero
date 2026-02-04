@@ -69,28 +69,28 @@
                             class="w-56 bg-app-surface border border-app-border rounded-xl shadow-xl overflow-hidden p-2 flex flex-col gap-1"
                         >
                             <a
-                                href="#preview"
+                                href="/#preview"
                                 class="block px-4 py-2.5 text-sm font-medium text-app-text rounded-lg hover:bg-app-primary/10 hover:text-app-primary transition-colors text-left"
                                 onclick={() => (isDesktopFeaturesOpen = false)}
                             >
                                 Meal Planning
                             </a>
                             <a
-                                href="#shopping"
+                                href="/#shopping"
                                 class="block px-4 py-2.5 text-sm font-medium text-app-text rounded-lg hover:bg-app-primary/10 hover:text-app-primary transition-colors text-left"
                                 onclick={() => (isDesktopFeaturesOpen = false)}
                             >
                                 Shopping List
                             </a>
                             <a
-                                href="#features"
+                                href="/#features"
                                 class="block px-4 py-2.5 text-sm font-medium text-app-text rounded-lg hover:bg-app-primary/10 hover:text-app-primary transition-colors text-left"
                                 onclick={() => (isDesktopFeaturesOpen = false)}
                             >
                                 Fridge Inventory
                             </a>
                             <a
-                                href="#features-import"
+                                href="/#features-import"
                                 class="block px-4 py-2.5 text-sm font-medium text-app-text rounded-lg hover:bg-app-primary/10 hover:text-app-primary transition-colors text-left"
                                 onclick={() => (isDesktopFeaturesOpen = false)}
                             >
@@ -101,12 +101,12 @@
                 </div>
 
                 <a
-                    href="#pricing"
+                    href="/#pricing"
                     class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
                     >Pricing</a
                 >
                 <a
-                    href="#faq"
+                    href="/#faq"
                     class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
                     >FAQ</a
                 >
@@ -170,22 +170,22 @@
                             transition:slide
                         >
                             <a
-                                href="#preview"
+                                href="/#preview"
                                 class="py-2 text-base text-app-text-muted active:text-app-primary"
                                 onclick={closeMenu}>Meal Planning</a
                             >
                             <a
-                                href="#shopping"
+                                href="/#shopping"
                                 class="py-2 text-base text-app-text-muted active:text-app-primary"
                                 onclick={closeMenu}>Shopping List</a
                             >
                             <a
-                                href="#features"
+                                href="/#features"
                                 class="py-2 text-base text-app-text-muted active:text-app-primary"
                                 onclick={closeMenu}>Fridge Inventory</a
                             >
                             <a
-                                href="#features-import"
+                                href="/#features-import"
                                 class="py-2 text-base text-app-text-muted active:text-app-primary"
                                 onclick={closeMenu}>Recipe Import</a
                             >
@@ -194,12 +194,12 @@
                 </div>
 
                 <a
-                    href="#pricing"
+                    href="/#pricing"
                     class="py-2 border-b border-app-border text-app-text"
                     onclick={closeMenu}>Pricing</a
                 >
                 <a
-                    href="#faq"
+                    href="/#faq"
                     class="py-2 border-b border-app-border text-app-text"
                     onclick={closeMenu}>FAQ</a
                 >
