@@ -413,7 +413,7 @@
 
             <!-- Screen -->
             <div
-                class="bg-white rounded-[40px] overflow-hidden relative z-0 isolate min-h-[720px]"
+                class="bg-white rounded-[40px] overflow-hidden relative z-0 isolate min-h-[680px]"
             >
                 <!-- Status bar -->
                 <div
@@ -458,7 +458,7 @@
                 <!-- Day Carousel -->
                 <div
                     bind:this={carouselRef}
-                    class="relative h-[600px] overflow-hidden bg-white"
+                    class="relative h-[560px] overflow-hidden bg-white"
                     ontouchstart={handleTouchStart}
                     ontouchmove={handleTouchMove}
                     ontouchend={handleTouchEnd}

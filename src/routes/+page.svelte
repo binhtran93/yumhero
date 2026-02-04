@@ -54,9 +54,9 @@
                         class="relative w-full flex items-center justify-center overflow-hidden"
                         style="height: {activeMockup === 'desktop'
                             ? 820 * scale
-                            : 800}px; min-height: {activeMockup === 'desktop'
+                            : 760}px; min-height: {activeMockup === 'desktop'
                             ? 0
-                            : '750px'}; transition: height 0.4s ease-out;"
+                            : '720px'}; transition: height 0.4s ease-out;"
                     >
                         {#if activeMockup === "desktop"}
                             <div
