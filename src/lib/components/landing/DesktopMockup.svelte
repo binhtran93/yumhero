@@ -37,7 +37,8 @@
     // Animation constants and state
     let animationFrame: number | null = null;
     let animationStartTime: number = 0;
-    const ANIMATION_DURATION = 15000;
+    // Change this to adjust the total speed/loop time of the demo
+    const ANIMATION_DURATION = 10000;
 
     interface Position {
         x: number;
@@ -165,8 +166,8 @@
                 y = wedLunchPos.y;
                 opacity = 1;
                 scale = 1.1;
-            } else if (progress < 0.6) {
-                const t = (progress - 0.52) / 0.08;
+            } else if (progress < 0.75) {
+                const t = (progress - 0.52) / 0.1;
                 x = wedLunchPos.x + 50 * t;
                 y = wedLunchPos.y + 50 * t;
                 opacity = 1 - t;
@@ -227,15 +228,17 @@
                 opacity = t;
                 scale = lerp(0.8, 1, easeInOutCubic(t));
                 translateY = lerp(10, 0, easeInOutCubic(t));
-            } else if (progress >= 0.22 && progress < 0.9) {
+            } else if (progress >= 0.22 && progress < 0.75) {
                 opacity = 1;
                 scale = 1;
                 translateY = 0;
-            } else if (progress >= 0.9) {
-                const t = (progress - 0.9) / 0.1;
+            } else if (progress >= 0.75 && progress < 0.85) {
+                const t = (progress - 0.75) / 0.1;
                 opacity = 1 - t;
                 scale = 1;
                 translateY = 0;
+            } else {
+                opacity = 0;
             }
             dropRevealCard.style.transform = `scale(${scale}) translateY(${translateY}px)`;
             dropRevealCard.style.opacity = String(opacity);
@@ -251,22 +254,24 @@
                 opacity = t;
                 scale = lerp(0.8, 1, easeInOutCubic(t));
                 translateY = lerp(10, 0, easeInOutCubic(t));
-            } else if (progress >= 0.52 && progress < 0.9) {
+            } else if (progress >= 0.52 && progress < 0.75) {
                 opacity = 1;
                 scale = 1;
                 translateY = 0;
-            } else if (progress >= 0.9) {
-                const t = (progress - 0.9) / 0.1;
+            } else if (progress >= 0.75 && progress < 0.85) {
+                const t = (progress - 0.75) / 0.1;
                 opacity = 1 - t;
                 scale = 1;
                 translateY = 0;
+            } else {
+                opacity = 0;
             }
             dropRevealCard2.style.transform = `scale(${scale}) translateY(${translateY}px)`;
             dropRevealCard2.style.opacity = String(opacity);
         }
 
         if (leftoverRefs[1]) {
-            if (progress >= 0.37 && progress < 0.95) {
+            if (progress >= 0.37 && progress < 0.85) {
                 leftoverRefs[1].style.opacity = "0";
                 leftoverRefs[1].style.pointerEvents = "none";
             } else {
