@@ -5,6 +5,7 @@
     import MobileMockup from "$lib/components/landing/MobileMockup.svelte";
     import ShoppingListMockup from "$lib/components/landing/ShoppingListMockup.svelte";
     import FeatureFridge from "$lib/components/landing/FeatureFridge.svelte";
+    import FeatureRecipeImport from "$lib/components/landing/FeatureRecipeImport.svelte";
     import FeatureGrid from "$lib/components/landing/FeatureGrid.svelte";
     import JournalSection from "$lib/components/landing/JournalSection.svelte";
     import PricingSection from "$lib/components/landing/PricingSection.svelte";
@@ -228,6 +229,7 @@
     {/if}
 
     <FeatureFridge />
+    <FeatureRecipeImport />
     <FeatureGrid />
     <JournalSection />
     <PricingSection />
