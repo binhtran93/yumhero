@@ -29,33 +29,28 @@ export const POST = async ({ request }) => {
 
         console.log(`Received Paddle Webhook: ${eventType}`);
 
-        if (
-            eventType === EventName.TransactionCompleted ||
-            eventType === EventName.SubscriptionCreated ||
-            eventType === EventName.SubscriptionUpdated
-        ) {
+        if (eventType === EventName.TransactionCompleted || eventType === EventName.SubscriptionCreated) {
             // Extract custom data (userId)
             const customData = eventData.data.customData;
+
+            // NOTE: In Paddle, custom_data comes as an object. verify structure.
+            // Depending on how we passed it in Checkout.
             const userId = customData?.userId;
 
             if (userId) {
-                console.log(`Processing subscription update for User ID: ${userId}`);
+                console.log(`Processing subscription for User ID: ${userId}`);
 
-                const isTrialing = eventData.data.status === 'trialing';
-                const updateData: any = {
-                    isSubscribed: eventData.data.status === 'active' || eventData.data.status === 'trialing',
-                    subscriptionId: eventData.data.id,
+                // Update Firestore
+                await adminDb.collection('users').doc(userId).set({
+                    hasUsedTrial: true,
+                    isSubscribed: true,
+                    subscriptionId: eventData.data.id, // Store subscription ID
                     updatedAt: new Date().toISOString(),
                     paddleCustomerId: eventData.data.customerId,
                     status: eventData.data.status
-                };
+                }, { merge: true });
 
-                if (isTrialing) {
-                    updateData.hasUsedTrial = true;
-                }
-
-                await adminDb.collection('users').doc(userId).set(updateData, { merge: true });
-                console.log(`Successfully updated user ${userId} state.`);
+                console.log(`Successfully updated user ${userId} subscription status.`);
             } else {
                 console.warn('No userId found in custom_data');
             }
