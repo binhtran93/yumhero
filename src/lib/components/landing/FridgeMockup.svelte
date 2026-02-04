@@ -391,17 +391,25 @@
             <div class="flex items-center gap-4">
                 <span class="flex items-center gap-1.5">
                     <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                    {leftovers.filter((l) => l.daysAgo < 2).length} Fresh
+                    {activeItems.filter((i) => i.daysAgo < 2).length} Fresh
                 </span>
                 <span class="flex items-center gap-1.5">
                     <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
-                    {leftovers.filter((l) => l.daysAgo >= 4).length} Overdue
+                    1 Overdue
                 </span>
             </div>
-            <div class="flex items-center gap-2">
-                <AlertCircle size={14} class="text-amber-500" />
-                <span>1 urgent</span>
-            </div>
+            {#if activeItems.filter((i) => i.daysAgo >= 4).length > 0}
+                <div
+                    class="flex items-center gap-2"
+                    out:fade={{ duration: 200 }}
+                >
+                    <AlertCircle size={14} class="text-red-500" />
+                    <span
+                        class="text-red-500 uppercase tracking-wider text-[10px]"
+                        >{activeItems.filter((i) => i.daysAgo >= 4).length} urgent</span
+                    >
+                </div>
+            {/if}
         </div>
     </div>
 </div>
