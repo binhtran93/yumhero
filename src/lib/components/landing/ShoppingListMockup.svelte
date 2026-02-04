@@ -169,7 +169,7 @@
 
 <div class="w-full max-w-4xl mx-auto">
     <div
-        class="bg-app-surface border border-app-border rounded-2xl shadow-2xl overflow-hidden relative"
+        class="bg-app-surface border border-app-border rounded-2xl shadow-md overflow-hidden relative"
     >
         <!-- Browser Chrome -->
         <div

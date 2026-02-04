@@ -118,7 +118,7 @@
                     </div>
 
                     <div
-                        class="mt-6 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
+                        class="mt-6 md:mt-0 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
                     >
                         <button
                             onclick={() => switchMockup("desktop")}
@@ -147,15 +147,20 @@
     </section>
 
     <!-- Shopping List Section -->
-    <section class="py-20 relative overflow-hidden bg-app-surface/30">
+    <section class="py-32 relative overflow-hidden bg-[#f9fafc]">
+        <!-- Light Atmosphere for this section -->
+        <div
+            class="absolute inset-0 pointer-events-none overflow-hidden opacity-50"
+        >
+            <div
+                class="absolute -top-[10%] right-[5%] w-[40%] h-[40%] bg-app-primary/5 blur-[100px] rounded-full"
+            ></div>
+            <div
+                class="absolute -bottom-[10%] left-[5%] w-[40%] h-[40%] bg-emerald-500/5 blur-[100px] rounded-full"
+            ></div>
+        </div>
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
-                <div
-                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-app-primary/10 text-app-primary text-xs font-bold uppercase tracking-widest mb-4"
-                >
-                    <ShoppingBag size={14} />
-                    <span>Smart Shopping</span>
-                </div>
                 <h2 class="text-3xl md:text-5xl font-black text-app-text mb-4">
                     Grocery lists that <span class="text-app-primary"
                         >talk to your fridge</span
