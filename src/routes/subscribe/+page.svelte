@@ -3,6 +3,7 @@
     import {
         isSubscribed,
         subscriptionLoading,
+        hasUsedTrial,
     } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
     import { Check, LogOut, Zap } from "lucide-svelte";
@@ -12,6 +13,8 @@
         PUBLIC_PADDLE_CLIENT_TOKEN,
         PUBLIC_PADDLE_PRICE_ID_MONTHLY,
         PUBLIC_PADDLE_PRICE_ID_YEARLY,
+        PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL,
+        PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL,
     } from "$env/static/public";
     import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 
@@ -51,12 +54,19 @@
     });
 
     const handleSubscribe = () => {
-        const priceId =
-            selectedPlan === "monthly"
-                ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
-                : PUBLIC_PADDLE_PRICE_ID_YEARLY;
+        let priceId: string;
 
-        // ... logs ...
+        if ($hasUsedTrial) {
+            priceId =
+                selectedPlan === "monthly"
+                    ? PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL
+                    : PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL;
+        } else {
+            priceId =
+                selectedPlan === "monthly"
+                    ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
+                    : PUBLIC_PADDLE_PRICE_ID_YEARLY;
+        }
 
         if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
             // ... alert ...
@@ -115,7 +125,11 @@
         >
             <h1 class="text-2xl md:text-3xl font-black mb-2">Unlock YumHero</h1>
             <p class="text-app-text-muted">
-                Start your 7-day free trial. Cancel anytime.
+                {#if $hasUsedTrial}
+                    Choose the plan that fits your kitchen.
+                {:else}
+                    Start your 7-day free trial. Cancel anytime.
+                {/if}
             </p>
         </div>
 
@@ -224,6 +238,10 @@
                 >
                     {#if isLoading}
                         Processing...
+                    {:else if $hasUsedTrial}
+                        Subscribe {selectedPlan === "monthly"
+                            ? "Monthly"
+                            : "Yearly"}
                     {:else}
                         Start {selectedPlan === "monthly"
                             ? "Monthly"
@@ -232,8 +250,8 @@
                 </button>
 
                 <p class="text-xs text-center text-app-text-muted">
-                    Secured by Paddle. You won't be charged until your trial
-                    ends.
+                    Secured by Paddle. {#if !$hasUsedTrial}You won't be charged
+                        until your trial ends.{:else}Cancel anytime.{/if}
                 </p>
             </div>
         </div>
