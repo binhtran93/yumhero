@@ -2,14 +2,23 @@
     import { ChefHat, Menu, X, ChevronDown, ArrowRight } from "lucide-svelte";
     import { slide } from "svelte/transition";
     import { user } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import {
+        isSubscribed,
+        subscriptionLoading,
+    } from "$lib/stores/subscription";
 
     let isMenuOpen = $state(false);
     let isMobileFeaturesOpen = $state(true);
     let isDesktopFeaturesOpen = $state(false);
 
     const planLink = $derived(
-        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+        !$user
+            ? "/login"
+            : $subscriptionLoading
+              ? "/plan"
+              : !$isSubscribed
+                ? "/subscribe"
+                : "/plan",
     );
 
     function toggleMenu() {

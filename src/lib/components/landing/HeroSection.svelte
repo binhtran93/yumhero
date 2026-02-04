@@ -1,7 +1,10 @@
 <script lang="ts">
     import { ArrowRight, ChevronDown } from "lucide-svelte";
     import { user } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import {
+        isSubscribed,
+        subscriptionLoading,
+    } from "$lib/stores/subscription";
 
     interface Props {
         onSeeItInAction?: () => void;
@@ -10,7 +13,13 @@
     let { onSeeItInAction }: Props = $props();
 
     const planLink = $derived(
-        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+        !$user
+            ? "/login"
+            : $subscriptionLoading
+              ? "/plan"
+              : !$isSubscribed
+                ? "/subscribe"
+                : "/plan",
     );
 </script>
 

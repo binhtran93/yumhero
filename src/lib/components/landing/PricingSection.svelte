@@ -1,9 +1,18 @@
 <script lang="ts">
     import { user } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import {
+        isSubscribed,
+        subscriptionLoading,
+    } from "$lib/stores/subscription";
 
     const planLink = $derived(
-        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+        !$user
+            ? "/login"
+            : $subscriptionLoading
+              ? "/plan"
+              : !$isSubscribed
+                ? "/subscribe"
+                : "/plan",
     );
 </script>
 

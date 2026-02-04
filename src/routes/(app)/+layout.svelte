@@ -1,18 +1,21 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import ToastContainer from "$lib/components/ToastContainer.svelte";
-    import { user, loading } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import { user, loading as authLoading } from "$lib/stores/auth";
+    import {
+        isSubscribed,
+        subscriptionLoading,
+    } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
 
     let { children } = $props();
 
     $effect(() => {
-        if (!$loading) {
+        if (!$authLoading) {
             if (!$user) {
                 goto("/login", { replaceState: true });
-            } else if (!$isSubscribed) {
+            } else if (!$subscriptionLoading && !$isSubscribed) {
                 goto("/subscribe", { replaceState: true });
             }
         }

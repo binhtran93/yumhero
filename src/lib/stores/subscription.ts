@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import type { User } from 'firebase/auth';
 
 export const isSubscribed = writable<boolean>(false);
+export const subscriptionLoading = writable<boolean>(true);
 
 let unsubscribeSnapshot: (() => void) | null = null;
 
@@ -16,8 +17,12 @@ export const syncSubscription = (user: User | null) => {
 
     if (!user) {
         isSubscribed.set(false);
+        subscriptionLoading.set(false);
         return;
     }
+
+    // Set loading to true when starting a new sync
+    subscriptionLoading.set(true);
 
     // Listen to the user's document in Firestore
     unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (doc) => {
@@ -30,6 +35,10 @@ export const syncSubscription = (user: User | null) => {
         } else {
             isSubscribed.set(false);
         }
+        subscriptionLoading.set(false);
+    }, (error) => {
+        console.error("Subscription Sync Error:", error);
+        subscriptionLoading.set(false);
     });
 };
 

@@ -1,6 +1,9 @@
 <script lang="ts">
-    import { loading, signOut, user } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import { loading as authLoading, signOut, user } from "$lib/stores/auth";
+    import {
+        isSubscribed,
+        subscriptionLoading,
+    } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
     import { Check, LogOut, Zap } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
@@ -14,9 +17,14 @@
 
     // Protect this route: Must be logged in
     $effect(() => {
-        if (!$loading && !$user) {
+        if (!$authLoading && !$user) {
             goto("/login", { replaceState: true });
-        } else if (!$loading && $user && $isSubscribed) {
+        } else if (
+            !$authLoading &&
+            !$subscriptionLoading &&
+            $user &&
+            $isSubscribed
+        ) {
             goto("/plan", { replaceState: true }); // Already subscribed
         }
     });
