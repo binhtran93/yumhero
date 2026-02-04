@@ -203,15 +203,13 @@
                                 >
                                     Confirm Subscription
                                 </button>
-                            {:else if $status === "active" && !isSwitching && $billingInterval}
+                            {:else if $status === "active" && !isSwitching && $billingInterval === "month"}
                                 <button
                                     onclick={() => (showSwitchModal = true)}
                                     class="flex items-center gap-1 text-xs font-bold text-app-primary hover:underline"
                                 >
                                     <Zap size={12} />
-                                    Switch to {$billingInterval === "month"
-                                        ? "Yearly"
-                                        : "Monthly"}
+                                    Switch to Yearly
                                 </button>
                             {:else}
                                 <div class="w-2 h-2"></div>
@@ -292,9 +290,7 @@
 <ConfirmModal
     isOpen={showSwitchModal}
     title="Switch Billing Cycle"
-    message={$billingInterval === "month"
-        ? "Switching to Yearly will charge you immediately with a pro-rated amount. You'll save 30% per year!"
-        : "Switching to Monthly will take effect at the end of your current yearly billing cycle."}
+    message="Switching to Yearly will charge you immediately with a pro-rated amount. You'll save 30% per year!"
     confirmText="Confirm Switch"
     cancelText="Keep Current"
     onConfirm={handleSwitchPlan}
