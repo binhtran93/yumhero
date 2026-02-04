@@ -4,11 +4,13 @@
     import { goto } from "$app/navigation";
     import { Check, LogOut, Zap } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
+    import { onMount } from "svelte";
     import {
         PUBLIC_PADDLE_CLIENT_TOKEN,
         PUBLIC_PADDLE_PRICE_ID_MONTHLY,
         PUBLIC_PADDLE_PRICE_ID_YEARLY,
     } from "$env/static/public";
+    import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 
     // Protect this route: Must be logged in
     $effect(() => {
@@ -21,6 +23,24 @@
 
     let isLoading = $state(false);
     let selectedPlan = $state<"monthly" | "yearly">("monthly");
+    let paddleInstance = $state<Paddle | undefined>(undefined);
+
+    onMount(async () => {
+        if (PUBLIC_PADDLE_CLIENT_TOKEN) {
+            const isSandbox = PUBLIC_PADDLE_CLIENT_TOKEN.startsWith("test_");
+            const environment = isSandbox ? "sandbox" : "production";
+
+            try {
+                paddleInstance = await initializePaddle({
+                    token: PUBLIC_PADDLE_CLIENT_TOKEN,
+                    environment: environment,
+                });
+                console.log("Paddle v2 Initialized (" + environment + ")");
+            } catch (err) {
+                console.error("Failed to initialize Paddle:", err);
+            }
+        }
+    });
 
     const handleSubscribe = () => {
         const priceId =
@@ -28,46 +48,32 @@
                 ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
                 : PUBLIC_PADDLE_PRICE_ID_YEARLY;
 
-        console.log("Attempting checkout with:", {
-            plan: selectedPlan,
-            priceId: priceId ? priceId.slice(0, 10) + "..." : "undefined", // Log partial ID for safety
-            tokenPresent: !!PUBLIC_PADDLE_CLIENT_TOKEN,
-        });
+        // ... logs ...
 
         if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
-            alert(
-                "Paddle configuration missing! Please ensure PUBLIC_PADDLE_PRICE_ID_MONTHLY/YEARLY are set in your .env file.",
-            );
+            // ... alert ...
+            return;
+        }
+
+        if (!paddleInstance) {
+            console.error("Paddle instance not ready");
             return;
         }
 
         isLoading = true;
-        const paddle = (window as any).Paddle;
 
-        if (paddle) {
-            try {
-                paddle.Checkout.open({
-                    items: [
-                        {
-                            priceId: priceId,
-                            quantity: 1,
-                        },
-                    ],
-                    customData: {
-                        userId: $user?.uid,
-                    },
-                    settings: {
-                        successUrl: window.location.origin + "/plan",
-                        displayMode: "overlay",
-                        theme: "light",
-                    },
-                });
-            } catch (err) {
-                console.error("Paddle Checkout Error:", err);
-                isLoading = false;
-            }
-        } else {
-            console.error("Paddle script not loaded defined on window");
+        try {
+            paddleInstance.Checkout.open({
+                items: [{ priceId: priceId, quantity: 1 }],
+                customData: { userId: $user?.uid },
+                settings: {
+                    successUrl: window.location.origin + "/plan",
+                    displayMode: "overlay",
+                    theme: "light",
+                },
+            });
+        } catch (err) {
+            console.error("Paddle Checkout Error:", err);
             isLoading = false;
         }
     };
@@ -77,26 +83,6 @@
         goto("/login");
     };
 </script>
-
-<svelte:head>
-    <script
-        src="https://cdn.paddle.com/paddle/v2/paddle.js"
-        onload={() => {
-            if (
-                typeof window !== "undefined" &&
-                window.Paddle &&
-                PUBLIC_PADDLE_CLIENT_TOKEN
-            ) {
-                // Paddle Billing (v2) Initialization
-                // Environment is automatically detected from the token (test_ prefix for sandbox)
-                window.Paddle.Initialize({
-                    token: PUBLIC_PADDLE_CLIENT_TOKEN,
-                });
-                console.log("Paddle v2 Initialized");
-            }
-        }}
-    ></script>
-</svelte:head>
 
 <div
     class="min-h-screen bg-app-bg text-app-text font-display flex flex-col items-center justify-center p-6 relative overflow-hidden"
