@@ -217,14 +217,14 @@
                 <div class="space-y-1 relative">
                     {#each itemsState as item}
                         <div
-                            class="flex items-center gap-4 py-3 px-2 border-b border-app-border/30 last:border-0 transition-all duration-500 {item.checked
+                            class="flex items-center gap-4 py-3 px-2 transition-all duration-500 {item.checked
                                 ? 'opacity-40 translate-x-1'
-                                : 'hover:bg-app-primary/5 rounded-lg'}"
+                                : 'hover:bg-app-primary/5 rounded-xl'}"
                         >
                             <div
-                                class="w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all duration-300 {item.checked
+                                class="w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 {item.checked
                                     ? 'bg-app-primary border-app-primary text-white shadow-lg shadow-app-primary/20'
-                                    : 'border-app-border bg-transparent hover:border-app-primary/50'}"
+                                    : 'border-app-border-strong bg-transparent hover:border-app-primary/50'}"
                             >
                                 {#if item.checked}
                                     <div in:svelteScale={{ duration: 200 }}>
@@ -262,11 +262,14 @@
                             {#if item.found}
                                 <div
                                     in:slide={{ axis: "x", duration: 400 }}
-                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/10 backdrop-blur-sm"
+                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/80 text-emerald-700 rounded-lg border border-emerald-200 shadow-sm backdrop-blur-sm"
                                 >
-                                    <CheckCircle2 size={12} />
+                                    <Refrigerator
+                                        size={12}
+                                        class="text-emerald-500"
+                                    />
                                     <span
-                                        class="text-[9px] font-black uppercase tracking-wider"
+                                        class="text-[10px] font-black uppercase tracking-wider"
                                         >In Fridge</span
                                     >
                                 </div>
