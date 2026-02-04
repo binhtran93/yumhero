@@ -42,61 +42,53 @@
                 <FridgeMockup />
             </div>
 
-            <!-- Feature Cards (Below demo on mobile, Below desc on desktop) -->
-            <div class="order-3 lg:order-2">
-                <div class="grid sm:grid-cols-2 gap-6">
-                    <!-- Leftover Tracking Card -->
-                    <div
-                        class="group p-6 md:p-8 bg-app-surface border border-app-border rounded-2xl md:rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
-                    >
+            <div class="grid sm:grid-cols-2 gap-6 order-3 lg:order-2">
+                <!-- Leftover Tracking Card -->
+                <div
+                    class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
+                >
+                    <div class="flex items-center gap-4 mb-5">
                         <div
-                            class="flex flex-col lg:flex-row items-center lg:items-center gap-4 mb-4 md:mb-5 lg:justify-start"
+                            class="w-11 h-11 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 transition-transform duration-500 group-hover:scale-110"
                         >
-                            <div
-                                class="w-10 h-10 md:w-11 md:h-11 bg-blue-50 rounded-xl md:rounded-2xl flex items-center justify-center text-blue-600 transition-transform duration-500 group-hover:scale-110"
-                            >
-                                <History size={20} strokeWidth={2.5} />
-                            </div>
-                            <h4
-                                class="text-base md:text-lg font-black text-app-text tracking-tight text-center lg:text-left"
-                            >
-                                Leftover Tracking
-                            </h4>
+                            <History size={20} strokeWidth={2.5} />
                         </div>
-                        <p
-                            class="text-[13px] md:text-[14px] text-app-text-muted leading-relaxed font-medium text-center lg:text-left"
+                        <h4
+                            class="text-lg font-black text-app-text tracking-tight"
                         >
-                            Tuesday's dinner becomes Wednesday's lunch with one
-                            click. Smart alerts remind you before things expire.
-                        </p>
+                            Leftover Tracking
+                        </h4>
                     </div>
+                    <p
+                        class="text-[14px] text-app-text-muted leading-relaxed font-medium"
+                    >
+                        Tuesday's dinner becomes Wednesday's lunch with one
+                        click. Smart alerts remind you before things expire.
+                    </p>
+                </div>
 
-                    <!-- Zero Waste Cleanup Card -->
-                    <div
-                        class="group p-6 md:p-8 bg-app-surface border border-app-border rounded-2xl md:rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5 active:scale-[0.98]"
-                    >
+                <!-- Zero Waste Cleanup Card -->
+                <div
+                    class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5 active:scale-[0.98]"
+                >
+                    <div class="flex items-center gap-4 mb-5">
                         <div
-                            class="flex flex-col lg:flex-row items-center lg:items-center gap-4 mb-4 md:mb-5 lg:justify-start"
+                            class="w-11 h-11 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-transform duration-500 group-hover:scale-110"
                         >
-                            <div
-                                class="w-10 h-10 md:w-11 md:h-11 bg-emerald-50 rounded-xl md:rounded-2xl flex items-center justify-center text-emerald-600 transition-transform duration-500 group-hover:scale-110"
-                            >
-                                <Zap size={20} strokeWidth={2.5} />
-                            </div>
-                            <h4
-                                class="text-base md:text-lg font-black text-app-text tracking-tight text-center lg:text-left"
-                            >
-                                Zero Waste Cleanup
-                            </h4>
+                            <Zap size={20} strokeWidth={2.5} />
                         </div>
-                        <p
-                            class="text-[13px] md:text-[14px] text-app-text-muted leading-relaxed font-medium text-center lg:text-left"
+                        <h4
+                            class="text-lg font-black text-app-text tracking-tight"
                         >
-                            Quickly purge your digital fridge as you use or
-                            discard items. One tap maintains a perfect digital
-                            twin.
-                        </p>
+                            Zero Waste Cleanup
+                        </h4>
                     </div>
+                    <p
+                        class="text-[14px] text-app-text-muted leading-relaxed font-medium"
+                    >
+                        Quickly purge your digital fridge as you use or discard
+                        items. One tap maintains a perfect digital twin.
+                    </p>
                 </div>
             </div>
         </div>
