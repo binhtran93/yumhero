@@ -8,6 +8,7 @@
     import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
     import { status } from "$lib/stores/subscription";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     const getStatusConfig = (s: string | null) => {
         switch (s) {
@@ -45,6 +46,34 @@
     const handleDeleteAccount = () => {
         // Placeholder for delete account logic
         toasts.info("Delete account functionality coming soon.");
+    };
+
+    let isActivating = $state(false);
+    let showConfirmModal = $state(false);
+
+    const handleConfirmSubscription = async () => {
+        if (!$user) return;
+        showConfirmModal = false;
+        isActivating = true;
+        try {
+            const response = await fetch("/api/subscription/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: $user.uid }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                toasts.success("Subscription confirmed successfully!");
+            } else {
+                toasts.error(result.error || "Failed to confirm subscription.");
+            }
+        } catch (e: any) {
+            console.error(e);
+            toasts.error("An error occurred. Please try again.");
+        } finally {
+            isActivating = false;
+        }
     };
 </script>
 
@@ -110,11 +139,23 @@
                                 </p>
                             </div>
                         </div>
-                        <span
-                            class="px-3 py-1 {statusConfig.classes} text-xs font-bold rounded-full"
-                        >
-                            {statusConfig.label}
-                        </span>
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="px-3 py-1 {statusConfig.classes} text-xs font-bold rounded-full"
+                            >
+                                {statusConfig.label}
+                            </span>
+                            {#if ($status === "trialing" || $status === "past_due") && !isActivating}
+                                <button
+                                    onclick={() => (showConfirmModal = true)}
+                                    class="text-xs font-bold text-app-primary hover:underline"
+                                >
+                                    Confirm Subscription
+                                </button>
+                            {:else}
+                                <div class="w-2 h-2"></div>
+                            {/if}
+                        </div>
                     </div>
 
                     <!-- Appearance / Theme Toggle -->
@@ -175,3 +216,14 @@
         </div>
     {/if}
 </div>
+
+<ConfirmModal
+    isOpen={showConfirmModal}
+    title="Confirm Subscription"
+    message="By confirming, you will end your trial period and start your paid subscription immediately."
+    confirmText="Confirm"
+    cancelText="Maybe Later"
+    onConfirm={handleConfirmSubscription}
+    onClose={() => (showConfirmModal = false)}
+    isLoading={isActivating}
+/>
