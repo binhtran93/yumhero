@@ -105,11 +105,6 @@
         <div
             class="bg-app-primary/5 p-8 text-center border-b border-app-border"
         >
-            <div
-                class="inline-flex items-center justify-center p-3 bg-app-primary/10 rounded-2xl mb-4 text-app-primary"
-            >
-                <Zap size={32} />
-            </div>
             <h1 class="text-2xl md:text-3xl font-black mb-2">Unlock YumHero</h1>
             <p class="text-app-text-muted">
                 Start your 7-day free trial. Cancel anytime.
