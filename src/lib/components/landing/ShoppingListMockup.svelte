@@ -218,7 +218,7 @@
                     {#each itemsState as item}
                         <div
                             class="flex items-center gap-4 py-3 px-2 transition-all duration-500 {item.checked
-                                ? 'opacity-40 translate-x-1'
+                                ? 'opacity-85'
                                 : 'hover:bg-app-primary/5 rounded-xl'}"
                         >
                             <div
@@ -261,7 +261,10 @@
 
                             {#if item.found}
                                 <div
-                                    in:slide={{ axis: "x", duration: 400 }}
+                                    in:svelteScale={{
+                                        duration: 400,
+                                        start: 0.5,
+                                    }}
                                     class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/80 text-emerald-700 rounded-lg border border-emerald-200 shadow-sm backdrop-blur-sm"
                                 >
                                     <Refrigerator
