@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ChefHat, Menu, X, ChevronDown } from "lucide-svelte";
+    import { ChefHat, Menu, X, ChevronDown, ArrowRight } from "lucide-svelte";
     import { slide } from "svelte/transition";
     import { user } from "$lib/stores/auth";
     import { isSubscribed } from "$lib/stores/subscription";
@@ -127,9 +127,10 @@
             <div class="hidden md:block">
                 <a
                     href={planLink}
-                    class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95"
+                    class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95 flex items-center gap-2"
                 >
                     Start Planning
+                    <ArrowRight size={16} />
                 </a>
             </div>
 
@@ -221,10 +222,11 @@
                 >
                 <a
                     href={planLink}
-                    class="mt-4 w-full py-4 bg-app-primary text-white text-center font-bold rounded-xl"
+                    class="mt-4 w-full py-4 bg-app-primary text-white text-center font-bold rounded-xl flex items-center justify-center gap-2"
                     onclick={closeMenu}
                 >
                     Start Planning
+                    <ArrowRight size={20} />
                 </a>
             </div>
         </div>
