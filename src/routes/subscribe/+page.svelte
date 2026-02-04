@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { user, loading } from "$lib/stores/auth";
-    import { isSubscribed, upgradeUser } from "$lib/stores/subscription";
-    import { goto } from "$app/navigation";
-    import { Check, ShieldCheck, Zap, LogOut } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
-    import { onMount } from "svelte";
-    import { signOut } from "$lib/stores/auth";
+    import {loading, signOut, user} from "$lib/stores/auth";
+    import {isSubscribed} from "$lib/stores/subscription";
+    import {goto} from "$app/navigation";
+    import {Check, LogOut, Zap} from "lucide-svelte";
+    import {fade, fly} from "svelte/transition";
     import {
         PUBLIC_PADDLE_CLIENT_TOKEN,
-        PUBLIC_PADDLE_PRICE_ID,
+        PUBLIC_PADDLE_PRICE_ID_MONTHLY,
+        PUBLIC_PADDLE_PRICE_ID_YEARLY,
     } from "$env/static/public";
 
     // Protect this route: Must be logged in
@@ -21,9 +20,15 @@
     });
 
     let isLoading = $state(false);
+    let selectedPlan = $state<"monthly" | "yearly">("monthly");
 
     const handleSubscribe = () => {
-        if (!PUBLIC_PADDLE_CLIENT_TOKEN || !PUBLIC_PADDLE_PRICE_ID) {
+        const priceId =
+            selectedPlan === "monthly"
+                ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
+                : PUBLIC_PADDLE_PRICE_ID_YEARLY;
+
+        if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
             alert("Paddle configuration missing! Please check your .env file.");
             return;
         }
@@ -37,7 +42,7 @@
             paddle.Checkout.open({
                 items: [
                     {
-                        priceId: PUBLIC_PADDLE_PRICE_ID,
+                        priceId: priceId,
                         quantity: 1,
                     },
                 ],
@@ -113,19 +118,71 @@
         </div>
 
         <div class="p-8 space-y-8">
+            <!-- Plan Switcher -->
+            <div
+                class="flex p-1 bg-app-surface-deep rounded-xl border border-app-border"
+            >
+                <button
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all {selectedPlan ===
+                    'monthly'
+                        ? 'bg-app-surface shadow-sm text-app-text'
+                        : 'text-app-text-muted hover:text-app-text'}"
+                    onclick={() => (selectedPlan = "monthly")}
+                >
+                    Monthly
+                </button>
+                <button
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all {selectedPlan ===
+                    'yearly'
+                        ? 'bg-app-surface shadow-sm text-app-text'
+                        : 'text-app-text-muted hover:text-app-text'}"
+                    onclick={() => (selectedPlan = "yearly")}
+                >
+                    Yearly <span class="text-xs text-green-600 ml-1">-30%</span>
+                </button>
+            </div>
+
             <!-- Price -->
             <div class="text-center">
-                <div class="flex items-end justify-center gap-1 mb-1">
-                    <span class="text-5xl font-black text-app-text">$5.45</span>
-                    <span class="text-lg text-app-text-muted mb-2 font-medium"
-                        >/month</span
+                {#if selectedPlan === "monthly"}
+                    <div
+                        class="flex items-end justify-center gap-1 mb-1"
+                        in:fade
                     >
-                </div>
-                <p
-                    class="text-xs text-app-text-muted uppercase tracking-wider font-bold"
-                >
-                    Billed Monthly
-                </p>
+                        <span class="text-5xl font-black text-app-text"
+                            >$5.45</span
+                        >
+                        <span
+                            class="text-lg text-app-text-muted mb-2 font-medium"
+                            >/mo</span
+                        >
+                    </div>
+                    <p
+                        class="text-xs text-app-text-muted uppercase tracking-wider font-bold"
+                        in:fade
+                    >
+                        Billed Monthly
+                    </p>
+                {:else}
+                    <div
+                        class="flex items-end justify-center gap-1 mb-1"
+                        in:fade
+                    >
+                        <span class="text-5xl font-black text-app-text"
+                            >$45</span
+                        >
+                        <span
+                            class="text-lg text-app-text-muted mb-2 font-medium"
+                            >/yr</span
+                        >
+                    </div>
+                    <p
+                        class="text-xs text-app-text-muted uppercase tracking-wider font-bold"
+                        in:fade
+                    >
+                        Billed Yearly ($3.75/mo)
+                    </p>
+                {/if}
             </div>
 
             <!-- Features -->
@@ -166,7 +223,9 @@
                     {#if isLoading}
                         Processing...
                     {:else}
-                        Start Free Trial
+                        Start {selectedPlan === "monthly"
+                            ? "Monthly"
+                            : "Yearly"} Free Trial
                     {/if}
                 </button>
 
