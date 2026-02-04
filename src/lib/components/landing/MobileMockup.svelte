@@ -76,7 +76,6 @@
     );
 
     function handleTouchStart(e: TouchEvent) {
-        hasInteracted = true;
         touchStartX = e.touches[0].clientX;
         touchDiff = 0;
         isSwiping = true;
@@ -383,6 +382,23 @@
             localPlan = mockPlan; // Restore full plan
         }
     });
+
+    $effect(() => {
+        // Handle auto-restart and pausing based on visible day
+        if (!hasInteracted) {
+            if (mobileDayIndex === 0) {
+                // Return to Monday, restart demo
+                runDemo();
+            } else {
+                // Swiped away from Monday, stop the demo but don't fill plan
+                if (demoAbortController) {
+                    demoAbortController.abort();
+                }
+                showCursor = false;
+                showModal = false;
+            }
+        }
+    });
 </script>
 
 <div class="{forceShow ? 'flex' : 'md:hidden flex'} justify-center py-6">
@@ -505,6 +521,8 @@
                                                             bind:this={
                                                                 addLunchRef
                                                             }
+                                                            onclick={() =>
+                                                                (hasInteracted = true)}
                                                             class="w-full h-10 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center transition-transform duration-200 {activeAddType ===
                                                                 'lunch' &&
                                                             isAddButtonActive
@@ -586,6 +604,7 @@
                             <div class="space-y-2.5">
                                 <div
                                     bind:this={recipeTunaRef}
+                                    onclick={() => (hasInteracted = true)}
                                     class="group flex items-center gap-3 p-2.5 rounded-2xl border transition-all duration-300 {isRecipeActive &&
                                     activeRecipeName === 'Tuna Salad'
                                         ? 'bg-app-primary/15 border-app-primary/30 scale-[0.98] shadow-inner'
