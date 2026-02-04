@@ -1,10 +1,39 @@
 import { writable } from 'svelte/store';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
+import type { User } from 'firebase/auth';
 
-// In a real app, this would be synced with your backend/database
-// For now, we'll default to false so we can test the "Hard Paywall"
 export const isSubscribed = writable<boolean>(false);
 
-// Helper to simulate a successful subscription
+let unsubscribeSnapshot: (() => void) | null = null;
+
+export const syncSubscription = (user: User | null) => {
+    // Unsubscribe from previous listener if exists
+    if (unsubscribeSnapshot) {
+        unsubscribeSnapshot();
+        unsubscribeSnapshot = null;
+    }
+
+    if (!user) {
+        isSubscribed.set(false);
+        return;
+    }
+
+    // Listen to the user's document in Firestore
+    unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (doc) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            // Check for 'isSubscribed' field or 'status' field being active
+            // Adjust logic based on what webhook sets
+            const active = data?.isSubscribed === true || data?.status === 'active' || data?.status === 'trialing';
+            isSubscribed.set(active);
+        } else {
+            isSubscribed.set(false);
+        }
+    });
+};
+
+// Helper for dev/demo if needed (only updates local store, does NOT persist to secure DB)
 export const upgradeUser = () => {
     isSubscribed.set(true);
 };

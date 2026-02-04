@@ -6,6 +6,10 @@
     import { fade, fly } from "svelte/transition";
     import { onMount } from "svelte";
     import { signOut } from "$lib/stores/auth";
+    import {
+        PUBLIC_PADDLE_CLIENT_TOKEN,
+        PUBLIC_PADDLE_PRICE_ID,
+    } from "$env/static/public";
 
     // Protect this route: Must be logged in
     $effect(() => {
@@ -19,18 +23,37 @@
     let isLoading = $state(false);
 
     const handleSubscribe = () => {
-        isLoading = true;
-        // PADDLE INTEGRATION
-        // In a real implementation:
-        // Paddle.Checkout.open({
-        //     items: [{ priceId: 'pri_12345', quantity: 1 }]
-        // });
+        if (!PUBLIC_PADDLE_CLIENT_TOKEN || !PUBLIC_PADDLE_PRICE_ID) {
+            alert("Paddle configuration missing! Please check your .env file.");
+            return;
+        }
 
-        // For demonstration purposes, we will simulate a successful checkout
-        setTimeout(() => {
-            upgradeUser();
+        isLoading = true;
+        const paddle = (window as any).Paddle;
+
+        if (paddle) {
+            // For testing/sandbox, we might want to ensure environment is set.
+            // Usually setup in the onload script.
+            paddle.Checkout.open({
+                items: [
+                    {
+                        priceId: PUBLIC_PADDLE_PRICE_ID,
+                        quantity: 1,
+                    },
+                ],
+                customData: {
+                    userId: $user?.uid, // Pass User ID for the webhook to use
+                },
+                settings: {
+                    successUrl: window.location.origin + "/plan", // Optional: where to go after success
+                },
+                // Optional: Handle close event to stop loading state
+                // onClose: () => { isLoading = false; }
+            });
+        } else {
+            console.error("Paddle not loaded");
             isLoading = false;
-        }, 1500);
+        }
     };
 
     const handleSignOut = async () => {
@@ -38,6 +61,24 @@
         goto("/login");
     };
 </script>
+
+<svelte:head>
+    <script
+        src="https://cdn.paddle.com/paddle/paddle.js"
+        onload={() => {
+            if (
+                typeof window !== "undefined" &&
+                window.Paddle &&
+                PUBLIC_PADDLE_CLIENT_TOKEN
+            ) {
+                // Detect if we are in dev/sandbox or prod based on some logic or assume sandbox for now
+                // Ideally this is also an env var like PUBLIC_PADDLE_ENV
+                window.Paddle.Environment.set("sandbox");
+                window.Paddle.Setup({ token: PUBLIC_PADDLE_CLIENT_TOKEN });
+            }
+        }}
+    ></script>
+</svelte:head>
 
 <div
     class="min-h-screen bg-app-bg text-app-text font-display flex flex-col items-center justify-center p-6 relative overflow-hidden"

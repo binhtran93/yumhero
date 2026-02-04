@@ -14,8 +14,11 @@ import { auth } from '../firebase';
 export const user = writable<User | null>(null);
 export const loading = writable(true); // Initial loading state
 
+import { syncSubscription } from './subscription';
+
 onAuthStateChanged(auth, (u) => {
     user.set(u);
+    syncSubscription(u);
     loading.set(false);
 });
 
