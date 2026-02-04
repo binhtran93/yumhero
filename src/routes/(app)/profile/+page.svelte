@@ -115,6 +115,37 @@
             isSwitching = false;
         }
     };
+
+    let isCancelling = $state(false);
+    let showCancelModal = $state(false);
+
+    const handleCancelSubscription = async () => {
+        if (!$user) return;
+        showCancelModal = false;
+        isCancelling = true;
+
+        try {
+            const response = await fetch("/api/subscription/cancel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: $user.uid }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                toasts.success(
+                    "Subscription cancelled. You will still have access until the end of your billing period.",
+                );
+            } else {
+                toasts.error(result.error || "Failed to cancel subscription.");
+            }
+        } catch (e: any) {
+            console.error(e);
+            toasts.error("An error occurred. Please try again.");
+        } finally {
+            isCancelling = false;
+        }
+    };
 </script>
 
 <SEO
@@ -178,15 +209,32 @@
                                     Current Plan
                                 </p>
                                 {#if $nextBilledAt}
-                                    <p class="text-[10px] text-app-text-muted">
-                                        Next billing: {new Date(
-                                            $nextBilledAt,
-                                        ).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })}
-                                    </p>
+                                    <div class="flex items-center gap-2">
+                                        <p
+                                            class="text-[10px] text-app-text-muted"
+                                        >
+                                            Next billing: {new Date(
+                                                $nextBilledAt,
+                                            ).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
+                                        </p>
+                                        {#if $status === "active" || $status === "trialing"}
+                                            <span
+                                                class="text-[10px] text-app-text-muted"
+                                                >•</span
+                                            >
+                                            <button
+                                                onclick={() =>
+                                                    (showCancelModal = true)}
+                                                class="text-[10px] text-red-500 hover:text-red-600 font-bold cursor-pointer transition-colors"
+                                            >
+                                                Cancel
+                                            </button>
+                                        {/if}
+                                    </div>
                                 {/if}
                             </div>
                         </div>
@@ -259,14 +307,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <button
                     onclick={handleSignOut}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-app-border text-app-text-muted hover:bg-app-surface-hover hover:text-app-text transition-colors font-medium text-sm md:text-base"
+                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-app-border text-app-text-muted hover:bg-app-surface-hover hover:text-app-text transition-colors font-medium text-sm md:text-base cursor-pointer"
                 >
                     <LogOut size={18} />
                     Sign Out
                 </button>
                 <button
                     onclick={handleDeleteAccount}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium text-sm md:text-base"
+                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium text-sm md:text-base cursor-pointer"
                 >
                     <Trash2 size={18} />
                     Delete Account
@@ -296,4 +344,16 @@
     onConfirm={handleSwitchPlan}
     onClose={() => (showSwitchModal = false)}
     isLoading={isSwitching}
+/>
+
+<ConfirmModal
+    isOpen={showCancelModal}
+    title="Cancel Subscription"
+    message="Are you sure you want to cancel? You will continue to have access to pro features until the end of your current billing period."
+    confirmText="Cancel Subscription"
+    cancelText="Keep My Plan"
+    isDestructive={true}
+    onConfirm={handleCancelSubscription}
+    onClose={() => (showCancelModal = false)}
+    isLoading={isCancelling}
 />
