@@ -34,6 +34,12 @@
 
             <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-8">
+                <a
+                    href="/"
+                    class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
+                >
+                    Home
+                </a>
                 <!-- Features Dropdown -->
                 <div
                     class="relative"
@@ -138,6 +144,11 @@
             transition:slide={{ duration: 300, axis: "y" }}
         >
             <div class="flex flex-col gap-6 text-lg font-medium">
+                <a
+                    href="/"
+                    class="py-2 border-b border-app-border text-app-text"
+                    onclick={closeMenu}>Home</a
+                >
                 <!-- Mobile Features Accordion -->
                 <div class="border-b border-app-border pb-2">
                     <button
