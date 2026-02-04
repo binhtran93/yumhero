@@ -1,85 +1,91 @@
 <script lang="ts">
-    import { Refrigerator } from "lucide-svelte";
-    import { fridgeItems } from "$lib/data/landingData";
+    import { Refrigerator, History, Zap, Trash2 } from "lucide-svelte";
+    import FridgeMockup from "./FridgeMockup.svelte";
 </script>
 
-<section id="features" class="py-20 md:py-32 bg-app-surface">
-    <div class="max-w-7xl mx-auto px-6 lg:px-12">
-        <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+<section id="features" class="py-24 md:py-32 bg-white relative overflow-hidden">
+    <!-- Atmosphere Glow -->
+    <div
+        class="absolute inset-0 pointer-events-none overflow-hidden opacity-50"
+    >
+        <div
+            class="absolute -top-[10%] left-[10%] w-[40%] h-[40%] bg-blue-500/5 blur-[100px] rounded-full"
+        ></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div>
                 <div
-                    class="inline-flex items-center gap-2 px-3 py-1 bg-app-primary/10 rounded-full text-app-primary text-sm font-medium mb-6"
+                    class="inline-flex items-center gap-2 px-3 py-1 bg-app-primary/10 rounded-full text-app-primary text-xs font-bold uppercase tracking-widest mb-6"
                 >
-                    <Refrigerator size={16} />
-                    Inventory Management
+                    <Refrigerator size={14} />
+                    <span>Real-time Inventory</span>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-app-text mb-6">
-                    Your fridge, digitized.
+                <h2
+                    class="text-4xl md:text-5xl font-black text-app-text mb-6 tracking-tight leading-[1.1]"
+                >
+                    Stop wondering what's in the <span class="text-app-primary"
+                        >back of the shelf.</span
+                    >
                 </h2>
-                <p class="text-lg text-app-text-muted mb-8">
-                    Stop wondering what's in the back of the shelf. YumHero
-                    prioritizes what you already own, turning forgotten
-                    ingredients into scheduled meals.
+                <p
+                    class="text-lg text-app-text-muted mb-8 leading-relaxed font-medium"
+                >
+                    YumHero digitizes your kitchen, making sure every leftover
+                    and ingredient has a purpose. No more forgotten chicken or
+                    wasted veggies.
                 </p>
-                <ul class="space-y-4">
-                    <li class="flex items-start gap-3">
-                        <div
-                            class="w-6 h-6 rounded-full bg-accent-lunch-bg flex items-center justify-center shrink-0 mt-0.5"
-                        >
+
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
                             <div
-                                class="w-2 h-2 rounded-full bg-accent-lunch"
-                            ></div>
-                        </div>
-                        <div>
-                            <span class="font-bold text-app-text"
-                                >Live Inventory</span
+                                class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"
                             >
-                            <span class="text-app-text-muted">
-                                — Log ingredients as you buy them.</span
-                            >
+                                <History size={20} />
+                            </div>
+                            <h4 class="font-black text-app-text tracking-tight">
+                                Leftover Tracking
+                            </h4>
                         </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <div
-                            class="w-6 h-6 rounded-full bg-accent-dinner-bg flex items-center justify-center shrink-0 mt-0.5"
+                        <p
+                            class="text-[14px] text-app-text-muted leading-relaxed"
                         >
+                            Tuesday's dinner becomes Wednesday's lunch with one
+                            click. Smart alerts remind you before things expire.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
                             <div
-                                class="w-2 h-2 rounded-full bg-accent-dinner"
-                            ></div>
-                        </div>
-                        <div>
-                            <span class="font-bold text-app-text"
-                                >Leftover Tracking</span
+                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"
                             >
-                            <span class="text-app-text-muted">
-                                — Tuesday's dinner becomes Wednesday's lunch
-                                with one click.</span
-                            >
+                                <Zap size={20} />
+                            </div>
+                            <h4 class="font-black text-app-text tracking-tight">
+                                Zero Waste Cleanup
+                            </h4>
                         </div>
-                    </li>
-                </ul>
+                        <p
+                            class="text-[14px] text-app-text-muted leading-relaxed"
+                        >
+                            Quickly purge your digital fridge as you use or
+                            discard items. One tap maintains a perfect digital
+                            twin.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <!-- Fridge Mockup -->
-            <div class="bg-app-bg border border-app-border rounded-xl p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <Refrigerator size={20} class="text-app-primary" />
-                    <span class="font-bold text-app-text">Your Fridge</span>
-                </div>
-                <div class="space-y-3">
-                    {#each fridgeItems as item}
-                        <div
-                            class="flex items-center justify-between p-3 bg-app-surface rounded-lg border border-app-border"
-                        >
-                            <span class="font-medium text-app-text"
-                                >{item.name}</span
-                            >
-                            <span
-                                class="text-xs px-2 py-1 rounded-full {item.tagColor}"
-                                >{item.tag}</span
-                            >
-                        </div>
-                    {/each}
-                </div>
+
+            <!-- Fridge Mockup Demo -->
+            <div class="relative">
+                <!-- Decorative Glow behind mockup -->
+                <div
+                    class="absolute inset-0 bg-blue-400/5 blur-3xl -z-10 rounded-full scale-110"
+                ></div>
+                <FridgeMockup />
             </div>
         </div>
     </div>
