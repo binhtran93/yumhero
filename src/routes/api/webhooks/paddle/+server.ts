@@ -29,7 +29,7 @@ export const POST = async ({ request }) => {
 
         console.log(`Received Paddle Webhook: ${eventType}`);
 
-        if (eventType === EventName.TransactionCompleted || eventType === EventName.SubscriptionCreated) {
+        if (eventType === EventName.SubscriptionCreated || eventType === EventName.SubscriptionTrialing) {
             // Extract custom data (userId)
             const customData = eventData.data.customData;
 
@@ -39,22 +39,18 @@ export const POST = async ({ request }) => {
 
             if (userId) {
                 console.log(`Processing subscription for User ID: ${userId}`);
-                const data: any = {
+
+                // Update Firestore
+                await adminDb.collection('users').doc(userId).set({
                     hasUsedTrial: true,
                     isSubscribed: true,
+                    subscriptionId: eventData.data.id,
+                    nextBilledAt: eventData.data.nextBilledAt,
+                    trialStartedAt: eventData.data.items[0].trialDates?.startsAt,
                     updatedAt: new Date().toISOString(),
                     paddleCustomerId: eventData.data.customerId,
                     status: eventData.data.status
-                };
-
-                if (eventType === EventName.SubscriptionCreated) {
-                    data.subscriptionId = eventData.data.id;
-                    data.trialEndedAt = eventData.data.items[0].trialDates?.endsAt;
-                    data.trialstartedAt = eventData.data.items[0].trialDates?.startsAt;
-                }
-
-                // Update Firestore
-                await adminDb.collection('users').doc(userId).set(data, { merge: true });
+                }, { merge: true });
 
                 console.log(`Successfully updated user ${userId} subscription status.`);
             } else {
@@ -72,6 +68,20 @@ export const POST = async ({ request }) => {
                     isSubscribed: false,
                     status: eventData.data.status,
                     updatedAt: new Date().toISOString()
+                }, { merge: true });
+            }
+        }
+
+        if (eventType == EventName.SubscriptionActivated) {
+            const customData = eventData.data.customData;
+            const userId = customData?.userId;
+
+            if (userId) {
+                await adminDb.collection('users').doc(userId).set({
+                    isSubscribed: true,
+                    status: eventData.data.status,
+                    nextBilledAt: eventData.data.nextBilledAt,
+                    updatedAt: new Date().toISOString(),
                 }, { merge: true });
             }
         }
