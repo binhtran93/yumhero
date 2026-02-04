@@ -1,11 +1,14 @@
 <script lang="ts">
     import { ArrowRight, ChevronDown } from "lucide-svelte";
+    import { user } from "$lib/stores/auth";
 
     interface Props {
         onSeeItInAction?: () => void;
     }
 
     let { onSeeItInAction }: Props = $props();
+
+    const planLink = $derived($user ? "/plan" : "/login");
 </script>
 
 <section class="relative pt-20 pb-6 md:pt-28 md:pb-10 overflow-hidden">
@@ -54,7 +57,7 @@
                     <ChevronDown size={16} class="md:w-5 md:h-5" />
                 </button>
                 <a
-                    href="/plan"
+                    href={planLink}
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-sm md:text-lg md:px-6 md:py-3 shadow-lg hover:shadow-app-primary/25 whitespace-nowrap"
                 >
                     Start Planning

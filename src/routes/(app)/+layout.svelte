@@ -11,9 +11,9 @@
     $effect(() => {
         if (!$loading) {
             if (!$user) {
-                goto("/login");
+                goto("/login", { replaceState: true });
             } else if (!$isSubscribed) {
-                goto("/subscribe");
+                goto("/subscribe", { replaceState: true });
             }
         }
     });

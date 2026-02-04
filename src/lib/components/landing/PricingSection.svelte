@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { user } from "$lib/stores/auth";
+
+    const planLink = $derived($user ? "/plan" : "/login");
 </script>
 
 <section id="pricing" class="py-20 md:py-32">
@@ -107,7 +110,7 @@
                     </ul>
 
                     <a
-                        href="/plan"
+                        href={planLink}
                         class="block w-full py-4 text-center rounded-xl font-bold transition-all border-2 border-app-primary text-app-primary hover:bg-app-primary hover:text-white"
                     >
                         Start 7-Day Free Trial
@@ -212,7 +215,7 @@
                     </ul>
 
                     <a
-                        href="/plan"
+                        href={planLink}
                         class="block w-full py-4 text-center rounded-xl font-bold transition-all bg-app-primary text-white shadow-lg shadow-app-primary/25 hover:shadow-app-primary/40 hover:-translate-y-0.5"
                     >
                         Start 7-Day Free Trial

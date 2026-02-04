@@ -3,6 +3,9 @@
     import LandingNav from "$lib/components/landing/LandingNav.svelte";
     import LandingFooter from "$lib/components/landing/LandingFooter.svelte";
     import { Heart, Sparkles, Coffee, ArrowRight } from "lucide-svelte";
+    import { user } from "$lib/stores/auth";
+
+    const planLink = $derived($user ? "/plan" : "/login");
 </script>
 
 <div class="min-h-screen bg-app-bg text-app-text font-display">
@@ -149,7 +152,7 @@
                     a try and let us know what you think.
                 </p>
                 <a
-                    href="/plan"
+                    href={planLink}
                     class="relative z-10 inline-flex items-center gap-2 px-8 py-4 bg-app-primary text-white font-bold rounded-xl hover:bg-app-primary/90 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-app-primary/20"
                 >
                     Start Your Journey

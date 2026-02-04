@@ -1,10 +1,13 @@
 <script lang="ts">
     import { ChefHat, Menu, X, ChevronDown } from "lucide-svelte";
     import { slide } from "svelte/transition";
+    import { user } from "$lib/stores/auth";
 
     let isMenuOpen = $state(false);
     let isMobileFeaturesOpen = $state(true);
     let isDesktopFeaturesOpen = $state(false);
+
+    const planLink = $derived($user ? "/plan" : "/login");
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
@@ -120,7 +123,7 @@
             <!-- CTA Desktop -->
             <div class="hidden md:block">
                 <a
-                    href="/plan"
+                    href={planLink}
                     class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95"
                 >
                     Start Planning
@@ -214,7 +217,7 @@
                     onclick={closeMenu}>FAQ</a
                 >
                 <a
-                    href="/plan"
+                    href={planLink}
                     class="mt-4 w-full py-4 bg-app-primary text-white text-center font-bold rounded-xl"
                     onclick={closeMenu}
                 >
