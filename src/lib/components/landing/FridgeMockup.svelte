@@ -53,7 +53,7 @@
         {
             id: "i1",
             name: "Organic Eggs",
-            date: "Added 1d ago",
+            date: "1 day ago",
             daysAgo: 1,
             type: "ingredient",
             image: "/mockup/avocado.png", // Using as placeholder
@@ -61,7 +61,7 @@
         {
             id: "i2",
             name: "Whole Milk",
-            date: "Added 2d ago",
+            date: "2 days ago",
             daysAgo: 2,
             type: "ingredient",
             image: "/mockup/yogurt.png", // Using as placeholder
@@ -69,7 +69,7 @@
         {
             id: "i3",
             name: "Butter",
-            date: "Added 5d ago",
+            date: "5 days ago",
             daysAgo: 5,
             type: "ingredient",
         },

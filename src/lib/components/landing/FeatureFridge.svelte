@@ -13,10 +13,12 @@
         ></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
+        <div
+            class="flex flex-col lg:grid lg:grid-cols-2 gap-16 lg:gap-x-24 lg:gap-y-12 lg:grid-rows-[auto_1fr] lg:items-start"
+        >
             <!-- Header Text -->
-            <div class="text-center lg:text-left order-1">
+            <div class="text-center lg:text-left lg:col-start-1 lg:row-start-1">
                 <h2
                     class="text-3xl lg:text-5xl font-black text-app-text mb-6 tracking-tight leading-[1.1] text-center lg:text-left"
                 >
@@ -34,7 +36,7 @@
             </div>
 
             <!-- Fridge Mockup Demo (Between Desc and Cards on mobile) -->
-            <div class="relative order-2 lg:order-3 lg:row-span-2">
+            <div class="relative lg:col-start-2 lg:row-start-1 lg:row-span-2">
                 <!-- Decorative Glow behind mockup -->
                 <div
                     class="absolute inset-0 bg-blue-400/5 blur-3xl -z-10 rounded-full scale-110"
@@ -42,7 +44,9 @@
                 <FridgeMockup />
             </div>
 
-            <div class="grid sm:grid-cols-2 gap-6 order-3 lg:order-2">
+            <div
+                class="grid sm:grid-cols-2 gap-6 lg:col-start-1 lg:row-start-2"
+            >
                 <!-- Leftover Tracking Card -->
                 <div
                     class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
