@@ -1,6 +1,7 @@
 <script lang="ts">
     import { ArrowRight, ChevronDown } from "lucide-svelte";
     import { user } from "$lib/stores/auth";
+    import { isSubscribed } from "$lib/stores/subscription";
 
     interface Props {
         onSeeItInAction?: () => void;
@@ -8,7 +9,9 @@
 
     let { onSeeItInAction }: Props = $props();
 
-    const planLink = $derived($user ? "/plan" : "/login");
+    const planLink = $derived(
+        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+    );
 </script>
 
 <section class="relative pt-20 pb-6 md:pt-28 md:pb-10 overflow-hidden">

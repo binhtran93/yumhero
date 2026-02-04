@@ -1,7 +1,10 @@
 <script lang="ts">
     import { user } from "$lib/stores/auth";
+    import { isSubscribed } from "$lib/stores/subscription";
 
-    const planLink = $derived($user ? "/plan" : "/login");
+    const planLink = $derived(
+        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+    );
 </script>
 
 <section id="pricing" class="py-20 md:py-32">

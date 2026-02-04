@@ -12,7 +12,6 @@
         Check,
         ShieldCheck,
         Lock,
-        ArrowLeft,
         ChefHat,
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
@@ -27,7 +26,7 @@
     // Redirect if already logged in
     $effect(() => {
         if ($user && !$loading) {
-            goto("/plan"); // Redirect to the main app area
+            goto("/plan", { replaceState: true }); // Redirect to the main app area
         }
     });
 
@@ -66,14 +65,7 @@
     class="min-h-screen bg-app-bg text-app-text font-display flex flex-col justify-center items-center p-6 relative overflow-hidden"
 >
     <!-- Background Elements -->
-    <a
-        href="/"
-        class="absolute top-6 left-6 z-20 flex items-center gap-2 text-app-text-muted hover:text-app-primary transition-colors font-bold text-sm"
-        in:fade
-    >
-        <ArrowLeft size={18} />
-        Back to Home
-    </a>
+
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
         <div
             class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-app-primary/5 blur-[100px] rounded-full"

@@ -4,8 +4,11 @@
     import LandingFooter from "$lib/components/landing/LandingFooter.svelte";
     import { Heart, Sparkles, Coffee, ArrowRight } from "lucide-svelte";
     import { user } from "$lib/stores/auth";
+    import { isSubscribed } from "$lib/stores/subscription";
 
-    const planLink = $derived($user ? "/plan" : "/login");
+    const planLink = $derived(
+        !$user ? "/login" : !$isSubscribed ? "/subscribe" : "/plan",
+    );
 </script>
 
 <div class="min-h-screen bg-app-bg text-app-text font-display">

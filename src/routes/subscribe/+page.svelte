@@ -15,9 +15,9 @@
     // Protect this route: Must be logged in
     $effect(() => {
         if (!$loading && !$user) {
-            goto("/login");
+            goto("/login", { replaceState: true });
         } else if (!$loading && $user && $isSubscribed) {
-            goto("/plan"); // Already subscribed
+            goto("/plan", { replaceState: true }); // Already subscribed
         }
     });
 
