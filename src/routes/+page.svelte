@@ -147,7 +147,7 @@
     </section>
 
     <!-- Shopping List Section -->
-    <section class="py-24 relative overflow-hidden bg-[#f9fafc]">
+    <section id="shopping" class="py-24 relative overflow-hidden bg-[#f9fafc]">
         <!-- Light Atmosphere for this section -->
         <div
             class="absolute inset-0 pointer-events-none overflow-hidden opacity-50"
