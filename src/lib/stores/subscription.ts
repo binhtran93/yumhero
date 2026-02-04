@@ -6,6 +6,7 @@ import type { User } from 'firebase/auth';
 export const isSubscribed = writable<boolean>(false);
 export const hasUsedTrial = writable<boolean>(false);
 export const status = writable<string | null>(null);
+export const nextBilledAt = writable<string | null>(null);
 export const subscriptionLoading = writable<boolean>(true);
 
 let unsubscribeSnapshot: (() => void) | null = null;
@@ -37,10 +38,12 @@ export const syncSubscription = (user: User | null) => {
             isSubscribed.set(active);
             hasUsedTrial.set(trialUsed);
             status.set(data?.status || 'free');
+            nextBilledAt.set(data?.nextBilledAt || null);
         } else {
             isSubscribed.set(false);
             hasUsedTrial.set(false);
             status.set('free');
+            nextBilledAt.set(null);
         }
         subscriptionLoading.set(false);
     }, (error) => {

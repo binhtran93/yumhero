@@ -7,7 +7,7 @@
     import SEO from "$lib/components/SEO.svelte";
     import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
-    import { status } from "$lib/stores/subscription";
+    import { status, nextBilledAt } from "$lib/stores/subscription";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     const getStatusConfig = (s: string | null) => {
@@ -137,6 +137,17 @@
                                 <p class="text-sm font-bold text-app-text">
                                     Current Plan
                                 </p>
+                                {#if $nextBilledAt}
+                                    <p class="text-[10px] text-app-text-muted">
+                                        Next billing: {new Date(
+                                            $nextBilledAt,
+                                        ).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        })}
+                                    </p>
+                                {/if}
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
