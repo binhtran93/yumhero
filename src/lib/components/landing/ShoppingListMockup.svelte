@@ -6,6 +6,7 @@
         CheckCircle2,
         Check,
         Pointer,
+        Smartphone,
     } from "lucide-svelte";
     import { shoppingItems } from "$lib/data/landingData";
     import { fade, slide, scale as svelteScale } from "svelte/transition";
@@ -332,39 +333,68 @@
     </div>
 
     <!-- Features Highlight -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-        <div class="p-6 bg-app-surface border border-app-border rounded-2xl">
-            <div
-                class="w-10 h-10 bg-app-primary/10 rounded-xl flex items-center justify-center text-app-primary mb-4"
-            >
-                <ShoppingBag size={20} />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        <!-- Smart Consolidation -->
+        <div
+            class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-app-primary/5 active:scale-[0.98]"
+        >
+            <div class="flex items-center gap-4 mb-5">
+                <div
+                    class="w-11 h-11 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 transition-transform duration-500 group-hover:scale-110"
+                >
+                    <ShoppingBag size={20} strokeWidth={2.5} />
+                </div>
+                <h4 class="text-lg font-black text-app-text tracking-tight">
+                    Smart Consolidation
+                </h4>
             </div>
-            <h4 class="font-bold text-app-text mb-2">Smart Consolidation</h4>
-            <p class="text-sm text-app-text-muted leading-relaxed">
+            <p
+                class="text-[14px] text-app-text-muted leading-relaxed font-medium"
+            >
                 YumHero automatically groups identical ingredients from
                 different recipes to save you time.
             </p>
         </div>
-        <div class="p-6 bg-app-surface border border-app-border rounded-2xl">
-            <div
-                class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mb-4"
-            >
-                <Refrigerator size={20} />
+
+        <!-- Inventory Sync -->
+        <div
+            class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5 active:scale-[0.98]"
+        >
+            <div class="flex items-center gap-4 mb-5">
+                <div
+                    class="w-11 h-11 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-transform duration-500 group-hover:scale-110"
+                >
+                    <Refrigerator size={20} strokeWidth={2.5} />
+                </div>
+                <h4 class="text-lg font-black text-app-text tracking-tight">
+                    Inventory Sync
+                </h4>
             </div>
-            <h4 class="font-bold text-app-text mb-2">Inventory Sync</h4>
-            <p class="text-sm text-app-text-muted leading-relaxed">
+            <p
+                class="text-[14px] text-app-text-muted leading-relaxed font-medium"
+            >
                 Avoid buying what you already have. One click checks your
                 digital fridge and marks found items.
             </p>
         </div>
-        <div class="p-6 bg-app-surface border border-app-border rounded-2xl">
-            <div
-                class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 mb-4"
-            >
-                <ShoppingBag size={20} />
+
+        <!-- Real-time Checkoff -->
+        <div
+            class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
+        >
+            <div class="flex items-center gap-4 mb-5">
+                <div
+                    class="w-11 h-11 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 transition-transform duration-500 group-hover:scale-110"
+                >
+                    <Smartphone size={20} strokeWidth={2.5} />
+                </div>
+                <h4 class="text-lg font-black text-app-text tracking-tight">
+                    Real-time Checkoff
+                </h4>
             </div>
-            <h4 class="font-bold text-app-text mb-2">Real-time Checkoff</h4>
-            <p class="text-sm text-app-text-muted leading-relaxed">
+            <p
+                class="text-[14px] text-app-text-muted leading-relaxed font-medium"
+            >
                 Cross off items as you shop. Progress syncs instantly across all
                 your family members' devices.
             </p>
