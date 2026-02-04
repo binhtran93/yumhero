@@ -10,13 +10,13 @@
     import FAQSection from "$lib/components/landing/FAQSection.svelte";
     import LandingFooter from "$lib/components/landing/LandingFooter.svelte";
 
-    import { Monitor, Smartphone } from "lucide-svelte";
-    import { fade } from "svelte/transition";
-
+    import { Monitor, Smartphone, Maximize2, X } from "lucide-svelte";
+    import { fade, scale as svelteScale } from "svelte/transition";
     import { tick } from "svelte";
 
     let restartKey = $state(0);
     let activeMockup = $state("desktop");
+    let isFullscreen = $state(false);
 
     let containerWidth = $state(0);
     const DESKTOP_BASE_WIDTH = 1400;
@@ -76,17 +76,23 @@
                             : '720px'}; transition: height 0.4s ease-out;"
                     >
                         {#if activeMockup === "desktop"}
-                            <div
-                                class="absolute top-0 left-1/2 -translate-x-1/2 origin-top"
+                            <button
+                                class="absolute top-0 left-1/2 -translate-x-1/2 origin-top text-left {scale <
+                                0.9
+                                    ? 'cursor-zoom-in hover:opacity-95'
+                                    : ''}"
                                 style="width: {mockupWidth}; transform: scale({scale});"
                                 in:fade={{ duration: 400 }}
+                                onclick={() => {
+                                    if (scale < 0.9) isFullscreen = true;
+                                }}
                             >
                                 <DesktopMockup
                                     {restartKey}
                                     forceShow={true}
                                     {scale}
                                 />
-                            </div>
+                            </button>
                         {:else}
                             <div
                                 class="absolute top-0 left-1/2 -translate-x-1/2"
@@ -133,6 +139,52 @@
             </div>
         </div>
     </section>
+
+    {#if isFullscreen}
+        {@const landscapeScale = Math.min(
+            1,
+            ((typeof window !== "undefined" ? window.innerHeight : 1000) *
+                0.95) /
+                DESKTOP_BASE_WIDTH,
+        )}
+        <div
+            class="fixed inset-0 z-[100] bg-app-bg flex items-center justify-center overflow-hidden"
+            in:fade={{ duration: 300 }}
+            out:fade={{ duration: 300 }}
+        >
+            <!-- Background Atmosphere -->
+            <div class="absolute inset-0 pointer-events-none">
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(251,146,60,0.15)_0%,transparent_70%)] blur-[120px]"
+                ></div>
+            </div>
+
+            <!-- Close Button -->
+            <button
+                onclick={() => (isFullscreen = false)}
+                class="absolute bottom-6 left-6 p-3 bg-app-surface border border-app-border text-app-text rounded-full shadow-2xl z-[110] hover:scale-110 active:scale-90 transition-all md:bottom-10 md:left-10"
+            >
+                <X size={24} />
+            </button>
+
+            <!-- Landscape Mockup -->
+            <div
+                class="landscape-mockup-wrapper w-screen h-screen flex items-center justify-center p-4"
+                style="transform: rotate(90deg); width: 100vh; height: 100vw;"
+            >
+                <div
+                    class="origin-center"
+                    style="width: {DESKTOP_BASE_WIDTH}px; transform: scale({landscapeScale});"
+                >
+                    <DesktopMockup
+                        {restartKey}
+                        forceShow={true}
+                        scale={landscapeScale}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <FeatureFridge />
     <FeatureGrid />

@@ -49,17 +49,22 @@
         container: HTMLElement | undefined,
     ): Position {
         if (!element || !container) return { x: 0, y: 0 };
-        const elementRect = element.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
+
+        // Position relative to container's offsetParent
+        let x = 0;
+        let y = 0;
+        let curr: HTMLElement | null = element;
+        const root = container.offsetParent as HTMLElement;
+
+        while (curr && curr !== root && root?.contains(curr)) {
+            x += curr.offsetLeft;
+            y += curr.offsetTop;
+            curr = curr.offsetParent as HTMLElement;
+        }
+
         return {
-            x:
-                (elementRect.left -
-                    containerRect.left +
-                    elementRect.width / 2) /
-                activeScale,
-            y:
-                (elementRect.top - containerRect.top + elementRect.height / 2) /
-                activeScale,
+            x: x + element.offsetWidth / 2,
+            y: y + element.offsetHeight / 2,
         };
     }
 
