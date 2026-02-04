@@ -57,13 +57,7 @@
                             >About</a
                         >
                     </li>
-                    <li>
-                        <a
-                            href="#journal"
-                            class="text-sm text-app-text-muted hover:text-app-text transition-colors"
-                            >Journal</a
-                        >
-                    </li>
+
                     <li>
                         <a
                             href="mailto:hello@yumhero.app"

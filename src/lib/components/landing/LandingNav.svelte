@@ -22,11 +22,7 @@
                     class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
                     >Features</a
                 >
-                <a
-                    href="#journal"
-                    class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
-                    >Journal</a
-                >
+
                 <a
                     href="#pricing"
                     class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
