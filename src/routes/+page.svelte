@@ -3,6 +3,7 @@
     import HeroSection from "$lib/components/landing/HeroSection.svelte";
     import DesktopMockup from "$lib/components/landing/DesktopMockup.svelte";
     import MobileMockup from "$lib/components/landing/MobileMockup.svelte";
+    import ShoppingListMockup from "$lib/components/landing/ShoppingListMockup.svelte";
     import FeatureFridge from "$lib/components/landing/FeatureFridge.svelte";
     import FeatureGrid from "$lib/components/landing/FeatureGrid.svelte";
     import JournalSection from "$lib/components/landing/JournalSection.svelte";
@@ -10,7 +11,13 @@
     import FAQSection from "$lib/components/landing/FAQSection.svelte";
     import LandingFooter from "$lib/components/landing/LandingFooter.svelte";
 
-    import { Monitor, Smartphone, Maximize2, X } from "lucide-svelte";
+    import {
+        Monitor,
+        Smartphone,
+        Maximize2,
+        X,
+        ShoppingBag,
+    } from "lucide-svelte";
     import { fade, scale as svelteScale } from "svelte/transition";
     import { tick } from "svelte";
 
@@ -137,6 +144,36 @@
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- Shopping List Section -->
+    <section class="py-20 relative overflow-hidden bg-app-surface/30">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-app-primary/10 text-app-primary text-xs font-bold uppercase tracking-widest mb-4"
+                >
+                    <ShoppingBag size={14} />
+                    <span>Smart Shopping</span>
+                </div>
+                <h2 class="text-3xl md:text-5xl font-black text-app-text mb-4">
+                    Grocery lists that <span class="text-app-primary"
+                        >talk to your fridge</span
+                    >
+                </h2>
+                <p class="text-lg text-app-text-muted max-w-2xl mx-auto">
+                    Never buy a second carton of eggs again. YumHero checks your
+                    inventory and automatically skips what you already have.
+                </p>
+            </div>
+
+            <ShoppingListMockup />
+        </div>
+
+        <!-- Decorative Background Element -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_50%_50%,rgba(251,146,60,0.03)_0%,transparent_70%)] blur-[120px] -z-10"
+        ></div>
     </section>
 
     {#if isFullscreen}

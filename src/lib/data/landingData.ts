@@ -247,3 +247,17 @@ export const getDotColor = (type: string) => {
             return "bg-gray-400";
     }
 };
+
+export const shoppingItems = [
+    { name: "Organic Eggs", amount: "1 dozen", inFridge: false },
+    { name: "Greek Yogurt", amount: "500g", inFridge: true },
+    { name: "Avocado", amount: "3 pcs", inFridge: false },
+    { name: "Chicken Breast", amount: "1 kg", inFridge: true },
+    { name: "Spinach", amount: "250g", inFridge: false },
+    { name: "Quinoa", amount: "500g", inFridge: false },
+    { name: "Whole Milk", amount: "1L", inFridge: true },
+    { name: "Blueberries", amount: "125g", inFridge: false },
+    { name: "Oat Milk", amount: "1L", inFridge: false },
+    { name: "Cherry Tomatoes", amount: "250g", inFridge: true },
+];
+
