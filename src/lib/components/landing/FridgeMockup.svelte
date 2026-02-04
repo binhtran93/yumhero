@@ -69,8 +69,8 @@
         {
             id: "i3",
             name: "Butter",
-            date: "Added 4d ago",
-            daysAgo: 4,
+            date: "Added 5d ago",
+            daysAgo: 5,
             type: "ingredient",
         },
     ];
@@ -132,8 +132,6 @@
         animationStartTime = now - 2000;
         // Reset removing state in case we're interrupting a previous loop
         isRemoving = false;
-        // If we switched tabs, we might want to stay on leftover for the demo
-        activeTab = "leftover";
     }
 
     function animate(timestamp: number) {
@@ -145,7 +143,7 @@
             resetDemo();
         }
 
-        const targetItemId = "l3"; // Garlic Pasta
+        const targetItemId = activeTab === "leftover" ? "l3" : "i3";
         const btnId = `trash-${targetItemId}`;
         const targetBtn = document.getElementById(btnId);
 
@@ -155,7 +153,7 @@
                 opacity = 0,
                 scale = 1;
 
-            if (targetBtn && activeTab === "leftover") {
+            if (targetBtn) {
                 const targetPos = getRelativePosition(
                     targetBtn,
                     animationContainer,
@@ -191,6 +189,10 @@
                         setTimeout(() => {
                             if (activeTab === "leftover") {
                                 leftovers = leftovers.filter(
+                                    (it) => it.id !== targetItemId,
+                                );
+                            } else {
+                                ingredients = ingredients.filter(
                                     (it) => it.id !== targetItemId,
                                 );
                             }
@@ -248,36 +250,37 @@
                     <h3 class="font-black text-app-text tracking-tight">
                         Fridge Inventory
                     </h3>
-                    <p
-                        class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
-                    >
-                        {activeItems.length} items logged
-                    </p>
                 </div>
             </div>
 
-            <!-- Tab Switcher -->
+            <!-- Tab Switcher (Premium Pill Design) -->
             <div
-                class="flex p-1 bg-app-surface border border-app-border rounded-xl"
+                class="flex p-1 bg-app-surface/80 backdrop-blur-sm border border-app-border rounded-xl"
             >
                 <button
                     onclick={() => (activeTab = "leftover")}
-                    class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all {activeTab ===
+                    class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
                     'leftover'
-                        ? 'bg-white text-app-text shadow-sm'
-                        : 'text-app-text-muted hover:text-app-text'}"
+                        ? 'bg-app-primary text-white shadow-lg font-black'
+                        : 'text-app-text-muted hover:text-app-text font-bold'}"
                 >
-                    <History size={14} />
+                    <History
+                        size={16}
+                        class={activeTab === "leftover" ? "text-white" : ""}
+                    />
                     Leftovers
                 </button>
                 <button
                     onclick={() => (activeTab = "ingredient")}
-                    class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all {activeTab ===
+                    class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm transition-all duration-300 {activeTab ===
                     'ingredient'
-                        ? 'bg-white text-app-text shadow-sm'
-                        : 'text-app-text-muted hover:text-app-text'}"
+                        ? 'bg-app-primary text-white shadow-lg font-black'
+                        : 'text-app-text-muted hover:text-app-text font-bold'}"
                 >
-                    <Package size={14} />
+                    <Package
+                        size={16}
+                        class={activeTab === "ingredient" ? "text-white" : ""}
+                    />
                     Ingredients
                 </button>
             </div>
