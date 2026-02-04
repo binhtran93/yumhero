@@ -7,6 +7,7 @@ export const isSubscribed = writable<boolean>(false);
 export const hasUsedTrial = writable<boolean>(false);
 export const status = writable<string | null>(null);
 export const nextBilledAt = writable<string | null>(null);
+export const scheduledCancellation = writable<string | null>(null);
 export const billingInterval = writable<"month" | "year" | null>(null);
 export const subscriptionLoading = writable<boolean>(true);
 
@@ -41,12 +42,14 @@ export const syncSubscription = (user: User | null) => {
             status.set(data?.status || 'free');
             nextBilledAt.set(data?.nextBilledAt || null);
             billingInterval.set(data?.billingInterval || null);
+            scheduledCancellation.set(data?.scheduledCancellation || null);
         } else {
             isSubscribed.set(false);
             hasUsedTrial.set(false);
             status.set('free');
             nextBilledAt.set(null);
             billingInterval.set(null);
+            scheduledCancellation.set(null);
         }
         subscriptionLoading.set(false);
     }, (error) => {

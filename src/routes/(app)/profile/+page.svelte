@@ -11,6 +11,7 @@
         status,
         nextBilledAt,
         billingInterval,
+        scheduledCancellation,
     } from "$lib/stores/subscription";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import { Zap } from "lucide-svelte";
@@ -208,31 +209,45 @@
                                 <p class="text-sm font-bold text-app-text">
                                     Current Plan
                                 </p>
-                                {#if $nextBilledAt}
+                                {#if $nextBilledAt || $scheduledCancellation}
                                     <div class="flex items-center gap-2">
-                                        <p
-                                            class="text-[10px] text-app-text-muted"
-                                        >
-                                            Next billing: {new Date(
-                                                $nextBilledAt,
-                                            ).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
-                                        </p>
-                                        {#if $status === "active" || $status === "trialing"}
-                                            <span
+                                        {#if $scheduledCancellation}
+                                            <p
+                                                class="text-[10px] text-red-500 font-bold"
+                                            >
+                                                Subscription ends on {new Date(
+                                                    $scheduledCancellation,
+                                                ).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    year: "numeric",
+                                                })}
+                                            </p>
+                                        {:else if $nextBilledAt}
+                                            <p
                                                 class="text-[10px] text-app-text-muted"
-                                                >•</span
                                             >
-                                            <button
-                                                onclick={() =>
-                                                    (showCancelModal = true)}
-                                                class="text-[10px] text-red-500 hover:text-red-600 font-bold cursor-pointer transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
+                                                Next billing: {new Date(
+                                                    $nextBilledAt,
+                                                ).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    year: "numeric",
+                                                })}
+                                            </p>
+                                            {#if $status === "active"}
+                                                <span
+                                                    class="text-[10px] text-app-text-muted"
+                                                    >•</span
+                                                >
+                                                <button
+                                                    onclick={() =>
+                                                        (showCancelModal = true)}
+                                                    class="text-[10px] text-red-500 hover:text-red-600 font-bold cursor-pointer transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            {/if}
                                         {/if}
                                     </div>
                                 {/if}
@@ -251,7 +266,7 @@
                                 >
                                     Confirm Subscription
                                 </button>
-                            {:else if $status === "active" && !isSwitching && $billingInterval === "month"}
+                            {:else if $status === "active" && !$scheduledCancellation && !isSwitching && $billingInterval === "month"}
                                 <button
                                     onclick={() => (showSwitchModal = true)}
                                     class="flex items-center gap-1 text-xs font-bold text-app-primary hover:underline"
