@@ -599,39 +599,6 @@
                                                         </div>
                                                     </div>
 
-                                                    {#if isPast}
-                                                        <!-- svelte-ignore a11y_no_static_element_interactions -->
-                                                        <div
-                                                            class="flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
-                                                            role="button"
-                                                            tabindex="0"
-                                                            onclick={(e) => {
-                                                                e.stopPropagation();
-                                                                handlePastTimeConfirm(
-                                                                    item,
-                                                                );
-                                                            }}
-                                                            onkeydown={(e) => {
-                                                                if (
-                                                                    e.key ===
-                                                                        "Enter" ||
-                                                                    e.key ===
-                                                                        " "
-                                                                ) {
-                                                                    e.stopPropagation();
-                                                                    handlePastTimeConfirm(
-                                                                        item,
-                                                                    );
-                                                                }
-                                                            }}
-                                                        >
-                                                            <AlertCircle
-                                                                size={12}
-                                                            />
-                                                            Eaten?
-                                                        </div>
-                                                    {/if}
-
                                                     <button
                                                         class="p-1 text-app-text-muted hover:text-app-text hover:bg-app-surface-deep rounded-lg transition-colors"
                                                         onclick={(e) =>
