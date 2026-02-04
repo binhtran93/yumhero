@@ -35,9 +35,9 @@
                     <summary
                         class="flex items-center justify-between p-6 cursor-pointer list-none select-none"
                     >
-                        <span class="font-bold text-app-text text-lg"
-                            >{faq.question}</span
-                        >
+                        <h3 class="font-bold text-app-text text-lg">
+                            {faq.question}
+                        </h3>
                         <span
                             class="text-app-primary bg-app-primary/10 w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-300 shrink-0 ml-4"
                         >

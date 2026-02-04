@@ -57,11 +57,11 @@
                         >
                             <History size={20} strokeWidth={2.5} />
                         </div>
-                        <h4
+                        <h3
                             class="text-lg font-black text-app-text tracking-tight"
                         >
                             Leftover Tracking
-                        </h4>
+                        </h3>
                     </div>
                     <p
                         class="text-[14px] text-app-text-muted leading-relaxed font-medium"
@@ -81,11 +81,11 @@
                         >
                             <Zap size={20} strokeWidth={2.5} />
                         </div>
-                        <h4
+                        <h3
                             class="text-lg font-black text-app-text tracking-tight"
                         >
                             Zero Waste Cleanup
-                        </h4>
+                        </h3>
                     </div>
                     <p
                         class="text-[14px] text-app-text-muted leading-relaxed font-medium"

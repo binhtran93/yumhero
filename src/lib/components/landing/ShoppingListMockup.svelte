@@ -344,9 +344,9 @@
                 >
                     <ShoppingBag size={20} strokeWidth={2.5} />
                 </div>
-                <h4 class="text-lg font-black text-app-text tracking-tight">
+                <h3 class="text-lg font-black text-app-text tracking-tight">
                     Smart Consolidation
-                </h4>
+                </h3>
             </div>
             <p
                 class="text-[14px] text-app-text-muted leading-relaxed font-medium"
@@ -366,9 +366,9 @@
                 >
                     <Refrigerator size={20} strokeWidth={2.5} />
                 </div>
-                <h4 class="text-lg font-black text-app-text tracking-tight">
+                <h3 class="text-lg font-black text-app-text tracking-tight">
                     Inventory Sync
-                </h4>
+                </h3>
             </div>
             <p
                 class="text-[14px] text-app-text-muted leading-relaxed font-medium"
@@ -388,9 +388,9 @@
                 >
                     <Smartphone size={20} strokeWidth={2.5} />
                 </div>
-                <h4 class="text-lg font-black text-app-text tracking-tight">
+                <h3 class="text-lg font-black text-app-text tracking-tight">
                     Real-time Checkoff
-                </h4>
+                </h3>
             </div>
             <p
                 class="text-[14px] text-app-text-muted leading-relaxed font-medium"

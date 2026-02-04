@@ -61,11 +61,11 @@
                         >
                             <Globe size={20} strokeWidth={2.5} />
                         </div>
-                        <h4
+                        <h3
                             class="text-lg font-black text-app-text tracking-tight"
                         >
                             Universal Import
-                        </h4>
+                        </h3>
                     </div>
                     <p
                         class="text-[14px] text-app-text-muted leading-relaxed font-medium"
@@ -85,11 +85,11 @@
                         >
                             <Wand2 size={20} strokeWidth={2.5} />
                         </div>
-                        <h4
+                        <h3
                             class="text-lg font-black text-app-text tracking-tight"
                         >
                             Smart Parsing
-                        </h4>
+                        </h3>
                     </div>
                     <p
                         class="text-[14px] text-app-text-muted leading-relaxed font-medium"
