@@ -115,7 +115,7 @@
 <div class="w-full max-w-4xl mx-auto">
     <div
         bind:this={container}
-        class="bg-app-surface border border-app-border rounded-2xl shadow-md overflow-hidden relative min-h-[320px] flex flex-col"
+        class="bg-app-surface border border-app-border rounded-2xl shadow-md overflow-hidden relative h-[460px] flex flex-col"
     >
         <!-- Header / Browser Bar -->
         <div
