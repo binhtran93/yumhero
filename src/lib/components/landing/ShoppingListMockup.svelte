@@ -4,6 +4,7 @@
         ShoppingBag,
         Refrigerator,
         CheckCircle2,
+        Check,
         Pointer,
     } from "lucide-svelte";
     import { shoppingItems } from "$lib/data/landingData";
@@ -194,30 +195,28 @@
                 bind:this={animationContainer}
             >
                 <!-- Header Actions -->
-                <div
-                    class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10"
-                >
+                <div class="flex items-center justify-between gap-4 mb-10">
                     <div>
                         <h2
-                            class="text-2xl font-black text-app-text tracking-tight"
+                            class="text-xl md:text-2xl font-black text-app-text tracking-tight"
                         >
                             Shopping List
                         </h2>
-                        <p class="text-sm text-app-text-muted">
-                            10 items total to purchase
-                        </p>
                     </div>
 
                     <button
                         bind:this={checkFridgeBtn}
-                        class="flex items-center justify-center gap-2 px-8 py-3.5 bg-app-primary text-white rounded-2xl font-bold shadow-lg shadow-app-primary/20 hover:scale-[1.02] active:scale-95 transition-all relative overflow-hidden group"
+                        class="flex items-center justify-center gap-2 px-4 md:px-8 py-2.5 md:py-3.5 bg-app-primary text-white rounded-xl md:rounded-2xl text-xs md:text-base font-bold shadow-lg shadow-app-primary/20 hover:scale-[1.02] active:scale-95 transition-all relative overflow-hidden group"
                     >
                         {#if isChecking}
                             <div
                                 class="absolute inset-0 bg-white/20 animate-pulse"
                             ></div>
                         {/if}
-                        <Refrigerator size={18} />
+                        <Refrigerator
+                            size={16}
+                            class="md:w-[18px] md:h-[18px]"
+                        />
                         <span>Check Fridge</span>
                     </button>
                 </div>
@@ -231,13 +230,13 @@
                                 : 'hover:bg-app-primary/5 rounded-xl'}"
                         >
                             <div
-                                class="w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 {item.checked
-                                    ? 'bg-app-primary border-app-primary text-white shadow-lg shadow-app-primary/20'
+                                class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 {item.checked
+                                    ? 'bg-app-primary border-app-primary text-white'
                                     : 'border-app-border-strong bg-transparent hover:border-app-primary/50'}"
                             >
                                 {#if item.checked}
                                     <div in:svelteScale={{ duration: 200 }}>
-                                        <CheckCircle2 size={18} />
+                                        <Check size={14} strokeWidth={4} />
                                     </div>
                                 {/if}
                             </div>
@@ -276,9 +275,10 @@
                                     }}
                                     class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/80 text-emerald-700 rounded-lg border border-emerald-200 shadow-sm backdrop-blur-sm"
                                 >
-                                    <Refrigerator
+                                    <Check
                                         size={12}
                                         class="text-emerald-500"
+                                        strokeWidth={3}
                                     />
                                     <span
                                         class="text-[10px] font-black uppercase tracking-wider"
@@ -313,12 +313,10 @@
                         />
                     </div>
 
-                    <!-- Mobile Touch Circle -->
+                    <!-- Mobile Touch Circle (Exact match to MobileMockup) -->
                     <div
-                        class="md:hidden w-10 h-10 border-2 border-white/50 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-[2px]"
-                    >
-                        <div class="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
+                        class="md:hidden w-8 h-8 rounded-full bg-gray-400/30 border border-gray-400/50 backdrop-blur-sm shadow-xl"
+                    ></div>
 
                     <!-- Click Effect Ping -->
                     <div
