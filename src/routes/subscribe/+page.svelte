@@ -1,9 +1,9 @@
 <script lang="ts">
-    import {loading, signOut, user} from "$lib/stores/auth";
-    import {isSubscribed} from "$lib/stores/subscription";
-    import {goto} from "$app/navigation";
-    import {Check, LogOut, Zap} from "lucide-svelte";
-    import {fade, fly} from "svelte/transition";
+    import { loading, signOut, user } from "$lib/stores/auth";
+    import { isSubscribed } from "$lib/stores/subscription";
+    import { goto } from "$app/navigation";
+    import { Check, LogOut, Zap } from "lucide-svelte";
+    import { fade, fly } from "svelte/transition";
     import {
         PUBLIC_PADDLE_CLIENT_TOKEN,
         PUBLIC_PADDLE_PRICE_ID_MONTHLY,
@@ -28,8 +28,16 @@
                 ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
                 : PUBLIC_PADDLE_PRICE_ID_YEARLY;
 
+        console.log("Attempting checkout with:", {
+            plan: selectedPlan,
+            priceId: priceId ? priceId.slice(0, 10) + "..." : "undefined", // Log partial ID for safety
+            tokenPresent: !!PUBLIC_PADDLE_CLIENT_TOKEN,
+        });
+
         if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
-            alert("Paddle configuration missing! Please check your .env file.");
+            alert(
+                "Paddle configuration missing! Please ensure PUBLIC_PADDLE_PRICE_ID_MONTHLY/YEARLY are set in your .env file.",
+            );
             return;
         }
 
@@ -37,26 +45,29 @@
         const paddle = (window as any).Paddle;
 
         if (paddle) {
-            // For testing/sandbox, we might want to ensure environment is set.
-            // Usually setup in the onload script.
-            paddle.Checkout.open({
-                items: [
-                    {
-                        priceId: priceId,
-                        quantity: 1,
+            try {
+                paddle.Checkout.open({
+                    items: [
+                        {
+                            priceId: priceId,
+                            quantity: 1,
+                        },
+                    ],
+                    customData: {
+                        userId: $user?.uid,
                     },
-                ],
-                customData: {
-                    userId: $user?.uid, // Pass User ID for the webhook to use
-                },
-                settings: {
-                    successUrl: window.location.origin + "/plan", // Optional: where to go after success
-                },
-                // Optional: Handle close event to stop loading state
-                // onClose: () => { isLoading = false; }
-            });
+                    settings: {
+                        successUrl: window.location.origin + "/plan",
+                        displayMode: "overlay",
+                        theme: "light",
+                    },
+                });
+            } catch (err) {
+                console.error("Paddle Checkout Error:", err);
+                isLoading = false;
+            }
         } else {
-            console.error("Paddle not loaded");
+            console.error("Paddle script not loaded defined on window");
             isLoading = false;
         }
     };
@@ -69,17 +80,19 @@
 
 <svelte:head>
     <script
-        src="https://cdn.paddle.com/paddle/paddle.js"
+        src="https://cdn.paddle.com/paddle/v2/paddle.js"
         onload={() => {
             if (
                 typeof window !== "undefined" &&
                 window.Paddle &&
                 PUBLIC_PADDLE_CLIENT_TOKEN
             ) {
-                // Detect if we are in dev/sandbox or prod based on some logic or assume sandbox for now
-                // Ideally this is also an env var like PUBLIC_PADDLE_ENV
-                window.Paddle.Environment.set("sandbox");
-                window.Paddle.Setup({ token: PUBLIC_PADDLE_CLIENT_TOKEN });
+                // Paddle Billing (v2) Initialization
+                // Environment is automatically detected from the token (test_ prefix for sandbox)
+                window.Paddle.Initialize({
+                    token: PUBLIC_PADDLE_CLIENT_TOKEN,
+                });
+                console.log("Paddle v2 Initialized");
             }
         }}
     ></script>
