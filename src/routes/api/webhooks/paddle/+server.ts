@@ -43,7 +43,6 @@ export const POST = async ({ request }) => {
                 // Update Firestore
                 await adminDb.collection('users').doc(userId).set({
                     hasUsedTrial: true,
-                    isSubscribed: true,
                     subscriptionId: eventData.data.id,
                     nextBilledAt: eventData.data.nextBilledAt,
                     billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
@@ -64,7 +63,6 @@ export const POST = async ({ request }) => {
 
             if (userId && ['active', 'trialing'].includes(eventData.data.status)) {
                 await adminDb.collection('users').doc(userId).set({
-                    isSubscribed: true,
                     status: eventData.data.status,
                     nextBilledAt: eventData.data.nextBilledAt,
                     billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
@@ -80,7 +78,6 @@ export const POST = async ({ request }) => {
 
             if (userId) {
                 await adminDb.collection('users').doc(userId).set({
-                    isSubscribed: false,
                     status: eventData.data.status,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });

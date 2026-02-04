@@ -30,9 +30,8 @@ export const syncSubscription = (user: User | null) => {
     unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            // Check for 'isSubscribed' field or 'status' field being active
-            // Adjust logic based on what webhook sets
-            const active = data?.isSubscribed === true || data?.status === 'active' || data?.status === 'trialing';
+            // Derive isSubscribed from status
+            const active = data?.status === 'active' || data?.status === 'trialing';
             const trialUsed = data?.hasUsedTrial === true;
 
             isSubscribed.set(active);
