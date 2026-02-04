@@ -7,8 +7,13 @@
     import SEO from "$lib/components/SEO.svelte";
     import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
-    import { status, nextBilledAt } from "$lib/stores/subscription";
+    import {
+        status,
+        nextBilledAt,
+        billingInterval,
+    } from "$lib/stores/subscription";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import { Zap } from "lucide-svelte";
 
     const getStatusConfig = (s: string | null) => {
         switch (s) {
@@ -73,6 +78,41 @@
             toasts.error("An error occurred. Please try again.");
         } finally {
             isActivating = false;
+        }
+    };
+
+    let isSwitching = $state(false);
+    let showSwitchModal = $state(false);
+
+    const handleSwitchPlan = async () => {
+        if (!$user || !$billingInterval) return;
+        showSwitchModal = false;
+        isSwitching = true;
+        const targetInterval = $billingInterval === "month" ? "year" : "month";
+
+        try {
+            const response = await fetch("/api/subscription/switch", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: $user.uid,
+                    targetInterval,
+                }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                toasts.success(
+                    `Successfully switched to ${targetInterval}ly plan!`,
+                );
+            } else {
+                toasts.error(result.error || "Failed to switch plan.");
+            }
+        } catch (e: any) {
+            console.error(e);
+            toasts.error("An error occurred. Please try again.");
+        } finally {
+            isSwitching = false;
         }
     };
 </script>
@@ -163,6 +203,16 @@
                                 >
                                     Confirm Subscription
                                 </button>
+                            {:else if $status === "active" && !isSwitching && $billingInterval}
+                                <button
+                                    onclick={() => (showSwitchModal = true)}
+                                    class="flex items-center gap-1 text-xs font-bold text-app-primary hover:underline"
+                                >
+                                    <Zap size={12} />
+                                    Switch to {$billingInterval === "month"
+                                        ? "Yearly"
+                                        : "Monthly"}
+                                </button>
                             {:else}
                                 <div class="w-2 h-2"></div>
                             {/if}
@@ -237,4 +287,17 @@
     onConfirm={handleConfirmSubscription}
     onClose={() => (showConfirmModal = false)}
     isLoading={isActivating}
+/>
+
+<ConfirmModal
+    isOpen={showSwitchModal}
+    title="Switch Billing Cycle"
+    message={$billingInterval === "month"
+        ? "Switching to Yearly will charge you immediately with a pro-rated amount. You'll save 30% per year!"
+        : "Switching to Monthly will take effect at the end of your current yearly billing cycle."}
+    confirmText="Confirm Switch"
+    cancelText="Keep Current"
+    onConfirm={handleSwitchPlan}
+    onClose={() => (showSwitchModal = false)}
+    isLoading={isSwitching}
 />
