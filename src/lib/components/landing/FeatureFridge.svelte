@@ -27,7 +27,7 @@
                     >
                 </h2>
                 <p
-                    class="text-base md:text-lg text-app-text-muted mb-8 leading-relaxed font-medium text-center lg:text-left"
+                    class="text-base md:text-lg text-app-text-muted leading-relaxed font-medium text-center lg:text-left"
                 >
                     YumHero digitizes your kitchen, making sure every leftover
                     and ingredient has a purpose. No more forgotten chicken or
