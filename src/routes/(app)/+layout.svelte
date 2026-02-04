@@ -1,8 +1,17 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import ToastContainer from "$lib/components/ToastContainer.svelte";
+    import { user, loading } from "$lib/stores/auth";
+    import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
 
     let { children } = $props();
+
+    $effect(() => {
+        if (!$loading && !$user) {
+            goto("/login");
+        }
+    });
 </script>
 
 <div

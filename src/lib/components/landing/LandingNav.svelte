@@ -106,6 +106,11 @@
                     >Pricing</a
                 >
                 <a
+                    href="/about"
+                    class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
+                    >About Us</a
+                >
+                <a
                     href="/#faq"
                     class="text-sm font-medium text-app-text-muted hover:text-app-text transition-colors"
                     >FAQ</a
@@ -197,6 +202,11 @@
                     href="/#pricing"
                     class="py-2 border-b border-app-border text-app-text"
                     onclick={closeMenu}>Pricing</a
+                >
+                <a
+                    href="/about"
+                    class="py-2 border-b border-app-border text-app-text"
+                    onclick={closeMenu}>About Us</a
                 >
                 <a
                     href="/#faq"
