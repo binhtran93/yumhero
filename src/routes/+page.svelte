@@ -162,7 +162,7 @@
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-5xl font-black text-app-text mb-4">
-                    Grocery lists that <span class="text-app-primary"
+                    Grocery list that <span class="text-app-primary"
                         >talk to your fridge</span
                     >
                 </h2>

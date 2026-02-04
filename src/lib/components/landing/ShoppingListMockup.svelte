@@ -201,7 +201,7 @@
                         <h2
                             class="text-xl md:text-2xl font-black text-app-text tracking-tight"
                         >
-                            Shopping List
+                            Grocery list
                         </h2>
                     </div>
 
