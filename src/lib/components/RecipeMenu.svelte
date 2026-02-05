@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Pencil, Share2, Trash2, X as XIcon } from "lucide-svelte";
+    import { Pencil, Trash2, X as XIcon } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
 
@@ -8,10 +8,9 @@
         onClose: () => void;
         onEdit?: () => void;
         onDelete: () => void;
-        onShare?: () => void;
     }
 
-    let { triggerRect, onClose, onEdit, onDelete, onShare }: Props = $props();
+    let { triggerRect, onClose, onEdit, onDelete }: Props = $props();
 
     // Calculate position with smart flip logic
     let style = $state("");
@@ -69,19 +68,6 @@
     >
         <!-- Menu Items -->
         <div class="py-1">
-            {#if onShare}
-                <button
-                    class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                    onclick={(e) => {
-                        e.stopPropagation();
-                        onShare();
-                    }}
-                >
-                    <Share2 size={18} />
-                    Share Recipe
-                </button>
-            {/if}
-
             {#if onEdit}
                 <button
                     class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"

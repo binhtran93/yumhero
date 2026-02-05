@@ -659,11 +659,6 @@
             showDeleteConfirm = true;
             handleCloseOptions();
         }}
-        onShare={() => {
-            // TODO: Share logic
-            toasts.success("Share functionality coming soon!");
-            handleCloseOptions();
-        }}
     />
 {/if}
 

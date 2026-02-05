@@ -322,11 +322,6 @@
         onClose={handleCloseOptions}
         onEdit={handleEditRecipe}
         onDelete={handleDeleteClick}
-        onShare={() => {
-            // TODO: Share logic
-            toasts.success("Share functionality coming soon!");
-            handleCloseOptions();
-        }}
     />
 {/if}
 
