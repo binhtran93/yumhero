@@ -187,10 +187,39 @@
             </div>
         </section>
 
+        <!-- CTA -->
+        <section class="max-w-4xl mx-auto px-6 lg:px-8 text-center mb-32">
+            <div
+                class="bg-app-surface border border-app-border rounded-[32px] p-12 md:p-16 relative overflow-hidden"
+            >
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 bg-app-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"
+                ></div>
+                <h2 class="text-3xl font-bold mb-6 relative z-10">
+                    Ready to join our family?
+                </h2>
+                <p
+                    class="text-lg text-app-text-muted mb-8 max-w-xl mx-auto relative z-10"
+                >
+                    We'd love to help you tame your kitchen chaos. Give YumHero
+                    a try and let us know what you think.
+                </p>
+                <a
+                    href={planLink}
+                    class="relative z-10 inline-flex items-center gap-2 px-8 py-4 bg-app-primary text-white font-bold rounded-xl hover:bg-app-primary/90 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-app-primary/20"
+                >
+                    Start Your Journey
+                    <ArrowRight size={20} />
+                </a>
+            </div>
+        </section>
+
+        <hr class="border-app-border" />
+
         <!-- Contact Section -->
         <section
             id="contact"
-            class="max-w-2xl mx-auto px-6 lg:px-8 pb-24 mb-16"
+            class="max-w-2xl mx-auto px-6 lg:px-8 py-16 mb-16"
         >
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-black text-app-text mb-4">
@@ -309,33 +338,6 @@
                         </p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- CTA -->
-        <section class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <div
-                class="bg-app-surface border border-app-border rounded-[32px] p-12 md:p-16 relative overflow-hidden"
-            >
-                <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-app-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"
-                ></div>
-                <h2 class="text-3xl font-bold mb-6 relative z-10">
-                    Ready to join our family?
-                </h2>
-                <p
-                    class="text-lg text-app-text-muted mb-8 max-w-xl mx-auto relative z-10"
-                >
-                    We'd love to help you tame your kitchen chaos. Give YumHero
-                    a try and let us know what you think.
-                </p>
-                <a
-                    href={planLink}
-                    class="relative z-10 inline-flex items-center gap-2 px-8 py-4 bg-app-primary text-white font-bold rounded-xl hover:bg-app-primary/90 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-app-primary/20"
-                >
-                    Start Your Journey
-                    <ArrowRight size={20} />
-                </a>
             </div>
         </section>
     </main>

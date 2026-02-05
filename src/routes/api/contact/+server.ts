@@ -22,10 +22,6 @@ export const POST: RequestHandler = async ({ request }) => {
             status: "new",
         });
 
-        // TODO: Integrate with an email service like Resend or SendGrid
-        // to actually send the email to support@yumhero.app
-        console.log(`Contact form submission from ${email}`);
-
         return json({ message: "Message sent successfully!" });
     } catch (error: any) {
         console.error("Error in contact API:", error);
