@@ -8,15 +8,7 @@
     import { goto } from "$app/navigation";
     import { LogOut } from "lucide-svelte";
     import { fly } from "svelte/transition";
-    import { onMount } from "svelte";
-    import {
-        PUBLIC_PADDLE_CLIENT_TOKEN,
-        PUBLIC_PADDLE_PRICE_ID_MONTHLY,
-        PUBLIC_PADDLE_PRICE_ID_YEARLY,
-        PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL,
-        PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL,
-    } from "$env/static/public";
-    import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+    import { openCheckout } from "$lib/paddle";
     import PricingTable from "$lib/components/PricingTable.svelte";
 
     // Protect this route: Must be logged in
@@ -34,72 +26,6 @@
     });
 
     let isLoading = $state(false);
-    let selectedPlan = $state<"monthly" | "yearly">("monthly");
-    let paddleInstance = $state<Paddle | undefined>(undefined);
-
-    onMount(async () => {
-        if (PUBLIC_PADDLE_CLIENT_TOKEN) {
-            const isSandbox = PUBLIC_PADDLE_CLIENT_TOKEN.startsWith("test_");
-            const environment = isSandbox ? "sandbox" : "production";
-
-            try {
-                paddleInstance = await initializePaddle({
-                    token: PUBLIC_PADDLE_CLIENT_TOKEN,
-                    environment: environment,
-                });
-                console.log("Paddle v2 Initialized (" + environment + ")");
-            } catch (err) {
-                console.error("Failed to initialize Paddle:", err);
-            }
-        }
-    });
-
-    const handleSubscribe = (plan: "monthly" | "yearly") => {
-        let priceId: string;
-
-        if ($hasUsedTrial) {
-            priceId =
-                plan === "monthly"
-                    ? PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL
-                    : PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL;
-        } else {
-            priceId =
-                plan === "monthly"
-                    ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
-                    : PUBLIC_PADDLE_PRICE_ID_YEARLY;
-        }
-
-        if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
-            return;
-        }
-
-        if (!paddleInstance) {
-            console.error("Paddle instance not ready");
-            return;
-        }
-
-        isLoading = true;
-
-        try {
-            paddleInstance.Checkout.open({
-                items: [{ priceId: priceId, quantity: 1 }],
-                customData: { userId: $user?.uid },
-                settings: {
-                    successUrl: window.location.origin + "/plan",
-                    displayMode: "overlay",
-                    theme: "light",
-                },
-            });
-            // Note: Paddle overlay doesn't have a direct 'onClose' to reset isLoading easily
-            // but usually users are redirected on success. We'll reset it after a delay or just leave it.
-            setTimeout(() => {
-                isLoading = false;
-            }, 3000);
-        } catch (err) {
-            console.error("Paddle Checkout Error:", err);
-            isLoading = false;
-        }
-    };
 
     const handleSignOut = async () => {
         await signOut();
@@ -141,7 +67,7 @@
         </div>
 
         <div class="p-8 md:p-12">
-            <PricingTable onSubscribe={handleSubscribe} {isLoading} />
+            <PricingTable bind:isLoading />
         </div>
 
         <!-- User Info / Logout -->

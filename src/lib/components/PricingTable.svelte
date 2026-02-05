@@ -7,7 +7,9 @@
     } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
 
-    let { onSubscribe, isLoading = false } = $props<{
+    import { openCheckout } from "$lib/paddle";
+
+    let { onSubscribe, isLoading = $bindable(false) } = $props<{
         onSubscribe?: (plan: "monthly" | "yearly") => void;
         isLoading?: boolean;
     }>();
@@ -20,16 +22,6 @@
         (1 - yearlyPrice / (monthlyPrice * 12)) * 100,
     );
 
-    const planLink = $derived(
-        !$user
-            ? "/login"
-            : $subscriptionLoading
-              ? "/plan"
-              : !$isSubscribed
-                ? "/subscribe"
-                : "/plan",
-    );
-
     const features = [
         "Ad-free recipe imports from any blog",
         "Rapid 2-minute weekly meal planning",
@@ -40,18 +32,39 @@
         "Universal cloud sync across all devices",
     ];
 
-    function handleAction(e: Event) {
+    async function handleAction(e: Event) {
         if (!$user) {
             e.preventDefault();
             goto("/login");
             return;
         }
 
-        if (onSubscribe) {
+        if ($isSubscribed) {
             e.preventDefault();
-            onSubscribe(isAnnual ? "yearly" : "monthly");
+            goto("/plan");
+            return;
         }
-        // Otherwise, the <a> tag will handle the href={planLink}
+
+        e.preventDefault();
+
+        if (onSubscribe) {
+            onSubscribe(isAnnual ? "yearly" : "monthly");
+        } else {
+            // Default internal checkout (Landing Page behavior)
+            isLoading = true;
+            try {
+                await openCheckout(
+                    $user.uid,
+                    isAnnual ? "yearly" : "monthly",
+                    $hasUsedTrial,
+                );
+                // The loading will reset after some time or on navigation
+                setTimeout(() => (isLoading = false), 5000);
+            } catch (err) {
+                console.error("Checkout failed:", err);
+                isLoading = false;
+            }
+        }
     }
 </script>
 
@@ -178,7 +191,11 @@
             </ul>
 
             <a
-                href={planLink}
+                href={$user
+                    ? $isSubscribed
+                        ? "/plan"
+                        : "/subscribe"
+                    : "/login"}
                 onclick={handleAction}
                 class="block w-full py-5 text-center rounded-2xl font-bold transition-all bg-app-primary text-white text-lg shadow-xl shadow-app-primary/25 hover:shadow-app-primary/40 hover:-translate-y-1 active:scale-[0.98] {isLoading
                     ? 'opacity-70 cursor-not-allowed pointer-events-none'
