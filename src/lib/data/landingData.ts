@@ -180,20 +180,44 @@ export const pricingTiers = [
 
 export const faqItems = [
     {
-        question: "How does YumHero handle leftovers?",
-        answer: 'It treats them as "Ready-to-Eat" ingredients that can be scheduled just like a recipe, ensuring nothing goes to waste. When you finish cooking, mark any extras as leftovers and they\'ll appear in your fridge inventory.',
+        question: "How much does YumHero cost?",
+        answer: "YumHero starts with a 7-day free trial on our Pro plan. After that, it's just $4.99 per month or $39.99 for an entire year (saving you 33%). You get unlimited recipe imports, smart inventory tracking, and full cross-device sync.",
     },
     {
-        question: "Can I import recipes from websites?",
-        answer: "Yes! The system is designed to scrape and format recipes from any URL into our clean, standardized UI. Just paste the link and we'll extract ingredients, steps, and cooking times automatically.",
+        question: "Why isn't there a permanent free plan?",
+        answer: "Many free apps sell your personal data or clutter your kitchen with distracting ads. We believe your kitchen should be a focused space. By being a paid product, we can focus 100% on building tools that actually help you cook, while keeping your data private and your interface clean.",
     },
     {
-        question: "Is there a mobile app?",
-        answer: "YumHero is built as a Progressive Web App (PWA), meaning it works perfectly on your phone in the kitchen without a bulky download. Add it to your home screen for a native app experience.",
+        question: "Do you have a mobile app?",
+        answer: "YumHero is a Progressive Web App (PWA). This means you don't need to visit an app store; just open it in your browser and add it to your home screen. It works exactly like a native app, takes up almost no space, and updates automatically.",
     },
     {
-        question: "How does the shopping list work?",
-        answer: "When you plan your week, YumHero automatically generates a consolidated shopping list. It checks your fridge inventory first and only includes ingredients you actually need to buy.",
+        question: "Can I use my subscription on multiple devices?",
+        answer: "Absolutely! Your account syncs instantly across your phone, tablet, and computer. You can plan your week on a large desktop screen and then follow the recipe on your phone while standing at the stove.",
+    },
+    {
+        question: "Do you provide recipes and meal plans?",
+        answer: "YumHero is designed to be a home for YOUR favorite recipes. While we don't force generic meal plans on you, we make it incredibly easy to import any recipe you find online or manually add your family's secret recipes.",
+    },
+    {
+        question: "Where can I import recipes from?",
+        answer: "Almost anywhere! If a recipe is on a website, YumHero can usually extract the ingredients and instructions instantly. It works with thousands of food blogs and recipe sites, stripping away the ads and fluff so you index only the food.",
+    },
+    {
+        question: "Can I import recipes from social media?",
+        answer: "Yes! While social media posts (like Instagram or TikTok) are often videos, you can copy the text description or the link into YumHero, and our parser will help you organize the ingredients and steps into your personal library.",
+    },
+    {
+        question: "Will YumHero make my grocery list for me?",
+        answer: "Yes, and it's smart about it. When you plan a meal, YumHero automatically adds the missing items to a consolidated list. Even better, it sorts the list by grocery store aisle so you can finish your shopping in record time.",
+    },
+    {
+        question: "Can I track my macros and nutrition?",
+        answer: "YumHero focuses on the joy of cooking and efficiency of planning. While we don't currently have a full calorie-counting database, you can manually add nutritional notes to your recipes to keep track of what matters to you.",
+    },
+    {
+        question: "Can I create a meal plan for an entire month?",
+        answer: "While we recommend weekly planning for the freshest ingredients, our grid is flexible. You can scroll as far into the future as you like and map out weeks or even months of meals in one go.",
     },
 ];
 

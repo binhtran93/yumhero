@@ -18,47 +18,54 @@
         ></div>
     </div>
 
-    <div class="max-w-3xl mx-auto px-6 lg:px-12 relative z-10">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-app-text mb-4">
-                Frequently Asked Questions
+    <div class="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="text-center mb-16 md:mb-24">
+            <h2
+                class="text-4xl md:text-6xl font-black text-app-text mb-6 tracking-tight"
+            >
+                Got questions?
             </h2>
-            <p class="text-lg text-app-text-muted">
-                Everything you need to know about the product and billing.
+            <p
+                class="text-xl text-app-text-muted max-w-2xl mx-auto font-medium"
+            >
+                Everything you need to know about YumHero, from billing to
+                kitchen magic.
             </p>
         </div>
+
         <div class="space-y-4">
             {#each faqItems as faq}
                 <details
-                    class="bg-app-surface border border-app-border rounded-2xl group overflow-hidden transition-all duration-300 hover:border-app-border-strong hover:shadow-sm"
+                    class="group bg-app-surface/50 backdrop-blur-sm border border-app-border rounded-[24px] overflow-hidden transition-all duration-500 hover:bg-app-surface hover:border-app-primary/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
                 >
                     <summary
-                        class="flex items-center justify-between p-6 cursor-pointer list-none select-none"
+                        class="flex items-center justify-between p-7 cursor-pointer list-none select-none"
                     >
-                        <h3 class="font-bold text-app-text text-lg">
+                        <h3
+                            class="font-bold text-app-text text-xl md:text-2xl tracking-tight group-hover:text-app-primary transition-colors duration-300"
+                        >
                             {faq.question}
                         </h3>
-                        <span
-                            class="text-app-primary bg-app-primary/10 w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-300 shrink-0 ml-4"
+                        <div
+                            class="relative w-10 h-10 flex items-center justify-center rounded-full bg-app-primary/5 text-app-primary group-hover:bg-app-primary group-hover:text-white transition-all duration-500 shrink-0 ml-6"
                         >
                             <svg
                                 width="20"
                                 height="20"
-                                viewBox="0 0 20 20"
+                                viewBox="0 0 24 24"
                                 fill="none"
+                                stroke="currentColor"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="transform transition-transform duration-500 group-open:rotate-180"
                             >
-                                <path
-                                    d="M5 7.5L10 12.5L15 7.5"
-                                    stroke="currentColor"
-                                    stroke-width="2.5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
+                                <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
-                        </span>
+                        </div>
                     </summary>
                     <div
-                        class="px-6 pb-6 pt-0 text-app-text-muted leading-relaxed"
+                        class="px-7 pb-8 pt-0 text-app-text-muted text-lg leading-relaxed font-medium max-w-3xl"
                     >
                         {faq.answer}
                     </div>
