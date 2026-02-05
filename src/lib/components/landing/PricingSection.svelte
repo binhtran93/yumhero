@@ -5,7 +5,7 @@
         subscriptionLoading,
     } from "$lib/stores/subscription";
 
-    let isAnnual = $state(true);
+    let isAnnual = $state(false);
 
     const planLink = $derived(
         !$user
@@ -26,7 +26,7 @@
 
 <section id="pricing" class="py-20 md:py-32 overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 lg:px-12">
-        <div class="text-center mb-16">
+        <div class="text-center mb-24">
             <h2 class="text-3xl md:text-5xl font-bold text-app-text mb-6">
                 Simple & Transparent
             </h2>
