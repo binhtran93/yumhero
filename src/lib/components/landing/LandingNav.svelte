@@ -41,8 +41,12 @@
                 class="flex items-center gap-2 z-50"
                 onclick={closeMenu}
             >
-                <div class="p-1.5 bg-app-primary/10 rounded-lg">
-                    <ChefHat size={24} class="text-app-primary" />
+                <div class="h-8 w-8 flex items-center justify-center">
+                    <img
+                        src="/logo.png"
+                        alt="YumHero Logo"
+                        class="w-full h-full object-contain"
+                    />
                 </div>
                 <span class="text-xl font-bold text-app-text">YumHero</span>
             </a>

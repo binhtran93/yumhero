@@ -12,7 +12,7 @@
     let {
         title = "YumHero",
         description = "Your personal meal planning hero. Plan weekly meals, manage recipes, track ingredients, and reduce food waste.",
-        image = "/icons/icon-512x512.png",
+        image = "/logo.png",
         url = "",
         type = "website",
         noindex = false,

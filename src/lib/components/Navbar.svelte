@@ -108,8 +108,12 @@
             ? 'md:justify-start md:px-6 lg:justify-start lg:px-6'
             : 'md:justify-center lg:justify-center'} mb-8 lg:gap-3"
     >
-        <div class="p-2 bg-app-primary/10 rounded-xl text-app-primary shrink-0">
-            <ChefHat size={28} strokeWidth={2.5} />
+        <div class="w-10 h-10 flex items-center justify-center shrink-0">
+            <img
+                src="/logo.png"
+                alt="YumHero Logo"
+                class="w-full h-full object-contain"
+            />
         </div>
         {#if $sidebarExpanded}
             <span

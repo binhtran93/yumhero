@@ -105,8 +105,12 @@
                 href="/"
                 class="inline-flex items-center justify-center gap-3 mb-2 hover:opacity-80 transition-opacity"
             >
-                <div class="p-2 bg-app-primary/10 rounded-xl">
-                    <ChefHat size={32} class="text-app-primary" />
+                <div class="h-12 w-12 flex items-center justify-center">
+                    <img
+                        src="/logo.png"
+                        alt="YumHero Logo"
+                        class="w-full h-full object-contain"
+                    />
                 </div>
                 <h1 class="text-3xl font-black text-app-text">
                     <span class="text-app-primary">YumHero</span>
