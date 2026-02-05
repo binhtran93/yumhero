@@ -35,14 +35,14 @@
 </script>
 
 <div
-    class="min-h-screen bg-app-bg text-app-text font-display flex flex-col items-center p-6 md:p-12 relative overflow-x-hidden"
+    class="min-h-screen bg-app-bg text-app-text font-display flex flex-col items-center justify-center p-6 md:p-12 relative overflow-x-hidden"
 >
     <!-- Top Right Profile Dropdown Page-Level -->
     <div class="fixed top-6 right-6 z-50">
         <div class="relative">
             <button
                 onclick={() => (isUserMenuOpen = !isUserMenuOpen)}
-                class="flex items-center gap-2 p-1 pr-2 rounded-full border border-stone-200 dark:border-app-border bg-white/80 dark:bg-app-surface/80 backdrop-blur-md hover:bg-app-surface-hover shadow-sm transition-all"
+                class="flex items-center rounded-full border border-stone-200 dark:border-app-border bg-white/80 dark:bg-app-surface/80 backdrop-blur-md hover:bg-app-surface-hover shadow-sm transition-all p-1"
             >
                 {#if $user?.photoURL}
                     <img
@@ -57,12 +57,6 @@
                         <LogOut size={14} class="text-app-text-muted" />
                     </div>
                 {/if}
-                <ChevronDown
-                    size={16}
-                    class="text-app-text-muted transition-transform duration-200 {isUserMenuOpen
-                        ? 'rotate-180'
-                        : ''}"
-                />
             </button>
 
             {#if isUserMenuOpen}
@@ -112,7 +106,7 @@
 
     <!-- Header Section -->
     <div
-        class="text-center mb-12 md:mb-16 mt-12 md:mt-20 relative z-10"
+        class="text-center mb-12 md:mb-16 relative z-10"
         in:fly={{ y: -20, duration: 600 }}
     >
         <h1
