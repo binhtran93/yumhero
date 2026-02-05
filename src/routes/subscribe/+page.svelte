@@ -140,15 +140,4 @@
     >
         <PricingTable bind:isLoading />
     </div>
-
-    <!-- Additional Trust Badges or Info -->
-    <div
-        class="mt-16 text-center text-app-text-muted/60 text-sm max-w-md mx-auto z-10"
-        in:fade={{ duration: 800, delay: 400 }}
-    >
-        <p>
-            Joined by thousands of home heroes. Secured by industry-standard
-            encryption.
-        </p>
-    </div>
 </div>
