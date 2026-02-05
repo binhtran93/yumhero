@@ -37,6 +37,7 @@
     // Delete State
     let showDeleteConfirm = $state(false);
     let isDeleting = $state(false);
+    let recipeToDeleteId = $state<string | null>(null);
 
     // Edit State
     let editingRecipe = $state<any | null>(null);
@@ -88,16 +89,17 @@
     }
 
     function handleDeleteClick() {
+        recipeToDeleteId = selectedRecipeId;
         showDeleteConfirm = true;
-        handleCloseOptions(); // Close menu but keep ID for deletion
+        handleCloseOptions(); // Safe to close everything now
     }
 
     async function confirmDelete() {
-        if (!$user || !selectedRecipeId) return;
+        if (!$user || !recipeToDeleteId) return;
         isDeleting = true;
         try {
             await deleteDoc(
-                doc(db, `users/${$user.uid}/recipes/${selectedRecipeId}`),
+                doc(db, `users/${$user.uid}/recipes/${recipeToDeleteId}`),
             );
             toasts.success("Recipe deleted");
         } catch (error) {
@@ -106,7 +108,7 @@
         } finally {
             isDeleting = false;
             showDeleteConfirm = false;
-            selectedRecipeId = null;
+            recipeToDeleteId = null;
         }
     }
 </script>
@@ -337,7 +339,7 @@
     onConfirm={confirmDelete}
     onClose={() => {
         showDeleteConfirm = false;
-        selectedRecipeId = null;
+        recipeToDeleteId = null;
     }}
     isLoading={isDeleting}
 />

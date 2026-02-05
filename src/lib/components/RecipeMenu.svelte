@@ -75,7 +75,6 @@
                     onclick={(e) => {
                         e.stopPropagation();
                         onShare();
-                        onClose();
                     }}
                 >
                     <Share2 size={18} />
@@ -89,7 +88,6 @@
                     onclick={(e) => {
                         e.stopPropagation();
                         onEdit();
-                        onClose();
                     }}
                 >
                     <Pencil size={18} />
@@ -105,7 +103,6 @@
             onclick={(e) => {
                 e.stopPropagation();
                 onDelete();
-                onClose();
             }}
         >
             <Trash2 size={18} />
