@@ -10,7 +10,6 @@
     import { getWeekPlan } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
     import type { WeeklyPlan, Recipe } from "$lib/types";
-    import MealSlot from "$lib/components/MealSlot.svelte";
     import { twMerge } from "tailwind-merge";
     import "../../../app.css"; // Ensure global styles are applied
 
@@ -141,9 +140,6 @@
             day: "numeric",
         });
     };
-
-    // No-op handlers for read-only view
-    const noop = () => {};
 </script>
 
 <svelte:head>
@@ -165,13 +161,13 @@
 
     <!-- Grid -->
     <div
-        class="flex-1 border-l border-app-text/30 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,1fr)] border-r"
+        class="flex-1 border-l border-app-text/30 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[repeat(6,auto)] content-start border-r"
     >
         {#each plan as dayPlan, i (dayPlan.day)}
             <div class="contents">
                 <!-- Column Header -->
                 <div
-                    class="flex flex-col items-center justify-center p-1 border-b border-r border-app-border bg-app-surface h-15"
+                    class="flex flex-col items-center justify-center p-1 border-b border-r border-app-border bg-white h-15"
                 >
                     <span
                         class="font-display font-black text-app-text text-base"
@@ -186,18 +182,103 @@
                 <!-- Meal Slots -->
                 {#each mealSections as section (section.type)}
                     <div
-                        class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative h-full"
+                        class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full min-h-10"
                     >
-                        <!-- Reusing MealSlot in read-only mode by passing no-ops and isPrinting=true -->
-                        <MealSlot
-                            day={dayPlan.day}
-                            type={section.type}
-                            items={dayPlan.meals[section.type]}
-                            onClick={noop}
-                            isLoading={false}
-                            {availableRecipes}
-                            isPrinting={true}
-                        />
+                        <!-- Inline Meal Slot Rendering for Print -->
+                        <div
+                            class="p-2 py-1 flex items-center justify-between bg-white border-b border-app-text/5"
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class={twMerge(
+                                        "w-2 h-2 rounded-full mr-2",
+                                        section.type === "breakfast"
+                                            ? "bg-accent-breakfast"
+                                            : section.type === "lunch"
+                                              ? "bg-accent-lunch"
+                                              : section.type === "dinner"
+                                                ? "bg-accent-dinner"
+                                                : section.type === "snack"
+                                                  ? "bg-accent-snack"
+                                                  : "bg-accent-note",
+                                    )}
+                                ></div>
+                                <span
+                                    class="text-[10px] font-semibold capitalize tracking-widest text-app-text-muted"
+                                >
+                                    {section.label}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="px-2 pb-2 flex flex-col gap-2 relative mt-2"
+                        >
+                            {#each dayPlan.meals[section.type] as item}
+                                {@const itemIsLeftover =
+                                    "isLeftover" in item && item.isLeftover}
+                                <div
+                                    class={twMerge(
+                                        "relative flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border",
+                                        section.type === "breakfast"
+                                            ? "bg-accent-breakfast-bg border-accent-breakfast-border"
+                                            : section.type === "lunch"
+                                              ? "bg-accent-lunch-bg border-accent-lunch-border"
+                                              : section.type === "dinner"
+                                                ? "bg-accent-dinner-bg border-accent-dinner-border"
+                                                : section.type === "snack"
+                                                  ? "bg-accent-snack-bg border-accent-snack-border"
+                                                  : "bg-accent-note-bg border-accent-note-border",
+                                    )}
+                                >
+                                    <div class="flex-1 min-w-0 pt-0.5">
+                                        <p
+                                            class={twMerge(
+                                                "font-bold leading-tight !text-[11px]",
+                                                section.type === "breakfast"
+                                                    ? "text-accent-breakfast-text"
+                                                    : section.type === "lunch"
+                                                      ? "text-accent-lunch-text"
+                                                      : section.type ===
+                                                          "dinner"
+                                                        ? "text-accent-dinner-text"
+                                                        : section.type ===
+                                                            "snack"
+                                                          ? "text-accent-snack-text"
+                                                          : "text-accent-note-text",
+                                            )}
+                                        >
+                                            {"title" in item
+                                                ? item.title
+                                                : "text" in item
+                                                  ? item.text
+                                                  : ""}
+
+                                            {#if "quantity" in item && item.quantity > 1}
+                                                <span
+                                                    class="opacity-60 font-medium ml-1 text-[10px]"
+                                                    >x{item.quantity}</span
+                                                >
+                                            {/if}
+                                        </p>
+                                        {#if itemIsLeftover}
+                                            <div
+                                                class="flex items-center gap-1.5 -mt-0.5"
+                                            >
+                                                <div
+                                                    class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"
+                                                ></div>
+                                                <p
+                                                    class="text-[9px] font-bold opacity-60"
+                                                >
+                                                    Leftover
+                                                </p>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
                     </div>
                 {/each}
             </div>
