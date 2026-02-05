@@ -48,7 +48,7 @@
                         class="w-full h-full object-contain"
                     />
                 </div>
-                <span class="text-xl font-bold text-app-text">YumHero</span>
+                <span class="text-xl font-extrabold text-app-primary">YumHero</span>
             </a>
 
             <!-- Desktop Nav -->
