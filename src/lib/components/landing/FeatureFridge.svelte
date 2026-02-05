@@ -3,7 +3,7 @@
     import FridgeMockup from "./FridgeMockup.svelte";
 </script>
 
-<section id="features" class="py-24 md:py-32 bg-white relative overflow-hidden">
+<section id="fridge" class="py-24 md:py-32 bg-white relative overflow-hidden">
     <!-- Atmosphere Glow -->
     <div
         class="absolute inset-0 pointer-events-none overflow-hidden opacity-50"

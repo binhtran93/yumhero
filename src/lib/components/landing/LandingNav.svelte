@@ -98,7 +98,7 @@
                                 Shopping List
                             </a>
                             <a
-                                href="/#features"
+                                href="/#fridge"
                                 class="block px-4 py-2.5 text-sm font-medium text-app-text rounded-lg hover:bg-app-primary/10 hover:text-app-primary transition-colors text-left"
                                 onclick={() => (isDesktopFeaturesOpen = false)}
                             >
@@ -201,7 +201,7 @@
                                 onclick={closeMenu}>Shopping List</a
                             >
                             <a
-                                href="/#features"
+                                href="/#fridge"
                                 class="py-2 text-base text-app-text-muted active:text-app-primary"
                                 onclick={closeMenu}>Fridge Inventory</a
                             >
