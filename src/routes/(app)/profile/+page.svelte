@@ -243,7 +243,7 @@
                                                 <button
                                                     onclick={() =>
                                                         (showCancelModal = true)}
-                                                    class="text-[10px] text-red-500 hover:text-red-600 font-bold cursor-pointer transition-colors"
+                                                    class="text-[10px] text-app-text-muted hover:text-red-500 font-bold cursor-pointer transition-colors"
                                                 >
                                                     Cancel
                                                 </button>

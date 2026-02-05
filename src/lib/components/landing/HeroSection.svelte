@@ -48,7 +48,7 @@
             ></div>
 
             <h1
-                class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-4 tracking-tight relative"
+                class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-app-text mb-4 tracking-tight relative"
             >
                 Plan with Precision.<br />
                 <span class="text-app-primary">Eat with Intent.</span>
@@ -61,13 +61,6 @@
                 high-performance interface.
             </p>
             <div class="flex items-center justify-center gap-3">
-                <button
-                    onclick={onSeeItInAction}
-                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-app-surface text-app-text font-bold rounded-full border border-app-border hover:bg-app-surface-hover transition-all active:scale-95 text-sm md:text-lg md:px-6 md:py-3 shadow-sm whitespace-nowrap"
-                >
-                    Demo
-                    <ChevronDown size={16} class="md:w-5 md:h-5" />
-                </button>
                 <a
                     href={planLink}
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-app-primary text-white font-bold rounded-full hover:bg-app-primary/90 transition-all active:scale-95 text-sm md:text-lg md:px-6 md:py-3 shadow-lg hover:shadow-app-primary/25 whitespace-nowrap"

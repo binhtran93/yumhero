@@ -45,7 +45,7 @@
             </div>
 
             <div
-                class="grid sm:grid-cols-2 gap-6 lg:col-start-1 lg:row-start-2"
+                class="hidden sm:grid sm:grid-cols-2 gap-6 lg:col-start-1 lg:row-start-2"
             >
                 <!-- Leftover Tracking Card -->
                 <div

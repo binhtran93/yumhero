@@ -207,7 +207,7 @@
 
                     <button
                         bind:this={checkFridgeBtn}
-                        class="flex items-center justify-center gap-2 px-4 md:px-8 py-2.5 md:py-3.5 bg-app-primary text-white rounded-xl md:rounded-2xl text-xs md:text-base font-bold shadow-lg shadow-app-primary/20 hover:scale-[1.02] active:scale-95 transition-all relative overflow-hidden group"
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-app-primary text-white rounded-xl text-xs md:text-base font-bold shadow-lg shadow-app-primary/20 hover:scale-[1.02] active:scale-95 transition-all relative overflow-hidden group"
                     >
                         {#if isChecking}
                             <div
@@ -231,7 +231,7 @@
                                 : 'hover:bg-app-primary/5 rounded-xl'}"
                         >
                             <div
-                                class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 {item.checked
+                                class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-300 {item.checked
                                     ? 'bg-app-primary border-app-primary text-white'
                                     : 'border-app-border-strong bg-transparent hover:border-app-primary/50'}"
                             >
@@ -333,7 +333,7 @@
     </div>
 
     <!-- Features Highlight -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+    <div class="hidden sm:grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
         <!-- Smart Consolidation -->
         <div
             class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-app-primary/5 active:scale-[0.98]"

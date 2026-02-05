@@ -49,7 +49,7 @@
 
             <!-- Feature Cards -->
             <div
-                class="grid sm:grid-cols-2 gap-6 lg:col-start-2 lg:row-start-2"
+                class="hidden sm:grid sm:grid-cols-2 gap-6 lg:col-start-2 lg:row-start-2"
             >
                 <!-- Universal Import Card -->
                 <div
