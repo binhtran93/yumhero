@@ -1,5 +1,6 @@
 import type { ScrapingResult, ScrapingStrategy } from './types';
-import { fetchDynamicContent } from '../scraper';
+import { fetchHtml } from '../curlScraper';
+import * as cheerio from 'cheerio';
 
 export class InstagramStrategy implements ScrapingStrategy {
     supports(url: URL): boolean {
@@ -7,39 +8,27 @@ export class InstagramStrategy implements ScrapingStrategy {
     }
 
     async scrape(url: string): Promise<ScrapingResult> {
-        const { text, html, jsonLds, mainImage } = await fetchDynamicContent(url);
+        const { html, mainImage } = await fetchHtml(url);
+        const $ = cheerio.load(html);
 
         // For Instagram, we primarily want the meta description as it contains the caption
-        // The fetchDynamicContent already returns the body text, but we can refine it here if needed.
-        // However, based on previous requirements, we want to extract the description meta tag.
+        const metaDescription = $('meta[name="description"]').attr('content') ||
+            $('meta[property="og:description"]').attr('content') ||
+            $('meta[name="twitter:description"]').attr('content');
 
-        // Since the driver now returns the full HTML, we can re-parse it here or 
-        // rely on the driver having already done some work. 
-        // Let's parse the meta description from the HTML returned by the driver.
-
-        const metaDescription = this.extractMetaDescription(html);
+        // Extract JSON-LD scripts
+        const jsonLds: string[] = [];
+        $('script[type="application/ld+json"]').each((_, element) => {
+            const content = $(element).html();
+            if (content) {
+                jsonLds.push(content);
+            }
+        });
 
         return {
-            text: metaDescription || text,
+            text: metaDescription || '',
             jsonLds,
             mainImage
         };
-    }
-
-    private extractMetaDescription(html: string): string | null {
-        // Simple regex to extract meta description from HTML string
-        const match = html.match(/<meta[^>]+(?:name|property)=["'](?:og:)?description["'][^>]+content=["']([^"']+)["']/i) ||
-            html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["'](?:og:)?description["']/i);
-
-        if (match && match[1]) {
-            // Decode HTML entities (basic)
-            return match[1]
-                .replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&')
-                .replace(/&#039;/g, "'")
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>');
-        }
-        return null;
     }
 }
