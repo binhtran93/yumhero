@@ -32,7 +32,7 @@ const RecipeSchema = z.object({
 
 });
 
-import { scrapeText } from '$lib/server/curlScraper';
+import { scraperManager } from '$lib/server/scrapers/ScraperManager';
 import { uploadImageToR2 } from '$lib/server/r2';
 
 export async function POST({ request }) {
@@ -65,18 +65,19 @@ export async function POST({ request }) {
         };
 
         if (url) {
-            // Use the robust scraper to get text content and raw JSON-LD
-            const { text, jsonLds, mainImage: scrapedImage } = await scrapeText(url);
+            // Use the scraper manager to get content via the appropriate strategy
+            const result = await scraperManager.scrape(url);
+            const { text, jsonLds, mainImage: scrapedImage } = result;
             mainImage = scrapedImage;
 
             // Optimize text BEFORE truncation to ensure we keep meaningful content
             const optimizedText = optimizeTextContent(text);
             contentToProcess = optimizedText.length > 50000 ? optimizedText.substring(0, 50000) : optimizedText;
+            contentType = 'web page content';
 
             if (mainImage) {
                 contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
             }
-            contentType = 'web page text content';
 
             // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
             if (jsonLds && jsonLds.length > 0) {

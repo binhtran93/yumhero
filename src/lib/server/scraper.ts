@@ -63,9 +63,9 @@ async function getBrowser() {
 }
 
 /**
- * Scrapes plain text from a URL using an isolated context with proxy and fingerprinting.
+ * Fetches dynamic content from a URL using an isolated context with proxy and fingerprinting.
  */
-export async function scrapeText(url: string): Promise<{ text: string; jsonLds: string[]; mainImage: string | null }> {
+export async function fetchDynamicContent(url: string): Promise<{ text: string; html: string; jsonLds: string[]; mainImage: string | null }> {
     const browser = await getBrowser();
 
     const proxyUrl = process.env.PROXY_URL;
@@ -151,6 +151,7 @@ export async function scrapeText(url: string): Promise<{ text: string; jsonLds: 
 
             return {
                 text: document.body.innerText,
+                html: document.documentElement.outerHTML,
                 // Extract all JSON-LD content as raw strings, let the API handle parsing/validation
                 jsonLds: Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
                     .map(el => el.textContent)
@@ -160,7 +161,7 @@ export async function scrapeText(url: string): Promise<{ text: string; jsonLds: 
         });
 
     } catch (error) {
-        console.error(`Error scraping ${url}:`, error);
+        console.error(`Error fetching dynamic content from ${url}:`, error);
         throw error;
     } finally {
         // Cleanup strictly
