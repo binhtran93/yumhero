@@ -185,7 +185,9 @@
                                 ></polyline></svg
                             >
                         </div>
-                        <span class="font-medium text-lg">{feature}</span>
+                        <span class="font-medium text-base md:text-lg"
+                            >{feature}</span
+                        >
                     </li>
                 {/each}
             </ul>

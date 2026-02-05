@@ -110,12 +110,12 @@
         in:fly={{ y: -20, duration: 600 }}
     >
         <h1
-            class="text-4xl md:text-6xl font-black mb-2 text-app-text tracking-tight"
+            class="text-3xl md:text-6xl font-black mb-2 text-app-text tracking-tight"
         >
             Unlock <span class="text-app-primary">YumHero</span>
         </h1>
         <p
-            class="text-lg md:text-2xl text-app-text-muted max-w-2xl mx-auto leading-relaxed"
+            class="text-base md:text-2xl text-app-text-muted max-w-2xl mx-auto leading-relaxed"
         >
             {#if $hasUsedTrial}
                 Choose the plan that fits your kitchen.
