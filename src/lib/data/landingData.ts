@@ -189,7 +189,7 @@ export const faqItems = [
     },
     {
         question: "Do you have a mobile app?",
-        answer: "YumHero is a Progressive Web App (PWA). This means you don't need to visit an app store; just open it in your browser and add it to your home screen. It works exactly like a native app, takes up almost no space, and updates automatically.",
+        answer: "We are planning to launch native iOS and Android apps very soon! In the meantime, YumHero is built as a Progressive Web App (PWA). You can install it instantly by opening this site in your mobile browser and selecting 'Add to Home Screen' (on iOS, tap the Share button; on Android, tap the menu dots). It works exactly like a native app, stays in sync, and won't take up any storage space.",
     },
     {
         question: "Can I use my subscription on multiple devices?",
@@ -209,7 +209,7 @@ export const faqItems = [
     },
     {
         question: "Will YumHero make my grocery list for me?",
-        answer: "Yes, and it's smart about it. When you plan a meal, YumHero automatically adds the missing items to a consolidated list. Even better, it sorts the list by grocery store aisle so you can finish your shopping in record time.",
+        answer: "Yes, and it's smarter than a standard list. When you plan a meal, YumHero automatically adds the missing items to a consolidated list. You can then use the 'Check Fridge' feature to instantly cross-reference your inventory, ensuring you only buy what you actually need.",
     },
     {
         question: "Can I track my macros and nutrition?",

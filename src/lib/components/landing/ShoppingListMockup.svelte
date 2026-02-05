@@ -231,7 +231,7 @@
                                 : 'hover:bg-app-primary/5 rounded-xl'}"
                         >
                             <div
-                                class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-300 {item.checked
+                                class="w-6 h-6 rounded-md border flex items-center justify-center transition-all duration-300 {item.checked
                                     ? 'bg-app-primary border-app-primary text-white'
                                     : 'border-app-border-strong bg-transparent hover:border-app-primary/50'}"
                             >
