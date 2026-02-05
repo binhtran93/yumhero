@@ -156,10 +156,10 @@
         <!-- Header -->
         <div class="flex flex-col border-b-2 border-app-primary pb-2">
             <div class="flex justify-between items-baseline">
-                <h1 class="text-[20pt] font-black text-app-primary m-0">
+                <h1 class="text-[16pt] font-black text-app-primary m-0">
                     YumHero Meal Plan
                 </h1>
-                <p class="text-app-text-muted font-bold text-[10pt] m-0">
+                <p class="text-app-text-muted font-bold text-[8pt] m-0">
                     {weekLabel}
                 </p>
             </div>
@@ -176,12 +176,12 @@
                         class="flex flex-col items-center justify-center p-1 border-b border-r border-app-text/20 bg-white h-15"
                     >
                         <span
-                            class="font-display font-black text-app-text text-[12pt]"
+                            class="font-display font-black text-app-text text-[10pt]"
                         >
                             {dayPlan.day.slice(0, 3)}
                         </span>
                         <span
-                            class="text-[9pt] text-app-text font-bold opacity-70"
+                            class="text-[7.5pt] text-app-text font-bold opacity-70"
                         >
                             {getDayDate(i).split(" ")[1]}
                         </span>
@@ -199,7 +199,7 @@
                                 <div class="flex items-center">
                                     <div
                                         class={twMerge(
-                                            "w-2 h-2 rounded-full mr-2",
+                                            "w-1.5 h-1.5 rounded-full mr-2",
                                             section.type === "breakfast"
                                                 ? "bg-accent-breakfast"
                                                 : section.type === "lunch"
@@ -212,7 +212,7 @@
                                         )}
                                     ></div>
                                     <span
-                                        class="text-[8pt] font-semibold capitalize tracking-widest text-app-text-muted"
+                                        class="text-[6pt] font-bold capitalize tracking-wider text-app-text-muted"
                                     >
                                         {section.label}
                                     </span>
@@ -242,7 +242,7 @@
                                         <div class="flex-1 min-w-0 pt-0.5">
                                             <p
                                                 class={twMerge(
-                                                    "font-bold leading-tight text-[9pt]!",
+                                                    "font-bold leading-tight text-[8pt]!",
                                                     section.type === "breakfast"
                                                         ? "text-accent-breakfast-text"
                                                         : section.type ===
@@ -265,7 +265,7 @@
 
                                                 {#if "quantity" in item && (item as any).quantity > 1}
                                                     <span
-                                                        class="opacity-60 font-medium ml-1 text-[8pt]"
+                                                        class="opacity-60 font-medium ml-1 text-[7pt]"
                                                         >x{(item as any)
                                                             .quantity}</span
                                                     >
@@ -279,7 +279,7 @@
                                                         class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"
                                                     ></div>
                                                     <p
-                                                        class="text-[7pt] font-bold opacity-60"
+                                                        class="text-[6pt] font-bold opacity-60"
                                                     >
                                                         Leftover
                                                     </p>
