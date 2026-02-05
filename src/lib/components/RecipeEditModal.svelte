@@ -24,7 +24,7 @@
     } from "lucide-svelte";
 
     import type { Recipe, Ingredient, MealType } from "$lib/types";
-    import { addRecipe } from "$lib/stores/recipes";
+    import { addRecipe, updateRecipe } from "$lib/stores/recipes";
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
@@ -80,6 +80,7 @@
 
     // Multiple Recipe Management
     type RecipeVariantState = {
+        id?: string;
         title: string;
         source: string;
         description: string;
@@ -140,6 +141,7 @@
     };
 
     const createEmptyVariant = (): RecipeVariantState => ({
+        id: undefined,
         title: "",
         source: "",
         description: "",
@@ -175,6 +177,7 @@
             : [{ amount: "", unit: "", name: "" }];
 
         return {
+            id: data.id,
             title: data.title || "",
             source: data.sourceUrl || "",
             description: data.description || "",
@@ -227,6 +230,7 @@
         }
 
         recipeVariants[index] = {
+            id: recipeVariants[index].id,
             title,
             source,
             description,
@@ -522,7 +526,11 @@
                 };
 
                 try {
-                    await addRecipe(newRecipe);
+                    if (variant.id) {
+                        await updateRecipe(variant.id, newRecipe);
+                    } else {
+                        await addRecipe(newRecipe);
+                    }
                     // Also ensure tags are in user's tag collection
                     for (const tagLabel of variant.tags) {
                         const existingTags = get(userTags).data;

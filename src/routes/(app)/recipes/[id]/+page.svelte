@@ -361,9 +361,9 @@
                     >
                         <!-- Image -->
                         <div
-                            class="w-full md:w-1/3 max-w-sm shrink-0 relative flex items-center"
+                            class="w-full md:w-1/3 max-w-sm shrink-0 relative flex items-start"
                         >
-                            <div class="w-full p-4 lg:p-6">
+                            <div class="w-full p-4 lg:p-6 pb-2 md:pb-6">
                                 <div
                                     class="w-full aspect-square relative overflow-hidden rounded-2xl md:rounded-3xl group border border-app-border/50 shadow-sm"
                                 >
@@ -378,7 +378,7 @@
 
                         <!-- Info -->
                         <div
-                            class="flex-1 flex flex-col justify-center space-y-4 p-6 md:p-8 md:pl-2"
+                            class="flex-1 flex flex-col justify-start space-y-4 p-6 md:p-8 md:pl-2"
                         >
                             <div class="flex flex-col gap-3">
                                 {#if recipe.mealTypes && recipe.mealTypes.length > 0}
