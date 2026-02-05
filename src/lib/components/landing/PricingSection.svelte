@@ -138,79 +138,33 @@
                         </p>
                     </div>
 
-                    <ul class="space-y-5 mb-10">
-                        <li
-                            class="flex items-center gap-4 text-app-text group/item"
-                        >
-                            <div
-                                class="flex-shrink-0 p-1.5 rounded-full bg-green-100 text-green-600 group-hover/item:scale-110 transition-transform"
+                    <ul class="space-y-4 mb-10">
+                        {#each ["Ad-free recipe imports from any blog", "Rapid 2-minute weekly meal planning", "Visual fridge inventory & tracking", "Smart shopping lists sorted by aisle", "Hands-free focused cooking mode", "Universal cloud sync across all devices"] as feature}
+                            <li
+                                class="flex items-start gap-4 text-app-text group/item"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="3"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    ><polyline points="20 6 9 17 4 12"
-                                    ></polyline></svg
+                                <div
+                                    class="shrink-0 p-1.5 rounded-full bg-green-200 text-green-800 group-hover/item:scale-110 transition-transform"
                                 >
-                            </div>
-                            <span class="font-semibold text-lg"
-                                >Universal Recipe Imports</span
-                            >
-                        </li>
-                        <li
-                            class="flex items-center gap-4 text-app-text group/item"
-                        >
-                            <div
-                                class="flex-shrink-0 p-1.5 rounded-full bg-green-100 text-green-600 group-hover/item:scale-110 transition-transform"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="3"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    ><polyline points="20 6 9 17 4 12"
-                                    ></polyline></svg
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="3"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        ><polyline points="20 6 9 17 4 12"
+                                        ></polyline></svg
+                                    >
+                                </div>
+                                <span class="font-medium text-lg"
+                                    >{feature}</span
                                 >
-                            </div>
-                            <span class="font-semibold text-lg"
-                                >Unlimited Meal Planning</span
-                            >
-                        </li>
-                        <li
-                            class="flex items-center gap-4 text-app-text group/item"
-                        >
-                            <div
-                                class="flex-shrink-0 p-1.5 rounded-full bg-green-100 text-green-600 group-hover/item:scale-110 transition-transform"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="3"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    ><polyline points="20 6 9 17 4 12"
-                                    ></polyline></svg
-                                >
-                            </div>
-                            <span class="font-semibold text-lg"
-                                >Smart Fridge Inventory</span
-                            >
-                        </li>
+                            </li>
+                        {/each}
                     </ul>
 
                     <a
