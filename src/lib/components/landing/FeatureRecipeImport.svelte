@@ -70,8 +70,8 @@
                     <p
                         class="text-[14px] text-app-text-muted leading-relaxed font-medium"
                     >
-                        Works with thousands of food blogs. No integration
-                        needed.
+                        Works with thousands of food blogs, TikTok, Facebook,
+                        and Instagram. No integration needed.
                     </p>
                 </div>
 
