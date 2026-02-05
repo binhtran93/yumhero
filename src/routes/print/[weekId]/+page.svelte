@@ -11,6 +11,7 @@
     import { userRecipes } from "$lib/stores/recipes";
     import type { WeeklyPlan, Recipe } from "$lib/types";
     import { twMerge } from "tailwind-merge";
+    import { Loader2 } from "lucide-svelte";
     import "../../../app.css"; // Ensure global styles are applied
 
     const weekId = $page.params.weekId ?? "";
@@ -147,8 +148,18 @@
 </svelte:head>
 
 <div
-    class="bg-slate-100 min-h-screen w-full flex justify-center items-start p-8 print:p-0 print:bg-white overflow-auto print:min-h-0"
+    class="bg-slate-100 min-h-screen w-full flex justify-center items-start p-8 print:p-0 print:bg-white overflow-auto print:min-h-0 relative"
 >
+    {#if isLoading}
+        <div
+            class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center gap-4 print:hidden"
+        >
+            <Loader2 class="w-10 h-10 text-app-primary animate-spin" />
+            <p class="text-app-text-muted font-bold animate-pulse">
+                Preparing your meal plan...
+            </p>
+        </div>
+    {/if}
     <!-- A4 Landscape Simulation: 297mm x 210mm -->
     <div
         class="bg-white w-[297mm] h-[210mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:max-h-full print:w-full print:overflow-visible"
@@ -190,7 +201,7 @@
                     <!-- Meal Slots -->
                     {#each mealSections as section (section.type)}
                         <div
-                            class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full min-h-10"
+                            class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full min-h-20"
                         >
                             <!-- Inline Meal Slot Rendering for Print -->
                             <div
@@ -220,14 +231,14 @@
                             </div>
 
                             <div
-                                class="px-2 pb-2 flex flex-col gap-2 relative mt-2"
+                                class="px-2 pb-2 flex flex-col gap-2 relative"
                             >
                                 {#each dayPlan.meals[section.type] as item}
                                     {@const itemIsLeftover =
                                         "isLeftover" in item && item.isLeftover}
                                     <div
                                         class={twMerge(
-                                            "relative flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border",
+                                            "relative flex items-center gap-2 pl-3 pr-2 py-1 rounded-xl border",
                                             section.type === "breakfast"
                                                 ? "bg-accent-breakfast-bg border-accent-breakfast-border"
                                                 : section.type === "lunch"
@@ -239,7 +250,7 @@
                                                       : "bg-accent-note-bg border-accent-note-border",
                                         )}
                                     >
-                                        <div class="flex-1 min-w-0 pt-0.5">
+                                        <div class="flex-1 min-w-0">
                                             <p
                                                 class={twMerge(
                                                     "font-bold leading-tight text-[8pt]!",
