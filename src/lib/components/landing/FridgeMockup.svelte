@@ -290,68 +290,79 @@
             </div>
         </div>
 
-        <!-- Scrollable Area -->
         <div
             bind:this={animationContainer}
             class="h-[380px] overflow-hidden bg-white/50 relative"
         >
-            <div class="space-y-3 p-6">
-                {#each activeItems as item (item.id)}
+            <div class="p-6 grid grid-cols-1 items-start">
+                {#key activeTab}
+                    {@const items =
+                        activeTab === "leftover" ? leftovers : ingredients}
                     <div
-                        out:slide={{ duration: 400 }}
-                        class="group flex items-center justify-between p-4 bg-white border border-app-border rounded-2xl transition-all hover:border-app-primary/30 hover:shadow-sm"
+                        class="space-y-3 col-start-1 row-start-1 w-full"
+                        in:fade={{ duration: 250, delay: 250 }}
+                        out:fade={{ duration: 200 }}
                     >
-                        <div class="flex items-center gap-4">
-                            <!-- Thumbnail or Icon based on item data -->
+                        {#each items as item (item.id)}
                             <div
-                                class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden border border-app-border {item.type ===
-                                'leftover'
-                                    ? 'bg-app-surface text-app-text-muted'
-                                    : 'bg-emerald-50 text-emerald-500'}"
+                                out:slide={{ duration: 400 }}
+                                class="group flex items-center justify-between p-4 bg-white border border-app-border rounded-2xl transition-all hover:border-app-primary/30 hover:shadow-sm"
                             >
-                                {#if item.image}
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        class="w-full h-full object-cover"
-                                    />
-                                {:else}
-                                    <Package size={20} />
-                                {/if}
-                            </div>
+                                <div class="flex items-center gap-4">
+                                    <!-- Thumbnail or Icon based on item data -->
+                                    <div
+                                        class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden border border-app-border {item.type ===
+                                        'leftover'
+                                            ? 'bg-app-surface text-app-text-muted'
+                                            : 'bg-emerald-50 text-emerald-500'}"
+                                    >
+                                        {#if item.image}
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                class="w-full h-full object-cover"
+                                            />
+                                        {:else}
+                                            <Package size={20} />
+                                        {/if}
+                                    </div>
 
-                            <div>
-                                <h4 class="font-bold text-app-text text-sm">
-                                    {item.name}
-                                </h4>
-                                <!-- Date Badge Under Name -->
-                                <div
-                                    class="inline-block mt-1.5 px-2 py-0.5 rounded-md border text-[9px] font-black uppercase tracking-wider {getBadgeStyles(
-                                        item.daysAgo,
-                                    )}"
-                                >
-                                    {item.date}
+                                    <div>
+                                        <h4
+                                            class="font-bold text-app-text text-sm"
+                                        >
+                                            {item.name}
+                                        </h4>
+                                        <!-- Date Badge Under Name -->
+                                        <div
+                                            class="inline-block mt-1.5 px-2 py-0.5 rounded-md border text-[9px] font-black uppercase tracking-wider {getBadgeStyles(
+                                                item.daysAgo,
+                                            )}"
+                                        >
+                                            {item.date}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4">
+                                    {#if item.daysAgo >= 5}
+                                        <!-- Action Button -->
+                                        <button
+                                            id="trash-{item.id}"
+                                            onclick={(e) => {
+                                                e.preventDefault();
+                                                handleManualTrigger();
+                                            }}
+                                            class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-red-100 transition-colors"
+                                        >
+                                            Throw away
+                                        </button>
+                                    {/if}
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            {#if item.daysAgo >= 5}
-                                <!-- Action Button -->
-                                <button
-                                    id="trash-{item.id}"
-                                    onclick={(e) => {
-                                        e.preventDefault();
-                                        handleManualTrigger();
-                                    }}
-                                    class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-red-100 transition-colors"
-                                >
-                                    Throw away
-                                </button>
-                            {/if}
-                        </div>
+                        {/each}
                     </div>
-                {/each}
+                {/key}
             </div>
 
             <!-- Hand Cursor -->
