@@ -32,20 +32,20 @@ export async function fetchDynamicContent(url: string, waitUntil: string = 'domc
         console.error(`Error fetching dynamic content from ${url}:`, error);
         throw error;
     } finally {
-        if (page) {
-            try {
-                page.removeAllListeners('request');
-                await page.close();
-            } catch (e) {
-                console.error('Error closing page:', e);
-            }
-        }
-        if (context) {
-            try {
-                await context.close();
-            } catch (e) {
-                console.error('Error closing context:', e);
-            }
-        }
+        // if (page) {
+        //     try {
+        //         page.removeAllListeners('request');
+        //         await page.close();
+        //     } catch (e) {
+        //         console.error('Error closing page:', e);
+        //     }
+        // }
+        // if (context) {
+        //     try {
+        //         await context.close();
+        //     } catch (e) {
+        //         console.error('Error closing context:', e);
+        //     }
+        // }
     }
 }
