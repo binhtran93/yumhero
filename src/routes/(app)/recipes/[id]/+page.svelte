@@ -150,21 +150,20 @@
 />
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden">
-    <!-- Header (Visible on all screens) -->
-    <div
-        class="shrink-0 z-20 bg-app-bg border-b border-app-border md:block hidden"
+    <!-- Base Toolbar (Visible on all screens) -->
+    <Header
+        title="Recipe Details"
+        mobileTitle={recipe?.title}
+        showBack={true}
+        backUrl="/recipes"
     >
-        <Header title="Recipe Details" showBack={true} backUrl="/recipes">
-            <Header title="Recipe Details" showBack={true} backUrl="/recipes">
-                <button
-                    onclick={handleShowOptions}
-                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
-                >
-                    <EllipsisVertical size={20} />
-                </button>
-            </Header>
-        </Header>
-    </div>
+        <button
+            onclick={handleShowOptions}
+            class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+        >
+            <EllipsisVertical size={20} />
+        </button>
+    </Header>
 
     <!-- Main Content Scrollable Area -->
     <div class="flex-1 overflow-y-auto w-full">
@@ -185,69 +184,10 @@
                             alt={recipe.title}
                             class="w-full h-full object-cover"
                         />
-                        <!-- Gradient overlay for text readability -->
+                        <!-- Gradient overlay -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-t from-overlay-gradient-from via-overlay-gradient-via to-transparent"
+                            class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
                         ></div>
-
-                        <!-- Back button overlay -->
-                        <a
-                            href="/recipes"
-                            class="absolute top-3 left-3 w-9 h-9 flex items-center justify-center bg-overlay-bg hover:bg-overlay-bg-hover backdrop-blur-sm rounded-full text-overlay-text transition-colors"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                ><path d="m15 18-6-6 6-6" /></svg
-                            >
-                        </a>
-
-                        <!-- Action menu overlay -->
-                        <div class="absolute top-3 right-3">
-                            <button
-                                onclick={handleShowOptions}
-                                class="p-2 text-overlay-text bg-overlay-bg backdrop-blur-sm hover:bg-overlay-bg-hover rounded-full transition-colors"
-                            >
-                                <EllipsisVertical size={20} />
-                            </button>
-                        </div>
-
-                        <!-- Title overlay at bottom -->
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <!-- Meal type badges -->
-                            {#if recipe.mealTypes && recipe.mealTypes.length > 0}
-                                <div class="flex flex-wrap gap-1.5 mb-2">
-                                    {#each [...new Set(recipe.mealTypes)] as type}
-                                        <span
-                                            class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide
-                                            {type === 'breakfast'
-                                                ? 'bg-accent-breakfast text-white'
-                                                : type === 'lunch'
-                                                  ? 'bg-accent-lunch text-white'
-                                                  : type === 'dinner'
-                                                    ? 'bg-accent-dinner text-white'
-                                                    : type === 'snack'
-                                                      ? 'bg-accent-snack text-white'
-                                                      : 'bg-app-primary text-white'}"
-                                        >
-                                            {type}
-                                        </span>
-                                    {/each}
-                                </div>
-                            {/if}
-                            <h1
-                                class="text-xl font-display font-bold text-white leading-tight line-clamp-2 drop-shadow-lg"
-                            >
-                                {recipe.title}
-                            </h1>
-                        </div>
                     </div>
 
                     <!-- Quick Stats Bar -->
