@@ -82,19 +82,30 @@ export async function POST({ request }) {
             const optimizedPasted = optimizeTextContent(pastedText);
             contentToProcess = optimizedPasted.length > 50000 ? optimizedPasted.substring(0, 50000) : optimizedPasted;
             contentType = 'pasted recipe text';
+
+            // If the text is very short, it's definitely not a recipe
+            if (contentToProcess.length < 20) {
+                return json({ recipes: [] });
+            }
         }
 
         const prompt = `
-            You are an expert recipe extractor. extracting recipe information from the provided ${contentType}.
+            You are an expert recipe extractor. Your task is to extract recipe information from the provided ${contentType}.
 
+            STRICT MISSION RULES:
+            1. ONLY extract recipes that are SPECIFICALLY and BOLDLY present in the provided text.
+            2. DO NOT FABRICATE, INVENT, OR "FILL IN THE GAPS" for recipes. If a recipe is not clearly there, it does not exist.
+            3. If the provided text does not contain a clear recipe (listing both ingredients and instructions), YOU MUST RETURN AN EMPTY ARRAY [] for the "recipes" field.
+            4. If the text is unrelated, gibberish, or just generic web content (like a login page, search results, or a generic article about food but without a specific recipe), RETURN AN EMPTY ARRAY.
+            5. If you are unsure if the content is a recipe, err on the side of caution and return an empty array.
+            
             The content might contain ONE or MULTIPLE recipe variants (e.g. "Method 1", "Method 2", or different versions of a dish).
-            YOU MUST EXTRACT ALL DISTINCT RECIPES FOUND IN THE CONTENT.
+            EXTRACT ALL DISTINCT RECIPES FOUND IN THE CONTENT, provided they are actually there.
             
             If there are multiple variants, name them distinctively (e.g. "Tofu with Tomato Sauce - Method 1", "Tofu with Tomato Sauce - Fried Version").
             
             FOR EACH VARIANT, try to find a specific image URL that represents that specific version.
             If you cannot find a specific image for a variant, leave the image field empty (null/undefined).
-
 
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
             
@@ -106,11 +117,9 @@ export async function POST({ request }) {
             If the servings amount is provided as a range (e.g. "4-6"), you MUST calculate the average and return a SINGLE NUMBER (e.g. 5).
             Do not return a string or a range. Servings must always be a number.
 
+            For 'mealTypes', categorize the recipe into ALL suitable categories from: breakfast, lunch, dinner, snack. If a recipe is versatile (e.g. a granola that works for breakfast or a snack, or a dish suitable for both lunch and dinner), YOU MUST include all relevant types in the array.
 
-
-            8. For 'mealTypes', categorize the recipe into ALL suitable categories from: breakfast, lunch, dinner, snack. If a recipe is versatile (e.g. a granola that works for breakfast or a snack, or a dish suitable for both lunch and dinner), YOU MUST include all relevant types in the array.
-
-            9. If you cannot find any cooking instructions or steps in the provided content, return an EMPTY ARRAY [] for the instructions field.
+            If you cannot find any cooking instructions or steps in the provided content, it is likely not a complete recipe. Return an EMPTY ARRAY if instructions are missing.
         `;
 
         const { output } = await generateText({
