@@ -11,6 +11,16 @@
         Globe,
         FileText,
         MoreVertical,
+        Clock,
+        Hash,
+        AlignLeft,
+        Settings2,
+        Link2,
+        Users,
+        Type,
+        LayoutList,
+        ListTodo,
+        ChefHat,
     } from "lucide-svelte";
 
     import type { Recipe, Ingredient, MealType } from "$lib/types";
@@ -805,19 +815,36 @@
         <!-- Basic Info Wrapper -->
         <div class="flex flex-row gap-4 md:gap-6">
             <!-- Left Column - Inputs -->
-            <div class="flex-1 space-y-4">
-                <div class="space-y-2">
+            <div class="flex-1 space-y-6">
+                <!-- Recipe Name -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 px-1">
+                        <Type size={16} class="text-app-primary" />
+                        <span
+                            class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                            >Recipe Name <span class="text-red-500">*</span
+                            ></span
+                        >
+                    </div>
                     <input
                         type="text"
                         bind:this={titleInput}
                         bind:value={title}
                         disabled={isSaving}
-                        placeholder="Recipe Name *"
-                        class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="e.g. Grandma's Famous Lasagna"
+                        class="w-full h-11 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-all font-medium"
                     />
                 </div>
 
+                <!-- Meal Type -->
                 <div class="space-y-3">
+                    <div class="flex items-center gap-2 px-1">
+                        <ChefHat size={16} class="text-app-primary" />
+                        <span
+                            class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                            >Meal Category</span
+                        >
+                    </div>
                     <div class="flex flex-wrap gap-2">
                         {#each ["breakfast", "lunch", "dinner", "snack"] as type}
                             <button
@@ -835,21 +862,15 @@
                             </button>
                         {/each}
                     </div>
-                    <p
-                        class="text-[11px] text-app-text-muted/70 pl-1 leading-tight"
-                    >
-                        Choose where this recipe fits best in your weekly plan
-                        to help with organization.
-                    </p>
                 </div>
             </div>
 
             <!-- Right Column - Image Upload -->
-            <div class="w-24 md:w-32 shrink-0">
+            <div class="w-24 md:w-32 shrink-0 pt-7">
                 <button
                     onclick={triggerFileInput}
                     disabled={isSaving}
-                    class="group relative w-full aspect-square md:aspect-4/3 md:h-28 rounded-xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2 disabled:opacity-50"
+                    class="group relative w-full aspect-square md:aspect-4/3 md:h-28 rounded-2xl bg-app-surface-deep border-2 border-dashed border-app-border hover:border-app-primary/50 transition-all overflow-hidden flex flex-col items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
                 >
                     {#if imageUrl}
                         <img
@@ -889,58 +910,50 @@
             </div>
         </div>
 
-        <!-- Ingredients Header & Toggle -->
-        <div class="space-y-4">
-            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
-                Ingredients <span class="text-red-500">*</span>
-            </h3>
+        <!-- Ingredients Section -->
+        <div class="space-y-4 pt-4">
+            <div class="flex items-center justify-between px-1">
+                <div class="flex items-center gap-2">
+                    <LayoutList size={16} class="text-app-primary" />
+                    <span
+                        class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                    >
+                        Ingredients <span class="text-red-500">*</span>
+                    </span>
+                </div>
 
-            <!-- Toggle -->
-            <div
-                class="flex gap-1 p-1 bg-app-surface-deep border border-app-border rounded-xl mt-4"
-            >
-                <button
-                    onclick={switchToLine}
-                    disabled={isSaving}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
-                    'line'
-                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
-                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
+                <!-- Toggle -->
+                <div
+                    class="flex p-1 bg-app-surface-deep border border-app-border rounded-xl"
                 >
-                    Line-item Input
-                </button>
-                <button
-                    onclick={switchToBulk}
-                    disabled={isSaving}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
-                    'bulk'
-                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
-                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
-                >
-                    Bulk Input
-                </button>
+                    <button
+                        onclick={switchToLine}
+                        disabled={isSaving}
+                        class="px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all border border-transparent {ingredientMode ===
+                        'line'
+                            ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
+                            : 'text-app-text-muted hover:text-app-text'}"
+                    >
+                        List
+                    </button>
+                    <button
+                        onclick={switchToBulk}
+                        disabled={isSaving}
+                        class="px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all border border-transparent {ingredientMode ===
+                        'bulk'
+                            ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
+                            : 'text-app-text-muted hover:text-app-text'}"
+                    >
+                        Bulk
+                    </button>
+                </div>
             </div>
-
-            <!-- Helper Text -->
-            <p class="text-xs text-app-text-muted leading-relaxed px-1">
-                Type in multiple ingredients below (one ingredient per line), or
-                copy and paste them from websites or your own notes.
-            </p>
 
             <!-- Inputs -->
             {#if ingredientMode === "line"}
                 <div
-                    class="space-y-3 bg-app-surface-deep p-3 md:p-4 rounded-2xl border border-app-border"
+                    class="space-y-3 bg-app-surface-deep/30 p-3 md:p-4 rounded-2xl border border-app-border"
                 >
-                    <!-- Header (Hide on mobile for space) -->
-                    <div
-                        class="hidden md:flex items-center gap-3 px-1 text-[10px] uppercase font-bold text-app-text-muted"
-                    >
-                        <span class="w-16 md:w-20 pl-1">Qty</span>
-                        <span class="w-16 md:w-20 pl-1">Unit</span>
-                        <span class="flex-1 pl-1">Ingredient</span>
-                        <span class="w-8"></span>
-                    </div>
                     {#each ingredients as ing, i}
                         <div class="flex gap-2 w-full min-w-0">
                             <input
@@ -948,14 +961,14 @@
                                 bind:value={ing.amount}
                                 disabled={isSaving}
                                 placeholder="Qty"
-                                class="w-14 md:w-20 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                                class="w-14 md:w-20 h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50"
                             />
                             <input
                                 type="text"
                                 bind:value={ing.unit}
                                 disabled={isSaving}
                                 placeholder="Unit"
-                                class="w-14 md:w-24 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                                class="w-14 md:w-24 h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50"
                             />
                             <div class="flex-1 min-w-0">
                                 <input
@@ -963,13 +976,13 @@
                                     bind:value={ing.name}
                                     disabled={isSaving}
                                     placeholder="Ingredient"
-                                    class="w-full h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
+                                    class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
                                 />
                             </div>
                             <button
                                 onclick={() => removeIngredientRow(i)}
                                 disabled={isSaving}
-                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
+                                class="w-8 h-10 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0"
                             >
                                 <X size={16} />
                             </button>
@@ -978,201 +991,269 @@
                     <button
                         onclick={addIngredientRow}
                         disabled={isSaving}
-                        class="text-sm text-app-primary font-bold hover:underline pt-2 pl-1 flex items-center gap-1 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                        class="text-xs text-app-primary font-bold hover:underline pt-1 pl-1 flex items-center gap-1.5"
                     >
-                        <Utensils size={14} /> Add Line Item
+                        <div
+                            class="w-5 h-5 rounded-full bg-app-primary/10 flex items-center justify-center"
+                        >
+                            <Utensils size={12} />
+                        </div>
+                        Add next ingredient
                     </button>
                 </div>
             {:else}
                 <textarea
                     bind:value={bulkIngredients}
-                    rows="10"
+                    rows="8"
                     disabled={isSaving}
                     placeholder="1 cup flour&#10;2 eggs&#10;..."
-                    class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
+                    class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/40 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
                 ></textarea>
             {/if}
         </div>
 
-        <div class="space-y-4 pb-8">
-            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
-                Instructions <span class="text-red-500">*</span>
-            </h3>
+        <!-- Instructions Section -->
+        <div class="space-y-4 pt-4">
+            <div class="flex items-center gap-2 px-1">
+                <ListTodo size={16} class="text-app-primary" />
+                <span
+                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                >
+                    Instructions <span class="text-red-500">*</span>
+                </span>
+            </div>
             <textarea
                 bind:value={instructions}
                 rows="8"
                 disabled={isSaving}
-                placeholder="Step-by-step directions..."
-                class="w-full p-5 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
+                placeholder="How do you make it? Speak your mind..."
+                class="w-full p-5 bg-app-bg border border-app-border rounded-2xl text-app-text placeholder:text-app-text-muted/40 focus:outline-none focus:border-app-primary transition-all resize-y leading-relaxed text-sm disabled:opacity-50"
             ></textarea>
         </div>
 
-        <!-- Advanced Toggle -->
-        <div class="relative py-2 pt-4">
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="w-full border-t border-app-border"></div>
-            </div>
-            <div class="relative flex justify-center">
-                <button
-                    onclick={() => (showAdvanced = !showAdvanced)}
-                    class="bg-app-surface px-4 py-1 text-xs font-bold uppercase tracking-wider text-app-text-muted hover:text-app-primary flex items-center gap-2 transition-colors rounded-full border border-app-border hover:border-app-primary/30"
+        <!-- Redesigned Advanced Section -->
+        <div class="pt-4">
+            <button
+                onclick={() => (showAdvanced = !showAdvanced)}
+                class="w-full flex items-center justify-between py-4 px-2 hover:bg-app-surface-hover/30 rounded-xl transition-all group"
+            >
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-app-surface-deep border border-app-border flex items-center justify-center group-hover:bg-app-bg group-hover:border-app-primary/30 transition-all"
+                    >
+                        <Settings2
+                            size={20}
+                            class="text-app-text-muted group-hover:text-app-primary transition-colors {showAdvanced
+                                ? 'rotate-45'
+                                : ''}"
+                        />
+                    </div>
+                    <div class="text-left">
+                        <h4
+                            class="text-sm font-bold text-app-text group-hover:text-app-primary transition-colors"
+                        >
+                            Additional Details
+                        </h4>
+                        <p class="text-[11px] text-app-text-muted">
+                            Description, tags, prep time, and more
+                        </p>
+                    </div>
+                </div>
+                <div
+                    class="text-app-text-muted group-hover:text-app-primary transition-colors"
                 >
                     {#if showAdvanced}
-                        <span>Hide Details</span>
-                        <ChevronUp size={14} />
+                        <ChevronUp size={20} />
                     {:else}
-                        <span>More Details</span>
-                        <ChevronDown size={14} />
+                        <ChevronDown size={20} />
                     {/if}
-                </button>
-            </div>
-        </div>
-
-        {#if showAdvanced}
-            <div transition:slide class="space-y-6 pt-2 pb-8">
-                <div class="space-y-2">
-                    <textarea
-                        bind:value={description}
-                        rows="4"
-                        disabled={isSaving}
-                        placeholder="Description"
-                        class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-colors disabled:opacity-50"
-                    ></textarea>
                 </div>
+            </button>
 
-                <div class="space-y-2">
-                    <label
-                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                        for="source">Source</label
-                    >
-                    <input
-                        id="source"
-                        type="text"
-                        bind:value={source}
-                        disabled={isSaving}
-                        placeholder="Website URL or cookbook name"
-                        class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
-                </div>
+            {#if showAdvanced}
+                <div
+                    transition:slide={{ duration: 300 }}
+                    class="space-y-8 pt-6 pb-12"
+                >
+                    <!-- Description -->
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2 px-1">
+                            <AlignLeft size={16} class="text-app-primary" />
+                            <span
+                                class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                >Description</span
+                            >
+                        </div>
+                        <textarea
+                            bind:value={description}
+                            rows="4"
+                            disabled={isSaving}
+                            placeholder="Add a short description or notes about this recipe..."
+                            class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-none transition-all text-sm leading-relaxed"
+                        ></textarea>
+                    </div>
 
-                <!-- Metadata Row (Prep, Cook, Serves, Yields) -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="space-y-2">
-                        <label
-                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                            for="prep">Prep Time</label
-                        >
-                        <input
-                            id="prep"
-                            type="text"
-                            bind:value={prepTime}
-                            disabled={isSaving}
-                            placeholder="e.g. 15 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
-                        />
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                            for="cook">Cook Time</label
-                        >
-                        <input
-                            id="cook"
-                            type="text"
-                            bind:value={cookTime}
-                            disabled={isSaving}
-                            placeholder="e.g. 30 mins"
-                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
-                        />
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                            for="serves">Serves</label
-                        >
-                        <input
-                            id="serves"
-                            type="text"
-                            bind:value={servings}
-                            disabled={isSaving}
-                            placeholder="e.g. 4"
-                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
-                        />
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                            for="yields">Yields</label
-                        >
-                        <input
-                            id="yields"
-                            type="text"
-                            bind:value={yields}
-                            disabled={isSaving}
-                            placeholder="e.g. 12"
-                            class="w-full h-10 md:h-12 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
-                        />
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    <label
-                        class="text-xs text-app-text-muted uppercase font-bold pl-1"
-                        >Tags (Max 5)</label
-                    >
-                    <div class="relative">
-                        <div
-                            class="flex flex-wrap gap-2 p-2 bg-app-bg border border-app-border rounded-xl min-h-[52px] focus-within:border-app-primary transition-colors"
-                        >
-                            {#each tags as tag, i}
+                    <!-- Source & Tags Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Source -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 px-1">
+                                <Link2 size={16} class="text-app-primary" />
                                 <span
-                                    class="bg-app-primary/10 text-app-primary text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1.5 animate-in fade-in scale-in duration-200"
+                                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                    >Source</span
                                 >
-                                    {tag}
-                                    <button
-                                        onclick={() => removeTag(i)}
-                                        class="hover:text-red-500 transition-colors"
-                                    >
-                                        <X size={14} />
-                                    </button>
-                                </span>
-                            {/each}
-                            {#if tags.length < 5}
-                                <input
-                                    type="text"
-                                    bind:value={tagInput}
-                                    onkeydown={handleTagKeydown}
-                                    onblur={() =>
-                                        setTimeout(() => addTag(), 200)}
-                                    placeholder={tags.length === 0
-                                        ? "Add tags (e.g. Healthy, Quick, Vegan)"
-                                        : "Add tag..."}
-                                    class="flex-1 bg-transparent border-none outline-none text-app-text placeholder:text-app-text-muted/50 text-sm min-w-[120px] h-8"
-                                />
-                            {/if}
+                            </div>
+                            <input
+                                type="text"
+                                bind:value={source}
+                                disabled={isSaving}
+                                placeholder="Website URL or Cookbook name"
+                                class="w-full h-11 px-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-all text-sm"
+                            />
                         </div>
 
-                        {#if tagSuggestions.length > 0}
-                            <div
-                                class="absolute left-0 right-0 top-full mt-1 bg-app-bg border border-app-border rounded-xl shadow-xl z-[100] overflow-hidden py-1"
-                            >
-                                {#each tagSuggestions as suggestion, i}
-                                    <button
-                                        onclick={() => addTag(suggestion)}
-                                        class="w-full text-left px-4 py-2.5 text-sm transition-colors {i ===
-                                        selectedTagIndex
-                                            ? 'bg-app-primary text-white font-bold'
-                                            : 'text-app-text hover:bg-app-surface-hover'}"
-                                    >
-                                        {suggestion}
-                                    </button>
-                                {/each}
+                        <!-- Tags -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 px-1">
+                                <Hash size={16} class="text-app-primary" />
+                                <span
+                                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                    >Tags (Max 5)</span
+                                >
                             </div>
-                        {/if}
+                            <div class="relative">
+                                <div
+                                    class="flex flex-wrap gap-2 p-2 bg-app-bg border border-app-border rounded-xl min-h-[44px] focus-within:border-app-primary transition-colors"
+                                >
+                                    {#each tags as tag, i}
+                                        <span
+                                            class="bg-app-primary/10 text-app-primary text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5"
+                                        >
+                                            {tag}
+                                            <button
+                                                onclick={() => removeTag(i)}
+                                                class="hover:text-red-500 transition-colors"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </span>
+                                    {/each}
+                                    {#if tags.length < 5}
+                                        <input
+                                            type="text"
+                                            bind:value={tagInput}
+                                            onkeydown={handleTagKeydown}
+                                            onblur={() =>
+                                                setTimeout(() => addTag(), 200)}
+                                            placeholder={tags.length === 0
+                                                ? "Add tags..."
+                                                : ""}
+                                            class="flex-1 bg-transparent border-none outline-none text-app-text placeholder:text-app-text-muted/50 text-sm min-w-[80px] h-7"
+                                        />
+                                    {/if}
+                                </div>
+
+                                {#if tagSuggestions.length > 0}
+                                    <div
+                                        class="absolute left-0 right-0 top-full mt-1 bg-app-bg border border-app-border rounded-xl shadow-xl z-[100] overflow-hidden py-1"
+                                    >
+                                        {#each tagSuggestions as suggestion, i}
+                                            <button
+                                                onclick={() =>
+                                                    addTag(suggestion)}
+                                                class="w-full text-left px-4 py-2.5 text-sm transition-colors {i ===
+                                                selectedTagIndex
+                                                    ? 'bg-app-primary text-white font-bold'
+                                                    : 'text-app-text hover:bg-app-surface-hover'}"
+                                            >
+                                                {suggestion}
+                                            </button>
+                                        {/each}
+                                    </div>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meta Grid (Prep, Cook, Serves, Yields) -->
+                    <div
+                        class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-app-surface-deep/50 rounded-2xl border border-app-border"
+                    >
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-1.5 px-1">
+                                <Clock size={14} class="text-app-text-muted" />
+                                <span
+                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    >Prep</span
+                                >
+                            </div>
+                            <input
+                                type="text"
+                                bind:value={prepTime}
+                                disabled={isSaving}
+                                placeholder="15m"
+                                class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-app-text placeholder:text-app-text-muted/30 focus:outline-none focus:border-app-primary transition-all text-sm font-medium"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-1.5 px-1">
+                                <Utensils
+                                    size={14}
+                                    class="text-app-text-muted"
+                                />
+                                <span
+                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    >Cook</span
+                                >
+                            </div>
+                            <input
+                                type="text"
+                                bind:value={cookTime}
+                                disabled={isSaving}
+                                placeholder="30m"
+                                class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-app-text placeholder:text-app-text-muted/30 focus:outline-none focus:border-app-primary transition-all text-sm font-medium"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-1.5 px-1">
+                                <Users size={14} class="text-app-text-muted" />
+                                <span
+                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    >Serves</span
+                                >
+                            </div>
+                            <input
+                                type="text"
+                                bind:value={servings}
+                                disabled={isSaving}
+                                placeholder="4"
+                                class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-1.5 px-1">
+                                <FileText
+                                    size={14}
+                                    class="text-app-text-muted"
+                                />
+                                <span
+                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    >Yields</span
+                                >
+                            </div>
+                            <input
+                                type="text"
+                                bind:value={yields}
+                                disabled={isSaving}
+                                placeholder="12"
+                                class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary transition-colors text-center font-medium disabled:opacity-50"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
+        </div>
     </div>
 </Modal>
 
