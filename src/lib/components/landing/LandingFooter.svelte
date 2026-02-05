@@ -74,28 +74,28 @@
                 <ul class="space-y-4">
                     <li>
                         <a
-                            href="#"
+                            href="/privacy"
                             class="text-sm text-app-text-muted hover:text-app-primary transition-colors"
                             >Privacy Policy</a
                         >
                     </li>
                     <li>
                         <a
-                            href="#"
+                            href="/terms"
                             class="text-sm text-app-text-muted hover:text-app-primary transition-colors"
                             >Terms of Service</a
                         >
                     </li>
                     <li>
                         <a
-                            href="#"
+                            href="/cookie-policy"
                             class="text-sm text-app-text-muted hover:text-app-primary transition-colors"
                             >Cookie Policy</a
                         >
                     </li>
                     <li>
                         <a
-                            href="#"
+                            href="/security"
                             class="text-sm text-app-text-muted hover:text-app-primary transition-colors"
                             >Security</a
                         >
