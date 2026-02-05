@@ -165,20 +165,20 @@
 
     <!-- Grid -->
     <div
-        class="flex-1 border-l border-app-text/30 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,auto)] border-r"
+        class="flex-1 border-l border-app-text/30 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,1fr)] border-r"
     >
         {#each plan as dayPlan, i (dayPlan.day)}
             <div class="contents">
                 <!-- Column Header -->
                 <div
-                    class="flex flex-col items-center justify-center p-1 border-b border-r border-app-border bg-app-surface h-12"
+                    class="flex flex-col items-center justify-center p-1 border-b border-r border-app-border bg-app-surface h-15"
                 >
-                    <span class="font-display font-black text-app-text text-sm">
+                    <span
+                        class="font-display font-black text-app-text text-base"
+                    >
                         {dayPlan.day.slice(0, 3)}
                     </span>
-                    <span
-                        class="text-[10px] text-app-text font-bold opacity-70"
-                    >
+                    <span class="text-xs text-app-text font-bold opacity-70">
                         {getDayDate(i).split(" ")[1]}
                     </span>
                 </div>
@@ -186,7 +186,7 @@
                 <!-- Meal Slots -->
                 {#each mealSections as section (section.type)}
                     <div
-                        class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full"
+                        class="flex flex-col border-r border-b border-app-text/20 bg-app-bg relative h-full"
                     >
                         <!-- Reusing MealSlot in read-only mode by passing no-ops and isPrinting=true -->
                         <MealSlot
