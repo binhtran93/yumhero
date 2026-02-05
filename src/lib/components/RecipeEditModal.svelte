@@ -889,8 +889,126 @@
             </div>
         </div>
 
+        <!-- Ingredients Header & Toggle -->
+        <div class="space-y-4">
+            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
+                Ingredients <span class="text-red-500">*</span>
+            </h3>
+
+            <!-- Toggle -->
+            <div
+                class="flex gap-1 p-1 bg-app-surface-deep border border-app-border rounded-xl mt-4"
+            >
+                <button
+                    onclick={switchToLine}
+                    disabled={isSaving}
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
+                    'line'
+                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
+                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
+                >
+                    Line-item Input
+                </button>
+                <button
+                    onclick={switchToBulk}
+                    disabled={isSaving}
+                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
+                    'bulk'
+                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
+                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
+                >
+                    Bulk Input
+                </button>
+            </div>
+
+            <!-- Helper Text -->
+            <p class="text-xs text-app-text-muted leading-relaxed px-1">
+                Type in multiple ingredients below (one ingredient per line), or
+                copy and paste them from websites or your own notes.
+            </p>
+
+            <!-- Inputs -->
+            {#if ingredientMode === "line"}
+                <div
+                    class="space-y-3 bg-app-surface-deep p-3 md:p-4 rounded-2xl border border-app-border"
+                >
+                    <!-- Header (Hide on mobile for space) -->
+                    <div
+                        class="hidden md:flex items-center gap-3 px-1 text-[10px] uppercase font-bold text-app-text-muted"
+                    >
+                        <span class="w-16 md:w-20 pl-1">Qty</span>
+                        <span class="w-16 md:w-20 pl-1">Unit</span>
+                        <span class="flex-1 pl-1">Ingredient</span>
+                        <span class="w-8"></span>
+                    </div>
+                    {#each ingredients as ing, i}
+                        <div class="flex gap-2 w-full min-w-0">
+                            <input
+                                type="text"
+                                bind:value={ing.amount}
+                                disabled={isSaving}
+                                placeholder="Qty"
+                                class="w-14 md:w-20 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                            />
+                            <input
+                                type="text"
+                                bind:value={ing.unit}
+                                disabled={isSaving}
+                                placeholder="Unit"
+                                class="w-14 md:w-24 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
+                            />
+                            <div class="flex-1 min-w-0">
+                                <input
+                                    type="text"
+                                    bind:value={ing.name}
+                                    disabled={isSaving}
+                                    placeholder="Ingredient"
+                                    class="w-full h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
+                                />
+                            </div>
+                            <button
+                                onclick={() => removeIngredientRow(i)}
+                                disabled={isSaving}
+                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                    {/each}
+                    <button
+                        onclick={addIngredientRow}
+                        disabled={isSaving}
+                        class="text-sm text-app-primary font-bold hover:underline pt-2 pl-1 flex items-center gap-1 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                    >
+                        <Utensils size={14} /> Add Line Item
+                    </button>
+                </div>
+            {:else}
+                <textarea
+                    bind:value={bulkIngredients}
+                    rows="10"
+                    disabled={isSaving}
+                    placeholder="1 cup flour&#10;2 eggs&#10;..."
+                    class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
+                ></textarea>
+            {/if}
+        </div>
+
+        <div class="space-y-4 pb-8">
+            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
+                Instructions <span class="text-red-500">*</span>
+            </h3>
+            <textarea
+                bind:value={instructions}
+                rows="8"
+                disabled={isSaving}
+                placeholder="Step-by-step directions..."
+                class="w-full p-5 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
+            ></textarea>
+        </div>
+
         <!-- Advanced Toggle -->
-        <div class="relative py-2">
+        <div class="relative py-2 pt-4">
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="w-full border-t border-app-border"></div>
             </div>
@@ -911,7 +1029,7 @@
         </div>
 
         {#if showAdvanced}
-            <div transition:slide class="space-y-6 pt-2">
+            <div transition:slide class="space-y-6 pt-2 pb-8">
                 <div class="space-y-2">
                     <textarea
                         bind:value={description}
@@ -1055,125 +1173,6 @@
                 </div>
             </div>
         {/if}
-
-        <!-- Ingredients Header & Toggle -->
-        <div class="space-y-4">
-            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
-                Ingredients <span class="text-red-500">*</span>
-            </h3>
-
-            <!-- Toggle -->
-            <div
-                class="flex gap-1 p-1 bg-app-surface-deep border border-app-border rounded-xl mt-4"
-            >
-                <button
-                    onclick={switchToLine}
-                    disabled={isSaving}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
-                    'line'
-                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
-                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
-                >
-                    Line-item Input
-                </button>
-                <button
-                    onclick={switchToBulk}
-                    disabled={isSaving}
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border-2 border-transparent disabled:opacity-50 {ingredientMode ===
-                    'bulk'
-                        ? 'bg-app-bg text-app-primary shadow-sm border-app-primary/10'
-                        : 'text-app-text-muted hover:text-app-text hover:bg-white/50'}"
-                >
-                    Bulk Input
-                </button>
-            </div>
-
-            <!-- Helper Text -->
-            <p class="text-xs text-app-text-muted leading-relaxed px-1">
-                Type in multiple ingredients below (one ingredient per line), or
-                copy and paste them from websites or your own notes.
-            </p>
-
-            <!-- Inputs -->
-            {#if ingredientMode === "line"}
-                <div
-                    class="space-y-3 bg-app-surface-deep p-3 md:p-4 rounded-2xl border border-app-border"
-                >
-                    <!-- Header (Hide on mobile for space) -->
-                    <div
-                        class="hidden md:flex items-center gap-3 px-1 text-[10px] uppercase font-bold text-app-text-muted"
-                    >
-                        <span class="w-16 md:w-20 pl-1">Qty</span>
-                        <span class="w-16 md:w-20 pl-1">Unit</span>
-                        <span class="flex-1 pl-1">Ingredient</span>
-                        <span class="w-8"></span>
-                    </div>
-                    {#each ingredients as ing, i}
-                        <div class="flex gap-2 w-full min-w-0">
-                            <input
-                                type="text"
-                                bind:value={ing.amount}
-                                disabled={isSaving}
-                                placeholder="Qty"
-                                class="w-14 md:w-20 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
-                            />
-                            <input
-                                type="text"
-                                bind:value={ing.unit}
-                                disabled={isSaving}
-                                placeholder="Unit"
-                                class="w-14 md:w-24 h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-colors shrink-0 disabled:opacity-50"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <input
-                                    type="text"
-                                    bind:value={ing.name}
-                                    disabled={isSaving}
-                                    placeholder="Ingredient"
-                                    class="w-full h-11 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-colors disabled:opacity-50"
-                                />
-                            </div>
-                            <button
-                                onclick={() => removeIngredientRow(i)}
-                                disabled={isSaving}
-                                class="w-8 h-11 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-app-text-muted"
-                            >
-                                <X size={16} />
-                            </button>
-                        </div>
-                    {/each}
-                    <button
-                        onclick={addIngredientRow}
-                        disabled={isSaving}
-                        class="text-sm text-app-primary font-bold hover:underline pt-2 pl-1 flex items-center gap-1 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
-                    >
-                        <Utensils size={14} /> Add Line Item
-                    </button>
-                </div>
-            {:else}
-                <textarea
-                    bind:value={bulkIngredients}
-                    rows="10"
-                    disabled={isSaving}
-                    placeholder="1 cup flour&#10;2 eggs&#10;..."
-                    class="w-full p-4 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y font-mono text-sm leading-relaxed disabled:opacity-50"
-                ></textarea>
-            {/if}
-        </div>
-
-        <!-- Instructions -->
-        <div class="space-y-4 pb-8">
-            <h3 class="text-app-text font-bold text-lg flex items-center gap-1">
-                Instructions <span class="text-red-500">*</span>
-            </h3>
-            <textarea
-                bind:value={instructions}
-                rows="8"
-                disabled={isSaving}
-                placeholder="Step-by-step directions..."
-                class="w-full p-5 bg-app-bg border border-app-border rounded-xl text-app-text placeholder:text-app-text-muted/50 focus:outline-none focus:border-app-primary resize-y leading-relaxed disabled:opacity-50"
-            ></textarea>
-        </div>
     </div>
 </Modal>
 
