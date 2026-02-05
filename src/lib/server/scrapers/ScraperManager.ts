@@ -1,6 +1,7 @@
 import type { ScrapingResult, ScrapingStrategy } from './types';
 import { DefaultStrategy } from './DefaultStrategy';
 import { InstagramStrategy } from './InstagramStrategy';
+import { TikTokStrategy } from './TikTokStrategy';
 
 export class ScraperManager {
     private strategies: ScrapingStrategy[] = [];
@@ -9,6 +10,7 @@ export class ScraperManager {
     constructor() {
         // Register specialized strategies
         this.strategies.push(new InstagramStrategy());
+        this.strategies.push(new TikTokStrategy());
 
         // Fallback strategy
         this.defaultStrategy = new DefaultStrategy();
