@@ -9,7 +9,7 @@ export default defineConfig({
 		tailwindcss(),
 		VitePWA({
 			registerType: 'autoUpdate',
-			includeAssets: ['icons/apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
+			includeAssets: ['logo.png'],
 			workbox: {
 				globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],
 				runtimeCaching: [
@@ -58,23 +58,23 @@ export default defineConfig({
 				prefer_related_applications: false,
 				icons: [
 					{
-						src: 'icons/icon-192x192.png',
+						src: 'logo.png',
 						sizes: '192x192',
 						type: 'image/png'
 					},
 					{
-						src: 'icons/icon-512x512.png',
+						src: 'logo.png',
 						sizes: '512x512',
 						type: 'image/png'
 					},
 					{
-						src: 'icons/icon-192x192.png',
+						src: 'logo.png',
 						sizes: '192x192',
 						type: 'image/png',
 						purpose: 'maskable'
 					},
 					{
-						src: 'icons/icon-512x512.png',
+						src: 'logo.png',
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'maskable'
@@ -85,19 +85,19 @@ export default defineConfig({
 						name: 'Week Plan',
 						short_name: 'Plan',
 						url: '/weekplan',
-						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
+						icons: [{ src: 'logo.png', sizes: '192x192' }]
 					},
 					{
 						name: 'Shopping List',
 						short_name: 'Shopping',
 						url: '/shopping',
-						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
+						icons: [{ src: 'logo.png', sizes: '192x192' }]
 					},
 					{
 						name: 'Recipes',
 						short_name: 'Recipes',
 						url: '/recipes',
-						icons: [{ src: 'icons/icon-192x192.png', sizes: '192x192' }]
+						icons: [{ src: 'logo.png', sizes: '192x192' }]
 					}
 				]
 			},
