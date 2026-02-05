@@ -16,18 +16,8 @@ export class InstagramStrategy implements ScrapingStrategy {
             $('meta[property="og:description"]').attr('content') ||
             $('meta[name="twitter:description"]').attr('content');
 
-        // Extract JSON-LD scripts
-        const jsonLds: string[] = [];
-        $('script[type="application/ld+json"]').each((_, element) => {
-            const content = $(element).html();
-            if (content) {
-                jsonLds.push(content);
-            }
-        });
-
         return {
             text: metaDescription || '',
-            jsonLds,
             mainImage
         };
     }

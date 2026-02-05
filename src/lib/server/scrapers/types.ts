@@ -1,6 +1,5 @@
 export interface ScrapingResult {
     text: string;
-    jsonLds: string[];
     mainImage: string | null;
 }
 

@@ -84,46 +84,23 @@ export class TikTokStrategy implements ScrapingStrategy {
                 // Main image
                 const mainImage = getMetaContent('og:image') || getMetaContent('twitter:image');
 
-                // Extract all JSON-LD content
-                const jsonLds = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
-                    .map(el => el.textContent)
-                    .filter(content => content !== null) as string[];
-
                 return {
                     containerText,
                     rHDescription,
                     ogDescription,
                     metaDescription,
-                    jsonLds,
                     mainImage
                 };
             });
 
-            // Reconstruct the text content prioritized by the container the user asked for
-            // Also include JSON-LD description as a fallback
-            let jsonLdDescription = '';
-            for (const rawJson of result.jsonLds) {
-                try {
-                    const data = JSON.parse(rawJson);
-                    if (data.description) {
-                        jsonLdDescription = data.description;
-                        break;
-                    }
-                } catch (e) {
-                    // Ignore parse errors
-                }
-            }
-
             const text = result.containerText ||
                 result.rHDescription ||
-                jsonLdDescription ||
                 result.ogDescription ||
                 result.metaDescription ||
                 '';
 
             return {
                 text,
-                jsonLds: result.jsonLds,
                 mainImage: result.mainImage
             };
 

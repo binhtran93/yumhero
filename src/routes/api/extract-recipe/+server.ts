@@ -67,7 +67,7 @@ export async function POST({ request }) {
         if (url) {
             // Use the scraper manager to get content via the appropriate strategy
             const result = await scraperManager.scrape(url);
-            const { text, jsonLds, mainImage: scrapedImage } = result;
+            const { text, mainImage: scrapedImage } = result;
             mainImage = scrapedImage;
 
             // Optimize text BEFORE truncation to ensure we keep meaningful content
@@ -77,48 +77,6 @@ export async function POST({ request }) {
 
             if (mainImage) {
                 contentToProcess += `\n\n[IMPORTANT] Discovered Main Image URL from metadata: ${mainImage}`;
-            }
-
-            // CLIENT-SIDE CHECK (API level): Check if we have a valid Recipe JSON-LD
-            if (jsonLds && jsonLds.length > 0) {
-                for (const rawJson of jsonLds) {
-                    try {
-                        const json = JSON.parse(rawJson);
-
-                        // Helper to check object type
-                        const isRecipe = (obj: any): boolean => {
-                            if (!obj || typeof obj !== 'object') return false;
-                            const type = obj['@type'];
-                            if (Array.isArray(type)) {
-                                return type.includes('Recipe');
-                            }
-                            return type === 'Recipe';
-                        };
-
-                        let recipeData = null;
-
-                        if (Array.isArray(json)) {
-                            recipeData = json.find(isRecipe);
-                        } else if (isRecipe(json)) {
-                            recipeData = json;
-                        } else if (json['@graph'] && Array.isArray(json['@graph'])) {
-                            recipeData = json['@graph'].find(isRecipe);
-                        }
-
-                        if (recipeData) {
-                            console.log('Found valid JSON-LD Recipe, optimizing context.');
-                            // Inject the main image if one wasn't found in the JSON-LD or to reinforce it
-                            if (mainImage && !recipeData.image) {
-                                recipeData.image = mainImage;
-                            }
-                            contentToProcess = JSON.stringify(recipeData);
-                            contentType = 'structured JSON-LD data';
-                            break; // Found one, stop searching
-                        }
-                    } catch (e) {
-                        // Start parsing next script
-                    }
-                }
             }
         } else {
             const optimizedPasted = optimizeTextContent(pastedText);
