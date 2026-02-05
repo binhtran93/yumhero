@@ -38,7 +38,7 @@
     class="min-h-screen bg-app-bg text-app-text font-display flex flex-col items-center justify-center p-6 md:p-12 relative overflow-x-hidden"
 >
     <!-- Top Right Profile Dropdown Page-Level -->
-    <div class="fixed top-6 right-6 z-50">
+    <div class="absolute top-6 right-6 z-50">
         <div class="relative">
             <button
                 onclick={() => (isUserMenuOpen = !isUserMenuOpen)}
