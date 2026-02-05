@@ -191,21 +191,27 @@
                     class="w-full max-w-sm mx-auto bg-white border border-app-border rounded-2xl shadow-lg overflow-hidden"
                     in:slide={{ duration: 400, axis: "y" }}
                 >
-                    <div class="h-32 bg-orange-50 relative overflow-hidden">
-                        <!-- Placeholder Food Art -->
+                    <div class="h-40 relative overflow-hidden">
+                        <img
+                            src="/mockup/bolognese.png"
+                            alt="Spicy Tacos"
+                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] scale-110 group-hover:scale-100"
+                        />
+                        <!-- Overlay Gradient (Deeper for better contrast) -->
                         <div
-                            class="absolute inset-0 flex items-center justify-center text-orange-200"
-                        >
-                            <ChefHat size={48} />
-                        </div>
-                        <!-- Overlay Gradient -->
-                        <div
-                            class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent"
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
                         ></div>
-                        <div
-                            class="absolute bottom-3 left-4 text-white font-black text-lg drop-shadow-md"
-                        >
-                            Spicy Tacos
+                        <div class="absolute bottom-4 left-5 text-white">
+                            <div
+                                class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-1"
+                            >
+                                New Recipe
+                            </div>
+                            <h3
+                                class="font-black text-2xl drop-shadow-lg leading-tight uppercase tracking-tight"
+                            >
+                                Spicy Tacos
+                            </h3>
                         </div>
                     </div>
                     <div class="p-4 space-y-4">
@@ -258,40 +264,6 @@
                                         Taco seasoning
                                     </li>
                                 </ul>
-                            </div>
-
-                            <div>
-                                <h4
-                                    class="text-[10px] uppercase font-bold text-app-text-muted mb-2"
-                                >
-                                    Instructions
-                                </h4>
-                                <div class="space-y-1.5">
-                                    <div class="flex gap-2">
-                                        <span
-                                            class="text-[10px] font-bold text-app-primary bg-app-primary/10 w-4 h-4 rounded flex items-center justify-center shrink-0"
-                                            >1</span
-                                        >
-                                        <p
-                                            class="text-[10px] leading-relaxed text-app-text-muted"
-                                        >
-                                            Brown the beef in a skillet over
-                                            medium-high heat...
-                                        </p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <span
-                                            class="text-[10px] font-bold text-app-primary bg-app-primary/10 w-4 h-4 rounded flex items-center justify-center shrink-0"
-                                            >2</span
-                                        >
-                                        <p
-                                            class="text-[10px] leading-relaxed text-app-text-muted"
-                                        >
-                                            Warm tortillas and serve with
-                                            toppings.
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
