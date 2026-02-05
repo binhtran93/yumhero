@@ -160,7 +160,7 @@
             role="separator"
         >
             <div class="flex items-center gap-3 text-app-text">
-                <Hash size={18} class="text-app-text-muted/80" />
+                <Hash size={18} class="text-app-text-muted" />
                 <span class="font-medium">Quantity</span>
             </div>
 
