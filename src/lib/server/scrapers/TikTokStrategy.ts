@@ -1,5 +1,5 @@
 import type { ScrapingResult, ScrapingStrategy } from './types';
-import { fetchHtml } from '../curlScraper';
+import { fetchDynamicContent } from '../scraper';
 import * as cheerio from 'cheerio';
 
 export class TikTokStrategy implements ScrapingStrategy {
@@ -8,7 +8,8 @@ export class TikTokStrategy implements ScrapingStrategy {
     }
 
     async scrape(url: string): Promise<ScrapingResult> {
-        const { html, mainImage } = await fetchHtml(url);
+        // Use Puppeteer ONLY for TikTok to handle its JS-heavy nature and anti-bot
+        const { html, mainImage, jsonLds } = await fetchDynamicContent(url);
         const $ = cheerio.load(html);
 
         // For TikTok, the meta description is highly reliable for recipe content
@@ -19,26 +20,19 @@ export class TikTokStrategy implements ScrapingStrategy {
 
         const rHDescription = $('meta[name="description"][data-rh="true"]').attr('content');
 
-        // Extract JSON-LD scripts as they might contain additional metadata
-        const jsonLds: string[] = [];
-        $('script[type="application/ld+json"]').each((_, element) => {
-            const content = $(element).html();
-            if (content) {
-                jsonLds.push(content);
-            }
-        });
-
         // Some TikTok JSON-LD (VideoObject) contains the description
         let jsonLdDescription = '';
-        for (const rawJson of jsonLds) {
-            try {
-                const data = JSON.parse(rawJson);
-                if (data.description) {
-                    jsonLdDescription = data.description;
-                    break;
+        if (jsonLds) {
+            for (const rawJson of jsonLds) {
+                try {
+                    const data = JSON.parse(rawJson);
+                    if (data.description) {
+                        jsonLdDescription = data.description;
+                        break;
+                    }
+                } catch (e) {
+                    // Ignore parse errors
                 }
-            } catch (e) {
-                // Ignore parse errors
             }
         }
 
@@ -46,7 +40,7 @@ export class TikTokStrategy implements ScrapingStrategy {
 
         return {
             text: textContent,
-            jsonLds,
+            jsonLds: jsonLds || [],
             mainImage
         };
     }
