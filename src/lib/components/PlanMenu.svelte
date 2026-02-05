@@ -8,11 +8,9 @@
         onClose: () => void;
         onPrint: () => void;
         onClear: () => void;
-        isPrinting: boolean;
     }
 
-    let { triggerRect, onClose, onPrint, onClear, isPrinting }: Props =
-        $props();
+    let { triggerRect, onClose, onPrint, onClear }: Props = $props();
 
     // Calculate position with smart flip logic
     let style = $state("");
@@ -76,15 +74,8 @@
                     onPrint();
                     onClose();
                 }}
-                disabled={isPrinting}
             >
-                {#if isPrinting}
-                    <div
-                        class="w-4 h-4 border-2 border-app-primary border-t-transparent rounded-full animate-spin"
-                    ></div>
-                {:else}
-                    <Printer size={18} />
-                {/if}
+                <Printer size={18} />
                 Print Plan
             </button>
 
@@ -95,7 +86,6 @@
                     onClear();
                     onClose();
                 }}
-                disabled={isPrinting}
             >
                 <BrushCleaning size={18} />
                 Clear All

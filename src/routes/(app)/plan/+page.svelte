@@ -1,11 +1,18 @@
 <script lang="ts">
-    import type {LeftoverItem, MealType, PlannedLeftover, PlannedRecipe, Recipe, WeeklyPlan,} from "$lib/types";
+    import type {
+        LeftoverItem,
+        MealType,
+        PlannedLeftover,
+        PlannedRecipe,
+        Recipe,
+        WeeklyPlan,
+    } from "$lib/types";
     import RecipeModal from "$lib/components/RecipeModal.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import {getWeekPlan, saveWeekPlan} from "$lib/stores/plans";
-    import {userRecipes} from "$lib/stores/recipes";
+    import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
+    import { userRecipes } from "$lib/stores/recipes";
     import {
         addLeftoverToFridge,
         deleteLeftover,
@@ -13,25 +20,33 @@
         setLeftoverNotPlanned,
         setLeftoverPlanned,
     } from "$lib/stores/leftovers";
-    import {getBoughtIngredientsForRecipe, getWeekShoppingList} from "$lib/stores/shoppingList";
-    import {addIngredientsToFridge} from "$lib/stores/fridgeIngredients";
+    import {
+        getBoughtIngredientsForRecipe,
+        getWeekShoppingList,
+    } from "$lib/stores/shoppingList";
+    import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
-    import {onMount} from "svelte";
-    import {fade} from "svelte/transition";
-    import {BrushCleaning, ChevronLeft, ChevronRight, EllipsisVertical, Printer,} from "lucide-svelte";
+    import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
+    import {
+        BrushCleaning,
+        ChevronLeft,
+        ChevronRight,
+        EllipsisVertical,
+        Printer,
+    } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import MealSlot from "$lib/components/MealSlot.svelte";
     import NotePopover from "$lib/components/NotePopover.svelte";
     import PlanMenu from "$lib/components/PlanMenu.svelte";
     import CookingView from "$lib/components/CookingView.svelte";
-    import {twMerge} from "tailwind-merge";
-    import {type DocumentState, documentStore} from "$lib/stores/firestore";
-    import {user} from "$lib/stores/auth";
-    import {derived, get, writable} from "svelte/store";
-    import {toasts} from "$lib/stores/toasts";
+    import { twMerge } from "tailwind-merge";
+    import { type DocumentState, documentStore } from "$lib/stores/firestore";
+    import { user } from "$lib/stores/auth";
+    import { derived, get, writable } from "svelte/store";
+    import { toasts } from "$lib/stores/toasts";
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
     import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
-    import {toPng} from "html-to-image";
 
     const DAYS = [
         "Monday",
@@ -933,10 +948,10 @@
 
         if (existingIndex !== -1) {
             // Recipe exists in target, merge quantities
-            // @ts-ignore
-            targetList[existingIndex].quantity =
-                (targetList[existingIndex].quantity || 1) +
-                (item.quantity || 1);
+            const targetRecipe = targetList[existingIndex] as any;
+            const sourceRecipe = item as any;
+            targetRecipe.quantity =
+                (targetRecipe.quantity || 1) + (sourceRecipe.quantity || 1);
 
             // Remove from source
             // @ts-ignore
@@ -959,98 +974,6 @@
     let isShoppingListOpen = $state(false);
     let shoppingListStore = $derived(getWeekShoppingList(weekId));
     let itemCount = $derived($shoppingListStore.data.length);
-
-    let printRef = $state<HTMLDivElement | null>(null);
-    let isPrinting = $state(false);
-
-    async function handlePrint() {
-        if (!printRef) return;
-
-        isPrinting = true;
-
-        try {
-            // Force a standard desktop-like width for the capture to ensure 7 columns look correct
-            const captureWidth = 1400;
-
-            const dataUrl = await toPng(printRef, {
-                backgroundColor: "#ffffff",
-                quality: 1,
-                pixelRatio: 2,
-                width: captureWidth,
-                style: {
-                    margin: "0",
-                    padding: "0",
-                    width: `${captureWidth}px`,
-                },
-            });
-
-            const printWindow = window.open("", "_blank");
-            if (printWindow) {
-                printWindow.document.write(`
-                    <html>
-                    <head>
-                        <title>YumHero Meal Plan</title>
-                        <style>
-                            @page { 
-                                size: landscape; 
-                                margin: 5mm; 
-                            }
-                            * {
-                                box-sizing: border-box;
-                            }
-                            body { 
-                                margin: 0; 
-                                padding: 0;
-                                width: 100%;
-                                display: flex; 
-                                flex-direction: column;
-                                align-items: stretch; 
-                                background: white; 
-                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                            }
-                            .header {
-                                width: 100%;
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: baseline;
-                                padding-bottom: 5px;
-                                border-bottom: 2px solid #c2410c;
-                                margin-bottom: 10px;
-                            }
-                            .header h1 { color: #c2410c; margin: 0; font-size: 22px; font-weight: 900; }
-                            .header p { color: #57534e; margin: 0; font-weight: bold; font-size: 14px; }
-                            .content {
-                                width: 100%;
-                                flex: 1;
-                            }
-                            img { 
-                                width: 100%; 
-                                height: auto; 
-                                display: block; 
-                                border: 1px solid #e7e5e4; 
-                            }
-                        </style>
-                    </head>
-                    <body onload="setTimeout(() => { window.print(); window.close(); }, 800)">
-                        <div class="header">
-                            <h1>YumHero Meal Plan</h1>
-                            <p>${formatDate(weekRange.start)} - ${formatDate(weekRange.end)}, ${weekRange.start.getFullYear()}</p>
-                        </div>
-                        <div class="content">
-                            <img src="${dataUrl}" />
-                        </div>
-                    </body>
-                    </html>
-                `);
-                printWindow.document.close();
-            }
-        } catch (error) {
-            console.error("Print failed:", error);
-            toasts.error("Failed to generate print view");
-        } finally {
-            isPrinting = false;
-        }
-    }
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />
@@ -1090,7 +1013,6 @@
                 <button
                     class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
                     onclick={() => (isResetModalOpen = true)}
-                    disabled={isPrinting}
                     aria-label="Clear Week Plan"
                 >
                     <BrushCleaning
@@ -1099,23 +1021,17 @@
                     />
                 </button>
 
-                <button
-                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group disabled:opacity-50"
-                    onclick={handlePrint}
-                    disabled={isPrinting}
+                <a
+                    href="/print/{weekId}"
+                    target="_blank"
+                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group block text-app-text-muted cursor-pointer"
                     aria-label="Print Week Plan"
                 >
-                    {#if isPrinting}
-                        <div
-                            class="w-6 h-6 border-2 border-app-primary border-t-transparent rounded-full animate-spin"
-                        ></div>
-                    {:else}
-                        <Printer
-                            size={20}
-                            class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                        />
-                    {/if}
-                </button>
+                    <Printer
+                        size={20}
+                        class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                    />
+                </a>
             </div>
 
             <button
@@ -1146,34 +1062,18 @@
             bind:this={scrollContainer}
         >
             <div
-                bind:this={printRef}
-                class={twMerge(
-                    "flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30",
-                    isPrinting &&
-                        "printing-mode grid! w-350! min-w-350! bg-white! grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[auto_repeat(5,auto)]",
-                )}
+                class="flex w-fit md:w-full md:min-w-fit md:grid md:grid-cols-[repeat(7,minmax(240px,1fr))] md:grid-flow-col md:grid-rows-[auto_repeat(5,auto)] border-r border-app-text/30"
             >
                 {#each plan as dayPlan, i (dayPlan.day)}
-                    <div
-                        class={twMerge(
-                            "w-screen flex flex-col md:contents snap-start",
-                            isPrinting && "contents!",
-                        )}
-                    >
+                    <div class="w-screen flex flex-col md:contents snap-start">
                         <!-- Header -->
                         <div
-                            class={twMerge(
-                                "sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0",
-                                isPrinting && "h-15! py-0!",
-                            )}
+                            class="sticky top-0 z-20 flex flex-col md:flex-col items-center justify-center bg-app-surface border-b border-r border-app-border transition-all duration-300 min-h-10 md:h-15 shadow-sm py-1 md:py-0"
                             bind:this={dayRefs[i]}
                         >
                             <!-- Mobile View: Horizontal Layout -->
                             <div
-                                class={twMerge(
-                                    "flex md:hidden items-center justify-center gap-1.5",
-                                    isPrinting && "hidden!",
-                                )}
+                                class="flex md:hidden items-center justify-center gap-1.5"
                             >
                                 <span
                                     class="font-display font-black text-app-text text-sm"
@@ -1191,12 +1091,7 @@
                             </div>
 
                             <!-- Desktop View: Existing Layout -->
-                            <div
-                                class={twMerge(
-                                    "hidden md:flex items-center gap-2",
-                                    isPrinting && "flex!",
-                                )}
-                            >
+                            <div class="hidden md:flex items-center gap-2">
                                 <span
                                     class="font-display font-black transition-all text-app-text text-base"
                                 >
@@ -1212,10 +1107,7 @@
                             </div>
 
                             <span
-                                class={twMerge(
-                                    "hidden md:block text-xs text-app-text font-bold opacity-70",
-                                    isPrinting && "block!",
-                                )}
+                                class="hidden md:block text-xs text-app-text font-bold opacity-70"
                             >
                                 {getDayDate(i).split(" ")[1]}
                             </span>
@@ -1315,7 +1207,6 @@
                                         )}
                                     onCloseDropdown={handleCloseDropdown}
                                     {availableRecipes}
-                                    {isPrinting}
                                 />
 
                                 <!-- Today Flash Overlay for each cell -->
@@ -1434,8 +1325,10 @@
     <PlanMenu
         triggerRect={planMenu.triggerRect}
         onClose={() => (planMenu.isOpen = false)}
-        onPrint={handlePrint}
+        onPrint={() => {
+            window.open(`/print/${weekId}`, "_blank");
+            planMenu.isOpen = false;
+        }}
         onClear={() => (isResetModalOpen = true)}
-        {isPrinting}
     />
 {/if}
