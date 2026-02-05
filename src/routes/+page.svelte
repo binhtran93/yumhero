@@ -20,6 +20,7 @@
     } from "lucide-svelte";
     import { fade, scale as svelteScale } from "svelte/transition";
     import { tick } from "svelte";
+    import { afterNavigate } from "$app/navigation";
 
     let restartKey = $state(0);
     let activeMockup = $state("desktop");
@@ -52,6 +53,18 @@
         restartKey += 1;
         switchMockup("desktop");
     };
+
+    afterNavigate(() => {
+        if (window.location.hash) {
+            const id = window.location.hash.substring(1);
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth" });
+                }
+            }, 100);
+        }
+    });
 </script>
 
 <div class="min-h-screen bg-app-bg text-app-text font-display">
