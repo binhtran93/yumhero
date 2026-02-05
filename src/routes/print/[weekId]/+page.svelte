@@ -234,7 +234,7 @@
                                     <div class="flex-1 min-w-0 pt-0.5">
                                         <p
                                             class={twMerge(
-                                                "font-bold leading-tight !text-[11px]",
+                                                "font-bold leading-tight text-[11px]!",
                                                 section.type === "breakfast"
                                                     ? "text-accent-breakfast-text"
                                                     : section.type === "lunch"
