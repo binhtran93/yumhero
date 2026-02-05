@@ -148,7 +148,7 @@
 </svelte:head>
 
 <div
-    class="bg-slate-100 min-h-screen w-full flex justify-center items-start p-8 print:p-0 print:bg-white overflow-auto print:min-h-0 relative"
+    class="bg-slate-100 min-h-screen w-full flex md:justify-center items-start p-4 sm:p-8 print:p-0 print:bg-white overflow-auto print:min-h-0 relative"
 >
     {#if isLoading}
         <div
@@ -162,7 +162,7 @@
     {/if}
     <!-- A4 Landscape Simulation: 297mm x 210mm -->
     <div
-        class="bg-white w-[297mm] h-[210mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:max-h-full print:w-full print:overflow-visible"
+        class="bg-white w-[297mm] h-[210mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:max-h-full print:w-full print:overflow-visible mx-auto md:mx-0"
     >
         <!-- Header -->
         <div class="flex flex-col border-b-2 border-app-primary pb-2">
@@ -299,22 +299,22 @@
     </div>
 
     <div
-        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 print:hidden z-50 bg-white/80 backdrop-blur-md p-2 rounded-full border border-gray-200 shadow-2xl"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-4 print:hidden z-50 bg-white/80 backdrop-blur-md p-2 rounded-full border border-gray-200 shadow-2xl max-w-[95vw]"
     >
         <button
             onclick={() => window.print()}
-            class="px-8 py-3 bg-app-primary text-white rounded-full font-black shadow-lg hover:scale-105 transition-transform flex items-center gap-2 group"
+            class="px-4 sm:px-8 py-3 bg-app-primary text-white rounded-full font-black shadow-lg hover:scale-105 transition-transform flex items-center gap-2 group whitespace-nowrap"
         >
-            <Printer class="w-5 h-5 group-hover:animate-bounce" />
-            <span>Print Plan</span>
+            <Printer class="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-bounce" />
+            <span class="text-sm sm:text-base">Print Plan</span>
         </button>
 
         <button
             onclick={() => window.close()}
-            class="w-12 h-12 flex items-center justify-center bg-white text-gray-400 font-black rounded-full shadow-sm border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+            class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white text-gray-400 font-black rounded-full shadow-sm border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shrink-0"
             title="Close"
         >
-            <X class="w-5 h-5" />
+            <X class="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
     </div>
 </div>
