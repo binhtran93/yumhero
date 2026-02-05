@@ -172,22 +172,30 @@
         return `${day.slice(0, 3)} ${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`;
     };
 
+    const getDiffDays = (date: Date): number => {
+        const d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const d2 = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+        );
+        return Math.round((d1.getTime() - d2.getTime()) / 86400000);
+    };
+
+    const getRelativeLabel = (date: Date): string => {
+        const diffDays = getDiffDays(date);
+
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Yesterday";
+        if (diffDays > 0) return `${diffDays} days ago`;
+        if (diffDays === -1) return "Tomorrow";
+        if (diffDays < -1) return `${Math.abs(diffDays)} days from now`;
+        return "Today";
+    };
+
     const formatSource = (item: LeftoverItem): string => {
         if (!item.sourceDate) return "Manual Entry";
-
-        // Format date as "Mon, Jan 1"
-        const dateStr = item.sourceDate.toLocaleDateString("en-US", {
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-        });
-
-        const mealTypeStr = item.sourceMealType
-            ? item.sourceMealType.charAt(0).toUpperCase() +
-              item.sourceMealType.slice(1)
-            : "";
-
-        return `${dateStr} • ${mealTypeStr}`;
+        return getRelativeLabel(item.sourceDate);
     };
 
     const DAYS = [
@@ -208,17 +216,11 @@
         if (dayIndex !== -1) {
             const plannedDate = new Date(weekStart);
             plannedDate.setDate(weekStart.getDate() + dayIndex);
-            const dateStr = plannedDate.toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-            });
-            const meal = item.plannedFor.mealType;
-            return `${dateStr} • ${meal.charAt(0).toUpperCase() + meal.slice(1)}`;
+            return getRelativeLabel(plannedDate);
         }
 
         // Fallback
-        return formatPlannedFor(item);
+        return item.plannedFor.day;
     };
 
     const getDaysInFridge = (date: Date) => {
@@ -229,7 +231,7 @@
     const getDaysBadgeClass = (days: number) => {
         if (days <= 2)
             return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-        if (days <= 5)
+        if (days <= 4)
             return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
         return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
     };
@@ -442,8 +444,8 @@
                                     </h2>
                                     <div class="space-y-2">
                                         {#each availableItems as item (item.id)}
-                                            {@const days = getDaysInFridge(
-                                                item.createdAt,
+                                            {@const days = getDiffDays(
+                                                item.sourceDate,
                                             )}
                                             <div
                                                 class="w-full flex items-center gap-3 p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left group"
@@ -478,26 +480,14 @@
                                                         {item.title}
                                                     </span>
                                                     <div
-                                                        class="flex items-center gap-2"
+                                                        class="flex items-center gap-2 mt-1"
                                                     >
-                                                        <span
-                                                            class="text-xs text-app-text-muted"
-                                                        >
-                                                            {formatSource(item)}
-                                                        </span>
                                                         <span
                                                             class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
                                                                 days,
                                                             )}"
                                                         >
-                                                            {#if days === 0}
-                                                                Today
-                                                            {:else}
-                                                                {days}
-                                                                {days === 1
-                                                                    ? "day"
-                                                                    : "days"}
-                                                            {/if}
+                                                            {formatSource(item)}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -531,8 +521,8 @@
                                     <div class="space-y-2">
                                         {#each plannedItems as item (item.id)}
                                             {@const isPast = isTimePast(item)}
-                                            {@const days = getDaysInFridge(
-                                                item.createdAt,
+                                            {@const days = getDiffDays(
+                                                item.sourceDate,
                                             )}
                                             <div
                                                 class="relative"
@@ -570,31 +560,27 @@
                                                             {item.title}
                                                         </span>
                                                         <div
-                                                            class="flex items-start gap-2"
+                                                            class="flex items-center gap-2 mt-1"
                                                         >
-                                                            <span
-                                                                class="text-xs text-app-text-muted block"
-                                                            >
-                                                                {formatSource(
-                                                                    item,
-                                                                )}
-                                                                → {formatPlannedDate(
-                                                                    item,
-                                                                )}
-                                                            </span>
                                                             <span
                                                                 class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
                                                                     days,
                                                                 )}"
                                                             >
-                                                                {#if days === 0}
-                                                                    Today
-                                                                {:else}
-                                                                    {days}
-                                                                    {days === 1
-                                                                        ? "day"
-                                                                        : "days"}
-                                                                {/if}
+                                                                {formatSource(
+                                                                    item,
+                                                                )}
+                                                            </span>
+                                                            <span
+                                                                class="text-[10px] text-app-text-muted font-bold"
+                                                                >→</span
+                                                            >
+                                                            <span
+                                                                class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-app-primary/10 text-app-primary border border-app-primary/20"
+                                                            >
+                                                                {formatPlannedDate(
+                                                                    item,
+                                                                )}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -657,7 +643,7 @@
                         <div class="max-w-2xl mx-auto">
                             <div class="space-y-2">
                                 {#each filteredIngredientsList as ingredient (ingredient.id)}
-                                    {@const days = getDaysInFridge(
+                                    {@const days = getDiffDays(
                                         ingredient.addedAt,
                                     )}
                                     <div
@@ -693,18 +679,13 @@
                                                 </div>
 
                                                 <span
-                                                    class="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
+                                                    class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold {getDaysBadgeClass(
                                                         days,
                                                     )}"
                                                 >
-                                                    {#if days === 0}
-                                                        Today
-                                                    {:else}
-                                                        {days}
-                                                        {days === 1
-                                                            ? "day"
-                                                            : "days"}
-                                                    {/if}
+                                                    {getRelativeLabel(
+                                                        ingredient.addedAt,
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
