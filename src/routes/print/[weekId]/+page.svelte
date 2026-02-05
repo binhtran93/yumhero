@@ -146,158 +146,168 @@
     <title>Print Plan - YumHero</title>
 </svelte:head>
 
-<div class="bg-white min-h-screen w-full flex flex-col p-4 print:p-0">
-    <!-- Header -->
+<div
+    class="bg-slate-100 min-h-screen w-full flex justify-center items-start p-8 print:p-0 print:bg-white overflow-auto print:min-h-0"
+>
+    <!-- A4 Landscape Simulation: 297mm x 210mm -->
     <div
-        class="flex flex-col border-b-2 border-app-primary pb-2 mb-4 print:mb-2"
+        class="bg-white w-[297mm] h-[210mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:max-h-full print:w-full print:overflow-visible"
     >
-        <div class="flex justify-between items-baseline">
-            <h1 class="text-2xl font-black text-app-primary m-0">
-                YumHero Meal Plan
-            </h1>
-            <p class="text-app-text-muted font-bold text-sm m-0">{weekLabel}</p>
+        <!-- Header -->
+        <div class="flex flex-col border-b-2 border-app-primary pb-2">
+            <div class="flex justify-between items-baseline">
+                <h1 class="text-[20pt] font-black text-app-primary m-0">
+                    YumHero Meal Plan
+                </h1>
+                <p class="text-app-text-muted font-bold text-[10pt] m-0">
+                    {weekLabel}
+                </p>
+            </div>
+        </div>
+
+        <!-- Grid -->
+        <div
+            class="border-l border-app-text/20 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[repeat(6,auto)] content-start"
+        >
+            {#each plan as dayPlan, i (dayPlan.day)}
+                <div class="contents">
+                    <!-- Column Header -->
+                    <div
+                        class="flex flex-col items-center justify-center p-1 border-b border-r border-app-text/20 bg-white h-15"
+                    >
+                        <span
+                            class="font-display font-black text-app-text text-[12pt]"
+                        >
+                            {dayPlan.day.slice(0, 3)}
+                        </span>
+                        <span
+                            class="text-[9pt] text-app-text font-bold opacity-70"
+                        >
+                            {getDayDate(i).split(" ")[1]}
+                        </span>
+                    </div>
+
+                    <!-- Meal Slots -->
+                    {#each mealSections as section (section.type)}
+                        <div
+                            class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full min-h-10"
+                        >
+                            <!-- Inline Meal Slot Rendering for Print -->
+                            <div
+                                class="p-2 py-1 flex items-center justify-between bg-white"
+                            >
+                                <div class="flex items-center">
+                                    <div
+                                        class={twMerge(
+                                            "w-2 h-2 rounded-full mr-2",
+                                            section.type === "breakfast"
+                                                ? "bg-accent-breakfast"
+                                                : section.type === "lunch"
+                                                  ? "bg-accent-lunch"
+                                                  : section.type === "dinner"
+                                                    ? "bg-accent-dinner"
+                                                    : section.type === "snack"
+                                                      ? "bg-accent-snack"
+                                                      : "bg-accent-note",
+                                        )}
+                                    ></div>
+                                    <span
+                                        class="text-[8pt] font-semibold capitalize tracking-widest text-app-text-muted"
+                                    >
+                                        {section.label}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="px-2 pb-2 flex flex-col gap-2 relative mt-2"
+                            >
+                                {#each dayPlan.meals[section.type] as item}
+                                    {@const itemIsLeftover =
+                                        "isLeftover" in item && item.isLeftover}
+                                    <div
+                                        class={twMerge(
+                                            "relative flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border",
+                                            section.type === "breakfast"
+                                                ? "bg-accent-breakfast-bg border-accent-breakfast-border"
+                                                : section.type === "lunch"
+                                                  ? "bg-accent-lunch-bg border-accent-lunch-border"
+                                                  : section.type === "dinner"
+                                                    ? "bg-accent-dinner-bg border-accent-dinner-border"
+                                                    : section.type === "snack"
+                                                      ? "bg-accent-snack-bg border-accent-snack-border"
+                                                      : "bg-accent-note-bg border-accent-note-border",
+                                        )}
+                                    >
+                                        <div class="flex-1 min-w-0 pt-0.5">
+                                            <p
+                                                class={twMerge(
+                                                    "font-bold leading-tight text-[9pt]!",
+                                                    section.type === "breakfast"
+                                                        ? "text-accent-breakfast-text"
+                                                        : section.type ===
+                                                            "lunch"
+                                                          ? "text-accent-lunch-text"
+                                                          : section.type ===
+                                                              "dinner"
+                                                            ? "text-accent-dinner-text"
+                                                            : section.type ===
+                                                                "snack"
+                                                              ? "text-accent-snack-text"
+                                                              : "text-accent-note-text",
+                                                )}
+                                            >
+                                                {"title" in item
+                                                    ? item.title
+                                                    : "text" in item
+                                                      ? item.text
+                                                      : ""}
+
+                                                {#if "quantity" in item && (item as any).quantity > 1}
+                                                    <span
+                                                        class="opacity-60 font-medium ml-1 text-[8pt]"
+                                                        >x{(item as any)
+                                                            .quantity}</span
+                                                    >
+                                                {/if}
+                                            </p>
+                                            {#if itemIsLeftover}
+                                                <div
+                                                    class="flex items-center gap-1.5 -mt-0.5"
+                                                >
+                                                    <div
+                                                        class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"
+                                                    ></div>
+                                                    <p
+                                                        class="text-[7pt] font-bold opacity-60"
+                                                    >
+                                                        Leftover
+                                                    </p>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/each}
         </div>
     </div>
 
-    <!-- Grid -->
     <div
-        class="flex-1 border-l border-app-text/30 grid grid-cols-[repeat(7,1fr)] grid-flow-col grid-rows-[repeat(6,auto)] content-start border-r"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-4 print:hidden z-50"
     >
-        {#each plan as dayPlan, i (dayPlan.day)}
-            <div class="contents">
-                <!-- Column Header -->
-                <div
-                    class="flex flex-col items-center justify-center p-1 border-b border-r border-app-border bg-white h-15"
-                >
-                    <span
-                        class="font-display font-black text-app-text text-base"
-                    >
-                        {dayPlan.day.slice(0, 3)}
-                    </span>
-                    <span class="text-xs text-app-text font-bold opacity-70">
-                        {getDayDate(i).split(" ")[1]}
-                    </span>
-                </div>
-
-                <!-- Meal Slots -->
-                {#each mealSections as section (section.type)}
-                    <div
-                        class="flex flex-col border-r border-b border-app-text/20 bg-white relative h-full min-h-10"
-                    >
-                        <!-- Inline Meal Slot Rendering for Print -->
-                        <div
-                            class="p-2 py-1 flex items-center justify-between bg-white border-b border-app-text/5"
-                        >
-                            <div class="flex items-center">
-                                <div
-                                    class={twMerge(
-                                        "w-2 h-2 rounded-full mr-2",
-                                        section.type === "breakfast"
-                                            ? "bg-accent-breakfast"
-                                            : section.type === "lunch"
-                                              ? "bg-accent-lunch"
-                                              : section.type === "dinner"
-                                                ? "bg-accent-dinner"
-                                                : section.type === "snack"
-                                                  ? "bg-accent-snack"
-                                                  : "bg-accent-note",
-                                    )}
-                                ></div>
-                                <span
-                                    class="text-[10px] font-semibold capitalize tracking-widest text-app-text-muted"
-                                >
-                                    {section.label}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div
-                            class="px-2 pb-2 flex flex-col gap-2 relative mt-2"
-                        >
-                            {#each dayPlan.meals[section.type] as item}
-                                {@const itemIsLeftover =
-                                    "isLeftover" in item && item.isLeftover}
-                                <div
-                                    class={twMerge(
-                                        "relative flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border",
-                                        section.type === "breakfast"
-                                            ? "bg-accent-breakfast-bg border-accent-breakfast-border"
-                                            : section.type === "lunch"
-                                              ? "bg-accent-lunch-bg border-accent-lunch-border"
-                                              : section.type === "dinner"
-                                                ? "bg-accent-dinner-bg border-accent-dinner-border"
-                                                : section.type === "snack"
-                                                  ? "bg-accent-snack-bg border-accent-snack-border"
-                                                  : "bg-accent-note-bg border-accent-note-border",
-                                    )}
-                                >
-                                    <div class="flex-1 min-w-0 pt-0.5">
-                                        <p
-                                            class={twMerge(
-                                                "font-bold leading-tight text-[11px]!",
-                                                section.type === "breakfast"
-                                                    ? "text-accent-breakfast-text"
-                                                    : section.type === "lunch"
-                                                      ? "text-accent-lunch-text"
-                                                      : section.type ===
-                                                          "dinner"
-                                                        ? "text-accent-dinner-text"
-                                                        : section.type ===
-                                                            "snack"
-                                                          ? "text-accent-snack-text"
-                                                          : "text-accent-note-text",
-                                            )}
-                                        >
-                                            {"title" in item
-                                                ? item.title
-                                                : "text" in item
-                                                  ? item.text
-                                                  : ""}
-
-                                            {#if "quantity" in item && item.quantity > 1}
-                                                <span
-                                                    class="opacity-60 font-medium ml-1 text-[10px]"
-                                                    >x{item.quantity}</span
-                                                >
-                                            {/if}
-                                        </p>
-                                        {#if itemIsLeftover}
-                                            <div
-                                                class="flex items-center gap-1.5 -mt-0.5"
-                                            >
-                                                <div
-                                                    class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"
-                                                ></div>
-                                                <p
-                                                    class="text-[9px] font-bold opacity-60"
-                                                >
-                                                    Leftover
-                                                </p>
-                                            </div>
-                                        {/if}
-                                    </div>
-                                </div>
-                            {/each}
-                        </div>
-                    </div>
-                {/each}
-            </div>
-        {/each}
-    </div>
-
-    <div class="mt-8 text-center print:hidden">
-        <p class="text-app-text-muted mb-2">
-            Printing should start automatically...
-        </p>
         <button
             onclick={() => window.print()}
-            class="px-4 py-2 bg-app-primary text-white rounded-lg font-bold"
+            class="px-6 py-3 bg-app-primary text-white rounded-full font-black shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
         >
-            Print Again
+            <span>Print Plan</span>
         </button>
         <button
             onclick={() => window.close()}
-            class="px-4 py-2 ml-2 text-app-text-muted font-bold hover:bg-gray-100 rounded-lg"
+            class="px-6 py-3 bg-white text-app-text-muted font-black rounded-full shadow-xl border border-gray-200 hover:bg-gray-50 transition-colors"
         >
             Close
         </button>
@@ -308,12 +318,14 @@
     @media print {
         @page {
             size: landscape;
-            margin: 5mm;
+            margin: 0;
         }
         /* Ensure background colors are printed */
         :global(body) {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            background: white !important;
+            padding: 10mm;
         }
     }
 </style>
