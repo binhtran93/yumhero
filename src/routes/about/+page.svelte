@@ -91,7 +91,7 @@
                         class="absolute -inset-4 bg-app-primary/10 rounded-[32px] -rotate-2"
                     ></div>
                     <img
-                        src="/team-binh.png"
+                        src="/team-binh.webp"
                         alt="Binh Tran, Founder"
                         class="relative rounded-3xl shadow-xl w-full object-cover aspect-[4/5]"
                     />
@@ -322,7 +322,7 @@
                     class="mt-4 pt-4 flex items-center justify-center gap-4 text-left max-w-sm mx-auto"
                 >
                     <img
-                        src="/team-binh.png"
+                        src="/team-binh.webp"
                         alt="Binh"
                         class="w-12 h-12 rounded-full border border-app-border object-cover"
                     />
