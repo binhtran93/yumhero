@@ -821,7 +821,7 @@
                     <div class="flex items-center gap-2 px-1">
                         <Type size={16} class="text-app-primary" />
                         <span
-                            class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                            class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                             >Recipe Name <span class="text-red-500">*</span
                             ></span
                         >
@@ -841,7 +841,7 @@
                     <div class="flex items-center gap-2 px-1">
                         <ChefHat size={16} class="text-app-primary" />
                         <span
-                            class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                            class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                             >Meal Category</span
                         >
                     </div>
@@ -916,7 +916,7 @@
                 <div class="flex items-center gap-2">
                     <LayoutList size={16} class="text-app-primary" />
                     <span
-                        class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                        class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                     >
                         Ingredients <span class="text-red-500">*</span>
                     </span>
@@ -1017,7 +1017,7 @@
             <div class="flex items-center gap-2 px-1">
                 <ListTodo size={16} class="text-app-primary" />
                 <span
-                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                 >
                     Instructions <span class="text-red-500">*</span>
                 </span>
@@ -1080,7 +1080,7 @@
                         <div class="flex items-center gap-2 px-1">
                             <AlignLeft size={16} class="text-app-primary" />
                             <span
-                                class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                                 >Description</span
                             >
                         </div>
@@ -1100,7 +1100,7 @@
                             <div class="flex items-center gap-2 px-1">
                                 <Link2 size={16} class="text-app-primary" />
                                 <span
-                                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                                     >Source</span
                                 >
                             </div>
@@ -1118,7 +1118,7 @@
                             <div class="flex items-center gap-2 px-1">
                                 <Hash size={16} class="text-app-primary" />
                                 <span
-                                    class="text-[11px] font-bold text-app-text-muted uppercase tracking-wider"
+                                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
                                     >Tags (Max 5)</span
                                 >
                             </div>
@@ -1184,7 +1184,7 @@
                             <div class="flex items-center gap-1.5 px-1">
                                 <Clock size={14} class="text-app-text-muted" />
                                 <span
-                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
                                     >Prep</span
                                 >
                             </div>
@@ -1203,7 +1203,7 @@
                                     class="text-app-text-muted"
                                 />
                                 <span
-                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
                                     >Cook</span
                                 >
                             </div>
@@ -1219,7 +1219,7 @@
                             <div class="flex items-center gap-1.5 px-1">
                                 <Users size={14} class="text-app-text-muted" />
                                 <span
-                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
                                     >Serves</span
                                 >
                             </div>
@@ -1238,7 +1238,7 @@
                                     class="text-app-text-muted"
                                 />
                                 <span
-                                    class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
                                     >Yields</span
                                 >
                             </div>
