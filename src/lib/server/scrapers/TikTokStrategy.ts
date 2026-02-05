@@ -1,45 +1,5 @@
 import type { ScrapingResult, ScrapingStrategy } from './types';
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
-// Use Stealth plugin to avoid detection
-// @ts-ignore
-puppeteer.use(StealthPlugin());
-
-let browserInstance: any = null;
-
-/**
- * Singleton browser instance for TikTok strategy
- */
-async function getBrowser() {
-    if (browserInstance && browserInstance.isConnected()) {
-        return browserInstance;
-    }
-
-    browserInstance = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process'
-        ]
-    });
-
-    // Cleanup on exit
-    if (process.listenerCount('SIGINT') === 0) {
-        process.on('SIGINT', async () => {
-            if (browserInstance) {
-                await browserInstance.close();
-                browserInstance = null;
-            }
-            process.exit();
-        });
-    }
-
-    return browserInstance;
-}
+import { createScrapingContext } from '../browser';
 
 export class TikTokStrategy implements ScrapingStrategy {
     supports(url: URL): boolean {
@@ -47,8 +7,9 @@ export class TikTokStrategy implements ScrapingStrategy {
     }
 
     async scrape(url: string): Promise<ScrapingResult> {
-        const browser = await getBrowser();
-        const page = await browser.newPage();
+        // Create context with fingerprinting and proxy, but don't block resources 
+        // as some visual elements might be needed for TikTok's complex JS
+        const { context, page } = await createScrapingContext({ blockResources: false });
 
         try {
             // Set a realistic viewport and user agent
@@ -108,10 +69,9 @@ export class TikTokStrategy implements ScrapingStrategy {
             console.error(`TikTok scraping failed for ${url}:`, error);
             throw error;
         } finally {
-            // Always close the page to avoid memory leaks
-            if (page) {
-                await page.close();
-            }
+            // Always close the page and context
+            if (page) await page.close();
+            if (context) await context.close();
         }
     }
 }
