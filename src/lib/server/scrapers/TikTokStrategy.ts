@@ -18,7 +18,7 @@ export class TikTokStrategy implements ScrapingStrategy {
             $('meta[property="og:description"]').attr('content') ||
             $('meta[name="twitter:description"]').attr('content');
 
-        const rHDescription = $('meta[name="description"][data-rh="true"]').attr('content');
+        const rHDescription = $('meta[name="og:description"][data-rh="true"]').attr('content');
 
         // Some TikTok JSON-LD (VideoObject) contains the description
         let jsonLdDescription = '';
