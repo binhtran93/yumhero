@@ -152,6 +152,7 @@ export async function POST({ request }) {
 
             8. For 'mealTypes', categorize the recipe into ALL suitable categories from: breakfast, lunch, dinner, snack. If a recipe is versatile (e.g. a granola that works for breakfast or a snack, or a dish suitable for both lunch and dinner), YOU MUST include all relevant types in the array.
 
+            9. If you cannot find any cooking instructions or steps in the provided content, return an EMPTY ARRAY [] for the instructions field.
         `;
 
         const { output } = await generateText({
@@ -173,9 +174,14 @@ export async function POST({ request }) {
         // Post-process recipes to deduplicate and clean
         const recipes = output.recipes.map(recipe => {
             const mealTypes = Array.from(new Set(recipe.mealTypes || []));
+            const instructions = recipe.instructions && recipe.instructions.length > 0
+                ? recipe.instructions
+                : ['No instructions'];
+
             return {
                 ...recipe,
                 mealTypes,
+                instructions,
                 tags: []
             };
         });
