@@ -9,12 +9,12 @@ export class TikTokStrategy implements ScrapingStrategy {
 
     async scrape(url: string): Promise<ScrapingResult> {
         // Use Puppeteer ONLY for TikTok to handle its JS-heavy nature and anti-bot
-        const { html, mainImage, jsonLds } = await fetchDynamicContent(url);
+        const { html, mainImage, jsonLds } = await fetchDynamicContent(url, 'networkidle2');
         const $ = cheerio.load(html);
 
         // For TikTok, the meta description is highly reliable for recipe content
         // We look for both standard meta description and the one with data-rh="true"
-        const metaDescription = $('meta[name="description"]').attr('content') ||
+        const metaDescription = $('meta[name="og:description"]').attr('content') ||
             $('meta[property="og:description"]').attr('content') ||
             $('meta[name="twitter:description"]').attr('content');
 

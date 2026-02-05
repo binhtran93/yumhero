@@ -65,7 +65,7 @@ async function getBrowser() {
 /**
  * Fetches dynamic content from a URL using an isolated context with proxy and fingerprinting.
  */
-export async function fetchDynamicContent(url: string): Promise<{ text: string; html: string; jsonLds: string[]; mainImage: string | null }> {
+export async function fetchDynamicContent(url: string, waitUntil: string = 'domcontentloaded'): Promise<{ text: string; html: string; jsonLds: string[]; mainImage: string | null }> {
     const browser = await getBrowser();
 
     const proxyUrl = process.env.PROXY_URL;
@@ -136,7 +136,7 @@ export async function fetchDynamicContent(url: string): Promise<{ text: string; 
 
         // Strict timeout and navigation
         await page.goto(url, {
-            waitUntil: 'domcontentloaded',
+            waitUntil: waitUntil,
             timeout: 30000
         });
 
