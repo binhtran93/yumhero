@@ -11,7 +11,7 @@
     import { userRecipes } from "$lib/stores/recipes";
     import type { WeeklyPlan, Recipe } from "$lib/types";
     import { twMerge } from "tailwind-merge";
-    import { Loader2 } from "lucide-svelte";
+    import { Loader2, Printer, X } from "lucide-svelte";
     import "../../../app.css"; // Ensure global styles are applied
 
     const weekId = $page.params.weekId ?? "";
@@ -299,19 +299,22 @@
     </div>
 
     <div
-        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-4 print:hidden z-50"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 print:hidden z-50 bg-white/80 backdrop-blur-md p-2 rounded-full border border-gray-200 shadow-2xl"
     >
         <button
             onclick={() => window.print()}
-            class="px-6 py-3 bg-app-primary text-white rounded-full font-black shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
+            class="px-8 py-3 bg-app-primary text-white rounded-full font-black shadow-lg hover:scale-105 transition-transform flex items-center gap-2 group"
         >
+            <Printer class="w-5 h-5 group-hover:animate-bounce" />
             <span>Print Plan</span>
         </button>
+
         <button
             onclick={() => window.close()}
-            class="px-6 py-3 bg-white text-app-text-muted font-black rounded-full shadow-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+            class="w-12 h-12 flex items-center justify-center bg-white text-gray-400 font-black rounded-full shadow-sm border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+            title="Close"
         >
-            Close
+            <X class="w-5 h-5" />
         </button>
     </div>
 </div>
