@@ -216,7 +216,7 @@
         </div>
         <button
             type="button"
-            class="hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:!text-app-text-muted/100 pointer-events-auto"
+            class="hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:text-app-text-muted! pointer-events-auto"
             onclick={onClick}
             aria-label={`Add to ${type}`}
         >
@@ -319,7 +319,7 @@
                             {quantity}
                             {baseServings}
                             triggerRect={activeTriggerRect}
-                            onUpdate={(newQuantity: number) =>
+                            onUpdate={(newQuantity) =>
                                 onUpdate(i, newQuantity)}
                             onClose={handleMenuClose}
                             onAction={(action) => {
