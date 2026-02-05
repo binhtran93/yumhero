@@ -227,6 +227,14 @@
                         >Universal Recipe Import</span
                     >
                 </li>
+                <li class="flex items-center gap-3">
+                    <div class="p-1 rounded-full bg-green-100 text-green-600">
+                        <Check size={14} strokeWidth={3} />
+                    </div>
+                    <span class="font-medium text-app-text"
+                        >Print Week Plan & Grocery List</span
+                    >
+                </li>
             </ul>
 
             <!-- Action -->

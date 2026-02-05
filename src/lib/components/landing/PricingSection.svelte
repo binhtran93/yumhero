@@ -139,7 +139,7 @@
                     </div>
 
                     <ul class="space-y-4 mb-10">
-                        {#each ["Ad-free recipe imports from any blog", "Rapid 2-minute weekly meal planning", "Visual fridge inventory & tracking", "Smart inventory check against fridge", "Hands-free focused cooking mode", "Universal cloud sync across all devices"] as feature}
+                        {#each ["Ad-free recipe imports from any blog", "Rapid 2-minute weekly meal planning", "Visual fridge inventory & tracking", "Smart inventory check against fridge", "Printable week plan & grocery list", "Hands-free focused cooking mode", "Universal cloud sync across all devices"] as feature}
                             <li
                                 class="flex items-start gap-4 text-app-text group/item"
                             >
