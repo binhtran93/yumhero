@@ -17,8 +17,8 @@
                 : "/plan",
     );
 
-    const monthlyPrice = 5.45;
-    const yearlyPrice = 45;
+    const monthlyPrice = 4.99;
+    const yearlyPrice = 39.99;
     const savingsPercent = Math.round(
         (1 - yearlyPrice / (monthlyPrice * 12)) * 100,
     );
@@ -175,8 +175,7 @@
                     </a>
 
                     <p class="text-center text-xs text-app-text-muted mt-5">
-                        Free trial includes all features. No credit card
-                        upfront.
+                        Start your free trial. No charge today
                     </p>
                 </div>
             </div>
