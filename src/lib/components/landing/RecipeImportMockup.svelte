@@ -4,7 +4,6 @@
         ArrowRight,
         Loader2,
         CheckCircle2,
-        Pointer,
         ChefHat,
         Clock,
         Users,
@@ -15,8 +14,6 @@
     // --- Animation State ---
     let step = $state<"idle" | "pasting" | "importing" | "success">("idle");
     let inputValue = $state("");
-    let handCursor: HTMLElement | undefined = $state();
-    let container: HTMLElement | undefined = $state();
 
     // Animation constants
     const TARGET_URL = "https://example.com/spicy-tacos";
@@ -55,51 +52,6 @@
             // Fade out / Reset
         }
 
-        // Hand Cursor Logic
-        if (handCursor && container) {
-            // Simplified cursor movement for this demo
-            // Move to input -> Move to Button -> Move Away
-            let x = 0;
-            let y = 0;
-            let scale = 1;
-            let opacity = 0;
-
-            const inputRect = { x: 200, y: 100 }; // rough positions relative to container
-            const btnRect = { x: 340, y: 100 };
-
-            // We can calculate cleaner positions if we had DOM refs to elements,
-            // but fixed relative offsets work for a predictable mockup size.
-            // Let's assume container is roughly 400-500px wide.
-            // Input is on left, Button on right.
-
-            if (elapsed > 500 && elapsed < 4500) {
-                opacity = 1;
-                if (elapsed < 1500) {
-                    // Moving to input
-                    const t = (elapsed - 500) / 1000;
-                    x = 40 + t * 50; // Approaching input
-                    y = 120 + t * 20;
-                } else if (elapsed < 2500) {
-                    // At input (typing)
-                    x = 90;
-                    y = 140;
-                } else if (elapsed < 3500) {
-                    // Move to button
-                    const t = (elapsed - 2500) / 1000;
-                    x = 90 + t * 240;
-                    y = 140;
-                } else {
-                    // Click button
-                    x = 330;
-                    y = 140;
-                    scale = elapsed > 3500 && elapsed < 3700 ? 0.85 : 1;
-                }
-            }
-
-            handCursor.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
-            handCursor.style.opacity = String(opacity);
-        }
-
         animationFrameId = requestAnimationFrame(animate);
     }
 
@@ -114,7 +66,6 @@
 
 <div class="w-full max-w-4xl mx-auto">
     <div
-        bind:this={container}
         class="bg-app-surface border border-app-border rounded-2xl shadow-md overflow-hidden relative h-[460px] flex flex-col"
     >
         <!-- Header / Browser Bar -->
@@ -269,19 +220,6 @@
                     </div>
                 </div>
             {/if}
-
-            <!-- Hand Cursor -->
-            <div
-                bind:this={handCursor}
-                class="absolute top-0 left-0 pointer-events-none z-[100] opacity-0 will-change-transform hidden md:block"
-            >
-                <Pointer
-                    size={28}
-                    fill="#fff"
-                    strokeWidth={1.5}
-                    class="drop-shadow-2xl -translate-x-1 -translate-y-1 text-black"
-                />
-            </div>
         </div>
     </div>
 </div>
