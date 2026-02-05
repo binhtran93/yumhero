@@ -42,7 +42,7 @@
     const switchMockup = (view: string) => {
         activeMockup = view;
         setTimeout(() => {
-            document.getElementById("preview")?.scrollIntoView({
+            document.getElementById("planning")?.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
             });
@@ -85,7 +85,7 @@
             <div
                 class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
             >
-                <div id="preview" class="scroll-mt-20">
+                <div id="planning" class="scroll-mt-20">
                     <div
                         bind:clientWidth={containerWidth}
                         class="flex flex-col items-center w-full"

@@ -8,6 +8,7 @@
         isSubscribed,
         subscriptionLoading,
     } from "$lib/stores/subscription";
+    import { Mail, MessageSquare, Send, CheckCircle2 } from "lucide-svelte";
 
     const planLink = $derived(
         !$user
@@ -18,6 +19,46 @@
                 ? "/subscribe"
                 : "/plan",
     );
+
+    let formState = $state({
+        email: "",
+        message: "",
+    });
+
+    let isSubmitting = $state(false);
+    let isSuccess = $state(false);
+    let errorMessage = $state("");
+
+    async function handleSubmit(e: SubmitEvent) {
+        e.preventDefault();
+        isSubmitting = true;
+        errorMessage = "";
+
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formState),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to send message");
+            }
+
+            isSuccess = true;
+            formState = {
+                email: "",
+                message: "",
+            };
+        } catch (err: any) {
+            errorMessage = err.message;
+        } finally {
+            isSubmitting = false;
+        }
+    }
 </script>
 
 <div class="min-h-screen bg-app-bg text-app-text font-display">
@@ -140,6 +181,131 @@
                         <p class="text-app-text-muted leading-relaxed">
                             Cooking shouldn't be a chore. We want to bring the
                             joy back to your kitchen by removing the stress.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section
+            id="contact"
+            class="max-w-2xl mx-auto px-6 lg:px-8 pb-24 mb-16"
+        >
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-black text-app-text mb-4">
+                    Get in touch
+                </h2>
+                <p class="text-app-text-muted">
+                    Have questions? Send us a message and we'll get back to you
+                    soon.
+                </p>
+            </div>
+
+            <div
+                class="bg-app-surface border border-app-border rounded-3xl p-8 md:p-12 shadow-sm"
+            >
+                {#if isSuccess}
+                    <div class="text-center py-8" in:fly={{ y: 20 }}>
+                        <div
+                            class="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"
+                        >
+                            <CheckCircle2 size={32} />
+                        </div>
+                        <h3 class="text-xl font-bold text-app-text mb-2">
+                            Message Sent!
+                        </h3>
+                        <p class="text-app-text-muted mb-8">
+                            Thanks for reaching out! We'll be in touch.
+                        </p>
+                        <button
+                            onclick={() => (isSuccess = false)}
+                            class="text-app-primary font-bold hover:underline"
+                        >
+                            Send another message
+                        </button>
+                    </div>
+                {:else}
+                    <form onsubmit={handleSubmit} class="space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                for="email"
+                                class="text-sm font-bold text-app-text ml-1"
+                            >
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                bind:value={formState.email}
+                                required
+                                placeholder="name@email.com"
+                                class="w-full px-4 py-3 bg-app-bg border border-app-border rounded-xl focus:outline-none focus:ring-2 focus:ring-app-primary/10 focus:border-app-primary transition-all text-app-text"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                for="message"
+                                class="text-sm font-bold text-app-text ml-1"
+                            >
+                                Message
+                            </label>
+                            <textarea
+                                id="message"
+                                rows="8"
+                                bind:value={formState.message}
+                                required
+                                placeholder="How can we help?"
+                                class="w-full px-4 py-3 bg-app-bg border border-app-border rounded-xl focus:outline-none focus:ring-2 focus:ring-app-primary/10 focus:border-app-primary transition-all text-app-text resize-none"
+                            ></textarea>
+                        </div>
+
+                        {#if errorMessage}
+                            <p
+                                class="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100"
+                            >
+                                {errorMessage}
+                            </p>
+                        {/if}
+
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            class="w-full py-4 bg-app-primary text-white font-bold rounded-xl hover:bg-app-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+                        >
+                            {#if isSubmitting}
+                                <div
+                                    class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"
+                                ></div>
+                                Sending...
+                            {:else}
+                                <Send size={18} />
+                                Send Message
+                            {/if}
+                        </button>
+                    </form>
+                {/if}
+            </div>
+
+            <div class="mt-12 text-center">
+                <div
+                    class="mt-4 pt-4 flex items-center justify-center gap-4 text-left max-w-sm mx-auto"
+                >
+                    <img
+                        src="/team-binh.png"
+                        alt="Binh"
+                        class="w-12 h-12 rounded-full border border-app-border object-cover"
+                    />
+                    <div>
+                        <p
+                            class="text-sm italic text-app-text-muted leading-tight"
+                        >
+                            "We're here to help. Every message comes straight to
+                            my inbox."
+                        </p>
+                        <p class="text-xs font-bold mt-1">
+                            — Binh Tran, Founder
                         </p>
                     </div>
                 </div>
