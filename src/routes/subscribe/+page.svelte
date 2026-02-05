@@ -106,11 +106,11 @@
 
     <!-- Header Section -->
     <div
-        class="text-center mb-12 md:mb-16 relative z-10"
+        class="text-center mb-18 md:mb-24 relative z-10"
         in:fly={{ y: -20, duration: 600 }}
     >
         <h1
-            class="text-3xl md:text-6xl font-black mb-2 text-app-text tracking-tight"
+            class="text-4xl md:text-6xl font-black mb-2 text-app-text tracking-tight"
         >
             Unlock <span class="text-app-primary">YumHero</span>
         </h1>

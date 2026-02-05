@@ -101,7 +101,7 @@
 
         <!-- Save Label & Arrow -->
         <div
-            class="absolute -right-12 -top-16 md:-right-24 md:-top-16 flex flex-col items-center pointer-events-none select-none"
+            class="absolute -right-12 -top-16 md:-right-16 md:-top-16 flex flex-col items-center pointer-events-none select-none"
         >
             <span
                 class="font-['Caveat'] text-2xl md:text-3xl text-app-text-muted transform rotate-[8deg] -translate-x-2"
@@ -199,7 +199,7 @@
                         : "/subscribe"
                     : "/login"}
                 onclick={handleAction}
-                class="block w-full py-5 text-center rounded-2xl font-bold transition-all bg-app-primary text-white text-lg shadow-xl shadow-app-primary/25 hover:shadow-app-primary/40 hover:-translate-y-1 active:scale-[0.98] {isLoading
+                class="block w-full py-4 text-center rounded-2xl font-bold transition-all bg-app-primary text-white text-lg shadow-xl shadow-app-primary/25 hover:shadow-app-primary/40 hover:-translate-y-1 active:scale-[0.98] {isLoading
                     ? 'opacity-70 cursor-not-allowed pointer-events-none'
                     : ''}"
             >
