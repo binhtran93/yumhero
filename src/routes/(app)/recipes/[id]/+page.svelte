@@ -179,7 +179,7 @@
                 <!-- MOBILE HERO SECTION -->
                 <div class="md:hidden">
                     <!-- Hero Image with Gradient Overlay -->
-                    <div class="relative w-full h-56">
+                    <div class="relative w-full aspect-square">
                         <RecipeThumbnail
                             src={recipe.image}
                             alt={recipe.title}
@@ -420,15 +420,17 @@
                         class="flex flex-col md:flex-row bg-app-surface rounded-3xl shadow-sm border border-app-border mb-6 md:mb-10 overflow-hidden"
                     >
                         <!-- Image -->
-                        <div class="w-full md:w-1/3 max-w-md shrink-0 relative">
-                            <div class="h-64 md:h-full md:p-4 lg:p-6">
+                        <div
+                            class="w-full md:w-1/3 max-w-sm shrink-0 relative flex items-center"
+                        >
+                            <div class="w-full p-4 lg:p-6">
                                 <div
-                                    class="w-full h-full relative overflow-hidden md:rounded-2xl group md:border border-app-border/50"
+                                    class="w-full aspect-square relative overflow-hidden rounded-2xl md:rounded-3xl group border border-app-border/50 shadow-sm"
                                 >
                                     <RecipeThumbnail
                                         src={recipe.image}
                                         alt={recipe.title}
-                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
                                 </div>
                             </div>
