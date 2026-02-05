@@ -6,8 +6,8 @@
         hasUsedTrial,
     } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
-    import { Check, LogOut, Zap } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+    import { LogOut } from "lucide-svelte";
+    import { fly } from "svelte/transition";
     import { onMount } from "svelte";
     import {
         PUBLIC_PADDLE_CLIENT_TOKEN,
@@ -17,6 +17,7 @@
         PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL,
     } from "$env/static/public";
     import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+    import PricingTable from "$lib/components/PricingTable.svelte";
 
     // Protect this route: Must be logged in
     $effect(() => {
@@ -53,23 +54,22 @@
         }
     });
 
-    const handleSubscribe = () => {
+    const handleSubscribe = (plan: "monthly" | "yearly") => {
         let priceId: string;
 
         if ($hasUsedTrial) {
             priceId =
-                selectedPlan === "monthly"
+                plan === "monthly"
                     ? PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL
                     : PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL;
         } else {
             priceId =
-                selectedPlan === "monthly"
+                plan === "monthly"
                     ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
                     : PUBLIC_PADDLE_PRICE_ID_YEARLY;
         }
 
         if (!PUBLIC_PADDLE_CLIENT_TOKEN || !priceId) {
-            // ... alert ...
             return;
         }
 
@@ -90,6 +90,11 @@
                     theme: "light",
                 },
             });
+            // Note: Paddle overlay doesn't have a direct 'onClose' to reset isLoading easily
+            // but usually users are redirected on success. We'll reset it after a delay or just leave it.
+            setTimeout(() => {
+                isLoading = false;
+            }, 3000);
         } catch (err) {
             console.error("Paddle Checkout Error:", err);
             isLoading = false;
@@ -116,15 +121,17 @@
     </div>
 
     <div
-        class="w-full max-w-lg bg-app-surface border border-app-border rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+        class="w-full max-w-xl bg-app-surface border border-app-border rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden"
         in:fly={{ y: 20, duration: 600 }}
     >
         <!-- Header -->
         <div
             class="bg-app-primary/5 p-8 text-center border-b border-app-border"
         >
-            <h1 class="text-2xl md:text-3xl font-black mb-2">Unlock YumHero</h1>
-            <p class="text-app-text-muted">
+            <h1 class="text-3xl md:text-4xl font-black mb-3 text-app-text">
+                Unlock YumHero
+            </h1>
+            <p class="text-lg text-app-text-muted">
                 {#if $hasUsedTrial}
                     Choose the plan that fits your kitchen.
                 {:else}
@@ -133,154 +140,27 @@
             </p>
         </div>
 
-        <div class="p-8 space-y-8">
-            <!-- Plan Switcher -->
-            <div
-                class="flex p-1 bg-app-surface-deep rounded-xl border border-app-border"
-            >
-                <button
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all {selectedPlan ===
-                    'monthly'
-                        ? 'bg-app-surface shadow-sm text-app-text'
-                        : 'text-app-text-muted hover:text-app-text'}"
-                    onclick={() => (selectedPlan = "monthly")}
-                >
-                    Monthly
-                </button>
-                <button
-                    class="flex-1 py-2 text-sm font-bold rounded-lg transition-all {selectedPlan ===
-                    'yearly'
-                        ? 'bg-app-surface shadow-sm text-app-text'
-                        : 'text-app-text-muted hover:text-app-text'}"
-                    onclick={() => (selectedPlan = "yearly")}
-                >
-                    Yearly <span class="text-xs text-green-600 ml-1">-30%</span>
-                </button>
-            </div>
-
-            <!-- Price -->
-            <div class="text-center">
-                {#if selectedPlan === "monthly"}
-                    <div
-                        class="flex items-end justify-center gap-1 mb-1"
-                        in:fade
-                    >
-                        <span class="text-5xl font-black text-app-text"
-                            >$5.45</span
-                        >
-                        <span
-                            class="text-lg text-app-text-muted mb-2 font-medium"
-                            >/mo</span
-                        >
-                    </div>
-                    <p
-                        class="text-xs text-app-text-muted uppercase tracking-wider font-bold"
-                        in:fade
-                    >
-                        Billed Monthly
-                    </p>
-                {:else}
-                    <div
-                        class="flex items-end justify-center gap-1 mb-1"
-                        in:fade
-                    >
-                        <span class="text-5xl font-black text-app-text"
-                            >$45</span
-                        >
-                        <span
-                            class="text-lg text-app-text-muted mb-2 font-medium"
-                            >/yr</span
-                        >
-                    </div>
-                    <p
-                        class="text-xs text-app-text-muted uppercase tracking-wider font-bold"
-                        in:fade
-                    >
-                        Billed Yearly ($3.75/mo)
-                    </p>
-                {/if}
-            </div>
-
-            <!-- Features -->
-            <ul class="space-y-4 max-w-xs mx-auto">
-                <li class="flex items-center gap-3">
-                    <div class="p-1 rounded-full bg-green-100 text-green-600">
-                        <Check size={14} strokeWidth={3} />
-                    </div>
-                    <span class="font-medium text-app-text"
-                        >Unlimited Meal Planning</span
-                    >
-                </li>
-                <li class="flex items-center gap-3">
-                    <div class="p-1 rounded-full bg-green-100 text-green-600">
-                        <Check size={14} strokeWidth={3} />
-                    </div>
-                    <span class="font-medium text-app-text"
-                        >Smart Fridge Inventory</span
-                    >
-                </li>
-                <li class="flex items-center gap-3">
-                    <div class="p-1 rounded-full bg-green-100 text-green-600">
-                        <Check size={14} strokeWidth={3} />
-                    </div>
-                    <span class="font-medium text-app-text"
-                        >Universal Recipe Import</span
-                    >
-                </li>
-                <li class="flex items-center gap-3">
-                    <div class="p-1 rounded-full bg-green-100 text-green-600">
-                        <Check size={14} strokeWidth={3} />
-                    </div>
-                    <span class="font-medium text-app-text"
-                        >Print Week Plan & Grocery List</span
-                    >
-                </li>
-            </ul>
-
-            <!-- Action -->
-            <div class="space-y-4">
-                <button
-                    onclick={handleSubscribe}
-                    disabled={isLoading}
-                    class="w-full py-4 text-center rounded-xl font-bold text-lg transition-all bg-app-primary text-white shadow-xl shadow-app-primary/20 hover:shadow-app-primary/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                    {#if isLoading}
-                        Processing...
-                    {:else if $hasUsedTrial}
-                        Subscribe {selectedPlan === "monthly"
-                            ? "Monthly"
-                            : "Yearly"}
-                    {:else}
-                        Start {selectedPlan === "monthly"
-                            ? "Monthly"
-                            : "Yearly"} Free Trial
-                    {/if}
-                </button>
-
-                <p class="text-xs text-center text-app-text-muted">
-                    Secured by Paddle. {#if !$hasUsedTrial}You won't be charged
-                        until your trial ends.{:else}Cancel anytime.{/if}
-                </p>
-            </div>
+        <div class="p-8 md:p-12">
+            <PricingTable onSubscribe={handleSubscribe} {isLoading} />
         </div>
 
         <!-- User Info / Logout -->
         <div
-            class="bg-app-surface-deep p-4 border-t border-app-border flex items-center justify-between"
+            class="bg-app-surface-deep p-6 border-t border-app-border flex items-center justify-between"
         >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
                 {#if $user?.photoURL}
                     <img
                         src={$user.photoURL}
                         alt="User"
-                        class="w-8 h-8 rounded-full border border-app-border"
+                        class="w-10 h-10 rounded-full border-2 border-app-border shadow-sm"
                     />
                 {:else}
                     <div
-                        class="w-8 h-8 rounded-full bg-app-surface border border-app-border"
+                        class="w-10 h-10 rounded-full bg-app-surface border-2 border-app-border"
                     />
                 {/if}
-                <div class="text-xs">
+                <div class="text-sm">
                     <p class="font-bold text-app-text">
                         {$user?.displayName || "User"}
                     </p>
@@ -289,10 +169,11 @@
             </div>
             <button
                 onclick={handleSignOut}
-                class="p-2 hover:bg-app-surface rounded-lg text-app-text-muted hover:text-red-500 transition-colors"
+                class="flex items-center gap-2 px-4 py-2 hover:bg-red-50 rounded-xl text-app-text-muted hover:text-red-500 transition-all font-bold border border-transparent hover:border-red-100"
                 title="Sign Out"
             >
-                <LogOut size={16} />
+                <span class="text-sm">Log out</span>
+                <LogOut size={18} />
             </button>
         </div>
     </div>
