@@ -272,6 +272,13 @@
                                                       ? item.text
                                                       : ""}
 
+                                                {#if itemIsLeftover}
+                                                    <span
+                                                        class="opacity-80 font-medium ml-1 text-[7pt]"
+                                                        >— leftover</span
+                                                    >
+                                                {/if}
+
                                                 {#if "quantity" in item && (item as any).quantity > 1}
                                                     <span
                                                         class="opacity-60 font-medium ml-1 text-[7pt]"
@@ -280,20 +287,6 @@
                                                     >
                                                 {/if}
                                             </p>
-                                            {#if itemIsLeftover}
-                                                <div
-                                                    class="flex items-center gap-1.5 -mt-0.5"
-                                                >
-                                                    <div
-                                                        class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"
-                                                    ></div>
-                                                    <p
-                                                        class="text-[6pt] font-bold opacity-60"
-                                                    >
-                                                        Leftover
-                                                    </p>
-                                                </div>
-                                            {/if}
                                         </div>
                                     </div>
                                 {/each}
