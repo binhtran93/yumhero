@@ -576,9 +576,9 @@
                                                                 >→</span
                                                             >
                                                             <span
-                                                                class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-app-primary/10 text-app-primary border border-app-primary/20"
+                                                                class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-app-surface-deep text-app-text-muted border border-app-border"
                                                             >
-                                                                {formatPlannedDate(
+                                                                {formatPlannedFor(
                                                                     item,
                                                                 )}
                                                             </span>
