@@ -206,7 +206,7 @@
                         <!-- Dropdown Trigger -->
                         <button
                             onclick={() => (showAddDropdown = !showAddDropdown)}
-                            class="p-2 hover:bg-black/10 transition-colors rounded-r-lg"
+                            class="px-3 flex items-center self-stretch hover:bg-black/10 transition-colors rounded-r-lg"
                             aria-label="More Options"
                         >
                             <ChevronDown size={16} class="opacity-70" />
@@ -218,17 +218,6 @@
                             transition:fade={{ duration: 100 }}
                             class="absolute right-0 top-full mt-2 w-48 bg-app-surface rounded-xl border border-app-border shadow-lg overflow-hidden z-50 py-1"
                         >
-                            <button
-                                onclick={() => {
-                                    showAddDropdown = false;
-                                    creationAction = null;
-                                    showAddModal = true;
-                                }}
-                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
-                            >
-                                <Plus size={16} />
-                                Add Manually
-                            </button>
                             <button
                                 onclick={() => {
                                     showAddDropdown = false;
@@ -250,6 +239,17 @@
                             >
                                 <FileText size={16} />
                                 Paste Recipe Text
+                            </button>
+                            <button
+                                onclick={() => {
+                                    showAddDropdown = false;
+                                    creationAction = null;
+                                    showAddModal = true;
+                                }}
+                                class="w-full text-left px-4 py-3 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2 transition-colors"
+                            >
+                                <Plus size={16} />
+                                Add Manually
                             </button>
                         </div>
 
