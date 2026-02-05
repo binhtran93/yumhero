@@ -144,7 +144,7 @@
 </script>
 
 <svelte:head>
-    <title>Print Plan - YumHero</title>
+    <title>YumHero Plan ({weekLabel})</title>
 </svelte:head>
 
 <div
@@ -230,9 +230,7 @@
                                 </div>
                             </div>
 
-                            <div
-                                class="px-2 pb-2 flex flex-col gap-2 relative"
-                            >
+                            <div class="px-2 pb-2 flex flex-col gap-2 relative">
                                 {#each dayPlan.meals[section.type] as item}
                                     {@const itemIsLeftover =
                                         "isLeftover" in item && item.isLeftover}
