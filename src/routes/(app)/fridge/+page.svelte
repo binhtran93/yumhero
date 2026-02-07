@@ -483,7 +483,7 @@
                                                 {/if}
                                                 <div class="flex-1 min-w-0">
                                                     <span
-                                                        class="font-medium text-app-text text-sm truncate block"
+                                                        class="font-bold text-app-text text-sm truncate block"
                                                     >
                                                         {item.title}
                                                     </span>
