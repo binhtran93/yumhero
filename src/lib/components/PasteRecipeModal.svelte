@@ -6,9 +6,10 @@
         isOpen: boolean;
         onClose: () => void;
         onImport: (text: string) => Promise<void>;
+        adaptive?: boolean;
     }
 
-    let { isOpen, onClose, onImport }: Props = $props();
+    let { isOpen, onClose, onImport, adaptive = true }: Props = $props();
 
     let recipeText = $state("");
     let isLoading = $state(false);
@@ -75,6 +76,7 @@
 <Modal
     {isOpen}
     {onClose}
+    {adaptive}
     class="w-full md:max-w-xl bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
     showCloseButton={false}
     header={headerContent}

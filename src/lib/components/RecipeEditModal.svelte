@@ -43,6 +43,7 @@
         onClose: () => void;
         initialRecipe?: Partial<Recipe>;
         initialAction?: "import" | "paste" | null;
+        adaptive?: boolean;
     }
 
     let {
@@ -50,6 +51,7 @@
         onClose,
         initialRecipe,
         initialAction = null,
+        adaptive = true,
     }: Props = $props();
 
     // Form State (Buffer for the active recipe)
@@ -770,6 +772,7 @@
 <Modal
     {isOpen}
     {onClose}
+    {adaptive}
     class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
     showCloseButton={!isSaving}
     header={headerContent}
@@ -1270,6 +1273,7 @@
     isOpen={showImportModal}
     onClose={() => (showImportModal = false)}
     onImport={handleImportFromUrl}
+    {adaptive}
 />
 
 <!-- Paste Recipe Modal -->
@@ -1277,4 +1281,5 @@
     isOpen={showPasteModal}
     onClose={() => (showPasteModal = false)}
     onImport={handlePasteText}
+    {adaptive}
 />

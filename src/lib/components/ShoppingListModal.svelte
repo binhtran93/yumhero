@@ -501,6 +501,7 @@
 <Modal
     isOpen={showAddManualModal}
     onClose={() => (showAddManualModal = false)}
+    adaptive={true}
     title="Add Manual Item"
     class="max-w-md"
 >
@@ -581,6 +582,7 @@
         showEditModal = false;
         editingItem = null;
     }}
+    adaptive={true}
     title={editingItem
         ? `Edit ${editingItem.ingredient_name.charAt(0).toUpperCase() + editingItem.ingredient_name.slice(1)}`
         : "Edit Item"}

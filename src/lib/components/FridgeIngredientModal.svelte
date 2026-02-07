@@ -6,9 +6,10 @@
     interface Props {
         isOpen: boolean;
         onClose: () => void;
+        adaptive?: boolean;
     }
 
-    let { isOpen, onClose }: Props = $props();
+    let { isOpen, onClose, adaptive = true }: Props = $props();
 
     let name = $state("");
     let amount = $state("");
@@ -46,6 +47,7 @@
 <Modal
     {isOpen}
     {onClose}
+    {adaptive}
     title="Add Ingredient"
     description="Manually add an item to your fridge inventory."
     class="max-w-md"
