@@ -1,27 +1,10 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import {
-        Calendar,
-        Book,
-        ChefHat,
-        User,
-        Search,
-        PanelLeftClose,
-        PanelLeftOpen,
-        Refrigerator,
-    } from "lucide-svelte";
-    import { fade } from "svelte/transition";
-    import { sidebarExpanded } from "$lib/stores/ui";
-    import { userRecipes } from "$lib/stores/recipes";
-    import {
-        availableLeftovers,
-        totalLeftoversCount,
-    } from "$lib/stores/leftovers";
+    import { Calendar, Book, User, Refrigerator } from "lucide-svelte";
+    import { totalLeftoversCount } from "$lib/stores/leftovers";
     import { fridgeIngredientsCount } from "$lib/stores/fridgeIngredients";
-    import type { Recipe, LeftoverItem } from "$lib/types";
-    import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
 
-    // Navigation Items (with optional badge support)
+    // Navigation Items
     type NavItem = {
         href: string;
         label: string;
@@ -35,6 +18,7 @@
             href: "/fridge",
             label: "Fridge",
             icon: Refrigerator,
+            // Only show badge if there are items
             badge:
                 $totalLeftoversCount + $fridgeIngredientsCount > 0
                     ? $totalLeftoversCount + $fridgeIngredientsCount
@@ -44,244 +28,90 @@
         { href: "/profile", label: "Profile", icon: User },
     ]);
 
-    // Check if a link is active
     const isActive = (path: string) => {
         if (path === "/plan" && $page.url.pathname === "/plan") return true;
         if (path !== "/plan" && $page.url.pathname.startsWith(path))
             return true;
         return false;
     };
-
-    let availableRecipes = $state<Recipe[]>([]);
-    let searchQuery = $state("");
-
-    let filteredRecipes = $derived(
-        availableRecipes.filter((r) =>
-            r.title.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
-    );
-
-    $effect(() => {
-        const unsubscribe = userRecipes.subscribe((state) => {
-            availableRecipes = state.data;
-        });
-        return unsubscribe;
-    });
-
-    const handleDragStart = (e: DragEvent, recipe: Recipe) => {
-        if (!e.dataTransfer) return;
-        e.dataTransfer.effectAllowed = "all";
-        e.dataTransfer.setData(
-            "application/json",
-            JSON.stringify({
-                type: "sidebar-recipe",
-                recipeId: recipe.id,
-            }),
-        );
-    };
-
-    const handleLeftoverDragStart = (e: DragEvent, leftover: LeftoverItem) => {
-        if (!e.dataTransfer) return;
-        e.dataTransfer.effectAllowed = "all";
-        e.dataTransfer.setData(
-            "application/json",
-            JSON.stringify({
-                type: "sidebar-leftover",
-                leftoverId: leftover.id,
-            }),
-        );
-    };
 </script>
 
-<aside
+<nav
     class="
-    flex shrink-0 z-30 bg-app-surface border-app-border transition-all duration-300
-    w-full h-16 border-t border-r-0 flex-row justify-around order-last
-    md:h-full md:border-r md:border-t-0 md:flex-col md:justify-start md:pt-6 md:order-first
-    {$sidebarExpanded ? 'md:w-64 lg:w-64' : 'md:w-20 lg:w-20'}
-    lg:pt-6
-    "
+    fixed z-50 w-full bg-app-surface/95 backdrop-blur-md border-t border-app-border
+    bottom-0 h-16 shrink-0 transition-all duration-300
+    
+    md:sticky md:top-0 md:border-t-0 md:border-b md:h-16 md:flex-row md:justify-between md:px-6 md:shadow-sm
+    
+    flex flex-row items-center justify-around px-2 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]
+"
 >
-    <!-- Logo / Brand -->
-    <div
-        class="hidden md:flex flex-col lg:flex-row items-center justify-center {$sidebarExpanded
-            ? 'md:justify-start md:px-6 lg:justify-start lg:px-6'
-            : 'md:justify-center lg:justify-center'} mb-8 lg:gap-3"
-    >
-        <div class="w-10 h-10 flex items-center justify-center shrink-0">
+    <!-- Logo (Desktop Only) -->
+    <div class="hidden md:flex items-center gap-3 w-48">
+        <div class="w-8 h-8 flex items-center justify-center shrink-0">
             <img
                 src="/logo.png"
                 alt="YumHero Logo"
                 class="w-full h-full object-contain"
             />
         </div>
-        {#if $sidebarExpanded}
-            <span
-                class="text-xl font-bold tracking-tight text-app-text font-display hidden md:block lg:block"
-                transition:fade={{ duration: 100 }}
-            >
-                YumHero
-            </span>
-        {/if}
+        <span
+            class="text-xl font-bold tracking-tight text-app-text font-display"
+        >
+            YumHero
+        </span>
     </div>
 
     <!-- Navigation Links -->
-    <nav
-        class="flex-none px-2 md:px-2 {$sidebarExpanded
-            ? 'md:px-4 lg:px-4'
-            : 'md:px-2 lg:px-2'} flex flex-row md:flex-col items-center justify-around md:justify-start md:space-y-2 w-full"
+    <div
+        class="flex flex-row items-center justify-around w-full md:w-auto md:gap-6"
     >
         {#each navItems as item}
             {@const active = isActive(item.href)}
             <a
                 href={item.href}
-                class="flex flex-col md:flex-row items-center justify-center {$sidebarExpanded
-                    ? 'md:justify-start md:gap-3 lg:justify-start lg:gap-3'
-                    : 'md:justify-center lg:justify-center'} px-1 py-1 md:px-2 md:py-3 rounded-xl transition-all duration-200 group relative w-full
-        {active
-                    ? 'text-app-primary font-bold bg-transparent md:bg-app-surface-hover shadow-none md:shadow-sm'
-                    : 'text-app-text-muted hover:text-app-text hover:bg-app-surface-hover/50'}"
+                class="
+                    relative flex flex-col md:flex-row items-center gap-1 md:gap-2 px-3 py-1.5 md:py-2 md:px-4 rounded-xl transition-all duration-200 group
+                    {active
+                    ? 'text-app-primary'
+                    : 'text-app-text-muted hover:text-app-text hover:bg-app-surface-hover/50'}
+                "
             >
-                {#if active}
-                    <div
-                        class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-app-primary"
-                        in:fade={{ duration: 200 }}
-                    ></div>
-                {/if}
-
-                <div class="relative">
+                <div class="relative flex items-center justify-center">
                     <item.icon
                         size={24}
-                        class="{active
-                            ? 'text-app-primary'
-                            : 'text-app-text-muted group-hover:text-app-text transition-colors'} md:w-5 md:h-5 lg:w-5 lg:h-5"
+                        class="w-6 h-6 md:w-5 md:h-5 transition-transform duration-200 {active
+                            ? 'scale-110'
+                            : 'group-hover:scale-110'}"
+                        strokeWidth={active ? 2.5 : 2}
                     />
                     {#if item.badge}
                         <span
-                            class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold text-white bg-app-primary rounded-full"
+                            class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold text-white bg-app-primary rounded-full ring-2 ring-app-surface"
                         >
                             {item.badge > 99 ? "99+" : item.badge}
                         </span>
                     {/if}
                 </div>
-                {#if $sidebarExpanded}
-                    <span
-                        class="text-[10px] md:block lg:block lg:text-sm whitespace-nowrap"
-                        transition:fade={{ duration: 100 }}>{item.label}</span
-                    >
+
+                <span
+                    class="text-[10px] md:text-sm font-medium {active
+                        ? 'font-bold'
+                        : ''}"
+                >
+                    {item.label}
+                </span>
+
+                <!-- Active Indicator (Desktop) -->
+                {#if active}
+                    <div
+                        class="hidden md:block absolute -bottom-[19px] left-0 w-full h-[3px] bg-app-primary rounded-t-full shadow-[0_0_8px_rgba(var(--color-primary),0.5)]"
+                    ></div>
                 {/if}
             </a>
         {/each}
-    </nav>
-
-    <!-- Draggable Recipes List (Only when expanded AND on Plan page) -->
-    {#if $sidebarExpanded && $page.url.pathname === "/plan"}
-        <div
-            class="hidden md:flex flex-col flex-1 min-h-0 mt-4 px-4 pb-2 border-t border-app-border pt-4"
-        >
-            {#if $availableLeftovers.length > 0}
-                <div class="flex flex-col mb-6">
-                    <h3
-                        class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
-                    >
-                        Leftovers
-                    </h3>
-                    <div
-                        class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 -mx-2 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
-                    >
-                        {#each $availableLeftovers as leftover}
-                            <!-- svelte-ignore a11y_no_static_element_interactions -->
-                            <div
-                                class="flex items-center gap-3 p-2 rounded-xl bg-app-surface cursor-grab active:cursor-grabbing transition-all duration-200 group border border-transparent hover:border-app-border"
-                                draggable="true"
-                                ondragstart={(e) =>
-                                    handleLeftoverDragStart(e, leftover)}
-                            >
-                                <RecipeThumbnail
-                                    src={leftover.imageUrl}
-                                    alt={leftover.title}
-                                    class="w-8 h-8 rounded-lg shadow-sm"
-                                />
-                                <div class="flex flex-col min-w-0">
-                                    <span
-                                        class="text-xs font-semibold text-app-text line-clamp-1 group-hover:text-app-primary transition-colors"
-                                    >
-                                        {leftover.title}
-                                    </span>
-                                    <span
-                                        class="text-[10px] text-app-text-muted"
-                                    >
-                                        {new Date(
-                                            leftover.createdAt,
-                                        ).toLocaleDateString(undefined, {
-                                            month: "short",
-                                            day: "numeric",
-                                        })}
-                                    </span>
-                                </div>
-                            </div>
-                        {/each}
-                    </div>
-                </div>
-            {/if}
-
-            <h3
-                class="text-xs font-bold text-app-text-muted uppercase mb-3 pl-1 tracking-wider"
-            >
-                Quick Recipes
-            </h3>
-            <div
-                class="flex items-center gap-2 mb-3 bg-app-surface-hover/50 rounded-lg px-2 py-1.5 focus-within:ring-2 focus-within:ring-app-primary/20 transition-all border border-app-border focus-within:border-app-primary/50"
-            >
-                <Search size={14} class="text-app-text-muted shrink-0" />
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    bind:value={searchQuery}
-                    class="bg-transparent border-0 outline-none text-xs w-full text-app-text placeholder:text-app-text-muted/70 p-0"
-                />
-            </div>
-
-            <div
-                class="flex-1 overflow-y-auto pr-1 pb-3 -mx-2 scrollbar-thin scrollbar-thumb-app-border scrollbar-track-transparent"
-            >
-                {#each filteredRecipes as recipe}
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <div
-                        class="flex items-center gap-3 p-2 rounded-xl bg-app-surface cursor-grab active:cursor-grabbing transition-all duration-200 group border border-transparent hover:border-app-border"
-                        draggable="true"
-                        ondragstart={(e) => handleDragStart(e, recipe)}
-                    >
-                        <RecipeThumbnail
-                            src={recipe.image}
-                            alt={recipe.title}
-                            class="w-8 h-8 rounded-lg shadow-sm"
-                        />
-                        <span
-                            class="text-xs font-medium text-app-text line-clamp-2 group-hover:text-app-primary transition-colors"
-                        >
-                            {recipe.title}
-                        </span>
-                    </div>
-                {/each}
-            </div>
-        </div>
-    {/if}
-
-    <!-- Sidebar Toggle (Fixed at bottom) -->
-    <div class="hidden md:flex mt-auto px-2 pb-2">
-        <button
-            onclick={() => ($sidebarExpanded = !$sidebarExpanded)}
-            class="p-2 rounded-lg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all duration-200"
-            aria-label={$sidebarExpanded
-                ? "Collapse Sidebar"
-                : "Expand Sidebar"}
-        >
-            {#if $sidebarExpanded}
-                <PanelLeftClose size={18} strokeWidth={2} />
-            {:else}
-                <PanelLeftOpen size={18} strokeWidth={2} />
-            {/if}
-        </button>
     </div>
-</aside>
+
+    <!-- Right Side Placeholder (Desktop) -->
+    <div class="hidden md:block w-48"></div>
+</nav>
