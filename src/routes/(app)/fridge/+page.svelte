@@ -295,7 +295,9 @@
 />
 
 <div class="h-full flex flex-col">
-    <Header title="Your Fridge" mobileTitle="Fridge" />
+    <div class="md:hidden">
+        <Header title="Your Fridge" mobileTitle="Fridge" />
+    </div>
 
     <div class="flex-1 flex flex-col min-h-0 bg-app-bg">
         <!-- Controls Bar -->
