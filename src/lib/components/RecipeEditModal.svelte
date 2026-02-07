@@ -829,10 +829,9 @@
             <div class="flex-1 space-y-6">
                 <!-- Recipe Name -->
                 <div class="space-y-3">
-                    <div class="flex items-center gap-2 px-1">
-                        <Type size={16} class="text-app-primary" />
+                    <div class="px-1">
                         <span
-                            class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                            class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                             >Recipe Name <span class="text-red-500">*</span
                             ></span
                         >
@@ -849,10 +848,9 @@
 
                 <!-- Meal Type -->
                 <div class="space-y-3">
-                    <div class="flex items-center gap-2 px-1">
-                        <ChefHat size={16} class="text-app-primary" />
+                    <div class="px-1">
                         <span
-                            class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                            class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                             >Meal Category</span
                         >
                     </div>
@@ -924,10 +922,9 @@
         <!-- Ingredients Section -->
         <div class="space-y-4 pt-4">
             <div class="flex items-center justify-between px-1">
-                <div class="flex items-center gap-2">
-                    <LayoutList size={16} class="text-app-primary" />
+                <div class="px-1">
                     <span
-                        class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                        class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                     >
                         Ingredients <span class="text-red-500">*</span>
                     </span>
@@ -1025,10 +1022,9 @@
 
         <!-- Instructions Section -->
         <div class="space-y-4 pt-4">
-            <div class="flex items-center gap-2 px-1">
-                <ListTodo size={16} class="text-app-primary" />
+            <div class="px-1">
                 <span
-                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                 >
                     Instructions <span class="text-red-500">*</span>
                 </span>
@@ -1088,10 +1084,9 @@
                 >
                     <!-- Description -->
                     <div class="space-y-3">
-                        <div class="flex items-center gap-2 px-1">
-                            <AlignLeft size={16} class="text-app-primary" />
+                        <div class="px-1">
                             <span
-                                class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                                class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                                 >Description</span
                             >
                         </div>
@@ -1108,10 +1103,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Source -->
                         <div class="space-y-3">
-                            <div class="flex items-center gap-2 px-1">
-                                <Link2 size={16} class="text-app-primary" />
+                            <div class="px-1">
                                 <span
-                                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                                     >Source</span
                                 >
                             </div>
@@ -1126,10 +1120,9 @@
 
                         <!-- Tags -->
                         <div class="space-y-3">
-                            <div class="flex items-center gap-2 px-1">
-                                <Hash size={16} class="text-app-primary" />
+                            <div class="px-1">
                                 <span
-                                    class="text-[11px] font-extrabold text-app-text-muted uppercase tracking-wider"
+                                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
                                     >Tags (Max 5)</span
                                 >
                             </div>
@@ -1192,13 +1185,10 @@
                         class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-app-surface-deep/50 rounded-2xl border border-app-border"
                     >
                         <div class="space-y-2">
-                            <div class="flex items-center gap-1.5 px-1">
-                                <Clock size={14} class="text-app-text-muted" />
-                                <span
-                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
-                                    >Prep</span
-                                >
-                            </div>
+                            <span
+                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                >Prep</span
+                            >
                             <input
                                 type="text"
                                 bind:value={prepTime}
@@ -1208,16 +1198,10 @@
                             />
                         </div>
                         <div class="space-y-2">
-                            <div class="flex items-center gap-1.5 px-1">
-                                <Utensils
-                                    size={14}
-                                    class="text-app-text-muted"
-                                />
-                                <span
-                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
-                                    >Cook</span
-                                >
-                            </div>
+                            <span
+                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                >Cook</span
+                            >
                             <input
                                 type="text"
                                 bind:value={cookTime}
@@ -1227,13 +1211,10 @@
                             />
                         </div>
                         <div class="space-y-2">
-                            <div class="flex items-center gap-1.5 px-1">
-                                <Users size={14} class="text-app-text-muted" />
-                                <span
-                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
-                                    >Serves</span
-                                >
-                            </div>
+                            <span
+                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                >Serves</span
+                            >
                             <input
                                 type="text"
                                 bind:value={servings}
@@ -1243,16 +1224,10 @@
                             />
                         </div>
                         <div class="space-y-2">
-                            <div class="flex items-center gap-1.5 px-1">
-                                <FileText
-                                    size={14}
-                                    class="text-app-text-muted"
-                                />
-                                <span
-                                    class="text-[10px] font-extrabold text-app-text-muted uppercase tracking-widest"
-                                    >Yields</span
-                                >
-                            </div>
+                            <span
+                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                >Yields</span
+                            >
                             <input
                                 type="text"
                                 bind:value={yields}
