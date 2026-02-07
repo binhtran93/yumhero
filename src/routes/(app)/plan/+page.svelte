@@ -22,7 +22,7 @@
     } from "$lib/stores/leftovers";
     import {
         fetchBoughtIngredientsForRecipe,
-        createWeekShoppingListStore,
+        getWeekShoppingListStore,
     } from "$lib/stores/shoppingList";
     import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
@@ -978,7 +978,7 @@
 
     // Shopping List State
     let isShoppingListOpen = $state(false);
-    let shoppingListStore = $derived(createWeekShoppingListStore(weekId));
+    let shoppingListStore = $derived(getWeekShoppingListStore(weekId));
     let itemCount = $derived($shoppingListStore.data.length);
 </script>
 

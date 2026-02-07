@@ -8,7 +8,7 @@ import { apiRequest, jsonRequest } from '$lib/api/client';
  * Create a reactive week-scoped shopping list store.
  * This is for UI subscriptions that should auto-refresh.
  */
-export const createWeekShoppingListStore = (weekId: string) => {
+export const getWeekShoppingListStore = (weekId: string) => {
     return derived<[Readable<any>, Readable<boolean>], { data: ShoppingListItem[], loading: boolean }>(
         [user, authLoading],
         ([$user, $authLoading], set) => {

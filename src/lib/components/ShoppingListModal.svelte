@@ -15,7 +15,7 @@
     import Modal from "./Modal.svelte";
     import { toPng } from "html-to-image";
     import {
-        createWeekShoppingListStore,
+        getWeekShoppingListStore,
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
         toggleAllShoppingItemChecks as toggleAllShoppingItemChecks,
         addManualShoppingItem,
@@ -59,7 +59,7 @@
     let isPrinting = $state(false);
 
     // Subscribe to week-scoped shopping list
-    let weekShoppingListStore = $derived(createWeekShoppingListStore(weekId));
+    let weekShoppingListStore = $derived(getWeekShoppingListStore(weekId));
     let shoppingList = $derived($weekShoppingListStore.data);
     let isLoading = $derived($weekShoppingListStore.loading);
 
