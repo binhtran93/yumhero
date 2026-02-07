@@ -54,12 +54,12 @@ export const removeLeftoverFromWeekPlan = async (weekId: string, leftoverId: str
     );
 };
 
-export const removeRecipeFromWeekPlan = async (
+export const removePlannedRecipeFromWeekPlan = async (
     weekId: string,
     plannedItemId: string
 ) => {
     await apiRequest<{ success: true; modified: boolean }>(
-        `/api/plans/${weekId}/recipes/${plannedItemId}`,
+        `/api/plans/${weekId}/planned-recipes/${plannedItemId}`,
         {
             method: 'DELETE'
         }

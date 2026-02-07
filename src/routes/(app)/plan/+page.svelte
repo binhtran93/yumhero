@@ -13,7 +13,7 @@
     import SEO from "$lib/components/SEO.svelte";
     import {
         getWeekPlan,
-        removeRecipeFromWeekPlan,
+        removePlannedRecipeFromWeekPlan,
         saveWeekPlan,
     } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
@@ -391,7 +391,7 @@
                 return;
             }
 
-            await removeRecipeFromWeekPlan(weekId, item.id);
+            await removePlannedRecipeFromWeekPlan(weekId, item.id);
             plan[dayIndex].meals[type].splice(index, 1);
             return;
         }
@@ -417,7 +417,7 @@
             })),
         );
 
-        await removeRecipeFromWeekPlan(
+        await removePlannedRecipeFromWeekPlan(
             weekId,
             boughtIngredientsModal.plannedItemId,
         );
@@ -435,7 +435,7 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        await removeRecipeFromWeekPlan(
+        await removePlannedRecipeFromWeekPlan(
             weekId,
             boughtIngredientsModal.plannedItemId,
         );

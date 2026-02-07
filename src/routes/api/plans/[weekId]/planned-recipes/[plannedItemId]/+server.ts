@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
 import { adminDb } from '$lib/server/admin';
-import type { MealType, ShoppingListItem, WeeklyPlan } from '$lib/types';
+import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
 import { errorResponse, fail } from '$lib/server/api';
 import { syncShoppingListFromPlan } from '$lib/server/plan-shopping';
 import { isPlannedLeftover } from '$lib/types';
@@ -44,7 +44,7 @@ export const DELETE = async ({ request, params }) => {
 
             let removed = false;
             for (const dayEntry of nextPlan) {
-                for (const mealType of ['breakfast', 'lunch', 'dinner', 'snack'] as Exclude<MealType, 'note'>[]) {
+                for (const mealType of ['breakfast', 'lunch', 'dinner', 'snack'] as const) {
                     const items = dayEntry.meals[mealType];
                     const index = items.findIndex((entry) => !isPlannedLeftover(entry) && entry.id === plannedItemId);
                     if (index === -1) {
@@ -83,4 +83,3 @@ export const DELETE = async ({ request, params }) => {
         return errorResponse(error, 'Failed to remove recipe from plan');
     }
 };
-
