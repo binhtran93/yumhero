@@ -20,6 +20,7 @@
     let editLabel = $state("");
     let isLoading = $state(false);
     let isAddModalOpen = $state(false);
+    let isEditModalOpen = $state(false);
     let searchQuery = $state("");
 
     // Derived state for sorting and filtering tags
@@ -50,22 +51,28 @@
     function startEdit(tag: any) {
         editingId = tag.id;
         editLabel = tag.label;
+        isEditModalOpen = true;
     }
 
     function cancelEdit() {
         editingId = null;
         editLabel = "";
+        isEditModalOpen = false;
     }
 
     async function handleUpdateTag(id: string) {
         if (!editLabel.trim()) return;
+        isLoading = true;
         try {
             await updateTag(id, editLabel.trim());
             editingId = null;
             editLabel = "";
+            isEditModalOpen = false;
         } catch (error) {
             console.error(error);
             toasts.error("Failed to update tag");
+        } finally {
+            isLoading = false;
         }
     }
 
@@ -156,73 +163,36 @@
                                 class="group flex items-center justify-between p-3 bg-app-surface rounded-xl border border-app-border hover:bg-app-surface-hover transition-all"
                                 transition:fade={{ duration: 150 }}
                             >
-                                {#if editingId === tag.id}
+                                <div
+                                    class="flex items-center gap-3 overflow-hidden"
+                                >
                                     <div
-                                        class="flex items-center gap-3 w-full animate-in fade-in duration-200"
+                                        class="w-10 h-10 rounded-lg bg-app-primary/10 flex items-center justify-center shrink-0 text-app-primary group-hover:bg-app-primary group-hover:text-white transition-colors border border-app-border"
                                     >
-                                        <input
-                                            type="text"
-                                            bind:value={editLabel}
-                                            class="flex-1 bg-app-bg border border-app-primary rounded-lg px-3 py-2 text-sm text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary/20"
-                                            autofocus
-                                            onkeydown={(e) => {
-                                                if (e.key === "Enter")
-                                                    handleUpdateTag(tag.id);
-                                                if (e.key === "Escape")
-                                                    cancelEdit();
-                                            }}
-                                        />
-                                        <div
-                                            class="flex items-center gap-1 shrink-0"
-                                        >
-                                            <button
-                                                onclick={() =>
-                                                    handleUpdateTag(tag.id)}
-                                                class="p-2 text-green-600 hover:bg-green-500/10 rounded-lg transition-colors"
-                                            >
-                                                <Check size={18} />
-                                            </button>
-                                            <button
-                                                onclick={cancelEdit}
-                                                class="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            >
-                                                <X size={18} />
-                                            </button>
-                                        </div>
+                                        <TagIcon size={16} />
                                     </div>
-                                {:else}
-                                    <div
-                                        class="flex items-center gap-3 overflow-hidden"
+                                    <span
+                                        class="text-app-text font-medium truncate text-sm"
                                     >
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-app-primary/10 flex items-center justify-center shrink-0 text-app-primary group-hover:bg-app-primary group-hover:text-white transition-colors border border-app-border"
-                                        >
-                                            <TagIcon size={16} />
-                                        </div>
-                                        <span
-                                            class="text-app-text font-medium truncate text-sm"
-                                        >
-                                            {tag.label}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <button
-                                            onclick={() => startEdit(tag)}
-                                            class="p-2 text-app-text-muted hover:text-app-primary hover:bg-app-surface-deep rounded-lg transition-colors"
-                                            aria-label="Edit"
-                                        >
-                                            <Pencil size={18} />
-                                        </button>
-                                        <button
-                                            onclick={() =>
-                                                handleDeleteTag(tag.id)}
-                                            class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            aria-label="Delete"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                {/if}
+                                        {tag.label}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <button
+                                        onclick={() => startEdit(tag)}
+                                        class="p-2 text-app-text-muted hover:text-app-primary hover:bg-app-surface-deep rounded-lg transition-colors"
+                                        aria-label="Edit"
+                                    >
+                                        <Pencil size={18} />
+                                    </button>
+                                    <button
+                                        onclick={() => handleDeleteTag(tag.id)}
+                                        class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                                        aria-label="Delete"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
                             </div>
                         {/each}
                     {/if}
@@ -282,6 +252,53 @@
                     <Plus size={24} strokeWidth={2.5} />
                 {/if}
                 Add Tag
+            </button>
+        </div>
+    </Modal>
+
+    <!-- Update Tag Modal -->
+    <Modal
+        isOpen={isEditModalOpen}
+        onClose={cancelEdit}
+        title="Edit Tag"
+        adaptive={true}
+        class="max-w-md"
+    >
+        <div class="p-6 pb-12 space-y-6">
+            <div class="relative group">
+                <TagIcon
+                    size={20}
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted group-focus-within:text-app-primary transition-colors"
+                />
+                <input
+                    type="text"
+                    bind:value={editLabel}
+                    placeholder="Tag name (e.g., Breakfast, Spicy)..."
+                    class="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border rounded-2xl focus:outline-none focus:border-app-primary focus:ring-4 focus:ring-app-primary/5 text-app-text text-lg transition-all"
+                    onkeydown={async (e) => {
+                        if (e.key === "Enter" && editingId) {
+                            handleUpdateTag(editingId);
+                        }
+                        if (e.key === "Escape") {
+                            cancelEdit();
+                        }
+                    }}
+                    autofocus
+                />
+            </div>
+            <button
+                onclick={async () => {
+                    if (editingId) handleUpdateTag(editingId);
+                }}
+                disabled={!editLabel.trim() || isLoading}
+                class="w-full bg-app-primary text-white py-4 rounded-2xl hover:bg-app-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-app-primary/20 active:scale-95 flex items-center justify-center gap-2 font-bold text-lg"
+            >
+                {#if isLoading}
+                    <Loader2 size={24} class="animate-spin" />
+                {:else}
+                    <Check size={24} strokeWidth={2.5} />
+                {/if}
+                Update Tag
             </button>
         </div>
     </Modal>
