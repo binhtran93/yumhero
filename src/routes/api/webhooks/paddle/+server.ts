@@ -79,7 +79,8 @@ export const POST = async ({ request }) => {
             if (userId) {
                 await adminDb.collection('users').doc(userId).set({
                     status: eventData.data.status,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: new Date().toISOString(),
+                    scheduledCancellation: null
                 }, { merge: true });
             }
         }
