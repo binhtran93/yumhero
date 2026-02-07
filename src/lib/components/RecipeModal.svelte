@@ -31,6 +31,7 @@
     onSelect: (recipes: Recipe[]) => void;
     onSelectLeftovers?: (leftovers: LeftoverItem[]) => void;
     availableRecipes?: Recipe[];
+    adaptive?: boolean;
   }
 
   let {
@@ -42,6 +43,7 @@
     onSelect,
     onSelectLeftovers,
     availableRecipes = [],
+    adaptive = true,
   }: Props = $props();
 
   let searchQuery = $state("");
@@ -451,6 +453,7 @@
 <Modal
   {isOpen}
   {onClose}
+  {adaptive}
   class="max-w-2xl"
   header={customHeader}
   footer={footerContent}
