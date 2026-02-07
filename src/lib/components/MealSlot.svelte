@@ -72,6 +72,7 @@
     };
 
     const getLabel = (item: MealSlotItem | Note) => {
+        if (!("isLeftover" in item) && "recipe" in item) return item.recipe.title;
         if ("title" in item) return item.title;
         if ("text" in item) return (item as Note).text;
         return "";
@@ -311,11 +312,11 @@
                     {:else if onUpdate && "quantity" in item}
                         <!-- Recipe menu (full feature set) -->
                         {@const quantity = item.quantity || 1}
-                        {@const baseServings = item.servings || undefined}
+                        {@const baseServings = item.recipe.servings || undefined}
 
                         <WeekSlotMenu
                             recipeId={item.id}
-                            recipeTitle={item.title}
+                            recipeTitle={item.recipe.title}
                             {quantity}
                             {baseServings}
                             triggerRect={activeTriggerRect}
@@ -324,13 +325,17 @@
                             onClose={handleMenuClose}
                             onAction={(action) => {
                                 if (onOpenRecipeMode && "id" in item) {
-                                    onOpenRecipeMode(action, item.id);
+                                    onOpenRecipeMode(action, item.recipe.id);
                                 }
                             }}
                             onRemove={() => onRemove?.(i)}
                             onAddToFridge={onAddToFridge
                                 ? (title) =>
-                                      onAddToFridge(title, item.id, item.image)
+                                      onAddToFridge(
+                                          title,
+                                          item.recipe.id,
+                                          item.recipe.image,
+                                      )
                                 : undefined}
                         />
                     {:else if !itemIsLeftover && !("quantity" in item) && "text" in item}

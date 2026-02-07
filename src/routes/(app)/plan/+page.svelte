@@ -11,7 +11,11 @@
     import Modal from "$lib/components/Modal.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import { getWeekPlan, saveWeekPlan } from "$lib/stores/plans";
+    import {
+        getWeekPlan,
+        removeRecipeFromWeekPlan,
+        saveWeekPlan,
+    } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
     import {
         addLeftoverToFridge,
@@ -72,6 +76,14 @@
                 note: [],
             },
         }));
+    };
+
+    const isPlannedRecipeItem = (item: unknown): item is PlannedRecipe => {
+        if (!item || typeof item !== "object") return false;
+        if ("isLeftover" in (item as any) && (item as any).isLeftover) {
+            return false;
+        }
+        return "recipe" in (item as any) && "quantity" in (item as any);
     };
 
     // State: Weekly Plan
@@ -258,9 +270,9 @@
         const dayPlan = plan.find((d) => d.day === day);
         // Filter to only get recipes (not leftovers) for the modal's current selection
         const currentMeals = dayPlan ? dayPlan.meals[type] : [];
-        const currentRecipes = currentMeals.filter(
-            (item: any) => !("isLeftover" in item && item.isLeftover),
-        ) as Recipe[];
+        const currentRecipes = currentMeals
+            .filter((item: any) => !("isLeftover" in item && item.isLeftover))
+            .map((item: any) => item.recipe) as Recipe[];
 
         modal.isOpen = true;
         modal.day = day;
@@ -296,7 +308,7 @@
             const newRecipes: PlannedRecipe[] = [];
             recipes.forEach((newRecipe) => {
                 const existingIndex = newRecipes.findIndex(
-                    (r) => r.id === newRecipe.id,
+                    (r) => r.recipe.id === newRecipe.id,
                 );
                 if (existingIndex !== -1) {
                     // Add to quantity if recipe already exists
@@ -304,7 +316,8 @@
                 } else {
                     // Add new recipe with quantity = 1
                     newRecipes.push({
-                        ...newRecipe,
+                        id: crypto.randomUUID(),
+                        recipe: newRecipe,
                         quantity: 1,
                     });
                 }
@@ -325,6 +338,7 @@
         isOpen: boolean;
         recipeTitle: string;
         recipeId: string;
+        plannedItemId: string;
         ingredients: Array<{
             ingredientName: string;
             amount: number;
@@ -339,6 +353,7 @@
         isOpen: false,
         recipeTitle: "",
         recipeId: "",
+        plannedItemId: "",
         ingredients: [],
         pendingRemoval: null,
     });
@@ -353,8 +368,8 @@
 
         const item = plan[dayIndex].meals[type][index];
         // Only check for bought ingredients if it's a recipe (not a leftover)
-        if (item && "id" in item && !("isLeftover" in item)) {
-            const recipe = item as PlannedRecipe;
+        if (item && isPlannedRecipeItem(item)) {
+            const recipe = item.recipe;
             // Check for bought ingredients
             const boughtIngredients = await fetchBoughtIngredientsForRecipe(
                 weekId,
@@ -369,16 +384,21 @@
                     isOpen: true,
                     recipeTitle: recipe.title,
                     recipeId: recipe.id,
+                    plannedItemId: item.id,
                     ingredients: boughtIngredients,
                     pendingRemoval: { day, type, index },
                 };
                 return;
             }
+
+            await removeRecipeFromWeekPlan(weekId, item.id);
+            plan[dayIndex].meals[type].splice(index, 1);
+            return;
         }
 
-        // No bought ingredients, proceed with removal
+        // Leftovers/notes still follow full plan save flow for now.
         plan[dayIndex].meals[type].splice(index, 1);
-        saveWeekPlan(weekId, plan);
+        await saveWeekPlan(weekId, plan);
     };
 
     const handleConfirmAddToFridge = async () => {
@@ -397,25 +417,29 @@
             })),
         );
 
-        // Remove the recipe from plan
+        await removeRecipeFromWeekPlan(
+            weekId,
+            boughtIngredientsModal.plannedItemId,
+        );
         plan[dayIndex].meals[type].splice(index, 1);
-        saveWeekPlan(weekId, plan);
 
         // Close modal and show success
         boughtIngredientsModal.isOpen = false;
         toasts.success("Ingredients added to fridge");
     };
 
-    const handleSkipAddToFridge = () => {
+    const handleSkipAddToFridge = async () => {
         if (!boughtIngredientsModal.pendingRemoval) return;
 
         const { day, type, index } = boughtIngredientsModal.pendingRemoval;
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        // Just remove the recipe without saving ingredients
+        await removeRecipeFromWeekPlan(
+            weekId,
+            boughtIngredientsModal.plannedItemId,
+        );
         plan[dayIndex].meals[type].splice(index, 1);
-        saveWeekPlan(weekId, plan);
 
         // Close modal
         boughtIngredientsModal.isOpen = false;
@@ -867,23 +891,24 @@
             );
             if (!recipe) return;
 
-            const targetList = plan[targetDayIndex].meals[target.type];
+            const targetList = plan[targetDayIndex].meals[target.type] as any[];
 
             // Check if recipe already exists in target list
-            // @ts-ignore
             const existingIndex = targetList.findIndex(
-                (r) => r.id === recipe.id,
+                (r: any) =>
+                    !("isLeftover" in r && r.isLeftover) &&
+                    r.recipe?.id === recipe.id,
             );
 
             if (existingIndex !== -1) {
                 // Recipe exists, increase quantity
-                // @ts-ignore
-                targetList[existingIndex].quantity += 1;
+                const targetRecipe = targetList[existingIndex] as PlannedRecipe;
+                targetRecipe.quantity += 1;
             } else {
                 // Recipe doesn't exist, add it with quantity 1
-                // @ts-ignore
                 targetList.push({
-                    ...recipe,
+                    id: crypto.randomUUID(),
+                    recipe,
                     quantity: 1, // Default quantity when dragging from sidebar
                 });
             }
@@ -934,9 +959,8 @@
         if (sourceDayIndex === -1 || targetDayIndex === -1) return;
 
         // @ts-ignore
-        const sourceList = plan[sourceDayIndex].meals[source.type];
-        // @ts-ignore
-        const targetList = plan[targetDayIndex].meals[target.type];
+        const sourceList = plan[sourceDayIndex].meals[source.type] as any[];
+        const targetList = plan[targetDayIndex].meals[target.type] as any[];
 
         // Access the item safely
         // @ts-ignore
@@ -945,10 +969,13 @@
         if (!item) return;
 
         // Check if recipe already exists in target list
-        // @ts-ignore - Check for existing item with same ID, but not the item itself if in the same list
+        const sourceRecipeId =
+            !("isLeftover" in item && item.isLeftover) ? item.recipe.id : null;
         const existingIndex = targetList.findIndex(
             (r: any, idx: number) =>
-                r.id === item.id &&
+                sourceRecipeId &&
+                !("isLeftover" in r && r.isLeftover) &&
+                r.recipe?.id === sourceRecipeId &&
                 (sourceList !== targetList || idx !== source.index),
         );
 

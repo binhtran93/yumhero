@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { MealType, ShoppingListItem, ShoppingListSource, WeeklyPlan } from '$lib/types';
+import { isPlannedLeftover } from '$lib/types';
 import { parseAmount } from '$lib/utils/shopping';
 
 function toDate(value: unknown): Date {
@@ -49,13 +50,13 @@ export function syncShoppingListFromPlan(
             if (type === 'note') return;
 
             (meals as any[]).forEach((planRecipe) => {
-                if ('isLeftover' in planRecipe && planRecipe.isLeftover) return;
-                if (!planRecipe.ingredients || !planRecipe.id) return;
+                if (isPlannedLeftover(planRecipe)) return;
+                if (!planRecipe.recipe?.ingredients || !planRecipe.recipe.id) return;
 
                 const quantity = planRecipe.quantity || 1;
-                const recipeId = planRecipe.id;
+                const recipeId = planRecipe.recipe.id;
 
-                planRecipe.ingredients.forEach((ing: any) => {
+                planRecipe.recipe.ingredients.forEach((ing: any) => {
                     if (!ing.name) return;
 
                     const amountVal = parseAmount(ing.amount);
@@ -109,8 +110,8 @@ export function syncShoppingListFromPlan(
         Object.entries(dayPlan.meals).forEach(([type, meals]) => {
             if (type === 'note') return;
             (meals as any[]).forEach((planRecipe) => {
-                if ('isLeftover' in planRecipe && planRecipe.isLeftover) return;
-                if (planRecipe.id) planRecipeIds.add(planRecipe.id);
+                if (isPlannedLeftover(planRecipe)) return;
+                if (planRecipe.recipe?.id) planRecipeIds.add(planRecipe.recipe.id);
             });
         });
     });

@@ -128,7 +128,9 @@ export interface Note {
  * - Recipe serves 3 people, quantity is 2 → serves 6 people total
  * - Recipe serves 3-4 people, quantity is 3 → serves 9-12 people total
  */
-export interface PlannedRecipe extends Recipe {
+export interface PlannedRecipe {
+    id: string; // Stable plan item id
+    recipe: Recipe;
     quantity: number; // Number of batches to make (default: 1)
 }
 
