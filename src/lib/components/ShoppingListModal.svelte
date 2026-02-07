@@ -22,12 +22,7 @@
         deleteShoppingItem,
         updateShoppingItem,
         resetAllShoppingItems,
-        fetchWeekShoppingList,
     } from "$lib/stores/shoppingList";
-    import {
-        fridgeIngredients,
-        getFridgeIngredients,
-    } from "$lib/stores/fridgeIngredients";
     import CheckFridgeModal from "./CheckFridgeModal.svelte";
     import type { WeeklyPlan } from "$lib/types";
     import { toasts } from "$lib/stores/toasts";
@@ -178,44 +173,12 @@
     const handleCheckFridge = async () => {
         isMatching = true;
         try {
-            const [latestShoppingList, latestFridgeIngredients] =
-                await Promise.all([
-                    fetchWeekShoppingList(weekId),
-                    getFridgeIngredients(),
-                ]);
-
-            if (latestShoppingList.length === 0) return;
-
-            // Only send items that are not fully checked
-            const uncheckedItems = latestShoppingList.filter((item) =>
-                item.sources.some((s) => !s.is_checked),
-            );
-
-            if (uncheckedItems.length === 0) {
-                isMatching = false;
-                return;
-            }
-
             const data = await apiRequest<{ matches?: any[] }>(
                 "/api/match-fridge-ingredients",
                 {
                 method: "POST",
                 ...jsonRequest({
-                    shoppingList: uncheckedItems.map((item) => ({
-                        id: item.id,
-                        name: item.ingredient_name,
-                        amount: item.sources.reduce(
-                            (sum, s) => sum + (s.amount || 0),
-                            0,
-                        ),
-                        unit: item.sources[0]?.unit || null,
-                    })),
-                    fridgeIngredients: latestFridgeIngredients.map((item) => ({
-                        id: item.id,
-                        name: item.name,
-                        amount: item.amount,
-                        unit: item.unit,
-                    })),
+                    weekId,
                 }),
             });
             matches = (data.matches || []).filter(

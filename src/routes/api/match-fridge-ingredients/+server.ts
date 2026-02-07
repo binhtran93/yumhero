@@ -7,6 +7,8 @@ import { createHash } from 'crypto';
 import { redis } from '$lib/server/redis';
 import { verifyAuth } from '$lib/server/auth';
 import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
+import { adminDb } from '$lib/server/admin';
+import { getShoppingListForWeek } from '$lib/server/shopping-list';
 
 interface MinimalIngredient {
     id: string;
@@ -27,10 +29,34 @@ export async function POST({ request }) {
         // 2. Check Rate Limit
         await checkRateLimit(user.uid, RATE_LIMITS.matchFridgeIngredients);
 
-        const { shoppingList, fridgeIngredients }: { shoppingList: MinimalIngredient[], fridgeIngredients: MinimalIngredient[] } = await request.json();
+        const { weekId } = (await request.json()) as { weekId?: unknown };
+        if (typeof weekId !== 'string' || weekId.trim().length === 0) {
+            return json({ error: 'Missing or invalid weekId' }, { status: 400 });
+        }
 
-        if (!shoppingList || !fridgeIngredients) {
-            return json({ error: 'Missing shoppingList or fridgeIngredients' }, { status: 400 });
+        const shoppingListForWeek = await getShoppingListForWeek(user.uid, weekId.trim());
+        const shoppingList: MinimalIngredient[] = shoppingListForWeek
+            .filter((item) => item.sources.some((source) => !source.is_checked))
+            .map((item) => ({
+                id: item.id,
+                name: item.ingredient_name,
+                amount: item.sources.reduce((sum, source) => sum + (source.amount || 0), 0),
+                unit: item.sources[0]?.unit || null
+            }));
+
+        const fridgeSnapshot = await adminDb.collection(`users/${user.uid}/fridgeIngredients`).get();
+        const fridgeIngredients: MinimalIngredient[] = fridgeSnapshot.docs.map((doc) => {
+            const data = doc.data() as Partial<MinimalIngredient>;
+            return {
+                id: doc.id,
+                name: typeof data.name === 'string' ? data.name : '',
+                amount: typeof data.amount === 'number' ? data.amount : 0,
+                unit: typeof data.unit === 'string' ? data.unit : null
+            };
+        });
+
+        if (shoppingList.length === 0 || fridgeIngredients.length === 0) {
+            return json({ matches: [] });
         }
 
         // Generate a fast hash for caching
