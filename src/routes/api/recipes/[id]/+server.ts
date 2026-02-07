@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
-import { checkRateLimit } from '$lib/server/ratelimit';
+import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 import { adminDb } from '$lib/server/admin';
 import { deleteImageFromR2ByPublicUrl } from '$lib/server/r2';
 import type { Recipe } from '$lib/types';
@@ -8,6 +8,7 @@ import type { Recipe } from '$lib/types';
 export const DELETE = async ({ request, params }) => {
     try {
         const user = await verifyAuth(request);
+        await checkRateLimit(user.uid, RATE_LIMITS.recipeDelete);
 
         const recipeId = params.id;
         if (!recipeId) {

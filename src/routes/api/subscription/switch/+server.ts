@@ -7,12 +7,13 @@ import {
 } from '$env/static/public';
 import { adminDb } from '$lib/server/admin';
 import { verifyAuth } from '$lib/server/auth';
-import { checkRateLimit } from '$lib/server/ratelimit';
+import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 
 export const POST = async ({ request }) => {
     try {
         const user = await verifyAuth(request);
         const userId = user.uid;
+        await checkRateLimit(userId, RATE_LIMITS.subscriptionSwitch);
 
         const { targetInterval } = await request.json();
 

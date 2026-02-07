@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { createHash } from 'crypto';
 import { redis } from '$lib/server/redis';
 import { verifyAuth } from '$lib/server/auth';
-import { checkRateLimit } from '$lib/server/ratelimit';
+import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 
 interface MinimalIngredient {
     id: string;
@@ -25,7 +25,7 @@ export async function POST({ request }) {
         const user = await verifyAuth(request);
 
         // 2. Check Rate Limit
-        await checkRateLimit(user.uid);
+        await checkRateLimit(user.uid, RATE_LIMITS.matchFridgeIngredients);
 
         const { shoppingList, fridgeIngredients }: { shoppingList: MinimalIngredient[], fridgeIngredients: MinimalIngredient[] } = await request.json();
 

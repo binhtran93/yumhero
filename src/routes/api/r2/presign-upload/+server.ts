@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
-import { checkRateLimit } from '$lib/server/ratelimit';
+import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 import { createPresignedR2Upload } from '$lib/server/r2';
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
@@ -33,7 +33,7 @@ function getSafeExtension(fileName: string | undefined, contentType: string): st
 export const POST = async ({ request }) => {
     try {
         const user = await verifyAuth(request);
-        await checkRateLimit(user.uid);
+        await checkRateLimit(user.uid, RATE_LIMITS.r2PresignUpload);
 
         const { fileName, contentType, size } = await request.json();
 

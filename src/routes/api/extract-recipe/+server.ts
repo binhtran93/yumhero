@@ -36,7 +36,7 @@ const RecipeSchema = z.object({
 import { scraperManager } from '$lib/server/scrapers/ScraperManager';
 import { uploadImageToR2 } from '$lib/server/r2';
 import { verifyAuth } from '$lib/server/auth';
-import { checkRateLimit } from '$lib/server/ratelimit';
+import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 import { redis } from '$lib/server/redis';
 
 export async function POST({ request }) {
@@ -50,7 +50,7 @@ export async function POST({ request }) {
         const user = await verifyAuth(request);
 
         // 2. Check Rate Limit
-        await checkRateLimit(user.uid);
+        await checkRateLimit(user.uid, RATE_LIMITS.extractRecipe);
 
         const { url, text: pastedText } = await request.json();
 
