@@ -309,6 +309,14 @@
                                 <Zap size={12} fill="currentColor" />
                                 Confirm Subscription
                             </button>
+                        {:else if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
+                            <button
+                                onclick={() => (showSwitchModal = true)}
+                                class="mt-1 px-4 py-1.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
+                            >
+                                <Zap size={12} fill="currentColor" />
+                                Save 30% w/ Yearly
+                            </button>
                         {/if}
                     </div>
                 </div>
@@ -318,15 +326,6 @@
                     >
                         {statusConfig.label}
                     </span>
-                    {#if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
-                        <button
-                            onclick={() => (showSwitchModal = true)}
-                            class="text-[10px] font-bold text-app-primary hover:underline flex items-center gap-1"
-                        >
-                            <Zap size={10} />
-                            Save 30% w/ Yearly
-                        </button>
-                    {/if}
                 </div>
             </div>
 
