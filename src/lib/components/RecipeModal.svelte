@@ -542,7 +542,7 @@
       {#if section.title}
         <div class="flex items-center gap-4 px-4 pt-4 pb-2">
           <div
-            class="text-[11px] uppercase font-extrabold text-app-text-muted tracking-[0.2em] whitespace-nowrap"
+            class="text-xs uppercase font-extrabold text-app-text-muted tracking-[0.2em] whitespace-nowrap"
           >
             {@html section.title}
           </div>
