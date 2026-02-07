@@ -1,9 +1,9 @@
 import { derived, get, type Readable } from 'svelte/store';
-import { addDoc, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { user, loading as authLoading } from './auth';
 import { type CollectionState } from './firestore';
 import type { Recipe } from '$lib/types';
-import { apiRequest } from '$lib/api/client';
+import { apiRequest, jsonRequest } from '$lib/api/client';
 import { db } from '$lib/firebase';
 
 export const userRecipes = derived<[Readable<any>, Readable<boolean>], CollectionState<Recipe>>(
@@ -65,8 +65,26 @@ export const updateRecipe = async (id: string, updates: Partial<Recipe>) => {
 };
 
 export const deleteRecipe = async (id: string) => {
-    // Keep API delete for R2 image cleanup + backend checks.
-    await apiRequest<{ success: true }>(`/api/recipes/${id}`, {
-        method: "DELETE",
-    });
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+
+    const recipeRef = doc(db, `users/${$user.uid}/recipes/${id}`);
+    const recipeSnapshot = await getDoc(recipeRef);
+    if (!recipeSnapshot.exists()) {
+        throw new Error('Recipe not found');
+    }
+
+    const recipe = recipeSnapshot.data() as Partial<Recipe> | undefined;
+    const imageUrl = recipe?.image;
+    if (typeof imageUrl === 'string' && imageUrl.trim()) {
+        await apiRequest<{ success: true }>(
+            '/api/r2/delete-image',
+            {
+                method: 'POST',
+                ...jsonRequest({ imageUrl: imageUrl.trim() })
+            }
+        );
+    }
+
+    await deleteDoc(recipeRef);
 };

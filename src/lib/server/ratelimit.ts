@@ -10,7 +10,7 @@ export const RATE_LIMITS = {
     extractRecipe: { scope: 'extract-recipe', windowSec: 60, maxRequests: 10 },
     matchFridgeIngredients: { scope: 'match-fridge-ingredients', windowSec: 60, maxRequests: 20 },
     r2PresignUpload: { scope: 'r2-presign-upload', windowSec: 60, maxRequests: 30 },
-    recipeDelete: { scope: 'recipe-delete', windowSec: 60, maxRequests: 30 },
+    r2DeleteImage: { scope: 'r2-delete-image', windowSec: 60, maxRequests: 30 },
     subscriptionCancel: { scope: 'subscription-cancel', windowSec: 60, maxRequests: 10 },
     subscriptionConfirm: { scope: 'subscription-confirm', windowSec: 60, maxRequests: 10 },
     subscriptionSwitch: { scope: 'subscription-switch', windowSec: 60, maxRequests: 10 },
