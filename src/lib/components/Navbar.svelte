@@ -42,7 +42,7 @@
     fixed z-50 w-full bg-app-surface/95 backdrop-blur-md border-t border-app-border
     bottom-0 h-16 shrink-0 transition-all duration-300
     
-    md:sticky md:top-0 md:border-t-0 md:border-b md:border-app-border-strong md:h-16 md:flex-row md:justify-start md:gap-8 md:px-6 md:shadow-md
+    md:sticky md:top-0 md:border-t-0 md:border-b md:border-app-border-strong md:h-16 md:flex-row md:justify-start md:gap-8 md:px-6 md:shadow
     
     flex flex-row items-center justify-around px-2 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]
 "
