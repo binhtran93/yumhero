@@ -464,7 +464,13 @@
         });
     };
 
-    const handleConfirmAddToFridge = async () => {
+    const handleConfirmAddToFridge = async (
+        selectedIngredients: Array<{
+            ingredientName: string;
+            amount: number;
+            unit: string | null;
+        }>,
+    ) => {
         if (!boughtIngredientsModal.pendingRemoval) return;
         if (isConfirmingBoughtIngredients) return;
 
@@ -475,14 +481,15 @@
         try {
             isConfirmingBoughtIngredients = true;
 
-            // Add ingredients to fridge
-            await addIngredientsToFridge(
-                boughtIngredientsModal.ingredients.map((ing) => ({
-                    name: ing.ingredientName,
-                    amount: ing.amount,
-                    unit: ing.unit,
-                })),
-            );
+            if (selectedIngredients.length > 0) {
+                await addIngredientsToFridge(
+                    selectedIngredients.map((ing) => ({
+                        name: ing.ingredientName,
+                        amount: ing.amount,
+                        unit: ing.unit,
+                    })),
+                );
+            }
 
             await withCellSaving(day, type, async () => {
                 await removePlannedRecipe(
@@ -500,24 +507,6 @@
         } finally {
             isConfirmingBoughtIngredients = false;
         }
-    };
-
-    const handleSkipAddToFridge = async () => {
-        if (!boughtIngredientsModal.pendingRemoval) return;
-
-        const { day, type, index } = boughtIngredientsModal.pendingRemoval;
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex === -1) return;
-
-        await withCellSaving(day, type, async () => {
-            await removePlannedRecipe(
-                boughtIngredientsModal.plannedItemId,
-            );
-            plan[dayIndex].meals[type].splice(index, 1);
-        });
-
-        // Close modal
-        boughtIngredientsModal.isOpen = false;
     };
 
     const handleRecipeUpdate = async (
@@ -1445,7 +1434,6 @@
     ingredients={boughtIngredientsModal.ingredients}
     isConfirming={isConfirmingBoughtIngredients}
     onConfirm={handleConfirmAddToFridge}
-    onSkip={handleSkipAddToFridge}
     onClose={() => (boughtIngredientsModal.isOpen = false)}
 />
 

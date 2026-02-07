@@ -5,8 +5,8 @@
         Refrigerator,
         ShoppingCart,
         ArrowRight,
-        Trash2,
         Loader2,
+        Check,
     } from "lucide-svelte";
     import { formatAmount } from "$lib/utils/shopping";
     import { portal } from "$lib/actions";
@@ -22,8 +22,7 @@
         recipeTitle: string;
         ingredients: BoughtIngredient[];
         isConfirming?: boolean;
-        onConfirm: () => void;
-        onSkip: () => void;
+        onConfirm: (selectedIngredients: BoughtIngredient[]) => void;
         onClose: () => void;
     }
 
@@ -33,9 +32,36 @@
         ingredients,
         isConfirming = false,
         onConfirm,
-        onSkip,
         onClose,
     }: Props = $props();
+
+    let selectedKeys = $state<Record<string, boolean>>({});
+
+    const ingredientKey = (ingredient: BoughtIngredient, index: number) =>
+        `${index}:${ingredient.ingredientName}:${ingredient.amount}:${ingredient.unit ?? ""}`;
+
+    $effect(() => {
+        if (!isOpen) return;
+        const next: Record<string, boolean> = {};
+        ingredients.forEach((ingredient, index) => {
+            next[ingredientKey(ingredient, index)] = true;
+        });
+        selectedKeys = next;
+    });
+
+    const toggleIngredient = (ingredient: BoughtIngredient, index: number) => {
+        const key = ingredientKey(ingredient, index);
+        selectedKeys = {
+            ...selectedKeys,
+            [key]: !selectedKeys[key],
+        };
+    };
+
+    const selectedIngredients = $derived.by(() =>
+        ingredients.filter((ingredient, index) =>
+            !!selectedKeys[ingredientKey(ingredient, index)],
+        ),
+    );
 </script>
 
 {#if isOpen}
@@ -104,24 +130,40 @@
             <!-- Ingredient List -->
             <div class="px-6 pb-4 max-h-64 overflow-y-auto">
                 <div class="space-y-2">
-                    {#each ingredients as ingredient (ingredient.ingredientName)}
-                        <div
-                            class="flex items-center justify-between p-3 bg-app-surface-deep rounded-xl border border-app-border"
+                    {#each ingredients as ingredient, index (`${ingredient.ingredientName}:${index}`)}
+                        <button
+                            type="button"
+                            class="w-full flex items-center justify-between gap-3 p-3 bg-app-surface-deep rounded-xl border border-app-border hover:bg-app-surface-hover transition-colors text-left"
                             transition:slide={{ duration: 150 }}
+                            onclick={() => toggleIngredient(ingredient, index)}
+                            disabled={isConfirming}
                         >
+                            <div class="flex items-center gap-3 min-w-0">
+                                {#if selectedKeys[ingredientKey(ingredient, index)]}
+                                    <div
+                                        class="w-6 h-6 rounded-md border flex items-center justify-center transition-all bg-app-primary border-app-primary text-white shrink-0"
+                                    >
+                                        <Check size={16} strokeWidth={4} />
+                                    </div>
+                                {:else}
+                                    <div
+                                        class="w-6 h-6 rounded-md border border-app-border-strong bg-app-bg text-transparent transition-all shrink-0"
+                                    ></div>
+                                {/if}
+                                <span
+                                    class="font-medium text-app-text capitalize text-sm truncate"
+                                >
+                                    {ingredient.ingredientName}
+                                </span>
+                            </div>
                             <span
-                                class="font-medium text-app-text capitalize text-sm"
-                            >
-                                {ingredient.ingredientName}
-                            </span>
-                            <span
-                                class="text-sm text-app-text-muted font-medium bg-app-surface px-2 py-1 rounded-lg"
+                                class="text-sm text-app-text-muted font-medium bg-app-surface px-2 py-1 rounded-lg shrink-0"
                             >
                                 {formatAmount(
                                     ingredient.amount,
                                 )}{ingredient.unit ? ` ${ingredient.unit}` : ""}
                             </span>
-                        </div>
+                        </button>
                     {/each}
                 </div>
             </div>
@@ -132,8 +174,8 @@
             >
                 <button
                     class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-app-primary hover:bg-app-primary/90 disabled:opacity-70 text-white font-bold rounded-xl transition-colors"
-                    onclick={onConfirm}
-                    disabled={isConfirming}
+                    onclick={() => onConfirm(selectedIngredients)}
+                    disabled={isConfirming || selectedIngredients.length === 0}
                 >
                     {#if isConfirming}
                         <Loader2 size={18} class="animate-spin" />
@@ -143,14 +185,6 @@
                         Add to Fridge
                         <ArrowRight size={16} class="ml-1" />
                     {/if}
-                </button>
-                <button
-                    class="w-full px-4 py-2.5 bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover disabled:opacity-70 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
-                    onclick={onSkip}
-                    disabled={isConfirming}
-                >
-                    <Trash2 size={18} />
-                    Remove Anyway
                 </button>
             </div>
         </div>
