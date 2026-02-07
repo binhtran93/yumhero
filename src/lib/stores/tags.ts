@@ -1,6 +1,6 @@
 import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
-import { collectionStore, type CollectionState } from './firestore';
+import { type CollectionState } from './firestore';
 import type { Tag } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
@@ -16,11 +16,27 @@ export const userTags = derived<[Readable<any>, Readable<boolean>], CollectionSt
             return;
         }
 
-        const store = collectionStore<Tag>(async () => {
-            const response = await apiRequest<{ tags: Tag[] }>('/api/tags');
-            return response.tags;
-        });
-        return store.subscribe(set);
+        let active = true;
+
+        const load = async () => {
+            try {
+                const response = await apiRequest<{ tags: Tag[] }>('/api/tags');
+                if (active) {
+                    set({ data: response.tags, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching tags:', error);
+                if (active) {
+                    set({ data: [], loading: false });
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
     },
     { data: [], loading: true }
 );

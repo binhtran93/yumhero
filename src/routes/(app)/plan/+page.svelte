@@ -26,6 +26,7 @@
     } from "$lib/stores/leftovers";
     import {
         fetchBoughtIngredientsForRecipe,
+        fetchWeekShoppingListCount,
         getWeekShoppingListStore,
     } from "$lib/stores/shoppingList";
     import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
@@ -210,6 +211,25 @@
     };
 
     let weekId = $derived(getWeekId(weekRange.start));
+    let itemCount = $state(0);
+
+    const refreshShoppingListCount = async () => {
+        try {
+            itemCount = await fetchWeekShoppingListCount(weekId);
+        } catch (error) {
+            console.error("Failed to fetch shopping list count:", error);
+        }
+    };
+
+    const savePlanAndRefreshCount = async () => {
+        await saveWeekPlan(weekId, plan);
+        await refreshShoppingListCount();
+    };
+
+    const removePlannedRecipeAndRefreshCount = async (plannedItemId: string) => {
+        await removePlannedRecipeFromWeekPlan(weekId, plannedItemId);
+        await refreshShoppingListCount();
+    };
 
     $effect(() => {
         const store = getWeekPlan(weekId);
@@ -231,6 +251,10 @@
             }
         });
         return unsubscribe;
+    });
+
+    $effect(() => {
+        refreshShoppingListCount();
     });
 
     // Handlers
@@ -293,7 +317,7 @@
             .filter(Boolean) as LeftoverItem[];
     };
 
-    const handleRecipeSelect = (recipes: Recipe[]) => {
+    const handleRecipeSelect = async (recipes: Recipe[]) => {
         const { day, mealType } = modal;
         if (!day || !mealType || mealType === "note") return;
 
@@ -329,7 +353,7 @@
                 ...existingLeftovers,
                 ...newRecipes,
             ];
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
         }
     };
 
@@ -391,14 +415,14 @@
                 return;
             }
 
-            await removePlannedRecipeFromWeekPlan(weekId, item.id);
+            await removePlannedRecipeAndRefreshCount(item.id);
             plan[dayIndex].meals[type].splice(index, 1);
             return;
         }
 
         // Leftovers/notes still follow full plan save flow for now.
         plan[dayIndex].meals[type].splice(index, 1);
-        await saveWeekPlan(weekId, plan);
+        await savePlanAndRefreshCount();
     };
 
     const handleConfirmAddToFridge = async () => {
@@ -417,8 +441,7 @@
             })),
         );
 
-        await removePlannedRecipeFromWeekPlan(
-            weekId,
+        await removePlannedRecipeAndRefreshCount(
             boughtIngredientsModal.plannedItemId,
         );
         plan[dayIndex].meals[type].splice(index, 1);
@@ -435,8 +458,7 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        await removePlannedRecipeFromWeekPlan(
-            weekId,
+        await removePlannedRecipeAndRefreshCount(
             boughtIngredientsModal.plannedItemId,
         );
         plan[dayIndex].meals[type].splice(index, 1);
@@ -445,7 +467,7 @@
         boughtIngredientsModal.isOpen = false;
     };
 
-    const handleRecipeUpdate = (
+    const handleRecipeUpdate = async (
         day: string,
         type: MealType,
         index: number,
@@ -462,16 +484,16 @@
                     ...item,
                     quantity: newQuantity,
                 };
-                saveWeekPlan(weekId, plan);
+                await savePlanAndRefreshCount();
             }
         }
     };
 
-    const handleClearMeal = (day: string, type: MealType) => {
+    const handleClearMeal = async (day: string, type: MealType) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
             plan[dayIndex].meals[type] = [];
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
         }
     };
 
@@ -572,7 +594,7 @@
             ...currentRecipesInPlan,
         ];
 
-        saveWeekPlan(weekId, plan);
+        await savePlanAndRefreshCount();
     };
 
     const handleRemoveLeftoverFromPlan = async (
@@ -584,7 +606,7 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
             plan[dayIndex].meals[type].splice(index, 1);
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
         }
         // Set leftover back to not_planned
         await setLeftoverNotPlanned(leftoverId);
@@ -607,7 +629,7 @@
             // "where is mark as eaten already, dont rmeove that, this is different from delete, because it will only remove from fridge"
             // This means when they "Mark as Eaten" in Week View, it should NOT be spliced from the plan.
             // It should only be deleted from the fridge.
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
         }
         // Permanently delete the leftover from fridge (cleanPlan = false)
         await deleteLeftover(leftoverId, false);
@@ -637,7 +659,7 @@
         // 2. Update the meal plan with the NEW leftover ID
         item.leftoverId = newLeftoverId;
         plan[dayIndex].meals[type][index] = item;
-        await saveWeekPlan(weekId, plan);
+        await savePlanAndRefreshCount();
 
         // 3. Mark as planned in the fridge
         await setLeftoverPlanned(newLeftoverId, weekId, day, type);
@@ -713,7 +735,7 @@
         }
 
         plan = createEmptyPlan(DAYS[0]);
-        saveWeekPlan(weekId, plan);
+        await savePlanAndRefreshCount();
         isResetModalOpen = false;
     };
 
@@ -806,7 +828,7 @@
         });
     };
 
-    const handleNoteSave = (text: string) => {
+    const handleNoteSave = async (text: string) => {
         if (!noteModal.day) return;
 
         const dayIndex = plan.findIndex((d) => d.day === noteModal.day);
@@ -821,7 +843,7 @@
                     text: text,
                 });
             }
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
         }
     };
 
@@ -854,7 +876,7 @@
         };
     };
 
-    const handleDrop = (
+    const handleDrop = async (
         source: {
             day?: string;
             type: MealType | "sidebar-recipe" | "sidebar-leftover";
@@ -913,7 +935,7 @@
                 });
             }
 
-            saveWeekPlan(weekId, plan);
+            await savePlanAndRefreshCount();
             return;
         }
 
@@ -947,9 +969,8 @@
             });
 
             // Mark as planned in store
-            setLeftoverPlanned(leftover.id, weekId, target.day, target.type);
-
-            saveWeekPlan(weekId, plan);
+            await setLeftoverPlanned(leftover.id, weekId, target.day, target.type);
+            await savePlanAndRefreshCount();
             return;
         }
 
@@ -1000,13 +1021,12 @@
             targetList.push(item);
         }
 
-        saveWeekPlan(weekId, plan);
+        await savePlanAndRefreshCount();
     };
 
     // Shopping List State
     let isShoppingListOpen = $state(false);
     let shoppingListStore = $derived(getWeekShoppingListStore(weekId));
-    let itemCount = $derived($shoppingListStore.data.length);
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />

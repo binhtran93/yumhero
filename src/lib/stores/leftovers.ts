@@ -3,7 +3,6 @@ import { user, loading as authLoading } from './auth';
 import type { LeftoverItem, MealType } from '$lib/types';
 import { removeLeftoverFromWeekPlan } from './plans';
 import { apiRequest, jsonRequest } from '$lib/api/client';
-import { collectionStore } from './firestore';
 
 /**
  * Leftovers Store
@@ -40,14 +39,29 @@ export const leftovers = derived<[Readable<any>, Readable<boolean>], { data: Lef
             return;
         }
 
-        const store = collectionStore<LeftoverItem>(async () => {
-            const response = await apiRequest<{ leftovers: any[] }>('/api/leftovers');
-            const items = response.leftovers.map(fromApi);
-            items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-            return items;
-        });
+        let active = true;
 
-        return store.subscribe(set);
+        const load = async () => {
+            try {
+                const response = await apiRequest<{ leftovers: any[] }>('/api/leftovers');
+                const items = response.leftovers.map(fromApi);
+                items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                if (active) {
+                    set({ data: items, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching leftovers:', error);
+                if (active) {
+                    set({ data: [], loading: false });
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
     },
     { data: [], loading: true }
 );

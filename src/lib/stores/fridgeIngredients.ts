@@ -2,7 +2,6 @@ import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import type { FridgeIngredient } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
-import { collectionStore } from './firestore';
 
 /**
  * Fridge Ingredients Store
@@ -36,14 +35,29 @@ export const fridgeIngredients = derived<[Readable<any>, Readable<boolean>], { d
             return;
         }
 
-        const store = collectionStore<FridgeIngredient>(async () => {
-            const response = await apiRequest<{ ingredients: any[] }>('/api/fridge-ingredients');
-            const items = response.ingredients.map(fromApi);
-            items.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-            return items;
-        });
+        let active = true;
 
-        return store.subscribe(set);
+        const load = async () => {
+            try {
+                const response = await apiRequest<{ ingredients: any[] }>('/api/fridge-ingredients');
+                const items = response.ingredients.map(fromApi);
+                items.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+                if (active) {
+                    set({ data: items, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching fridge ingredients:', error);
+                if (active) {
+                    set({ data: [], loading: false });
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
     },
     { data: [], loading: true }
 );

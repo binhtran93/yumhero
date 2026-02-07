@@ -154,3 +154,8 @@ export const fetchBoughtIngredientsForRecipe = async (
     );
     return response.ingredients || [];
 };
+
+export const fetchWeekShoppingListCount = async (weekId: string): Promise<number> => {
+    const response = await apiRequest<{ count: number }>(`/api/shopping-lists/${weekId}/count`);
+    return typeof response.count === 'number' ? response.count : 0;
+};

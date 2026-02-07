@@ -1,6 +1,6 @@
 import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
-import { collectionStore, type CollectionState } from './firestore';
+import { type CollectionState } from './firestore';
 import type { Recipe } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
@@ -16,11 +16,27 @@ export const userRecipes = derived<[Readable<any>, Readable<boolean>], Collectio
             return;
         }
 
-        const store = collectionStore<Recipe>(async () => {
-            const response = await apiRequest<{ recipes: Recipe[] }>('/api/recipes');
-            return response.recipes;
-        });
-        return store.subscribe(set);
+        let active = true;
+
+        const load = async () => {
+            try {
+                const response = await apiRequest<{ recipes: Recipe[] }>('/api/recipes');
+                if (active) {
+                    set({ data: response.recipes, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching recipes:', error);
+                if (active) {
+                    set({ data: [], loading: false });
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
     },
     { data: [], loading: true }
 );
