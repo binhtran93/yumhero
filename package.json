@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@ai-sdk/google": "^3.0.13",
 		"@aws-sdk/client-s3": "^3.975.0",
+		"@aws-sdk/s3-request-presigner": "^3.985.0",
 		"@google/generative-ai": "^0.24.1",
 		"@paddle/paddle-js": "^1.6.2",
 		"@paddle/paddle-node-sdk": "^3.5.0",
