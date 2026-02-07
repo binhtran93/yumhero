@@ -65,7 +65,7 @@
 
     <!-- Navigation Links -->
     <div
-        class="flex flex-row items-center justify-around w-full md:w-auto md:gap-6"
+        class="flex flex-row items-center justify-around w-full md:w-auto md:gap-2"
     >
         {#each navItems as item}
             {@const active = isActive(item.href)}
