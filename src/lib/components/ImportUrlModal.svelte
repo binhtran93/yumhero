@@ -98,7 +98,7 @@
     {isOpen}
     {onClose}
     {adaptive}
-    class="w-full md:max-w-lg bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
+    class="w-full md:max-w-lg bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl"
     showCloseButton={false}
     header={headerContent}
     closeOnEsc={!isLoading}

@@ -773,7 +773,7 @@
     {isOpen}
     {onClose}
     {adaptive}
-    class="w-full md:max-w-2xl h-full md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl rounded-none"
+    class="w-full md:max-w-2xl md:h-[90vh] bg-app-surface p-0 overflow-hidden flex flex-col md:rounded-2xl"
     showCloseButton={!isSaving}
     header={headerContent}
     footer={footerContent}
