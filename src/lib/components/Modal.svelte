@@ -1,9 +1,8 @@
 <script lang="ts">
     import { X } from "lucide-svelte";
     import { fade, scale, fly } from "svelte/transition";
-    import { quintOut } from "svelte/easing";
+    import { quintOut, cubicOut } from "svelte/easing";
     import { twMerge } from "tailwind-merge";
-    import { onMount } from "svelte";
 
     interface Props {
         isOpen: boolean;
@@ -18,7 +17,7 @@
         headerClass?: string;
         closeOnEsc?: boolean;
         closeOnClickOutside?: boolean;
-        variant?: "center" | "bottom" | "responsive";
+        adaptive?: boolean;
     }
 
     let {
@@ -34,19 +33,48 @@
         headerClass = "",
         closeOnEsc = true,
         closeOnClickOutside = true,
-        variant = "responsive",
+        adaptive = false,
     }: Props = $props();
 
     let innerWidth = $state(0);
     let innerHeight = $state(0);
-    let isMobile = $derived(
-        variant === "bottom" || (variant === "responsive" && innerWidth < 640),
-    );
+    let isMobile = $derived(adaptive && innerWidth < 640);
 
     // Gesture states
     let startY = 0;
     let dragY = $state(0);
     let isDragging = $state(false);
+
+    // Custom transition for smooth drag continuity
+    function flyWithDrag(
+        node: Element,
+        {
+            y = 0,
+            duration = 400,
+            easing = cubicOut,
+            start = 0,
+            opacity = 0,
+        }: {
+            y?: number;
+            duration?: number;
+            easing?: (t: number) => number;
+            start?: number;
+            opacity?: number;
+        },
+    ) {
+        const style = getComputedStyle(node);
+        const target_opacity = +style.opacity;
+        const transform = style.transform === "none" ? "" : style.transform;
+
+        return {
+            duration,
+            easing,
+            css: (t: number, u: number) => `
+                transform: ${transform} translateY(${start + (y - start) * u}px);
+                opacity: ${target_opacity - (target_opacity - opacity) * u}
+            `,
+        };
+    }
 
     const handleKeydown = (e: KeyboardEvent) => {
         if (isOpen && closeOnEsc && e.key === "Escape") {
@@ -77,8 +105,9 @@
         dragY = 0;
     };
 
+    // Reset gestures strictly on open to preserve dragY during close animation
     $effect(() => {
-        if (!isOpen) {
+        if (isOpen) {
             dragY = 0;
             isDragging = false;
         }
@@ -92,13 +121,13 @@
         <!-- Handle for mobile -->
         {#if isMobile}
             <div
-                class="w-full flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing"
+                class="w-full flex justify-center pt-3 pb-2 shrink-0 cursor-grab active:cursor-grabbing touch-none"
                 ontouchstart={onTouchStart}
                 ontouchmove={onTouchMove}
                 ontouchend={onTouchEnd}
             >
                 <div
-                    class="w-12 h-1.5 bg-app-border rounded-full opacity-50"
+                    class="w-12 h-1.5 bg-app-border rounded-full opacity-40"
                 ></div>
             </div>
         {/if}
@@ -108,7 +137,7 @@
                 ontouchstart={onTouchStart}
                 ontouchmove={onTouchMove}
                 ontouchend={onTouchEnd}
-                class="shrink-0"
+                class="shrink-0 touch-none"
             >
                 {@render header()}
             </div>
@@ -117,7 +146,9 @@
             <div
                 class={twMerge(
                     "p-6 pb-2 flex items-start justify-between shrink-0",
-                    isMobile ? "cursor-grab active:cursor-grabbing" : "",
+                    isMobile
+                        ? "cursor-grab active:cursor-grabbing touch-none"
+                        : "",
                     headerClass,
                 )}
                 ontouchstart={onTouchStart}
@@ -176,7 +207,7 @@
             role="button"
             tabindex="-1"
             onkeydown={() => {}}
-            transition:fade={{ duration: 200 }}
+            transition:fade={{ duration: 250 }}
         ></div>
 
         <!-- Modal Content -->
@@ -205,11 +236,20 @@
                     className,
                 )}
                 style:transform={dragY > 0 ? `translateY(${dragY}px)` : ""}
-                style:transition={isDragging
-                    ? "none"
-                    : "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.125)"}
-                in:fly={{ y: innerHeight, duration: 450, easing: quintOut }}
-                out:fly={{ y: innerHeight, duration: 300, easing: quintOut }}
+                style:transition={isDragging ? "none" : "transform 0.2s linear"}
+                in:flyWithDrag={{
+                    y: innerHeight,
+                    duration: 450,
+                    easing: quintOut,
+                    opacity: 1,
+                }}
+                out:flyWithDrag={{
+                    y: innerHeight,
+                    duration: 400,
+                    start: dragY, // Start from current dragged position
+                    opacity: 1, // NO FADING
+                    easing: (t) => t * t, // Accelerate to bottom
+                }}
                 role="dialog"
                 aria-modal="true"
             >

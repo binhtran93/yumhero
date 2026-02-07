@@ -330,6 +330,7 @@
 <Modal
     {isOpen}
     {onClose}
+    adaptive={true}
     class="max-w-2xl"
     closeOnEsc={!showAddManualModal && !showEditModal && !showCheckFridgeModal}
 >
