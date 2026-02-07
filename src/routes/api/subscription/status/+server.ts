@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
 import { adminDb } from '$lib/server/admin';
+import { errorResponse } from '$lib/server/api';
 
 export const GET = async ({ request }) => {
     try {
@@ -31,7 +32,6 @@ export const GET = async ({ request }) => {
         });
     } catch (error: any) {
         console.error('Error fetching subscription status:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to fetch subscription status' }, { status });
+        return errorResponse(error, 'Failed to fetch subscription status');
     }
 };

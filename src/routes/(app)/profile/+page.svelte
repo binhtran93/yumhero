@@ -28,6 +28,7 @@
         scheduledCancellation,
     } from "$lib/stores/subscription";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import { apiRequest, jsonRequest } from "$lib/api/client";
 
     const getStatusConfig = (s: string | null) => {
         switch (s) {
@@ -70,21 +71,15 @@
     let showConfirmModal = $state(false);
 
     const handleConfirmSubscription = async () => {
-        if (!$user) return;
         showConfirmModal = false;
         isActivating = true;
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch("/api/subscription/confirm", {
+            const result = await apiRequest<{ success: boolean; error?: string }>(
+                "/api/subscription/confirm",
+                {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({}),
+                ...jsonRequest({}),
             });
-
-            const result = await response.json();
             if (result.success) {
                 toasts.success("Subscription confirmed successfully!");
             } else {
@@ -110,28 +105,20 @@
         previewAmount = null;
 
         try {
-            const token = await $user?.getIdToken();
-            if (!token) return;
-
-            const response = await fetch("/api/subscription/switch/preview", {
+            const data = await apiRequest<{
+                success: boolean;
+                immediateTransaction?: { details?: { totals?: { total?: string } } };
+                currency?: string;
+            }>("/api/subscription/switch/preview", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+                ...jsonRequest({
                     targetInterval: "year",
                 }),
             });
-            const data = await response.json();
+
             if (data.success && data.immediateTransaction) {
-                // Paddle returns amounts in smallest currency unit (e.g. cents) as a string usually?
-                // Wait, check API response. Preview response creates a transaction object.
-                // totals.total is usually a string formatted as major currency unit in new API?
-                // Or typically string representation of float.
-                // Let's assume the API returns the string as is from SDK.
-                previewAmount = data.immediateTransaction.details.totals.total;
-                previewCurrency = data.currency;
+                previewAmount = data.immediateTransaction.details?.totals?.total || null;
+                previewCurrency = data.currency || null;
             }
         } catch (e) {
             console.error("Failed to fetch preview", e);
@@ -158,25 +145,21 @@
     );
 
     const handleSwitchPlan = async () => {
-        if (!$user || !$billingInterval) return;
+        if (!$billingInterval) return;
         showSwitchModal = false;
         isSwitching = true;
         const targetInterval = $billingInterval === "month" ? "year" : "month";
 
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch("/api/subscription/switch", {
+            const result = await apiRequest<{ success: boolean; error?: string }>(
+                "/api/subscription/switch",
+                {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+                ...jsonRequest({
                     targetInterval,
                 }),
             });
-
-            const result = await response.json();
+            
             if (result.success) {
                 toasts.success(
                     `Successfully switched to ${targetInterval}ly plan!`,
@@ -196,22 +179,17 @@
     let showCancelModal = $state(false);
 
     const handleCancelSubscription = async () => {
-        if (!$user) return;
         showCancelModal = false;
         isCancelling = true;
 
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch("/api/subscription/cancel", {
+            const result = await apiRequest<{ success: boolean; error?: string }>(
+                "/api/subscription/cancel",
+                {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({}),
+                ...jsonRequest({}),
             });
-
-            const result = await response.json();
+            
             if (result.success) {
                 toasts.success(
                     "Subscription cancelled. You will still have access until the end of your billing period.",

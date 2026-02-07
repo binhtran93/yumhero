@@ -127,19 +127,12 @@
     }
 
     async function confirmDelete() {
-        if (!$user || !data.id) return;
+        if (!data.id) return;
         isDeleting = true;
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch(`/api/recipes/${data.id}`, {
+            await apiRequest<{ success: true }>(`/api/recipes/${data.id}`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
             });
-            if (!response.ok) {
-                throw new Error("Failed to delete recipe");
-            }
             toasts.success("Recipe deleted");
             goto("/recipes");
         } catch (error) {

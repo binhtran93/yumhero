@@ -2,6 +2,8 @@ import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
 import { adminDb } from '$lib/server/admin';
 import { serializeFirestoreData } from '$lib/server/firestore-serialize';
+import { errorResponse, fail } from '$lib/server/api';
+import { toNonEmptyString } from '$lib/server/validators';
 
 export const GET = async ({ request }) => {
     try {
@@ -12,18 +14,24 @@ export const GET = async ({ request }) => {
         return json({ tags });
     } catch (error: any) {
         console.error('Error fetching tags:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to fetch tags' }, { status });
+        return errorResponse(error, 'Failed to fetch tags');
     }
 };
 
 export const POST = async ({ request }) => {
     try {
         const user = await verifyAuth(request);
-        const { label } = (await request.json()) as { label: string };
+        const body = (await request.json()) as { label?: unknown };
+        const label = toNonEmptyString(body.label, 'label');
 
-        if (!label || typeof label !== 'string') {
-            return json({ error: 'Label is required' }, { status: 400 });
+        const existing = await adminDb
+            .collection(`users/${user.uid}/tags`)
+            .where('label', '==', label)
+            .limit(1)
+            .get();
+
+        if (!existing.empty) {
+            fail('Tag already exists', 409);
         }
 
         const docRef = adminDb.collection(`users/${user.uid}/tags`).doc();
@@ -36,7 +44,6 @@ export const POST = async ({ request }) => {
         return json({ id: docRef.id });
     } catch (error: any) {
         console.error('Error creating tag:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to create tag' }, { status });
+        return errorResponse(error, 'Failed to create tag');
     }
 };

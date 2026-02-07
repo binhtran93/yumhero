@@ -1,9 +1,9 @@
 <script lang="ts">
     import { EllipsisVertical, Pencil, Share2, Trash2 } from "lucide-svelte";
     import { fade, scale } from "svelte/transition";
-    import { user } from "$lib/stores/auth";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
+    import { apiRequest } from "$lib/api/client";
 
     interface Props {
         recipeId: string;
@@ -47,20 +47,12 @@
         e.preventDefault();
         e.stopPropagation();
 
-        if (!$user) return;
         isDeleting = true;
 
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch(`/api/recipes/${recipeId}`, {
+            await apiRequest<{ success: true }>(`/api/recipes/${recipeId}`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
             });
-            if (!response.ok) {
-                throw new Error("Failed to delete recipe");
-            }
 
             // Check if we are on the detail page for this recipe
             if (

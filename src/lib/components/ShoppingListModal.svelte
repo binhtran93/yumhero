@@ -30,9 +30,8 @@
     } from "$lib/stores/fridgeIngredients";
     import CheckFridgeModal from "./CheckFridgeModal.svelte";
     import type { WeeklyPlan } from "$lib/types";
-    import { user } from "$lib/stores/auth";
-    import { get } from "svelte/store";
     import { toasts } from "$lib/stores/toasts";
+    import { apiRequest, jsonRequest } from "$lib/api/client";
 
     interface Props {
         isOpen: boolean;
@@ -197,21 +196,11 @@
                 return;
             }
 
-            const currentUser = get(user);
-            if (!currentUser) {
-                toasts.error("You must be logged in to check fridge matches");
-                isMatching = false;
-                return;
-            }
-            const token = await currentUser.getIdToken();
-
-            const response = await fetch("/api/match-fridge-ingredients", {
+            const data = await apiRequest<{ matches?: any[] }>(
+                "/api/match-fridge-ingredients",
+                {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+                ...jsonRequest({
                     shoppingList: uncheckedItems.map((item) => ({
                         id: item.id,
                         name: item.ingredient_name,
@@ -229,10 +218,6 @@
                     })),
                 }),
             });
-
-            if (!response.ok) throw new Error("Failed to match ingredients");
-
-            const data = await response.json();
             matches = (data.matches || []).filter(
                 (m: any) => m && m.shoppingItemId,
             );

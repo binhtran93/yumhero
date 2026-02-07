@@ -3,6 +3,7 @@ import { verifyAuth } from '$lib/server/auth';
 import { adminDb } from '$lib/server/admin';
 import { serializeFirestoreData } from '$lib/server/firestore-serialize';
 import type { WeeklyPlan, ShoppingListItem } from '$lib/types';
+import { errorResponse, fail } from '$lib/server/api';
 
 export const GET = async ({ request, params }) => {
     try {
@@ -24,8 +25,7 @@ export const GET = async ({ request, params }) => {
         });
     } catch (error: any) {
         console.error('Error fetching plan:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to fetch plan' }, { status });
+        return errorResponse(error, 'Failed to fetch plan');
     }
 };
 
@@ -38,6 +38,12 @@ export const PUT = async ({ request, params }) => {
         }
 
         const body = (await request.json()) as { plan: WeeklyPlan; shopping_list: ShoppingListItem[] };
+        if (!Array.isArray(body.plan)) {
+            fail('plan must be an array');
+        }
+        if (!Array.isArray(body.shopping_list)) {
+            fail('shopping_list must be an array');
+        }
 
         await adminDb.doc(`users/${user.uid}/plans/${weekId}`).set(
             {
@@ -52,8 +58,7 @@ export const PUT = async ({ request, params }) => {
         return json({ success: true });
     } catch (error: any) {
         console.error('Error saving plan:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to save plan' }, { status });
+        return errorResponse(error, 'Failed to save plan');
     }
 };
 
@@ -66,7 +71,7 @@ export const PATCH = async ({ request, params }) => {
         }
 
         const body = (await request.json()) as { shopping_list?: ShoppingListItem[] };
-        if (!body.shopping_list) {
+        if (!Array.isArray(body.shopping_list)) {
             return json({ error: 'shopping_list is required' }, { status: 400 });
         }
 
@@ -81,7 +86,6 @@ export const PATCH = async ({ request, params }) => {
         return json({ success: true });
     } catch (error: any) {
         console.error('Error updating plan shopping list:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to update shopping list' }, { status });
+        return errorResponse(error, 'Failed to update shopping list');
     }
 };

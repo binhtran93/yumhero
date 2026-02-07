@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
 import { adminDb } from '$lib/server/admin';
+import { errorResponse } from '$lib/server/api';
+import { toNonEmptyString } from '$lib/server/validators';
 
 export const PATCH = async ({ request, params }) => {
     try {
@@ -10,17 +12,14 @@ export const PATCH = async ({ request, params }) => {
             return json({ error: 'Tag ID is required' }, { status: 400 });
         }
 
-        const { label } = (await request.json()) as { label: string };
-        if (!label || typeof label !== 'string') {
-            return json({ error: 'Label is required' }, { status: 400 });
-        }
+        const { label } = (await request.json()) as { label?: unknown };
+        const normalizedLabel = toNonEmptyString(label, 'label');
 
-        await adminDb.doc(`users/${user.uid}/tags/${tagId}`).update({ label });
+        await adminDb.doc(`users/${user.uid}/tags/${tagId}`).update({ label: normalizedLabel });
         return json({ success: true });
     } catch (error: any) {
         console.error('Error updating tag:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to update tag' }, { status });
+        return errorResponse(error, 'Failed to update tag');
     }
 };
 
@@ -36,7 +35,6 @@ export const DELETE = async ({ request, params }) => {
         return json({ success: true });
     } catch (error: any) {
         console.error('Error deleting tag:', error);
-        const status = error.message?.includes('authentication') || error.message?.includes('Authorization') ? 401 : 500;
-        return json({ error: error?.message || 'Failed to delete tag' }, { status });
+        return errorResponse(error, 'Failed to delete tag');
     }
 };

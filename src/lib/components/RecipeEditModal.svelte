@@ -28,12 +28,12 @@
     import type { Recipe, Ingredient, MealType } from "$lib/types";
     import { addRecipe, updateRecipe } from "$lib/stores/recipes";
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
-    import { user } from "$lib/stores/auth";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
     import { toasts } from "$lib/stores/toasts";
     import { twMerge } from "tailwind-merge";
+    import { apiRequest, jsonRequest } from "$lib/api/client";
 
     type FormIngredient = {
         amount: string;
@@ -465,37 +465,16 @@
     };
 
     const uploadImageFileToR2 = async (file: File): Promise<string> => {
-        const currentUser = get(user);
-        if (!currentUser) {
-            throw new Error("User not authenticated");
-        }
-
-        const token = await currentUser.getIdToken();
-        const presignResponse = await fetch("/api/r2/presign-upload", {
+        const presigned = await apiRequest<PresignedUploadResponse>(
+            "/api/r2/presign-upload",
+            {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
+            ...jsonRequest({
                 fileName: file.name,
                 contentType: file.type,
                 size: file.size,
             }),
         });
-
-        if (!presignResponse.ok) {
-            let message = "Failed to create upload URL";
-            try {
-                const errorData = await presignResponse.json();
-                message = errorData.error || message;
-            } catch {
-                // Keep fallback message if JSON parsing fails
-            }
-            throw new Error(message);
-        }
-
-        const presigned: PresignedUploadResponse = await presignResponse.json();
         const uploadResponse = await fetch(presigned.uploadUrl, {
             method: presigned.method || "PUT",
             headers: {
@@ -674,29 +653,11 @@
 
     const handleImportFromUrl = async (url: string) => {
         try {
-            const currentUser = get(user);
-            if (!currentUser) {
-                toasts.error("You must be logged in to import recipes");
-                throw new Error("User not authenticated");
-            }
-            const token = await currentUser.getIdToken();
-
             const currentTags = get(userTags).data.map((t) => t.label);
-            const response = await fetch("/api/extract-recipe", {
+            const data = await apiRequest<any>("/api/extract-recipe", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ url, userTags: currentTags }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Failed to import recipe");
-            }
-
-            const data = await response.json();
+                ...jsonRequest({ url, userTags: currentTags }),
+            }); 
             handleExtractedData(data, url);
         } catch (error: any) {
             console.error("Import error:", error);
@@ -706,31 +667,11 @@
 
     const handlePasteText = async (text: string) => {
         try {
-            const currentUser = get(user);
-            if (!currentUser) {
-                toasts.error("You must be logged in to import recipes");
-                throw new Error("User not authenticated");
-            }
-            const token = await currentUser.getIdToken();
-
             const currentTags = get(userTags).data.map((t) => t.label);
-            const response = await fetch("/api/extract-recipe", {
+            const data = await apiRequest<any>("/api/extract-recipe", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ text, userTags: currentTags }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(
-                    errorData.error || "Failed to parse recipe text",
-                );
-            }
-
-            const data = await response.json();
+                ...jsonRequest({ text, userTags: currentTags }),
+            }); 
             handleExtractedData(data);
         } catch (error: any) {
             console.error("Paste error:", error);

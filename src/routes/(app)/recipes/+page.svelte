@@ -18,8 +18,8 @@
 
     import RecipeMenu from "$lib/components/RecipeMenu.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
-    import { user } from "$lib/stores/auth";
     import { toasts } from "$lib/stores/toasts";
+    import { apiRequest } from "$lib/api/client";
 
     let searchQuery = $state("");
 
@@ -93,19 +93,12 @@
     }
 
     async function confirmDelete() {
-        if (!$user || !recipeToDeleteId) return;
+        if (!recipeToDeleteId) return;
         isDeleting = true;
         try {
-            const token = await $user.getIdToken();
-            const response = await fetch(`/api/recipes/${recipeToDeleteId}`, {
+            await apiRequest<{ success: true }>(`/api/recipes/${recipeToDeleteId}`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
             });
-            if (!response.ok) {
-                throw new Error("Failed to delete recipe");
-            }
             toasts.success("Recipe deleted");
         } catch (error) {
             console.error("Error deleting recipe:", error);
