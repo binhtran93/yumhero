@@ -48,7 +48,8 @@ export const POST = async ({ request }) => {
                     billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
                     updatedAt: new Date().toISOString(),
                     paddleCustomerId: eventData.data.customerId,
-                    status: eventData.data.status
+                    status: eventData.data.status,
+                    scheduledCancellation: undefined,
                 }, { merge: true });
 
                 console.log(`Successfully updated user ${userId} subscription status.`);
@@ -66,6 +67,7 @@ export const POST = async ({ request }) => {
                     status: eventData.data.status,
                     nextBilledAt: eventData.data.nextBilledAt,
                     billingInterval: eventData.data.items[0].price?.billingCycle?.interval,
+                    scheduledCancellation: undefined,
                     updatedAt: new Date().toISOString(),
                 }, { merge: true });
             }
