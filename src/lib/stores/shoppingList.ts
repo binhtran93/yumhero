@@ -5,10 +5,10 @@ import type { ShoppingListItem } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
 /**
- * Week-scoped shopping list store.
- * Returns a derived store for the shopping list of a specific week.
+ * Create a reactive week-scoped shopping list store.
+ * This is for UI subscriptions that should auto-refresh.
  */
-export const getWeekShoppingList = (weekId: string) => {
+export const createWeekShoppingListStore = (weekId: string) => {
     return derived<[Readable<any>, Readable<boolean>], { data: ShoppingListItem[], loading: boolean }>(
         [user, authLoading],
         ([$user, $authLoading], set) => {
@@ -37,9 +37,10 @@ export const getWeekShoppingList = (weekId: string) => {
 };
 
 /**
- * Helper to get the current shopping list for a week
+ * Fetch the current shopping list for a week once.
+ * This is for one-off reads in action handlers.
  */
-export const getShoppingList = async (weekId: string): Promise<ShoppingListItem[]> => {
+export const fetchWeekShoppingList = async (weekId: string): Promise<ShoppingListItem[]> => {
     const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
     return response.shopping_list || [];
 };
@@ -148,7 +149,7 @@ export const getBoughtIngredientsForRecipe = async (
     amount: number;
     unit: string | null;
 }>> => {
-    const shoppingList = await getShoppingList(weekId);
+    const shoppingList = await fetchWeekShoppingList(weekId);
     const boughtIngredients: Array<{
         ingredientName: string;
         amount: number;

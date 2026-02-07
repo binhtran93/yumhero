@@ -15,14 +15,14 @@
     import Modal from "./Modal.svelte";
     import { toPng } from "html-to-image";
     import {
-        getWeekShoppingList,
+        createWeekShoppingListStore,
         toggleShoppingItemCheck as toggleShoppingSourceCheck,
         toggleAllShoppingItemChecks as toggleAllShoppingItemChecks,
         addManualShoppingItem,
         deleteShoppingItem,
         updateShoppingItem,
         resetAllShoppingItems,
-        getShoppingList,
+        fetchWeekShoppingList,
     } from "$lib/stores/shoppingList";
     import {
         fridgeIngredients,
@@ -64,7 +64,7 @@
     let isPrinting = $state(false);
 
     // Subscribe to week-scoped shopping list
-    let weekShoppingListStore = $derived(getWeekShoppingList(weekId));
+    let weekShoppingListStore = $derived(createWeekShoppingListStore(weekId));
     let shoppingList = $derived($weekShoppingListStore.data);
     let isLoading = $derived($weekShoppingListStore.loading);
 
@@ -180,7 +180,7 @@
         try {
             const [latestShoppingList, latestFridgeIngredients] =
                 await Promise.all([
-                    getShoppingList(weekId),
+                    fetchWeekShoppingList(weekId),
                     getFridgeIngredients(),
                 ]);
 
