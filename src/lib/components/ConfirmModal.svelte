@@ -43,7 +43,7 @@
         </div>
 
         <p class="text-app-text-muted leading-relaxed mb-6">
-            {message}
+            {@html message}
         </p>
 
         <div class="flex items-center justify-end gap-3">

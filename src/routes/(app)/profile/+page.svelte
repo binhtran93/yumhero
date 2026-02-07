@@ -100,6 +100,62 @@
 
     let isSwitching = $state(false);
     let showSwitchModal = $state(false);
+    let previewAmount = $state<string | null>(null);
+    let previewCurrency = $state<string | null>(null);
+    let isLoadingPreview = $state(false);
+
+    const handleShowSwitchModal = async () => {
+        showSwitchModal = true;
+        isLoadingPreview = true;
+        previewAmount = null;
+
+        try {
+            const token = await $user?.getIdToken();
+            if (!token) return;
+
+            const response = await fetch("/api/subscription/switch/preview", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    targetInterval: "year",
+                }),
+            });
+            const data = await response.json();
+            if (data.success && data.immediateTransaction) {
+                // Paddle returns amounts in smallest currency unit (e.g. cents) as a string usually?
+                // Wait, check API response. Preview response creates a transaction object.
+                // totals.total is usually a string formatted as major currency unit in new API?
+                // Or typically string representation of float.
+                // Let's assume the API returns the string as is from SDK.
+                previewAmount = data.immediateTransaction.details.totals.total;
+                previewCurrency = data.currency;
+            }
+        } catch (e) {
+            console.error("Failed to fetch preview", e);
+        } finally {
+            isLoadingPreview = false;
+        }
+    };
+
+    const formatPrice = (amount: string, currency: string) => {
+        if (!amount || !currency) return "";
+        const value = parseInt(amount) / 100;
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: currency,
+        }).format(value);
+    };
+
+    let switchMessage = $derived(
+        isLoadingPreview
+            ? "Calculating pro-rated amount..."
+            : previewAmount && previewCurrency
+              ? `Switching to Yearly will charge you approximately <strong>${formatPrice(previewAmount, previewCurrency)}</strong> immediately. <br/><br/>You'll <strong>save 30%</strong> per year!`
+              : "Switching to Yearly will charge you immediately. <br/><br/>You'll <strong>save 30%</strong> per year!",
+    );
 
     const handleSwitchPlan = async () => {
         if (!$user || !$billingInterval) return;
@@ -245,12 +301,12 @@
                         src={$user.photoURL}
                         name={$user.displayName || $user.email}
                         size="xl"
-                        className="relative w-32 h-32 text-4xl border-4 border-white dark:border-app-surface shadow-2xl"
+                        className="relative w-24 h-24 text-4xl border-4 border-white dark:border-app-surface shadow-2xl"
                     />
                 </div>
                 <div>
                     <h2
-                        class="text-2xl md:text-3xl font-black text-app-text tracking-tight"
+                        class="text-2xl font-black text-app-text tracking-tight"
                     >
                         {$user.displayName || "User"}
                     </h2>
@@ -319,11 +375,11 @@
                             </button>
                         {:else if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
                             <button
-                                onclick={() => (showSwitchModal = true)}
+                                onclick={handleShowSwitchModal}
                                 class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
                             >
                                 <Zap size={12} fill="currentColor" />
-                                Save 30% w/ Yearly
+                                Switch to Yearly & Save 30%
                             </button>
                         {/if}
                     </div>
@@ -412,12 +468,12 @@
 <ConfirmModal
     isOpen={showSwitchModal}
     title="Switch Billing Cycle"
-    message="Switching to Yearly will charge you immediately with a pro-rated amount. You'll save 30% per year!"
+    message={switchMessage}
     confirmText="Confirm Switch"
     cancelText="Keep Current"
     onConfirm={handleSwitchPlan}
     onClose={() => (showSwitchModal = false)}
-    isLoading={isSwitching}
+    isLoading={isSwitching || isLoadingPreview}
 />
 
 <ConfirmModal
