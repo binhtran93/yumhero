@@ -297,6 +297,14 @@
                                     day: "numeric",
                                     year: "numeric",
                                 })}
+                                {#if $status === "active" && !$scheduledCancellation}
+                                    <button
+                                        onclick={() => (showCancelModal = true)}
+                                        class="ml-2 text-[10px] text-app-text-muted hover:text-red-500 underline cursor-pointer"
+                                    >
+                                        Cancel
+                                    </button>
+                                {/if}
                             {:else}
                                 Free Account
                             {/if}
@@ -304,7 +312,7 @@
                         {#if ($status === "trialing" || $status === "past_due") && !isActivating}
                             <button
                                 onclick={() => (showConfirmModal = true)}
-                                class="mt-1 px-4 py-1.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
+                                class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
                             >
                                 <Zap size={12} fill="currentColor" />
                                 Confirm Subscription
@@ -312,7 +320,7 @@
                         {:else if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
                             <button
                                 onclick={() => (showSwitchModal = true)}
-                                class="mt-1 px-4 py-1.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
+                                class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
                             >
                                 <Zap size={12} fill="currentColor" />
                                 Save 30% w/ Yearly
