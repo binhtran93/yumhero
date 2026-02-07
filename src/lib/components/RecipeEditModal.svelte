@@ -653,10 +653,9 @@
 
     const handleImportFromUrl = async (url: string) => {
         try {
-            const currentTags = get(userTags).data.map((t) => t.label);
             const data = await apiRequest<any>("/api/extract-recipe", {
                 method: "POST",
-                ...jsonRequest({ url, userTags: currentTags }),
+                ...jsonRequest({ url }),
             }); 
             handleExtractedData(data, url);
         } catch (error: any) {
@@ -667,10 +666,9 @@
 
     const handlePasteText = async (text: string) => {
         try {
-            const currentTags = get(userTags).data.map((t) => t.label);
             const data = await apiRequest<any>("/api/extract-recipe", {
                 method: "POST",
-                ...jsonRequest({ text, userTags: currentTags }),
+                ...jsonRequest({ text }),
             }); 
             handleExtractedData(data);
         } catch (error: any) {
