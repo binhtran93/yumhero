@@ -246,6 +246,19 @@
     const isDropSaving = (day: string, type: MealType) =>
         !!dropSavingCells[getCellKey(day, type)];
 
+    const withCellSaving = async (
+        day: string,
+        type: MealType,
+        work: () => Promise<void>,
+    ) => {
+        markDropSaving(day, type);
+        try {
+            await work();
+        } finally {
+            unmarkDropSaving(day, type);
+        }
+    };
+
     const savePlan = async () => {
         await saveWeekPlan(weekId, plan);
     };
@@ -372,7 +385,9 @@
                 ...existingLeftovers,
                 ...newRecipes,
             ];
-            await savePlan();
+            await withCellSaving(day, mealType, async () => {
+                await savePlan();
+            });
         }
     };
 
@@ -434,14 +449,18 @@
                 return;
             }
 
-            await removePlannedRecipe(item.id);
-            plan[dayIndex].meals[type].splice(index, 1);
+            await withCellSaving(day, type, async () => {
+                await removePlannedRecipe(item.id);
+                plan[dayIndex].meals[type].splice(index, 1);
+            });
             return;
         }
 
         // Leftovers/notes still follow full plan save flow for now.
-        plan[dayIndex].meals[type].splice(index, 1);
-        await savePlan();
+        await withCellSaving(day, type, async () => {
+            plan[dayIndex].meals[type].splice(index, 1);
+            await savePlan();
+        });
     };
 
     const handleConfirmAddToFridge = async () => {
@@ -460,10 +479,12 @@
             })),
         );
 
-        await removePlannedRecipe(
-            boughtIngredientsModal.plannedItemId,
-        );
-        plan[dayIndex].meals[type].splice(index, 1);
+        await withCellSaving(day, type, async () => {
+            await removePlannedRecipe(
+                boughtIngredientsModal.plannedItemId,
+            );
+            plan[dayIndex].meals[type].splice(index, 1);
+        });
 
         // Close modal and show success
         boughtIngredientsModal.isOpen = false;
@@ -477,10 +498,12 @@
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        await removePlannedRecipe(
-            boughtIngredientsModal.plannedItemId,
-        );
-        plan[dayIndex].meals[type].splice(index, 1);
+        await withCellSaving(day, type, async () => {
+            await removePlannedRecipe(
+                boughtIngredientsModal.plannedItemId,
+            );
+            plan[dayIndex].meals[type].splice(index, 1);
+        });
 
         // Close modal
         boughtIngredientsModal.isOpen = false;
@@ -624,8 +647,10 @@
     ) => {
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            plan[dayIndex].meals[type].splice(index, 1);
-            await savePlan();
+            await withCellSaving(day, type, async () => {
+                plan[dayIndex].meals[type].splice(index, 1);
+                await savePlan();
+            });
         }
         // Set leftover back to not_planned
         await setLeftoverNotPlanned(leftoverId);
@@ -906,14 +931,10 @@
         },
         target: { day: string; type: MealType },
     ) => {
-        const savePlanForDropTarget = async () => {
-            markDropSaving(target.day, target.type);
-            try {
+        const savePlanForDropTarget = async () =>
+            withCellSaving(target.day, target.type, async () => {
                 await savePlan();
-            } finally {
-                unmarkDropSaving(target.day, target.type);
-            }
-        };
+            });
 
         // Prevent dropping note into meal or recipe into note
         if (source.type === "note" && target.type !== "note") return;

@@ -110,6 +110,11 @@
         index: number,
         item: MealSlotItem | Note,
     ) => {
+        if (isLoading || isSaving) {
+            e.preventDefault();
+            return;
+        }
+
         // Defer hiding the element so the browser has time to create the ghost image from the visible element
         setTimeout(() => {
             draggingIndex = index;
@@ -254,7 +259,7 @@
                               : "bg-accent-note-bg hover:bg-accent-note-hover border-accent-note-border",
                     draggingIndex === i && "invisible",
                 )}
-                draggable="true"
+                draggable={!isLoading && !isSaving}
                 ondragstart={(e) => handleDragStart(e, i, item)}
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
@@ -276,7 +281,7 @@
                                       : "text-accent-note-text",
                         )}
                     >
-                        {getLabel(item)}
+                        {getLabel(item)}{itemIsLeftover ? " - leftover" : ""}
 
                         {#if "quantity" in item && item.quantity > 1}
                             <span class="opacity-60 font-medium ml-1 text-xs"
@@ -284,21 +289,6 @@
                             >
                         {/if}
                     </p>
-                    {#if itemIsLeftover}
-                        <div class="flex items-center gap-1.5 -mt-0.5">
-                            <div
-                                class={twMerge(
-                                    "w-1.5 h-1.5 rounded-full shrink-0",
-                                    isEatenStatus(item.leftoverId)
-                                        ? "bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
-                                        : "bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.4)]",
-                                )}
-                            ></div>
-                            <p class="text-[9px] font-bold opacity-60">
-                                Leftover
-                            </p>
-                        </div>
-                    {/if}
                 </div>
 
                 <!-- Show menu based on item type -->
