@@ -27,6 +27,7 @@ html {
     --app-underline: rgba(120, 113, 108, 0.1);
     --app-border: #e7e5e4;
     --app-border-strong: #d6d3d1;
+    --app-primary-hover: #9a3412;
 
     /* Breakfast - Sunrise (Soft Orange) */
     --color-accent-breakfast: #c2410c;
@@ -88,6 +89,7 @@ html {
     --app-underline: rgba(168, 162, 158, 0.2);
     --app-border: #36312e;
     --app-border-strong: #57534e;
+    --app-primary-hover: #9a3412;
 
     /* Dark Mode - Deep Tints */
     /* Breakfast - Deep Orange */
@@ -135,6 +137,7 @@ html {
 
 @theme {
     --color-app-primary: var(--app-primary);
+    --color-app-primary-hover: var(--app-primary-hover);
     --color-app-bg: var(--app-bg);
     --color-app-surface-deep: var(--app-surface-deep);
     --color-app-surface: var(--app-surface);

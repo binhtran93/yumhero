@@ -268,16 +268,17 @@
             in:fly={{ y: 20, duration: 500, delay: 200 }}
         >
             <!-- Subscription Card -->
+            <!-- Subscription Card -->
             <div
-                class="bg-app-surface p-4 rounded-2xl border border-app-border shadow-sm flex items-center justify-between"
+                class="bg-app-surface p-4 rounded-2xl border border-app-border shadow-sm flex justify-between items-start"
             >
-                <div class="flex items-center gap-4">
+                <div class="flex gap-4">
                     <div
-                        class="w-12 h-12 flex items-center justify-center bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-2xl"
+                        class="w-12 h-12 flex items-center justify-center bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-2xl shrink-0"
                     >
                         <Star size={24} fill="currentColor" />
                     </div>
-                    <div>
+                    <div class="flex flex-col gap-1">
                         <p class="font-black text-app-text">Premium Plan</p>
                         <p class="text-xs text-app-text-muted font-bold">
                             {#if $scheduledCancellation}
@@ -300,6 +301,15 @@
                                 Free Account
                             {/if}
                         </p>
+                        {#if ($status === "trialing" || $status === "past_due") && !isActivating}
+                            <button
+                                onclick={() => (showConfirmModal = true)}
+                                class="mt-1 px-4 py-1.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
+                            >
+                                <Zap size={12} fill="currentColor" />
+                                Confirm Subscription
+                            </button>
+                        {/if}
                     </div>
                 </div>
                 <div class="flex flex-col items-end gap-2">
@@ -308,7 +318,6 @@
                     >
                         {statusConfig.label}
                     </span>
-
                     {#if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
                         <button
                             onclick={() => (showSwitchModal = true)}
