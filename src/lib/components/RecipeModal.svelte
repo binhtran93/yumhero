@@ -8,6 +8,7 @@
     Clock,
     Users,
     Calendar,
+    Check,
   } from "lucide-svelte";
   import type {
     Recipe,
@@ -441,10 +442,11 @@
     <button
       onclick={handleDone}
       class={twMerge(
-        "w-full py-3 rounded-xl text-white font-bold text-sm shadow-sm transition-colors",
+        "w-full py-3 rounded-xl text-white font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2",
         colors.bg,
       )}
     >
+      <Check size={18} />
       Done
     </button>
   </div>

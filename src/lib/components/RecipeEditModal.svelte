@@ -21,6 +21,8 @@
         LayoutList,
         ListTodo,
         ChefHat,
+        Save,
+        Check,
     } from "lucide-svelte";
 
     import type { Recipe, Ingredient, MealType } from "$lib/types";
@@ -746,8 +748,9 @@
         <button
             onclick={onClose}
             disabled={isSaving}
-            class="px-6 py-3 bg-app-bg border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-auto"
+            class="px-6 py-3 bg-app-bg border border-app-border rounded-xl text-app-text font-bold hover:bg-app-surface-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-auto flex items-center gap-2"
         >
+            <X size={18} />
             Cancel
         </button>
         <button
@@ -761,6 +764,7 @@
                 ></div>
                 Saving...
             {:else}
+                <Save size={18} />
                 Save {recipeVariants.length > 1
                     ? `${recipeVariants.length} Recipes`
                     : "Recipe"}
@@ -831,7 +835,7 @@
                 <div class="space-y-3">
                     <div class="px-1">
                         <span
-                            class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                            class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                             >Recipe Name <span class="text-red-500">*</span
                             ></span
                         >
@@ -850,7 +854,7 @@
                 <div class="space-y-3">
                     <div class="px-1">
                         <span
-                            class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                            class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                             >Meal Category</span
                         >
                     </div>
@@ -924,7 +928,7 @@
             <div class="flex items-center justify-between px-1">
                 <div class="px-1">
                     <span
-                        class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                        class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                     >
                         Ingredients <span class="text-red-500">*</span>
                     </span>
@@ -1024,7 +1028,7 @@
         <div class="space-y-4 pt-4">
             <div class="px-1">
                 <span
-                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                 >
                     Instructions <span class="text-red-500">*</span>
                 </span>
@@ -1086,7 +1090,7 @@
                     <div class="space-y-3">
                         <div class="px-1">
                             <span
-                                class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                                class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                                 >Description</span
                             >
                         </div>
@@ -1105,7 +1109,7 @@
                         <div class="space-y-3">
                             <div class="px-1">
                                 <span
-                                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                                     >Source</span
                                 >
                             </div>
@@ -1122,7 +1126,7 @@
                         <div class="space-y-3">
                             <div class="px-1">
                                 <span
-                                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                                     >Tags (Max 5)</span
                                 >
                             </div>
@@ -1212,7 +1216,7 @@
                         </div>
                         <div class="space-y-2">
                             <span
-                                class="text-[10px] font-bold text-app-text-muted uppercase tracking-widest"
+                                class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                                 >Serves</span
                             >
                             <input

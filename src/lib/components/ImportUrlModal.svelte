@@ -1,6 +1,6 @@
 <script lang="ts">
     import Modal from "$lib/components/Modal.svelte";
-    import { X, Globe, Loader2 } from "lucide-svelte";
+    import { X, Globe, Loader2, Link2 } from "lucide-svelte";
 
     interface Props {
         isOpen: boolean;
@@ -136,8 +136,9 @@
             <button
                 onclick={onClose}
                 disabled={isLoading}
-                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
+                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
+                <X size={18} />
                 Cancel
             </button>
             <button
@@ -149,6 +150,7 @@
                     <Loader2 size={18} class="animate-spin" />
                     <span>Importing...</span>
                 {:else}
+                    <Link2 size={18} />
                     <span>Import Recipe</span>
                 {/if}
             </button>

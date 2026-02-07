@@ -4,7 +4,7 @@
         addIngredientsToFridge,
         updateIngredient,
     } from "$lib/stores/fridgeIngredients";
-    import { Check, Plus, Save } from "lucide-svelte";
+    import { X, Check, Plus, Save } from "lucide-svelte";
     import type { FridgeIngredient } from "$lib/types";
 
     interface Props {
@@ -87,7 +87,7 @@
         <div class="space-y-2">
             <label
                 for="name"
-                class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
             >
                 Ingredient Name
             </label>
@@ -106,7 +106,7 @@
             <div class="space-y-2">
                 <label
                     for="amount"
-                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                 >
                     Amount
                 </label>
@@ -125,7 +125,7 @@
             <div class="space-y-2">
                 <label
                     for="unit"
-                    class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
+                    class="text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1"
                 >
                     Unit <span
                         class="text-app-text-muted/50 normal-case font-normal"
@@ -149,9 +149,10 @@
             class="p-4 border-t border-app-border bg-app-surface-deep/50 flex gap-3"
         >
             <button
-                class="px-5 py-2.5 font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors"
+                class="px-5 py-2.5 font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors flex items-center gap-2"
                 onclick={onClose}
             >
+                <X size={18} />
                 Cancel
             </button>
             <button

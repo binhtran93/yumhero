@@ -1,8 +1,8 @@
 <script lang="ts">
-    import {Check, X,} from "lucide-svelte";
+    import { Calendar, Check, X } from "lucide-svelte";
     import Modal from "./Modal.svelte";
-    import {batchToggleShoppingItemChecks} from "$lib/stores/shoppingList";
-    import {formatAmount} from "$lib/utils/shopping";
+    import { batchToggleShoppingItemChecks } from "$lib/stores/shoppingList";
+    import { formatAmount } from "$lib/utils/shopping";
 
     interface Match {
         shoppingItemId: string;
@@ -176,6 +176,14 @@
 
         <div class="flex gap-3 mt-6">
             <button
+                class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-app-bg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
+                onclick={onClose}
+                disabled={isApplying}
+            >
+                <X size={18} />
+                Cancel
+            </button>
+            <button
                 class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all enabled:active:scale-95 shadow-lg shadow-app-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 h-auto whitespace-normal"
                 disabled={matches.length === 0 ||
                     isApplying ||
@@ -188,6 +196,7 @@
                     ></div>
                     Applying...
                 {:else}
+                    <Check size={18} />
                     Skip shopping
                 {/if}
             </button>

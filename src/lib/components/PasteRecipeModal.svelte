@@ -1,6 +1,6 @@
 <script lang="ts">
     import Modal from "$lib/components/Modal.svelte";
-    import { X, FileText, Loader2 } from "lucide-svelte";
+    import { X, FileText, Loader2, Sparkles } from "lucide-svelte";
 
     interface Props {
         isOpen: boolean;
@@ -113,8 +113,9 @@
             <button
                 onclick={onClose}
                 disabled={isLoading}
-                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50"
+                class="flex-1 py-3 rounded-xl bg-app-bg border border-app-border text-app-text font-bold text-sm hover:bg-app-surface-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
+                <X size={18} />
                 Cancel
             </button>
             <button
@@ -126,6 +127,7 @@
                     <Loader2 size={18} class="animate-spin" />
                     <span>Parsing...</span>
                 {:else}
+                    <Sparkles size={18} />
                     <span>Extract Recipe</span>
                 {/if}
             </button>

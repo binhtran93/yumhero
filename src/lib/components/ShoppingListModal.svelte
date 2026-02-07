@@ -7,6 +7,8 @@
         RotateCcw,
         Refrigerator,
         Printer,
+        Check,
+        Save,
     } from "lucide-svelte";
     import type { Recipe, ShoppingListItem } from "$lib/types";
     import GroupedIngredientCard from "./GroupedIngredientCard.svelte";
@@ -509,7 +511,7 @@
         <div>
             <label
                 for="ingredient-name"
-                class="block text-sm font-bold text-app-text mb-2"
+                class="block text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1 mb-2"
             >
                 Ingredient Name
             </label>
@@ -526,7 +528,7 @@
             <div>
                 <label
                     for="amount"
-                    class="block text-sm font-bold text-app-text mb-2"
+                    class="block text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1 mb-2"
                 >
                     Amount
                 </label>
@@ -543,7 +545,7 @@
             <div>
                 <label
                     for="unit"
-                    class="block text-sm font-bold text-app-text mb-2"
+                    class="block text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1 mb-2"
                 >
                     Unit
                 </label>
@@ -559,16 +561,18 @@
 
         <div class="flex gap-3 mt-6">
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
                 onclick={() => (showAddManualModal = false)}
             >
+                <X size={18} />
                 Cancel
             </button>
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all active:scale-95"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all active:scale-95 flex items-center justify-center gap-2"
                 onclick={handleAddManualItem}
                 disabled={!manualItemName.trim()}
             >
+                <Plus size={18} />
                 Add Item
             </button>
         </div>
@@ -593,7 +597,7 @@
             <div>
                 <label
                     for="edit-amount"
-                    class="block text-sm font-bold text-app-text mb-2"
+                    class="block text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1 mb-2"
                 >
                     Amount
                 </label>
@@ -610,7 +614,7 @@
             <div>
                 <label
                     for="edit-unit"
-                    class="block text-sm font-bold text-app-text mb-2"
+                    class="block text-xs font-bold text-app-text-muted uppercase tracking-wider pl-1 mb-2"
                 >
                     Unit
                 </label>
@@ -626,18 +630,20 @@
 
         <div class="flex gap-3 mt-6">
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
                 onclick={() => {
                     showEditModal = false;
                     editingItem = null;
                 }}
             >
+                <X size={18} />
                 Cancel
             </button>
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all active:scale-95"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-primary text-white hover:bg-app-primary/90 transition-all active:scale-95 flex items-center justify-center gap-2"
                 onclick={handleSaveEdit}
             >
+                <Save size={18} />
                 Save Changes
             </button>
         </div>
@@ -674,10 +680,11 @@
 
         <div class="flex gap-3">
             <button
-                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all disabled:opacity-50"
+                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-bg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 onclick={() => (showResetConfirmModal = false)}
                 disabled={isResetting}
             >
+                <X size={18} />
                 Cancel
             </button>
             <button
@@ -689,6 +696,8 @@
                     <div
                         class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
                     ></div>
+                {:else}
+                    <RotateCcw size={18} />
                 {/if}
                 Reset List
             </button>
