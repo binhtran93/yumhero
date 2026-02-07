@@ -146,7 +146,7 @@
 
     {#snippet footer()}
         <div
-            class="p-4 border-t border-app-border bg-app-surface-deep/50 flex justify-end gap-3"
+            class="p-4 border-t border-app-border bg-app-surface-deep/50 flex gap-3"
         >
             <button
                 class="px-5 py-2.5 font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors"
@@ -155,7 +155,7 @@
                 Cancel
             </button>
             <button
-                class="px-6 py-2.5 bg-app-primary text-white hover:bg-app-primary-hover rounded-xl font-bold transition-all shadow-sm active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+                class="flex-1 justify-center px-6 py-3 bg-app-primary text-white hover:bg-app-primary-hover rounded-xl font-bold transition-all shadow-sm active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
                 onclick={handleSubmit}
                 disabled={!name || !amount || loading}
             >
