@@ -21,7 +21,7 @@
         setLeftoverPlanned,
     } from "$lib/stores/leftovers";
     import {
-        getBoughtIngredientsForRecipe,
+        fetchBoughtIngredientsForRecipe,
         createWeekShoppingListStore,
     } from "$lib/stores/shoppingList";
     import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
@@ -356,7 +356,7 @@
         if (item && "id" in item && !("isLeftover" in item)) {
             const recipe = item as PlannedRecipe;
             // Check for bought ingredients
-            const boughtIngredients = await getBoughtIngredientsForRecipe(
+            const boughtIngredients = await fetchBoughtIngredientsForRecipe(
                 weekId,
                 recipe.id,
                 day,

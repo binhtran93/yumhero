@@ -1,7 +1,7 @@
 import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
-import type { ShoppingListItem } from '$lib/types';
+import type { MealType, ShoppingListItem } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
 /**
@@ -139,39 +139,27 @@ export const resetAllShoppingItems = async (weekId: string) => {
  * Used when removing a recipe to check if any ingredients were already bought.
  * Returns a list of ingredients that have is_checked=true for the given recipe.
  */
-export const getBoughtIngredientsForRecipe = async (
+export const fetchBoughtIngredientsForRecipe = async (
     weekId: string,
     recipeId: string,
     day?: string,
-    mealType?: string
+    mealType?: MealType
 ): Promise<Array<{
     ingredientName: string;
     amount: number;
     unit: string | null;
 }>> => {
-    const shoppingList = await fetchWeekShoppingList(weekId);
-    const boughtIngredients: Array<{
-        ingredientName: string;
-        amount: number;
-        unit: string | null;
-    }> = [];
-
-    for (const item of shoppingList) {
-        for (const source of item.sources) {
-            // Check if this source matches the recipe being removed
-            const matchesRecipe = source.recipe_id === recipeId;
-            const matchesDay = !day || source.day === day;
-            const matchesMeal = !mealType || source.meal_type === mealType;
-
-            if (matchesRecipe && matchesDay && matchesMeal && source.is_checked) {
-                boughtIngredients.push({
-                    ingredientName: item.ingredient_name,
-                    amount: source.amount,
-                    unit: source.unit,
-                });
-            }
-        }
+    const searchParams = new URLSearchParams();
+    if (day) {
+        searchParams.set('day', day);
+    }
+    if (mealType) {
+        searchParams.set('mealType', mealType);
     }
 
-    return boughtIngredients;
+    const query = searchParams.toString();
+    const response = await apiRequest<{ ingredients: Array<{ ingredientName: string; amount: number; unit: string | null }> }>(
+        `/api/shopping-lists/${weekId}/recipes/${recipeId}/bought-ingredients${query ? `?${query}` : ''}`
+    );
+    return response.ingredients || [];
 };
