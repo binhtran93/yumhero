@@ -10,6 +10,7 @@
     import type { Recipe } from "$lib/types";
     import { formatAmount } from "$lib/utils/shopping";
     import IngredientItem from "./IngredientItem.svelte";
+    import HeaderActions from "./HeaderActions.svelte";
     import Header from "./Header.svelte";
 
     interface Props {
@@ -44,18 +45,36 @@
     }
 </script>
 
+{#snippet shoppingActions()}
+    <button
+        class="flex items-center gap-2 px-3 py-2 text-sm font-bold text-red-500/80 hover:text-red-600 hover:bg-red-50 transition-colors rounded-lg disabled:opacity-0"
+        onclick={clearChecked}
+        disabled={completedCount === 0}
+        title="Clear all checked items"
+    >
+        <Trash2 size={18} />
+        <span>Clear Checked</span>
+    </button>
+{/snippet}
+
+<HeaderActions>
+    {@render shoppingActions()}
+</HeaderActions>
+
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
-    <!-- Header -->
-    <Header title="Shopping List" showBack={true} {onBack}>
-        <button
-            class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-90 disabled:opacity-0"
-            onclick={clearChecked}
-            disabled={completedCount === 0}
-            title="Clear all checked items"
-        >
-            <Trash2 size={20} />
-        </button>
-    </Header>
+    <!-- Header (Mobile Only) -->
+    <div class="md:hidden">
+        <Header title="Shopping List" showBack={true} {onBack}>
+            <button
+                class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-90 disabled:opacity-0"
+                onclick={clearChecked}
+                disabled={completedCount === 0}
+                title="Clear all checked items"
+            >
+                <Trash2 size={20} />
+            </button>
+        </Header>
+    </div>
 
     <!-- Content Area -->
     <div class="flex-1 overflow-y-auto pb-20">

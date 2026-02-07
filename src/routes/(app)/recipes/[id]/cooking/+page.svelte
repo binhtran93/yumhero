@@ -33,7 +33,10 @@
                         return;
                     }
                     const recipeData = snapshot.data() as Recipe;
-                    set({ data: { ...recipeData, id: snapshot.id }, loading: false });
+                    set({
+                        data: { ...recipeData, id: snapshot.id },
+                        loading: false,
+                    });
                 },
                 (error) => {
                     console.error("Error listening to recipe:", error);
@@ -41,7 +44,10 @@
                 },
             );
         },
-        { data: null, loading: true } as { data: Recipe | null; loading: boolean },
+        { data: null, loading: true } as {
+            data: Recipe | null;
+            loading: boolean;
+        },
     );
 
     let recipe = $derived($recipeStore.data);
@@ -49,11 +55,13 @@
 </script>
 
 <div class="h-full flex flex-col bg-app-bg overflow-hidden select-none">
-    <Header
-        title="Cooking Mode"
-        showBack={true}
-        onBack={() => goto(`/recipes/${recipeId}`)}
-    />
+    <div class="md:hidden">
+        <Header
+            title="Cooking Mode"
+            showBack={true}
+            onBack={() => goto(`/recipes/${recipeId}`)}
+        />
+    </div>
     {#if loading}
         <div class="flex items-center justify-center h-full">
             <div
