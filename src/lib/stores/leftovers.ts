@@ -52,10 +52,6 @@ export const leftovers = derived<[Readable<any>, Readable<boolean>], { data: Lef
     { data: [], loading: true }
 );
 
-export const notPlannedCount = derived(leftovers, ($leftovers) => {
-    return $leftovers.data.filter(item => item.status === 'not_planned').length;
-});
-
 export const totalLeftoversCount = derived(leftovers, ($leftovers) => {
     return $leftovers.data.length;
 });

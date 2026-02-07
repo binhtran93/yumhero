@@ -99,14 +99,6 @@ export const updateIngredient = async (
 };
 
 /**
- * Get a single ingredient by ID.
- */
-export const getIngredientById = (ingredientId: string): FridgeIngredient | undefined => {
-    const $fridgeIngredients = get(fridgeIngredients);
-    return $fridgeIngredients.data.find(item => item.id === ingredientId);
-};
-
-/**
  * Get all fridge ingredients once (not a subscription).
  */
 export const getFridgeIngredients = async (): Promise<FridgeIngredient[]> => {

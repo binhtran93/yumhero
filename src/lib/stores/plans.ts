@@ -48,27 +48,8 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
  * Used when a leftover is deleted from the fridge.
  */
 export const removeLeftoverFromWeekPlan = async (weekId: string, leftoverId: string) => {
-    const $user = get(user);
-    if (!$user) return;
-
-    const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
-    const days = response.plan?.days as WeeklyPlan | undefined;
-    if (!days) return;
-
-    let modified = false;
-    days.forEach(day => {
-        Object.keys(day.meals).forEach(mealType => {
-            if (mealType === 'note') return;
-            const items = day.meals[mealType as keyof typeof day.meals] as any[];
-            const index = items.findIndex(item => item.isLeftover && item.leftoverId === leftoverId);
-            if (index !== -1) {
-                items.splice(index, 1);
-                modified = true;
-            }
-        });
-    });
-
-    if (modified) {
-        await saveWeekPlan(weekId, days);
-    }
+    await apiRequest<{ success: true; modified: boolean }>(
+        `/api/plans/${weekId}/leftovers/${leftoverId}`,
+        { method: 'DELETE' }
+    );
 };
