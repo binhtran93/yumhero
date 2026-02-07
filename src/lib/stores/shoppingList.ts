@@ -37,15 +37,6 @@ export const createWeekShoppingListStore = (weekId: string) => {
 };
 
 /**
- * Fetch the current shopping list for a week once.
- * This is for one-off reads in action handlers.
- */
-export const fetchWeekShoppingList = async (weekId: string): Promise<ShoppingListItem[]> => {
-    const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
-    return response.shopping_list || [];
-};
-
-/**
  * Add a manual shopping item to a week's shopping list
  */
 export const addManualShoppingItem = async (weekId: string, ingredientName: string, amount: number, unit: string | null) => {

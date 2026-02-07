@@ -97,13 +97,3 @@ export const updateIngredient = async (
         ...jsonRequest(updates)
     });
 };
-
-/**
- * Get all fridge ingredients once (not a subscription).
- */
-export const getFridgeIngredients = async (): Promise<FridgeIngredient[]> => {
-    const response = await apiRequest<{ ingredients: any[] }>('/api/fridge-ingredients');
-    const items = response.ingredients.map(fromApi);
-    items.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-    return items;
-};
