@@ -4,6 +4,7 @@ import { adminDb } from '$lib/server/admin';
 import { serializeFirestoreData } from '$lib/server/firestore-serialize';
 import type { WeeklyPlan, ShoppingListItem } from '$lib/types';
 import { errorResponse, fail } from '$lib/server/api';
+import { syncShoppingListFromPlan } from '$lib/server/plan-shopping';
 
 export const GET = async ({ request, params }) => {
     try {
@@ -37,25 +38,28 @@ export const PUT = async ({ request, params }) => {
             return json({ error: 'Week ID is required' }, { status: 400 });
         }
 
-        const body = (await request.json()) as { plan: WeeklyPlan; shopping_list: ShoppingListItem[] };
+        const body = (await request.json()) as { plan: WeeklyPlan };
         if (!Array.isArray(body.plan)) {
             fail('plan must be an array');
         }
-        if (!Array.isArray(body.shopping_list)) {
-            fail('shopping_list must be an array');
-        }
 
-        await adminDb.doc(`users/${user.uid}/plans/${weekId}`).set(
+        const planDocRef = adminDb.doc(`users/${user.uid}/plans/${weekId}`);
+        const currentSnapshot = await planDocRef.get();
+        const currentData = currentSnapshot.data() as { shopping_list?: ShoppingListItem[] } | undefined;
+        const currentList = Array.isArray(currentData?.shopping_list) ? currentData.shopping_list : [];
+        const shoppingList = syncShoppingListFromPlan(currentList, body.plan, user.uid);
+
+        await planDocRef.set(
             {
                 id: weekId,
                 days: body.plan,
-                shopping_list: body.shopping_list,
+                shopping_list: shoppingList,
                 updatedAt: new Date()
             },
             { merge: true }
         );
 
-        return json({ success: true });
+        return json({ success: true, shopping_list: serializeFirestoreData(shoppingList) });
     } catch (error: any) {
         console.error('Error saving plan:', error);
         return errorResponse(error, 'Failed to save plan');
