@@ -1,7 +1,7 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
-import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
+import type { ShoppingListItem } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
 /**
@@ -22,8 +22,8 @@ export const getWeekShoppingList = (weekId: string) => {
             }
 
             const store = documentStore<{ shopping_list?: ShoppingListItem[] }>(async () => {
-                const response = await apiRequest<{ plan: { shopping_list?: ShoppingListItem[] } | null }>(`/api/plans/${weekId}`);
-                return response.plan;
+                const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
+                return { shopping_list: response.shopping_list };
             });
             return store.subscribe((state) => {
                 set({
@@ -40,20 +40,16 @@ export const getWeekShoppingList = (weekId: string) => {
  * Helper to get the current shopping list for a week
  */
 export const getShoppingList = async (weekId: string): Promise<ShoppingListItem[]> => {
-    const response = await apiRequest<{ plan: { shopping_list?: ShoppingListItem[] } | null }>(`/api/plans/${weekId}`);
-    if (!response.plan) {
-        return [];
-    }
-
-    return response.plan.shopping_list || [];
+    const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
+    return response.shopping_list || [];
 };
 
 /**
  * Helper to save the shopping list to a week
  */
 const saveShoppingList = async (weekId: string, shoppingList: ShoppingListItem[]) => {
-    await apiRequest<{ success: true }>(`/api/plans/${weekId}`, {
-        method: 'PATCH',
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}`, {
+        method: 'PUT',
         ...jsonRequest({
             shopping_list: shoppingList
         })
@@ -208,23 +204,9 @@ export const updateShoppingItem = async (weekId: string, itemId: string, newAmou
 };
 
 export const resetAllShoppingItems = async (weekId: string) => {
-    const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
-    if (!response.plan) {
-        await saveShoppingList(weekId, []);
-        return;
-    }
-
-    const days = response.plan.days;
-
-    if (!days) {
-        await saveShoppingList(weekId, []);
-        return;
-    }
-
-    await saveShoppingList(weekId, []);
-
-    const { saveWeekPlan } = await import('./plans');
-    await saveWeekPlan(weekId, days);
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/reset`, {
+        method: 'POST'
+    });
 };
 
 /**
