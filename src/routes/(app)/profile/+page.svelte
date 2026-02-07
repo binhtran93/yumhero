@@ -1,11 +1,25 @@
 <script lang="ts">
     import { signOut, user } from "$lib/stores/auth";
-    import { Trash2, LogOut, User, Sun, Moon } from "lucide-svelte";
-    import { fade } from "svelte/transition";
+    import {
+        Trash2,
+        LogOut,
+        User,
+        Sun,
+        Moon,
+        Star,
+        Info,
+        Mail,
+        Shield,
+        FileText,
+        Cookie,
+        Lock,
+        ChevronRight,
+        Zap,
+    } from "lucide-svelte";
+    import { fly } from "svelte/transition";
     import Avatar from "$lib/components/Avatar.svelte";
     import { theme } from "$lib/stores/theme";
     import SEO from "$lib/components/SEO.svelte";
-    import Header from "$lib/components/Header.svelte";
     import { toasts } from "$lib/stores/toasts";
     import {
         status,
@@ -14,32 +28,31 @@
         scheduledCancellation,
     } from "$lib/stores/subscription";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
-    import { Zap } from "lucide-svelte";
 
     const getStatusConfig = (s: string | null) => {
         switch (s) {
             case "active":
                 return {
-                    label: "Active",
+                    label: "ACTIVE",
                     classes: "bg-green-100 text-green-700",
                 };
             case "trialing":
                 return {
-                    label: "Free Trial",
+                    label: "FREE TRIAL",
                     classes: "bg-blue-100 text-blue-700",
                 };
             case "past_due":
                 return {
-                    label: "Past Due",
+                    label: "PAST DUE",
                     classes: "bg-orange-100 text-orange-700",
                 };
             case "canceled":
                 return {
-                    label: "Canceled",
+                    label: "CANCELED",
                     classes: "bg-gray-100 text-gray-700",
                 };
             default:
-                return { label: "Free", classes: "bg-gray-100 text-gray-700" };
+                return { label: "FREE", classes: "bg-gray-100 text-gray-700" };
         }
     };
 
@@ -50,7 +63,6 @@
     };
 
     const handleDeleteAccount = () => {
-        // Placeholder for delete account logic
         toasts.info("Delete account functionality coming soon.");
     };
 
@@ -147,6 +159,51 @@
             isCancelling = false;
         }
     };
+
+    const menuItems = [
+        {
+            label: "About Us",
+            icon: Info,
+            color: "text-orange-500",
+            bgColor: "bg-orange-50",
+            href: "/about",
+        },
+        {
+            label: "Contact",
+            icon: Mail,
+            color: "text-red-500",
+            bgColor: "bg-red-50",
+            href: "/about#contact",
+        },
+        {
+            label: "Privacy Policy",
+            icon: Shield,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+            href: "/privacy",
+        },
+        {
+            label: "Terms of Service",
+            icon: FileText,
+            color: "text-red-500",
+            bgColor: "bg-red-50",
+            href: "/terms",
+        },
+        {
+            label: "Cookie Policy",
+            icon: Cookie,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+            href: "/cookie-policy",
+        },
+        {
+            label: "Security",
+            icon: Lock,
+            color: "text-red-500",
+            bgColor: "bg-red-50",
+            href: "/security",
+        },
+    ];
 </script>
 
 <SEO
@@ -154,187 +211,161 @@
     description="Manage your YumHero account settings and preferences."
 />
 
-<!-- Header -->
-<Header title="Profile" />
-
-<div class="p-4 md:p-8 max-w-2xl mx-auto">
+<div
+    class="flex-1 h-full overflow-y-auto bg-app-bg pb-24 md:pb-8 scrollbar-hide"
+>
     {#if $user}
-        <!-- User Authenticated View -->
-        <div
-            class="bg-app-surface p-5 md:p-8 rounded-2xl border border-app-border shadow-sm space-y-6 md:space-y-8"
-            transition:fade
-        >
+        <!-- Hero Section with Gradient -->
+        <div class="relative pt-12 pb-8 px-4 text-center overflow-hidden">
+            <!-- Background Gradient -->
             <div
-                class="flex flex-col items-center justify-center text-center gap-3 md:gap-4"
+                class="absolute inset-0 bg-gradient-to-b from-orange-100/60 to-transparent dark:from-orange-950/20 -z-10"
+            ></div>
+
+            <div
+                class="flex flex-col items-center gap-4 relative z-10"
+                in:fly={{ y: -20, duration: 500 }}
             >
-                <Avatar
-                    src={$user.photoURL}
-                    name={$user.displayName || $user.email}
-                    size="lg"
-                />
+                <div
+                    class="relative p-1 rounded-full bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-white/20 shadow-lg"
+                >
+                    <Avatar
+                        src={$user.photoURL}
+                        name={$user.displayName || $user.email}
+                        size="xl"
+                        className="w-24 h-24 text-2xl ring-4 ring-white dark:ring-app-surface shadow-xl"
+                    />
+                </div>
                 <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-app-text">
+                    <h2
+                        class="text-2xl md:text-3xl font-black text-app-text tracking-tight"
+                    >
                         {$user.displayName || "User"}
                     </h2>
-                    <p class="text-sm md:text-base text-app-text-muted">
+                    <p
+                        class="text-sm md:text-base text-app-text-muted font-medium opacity-80"
+                    >
                         {$user.email}
                     </p>
                 </div>
             </div>
+        </div>
 
-            <div class="border-t border-app-border my-4 md:my-6"></div>
-
-            <!-- Settings Section -->
-            <div class="space-y-6">
-                <div class="flex items-center gap-2 px-1">
-                    <h3
-                        class="text-sm font-bold text-app-text-muted uppercase tracking-wider"
-                    >
-                        Settings
-                    </h3>
-                </div>
-
-                <div class="space-y-3">
-                    <!-- Current Plan -->
+        <div
+            class="max-w-xl mx-auto px-4 space-y-4 mb-12"
+            in:fly={{ y: 20, duration: 500, delay: 200 }}
+        >
+            <!-- Subscription Card -->
+            <div
+                class="bg-app-surface p-4 rounded-2xl border border-app-border shadow-sm flex items-center justify-between"
+            >
+                <div class="flex items-center gap-4">
                     <div
-                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
+                        class="w-12 h-12 flex items-center justify-center bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-2xl"
                     >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
-                            >
-                                <User size={20} />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-app-text">
-                                    Current Plan
-                                </p>
-                                {#if $nextBilledAt || $scheduledCancellation}
-                                    <div class="flex items-center gap-2">
-                                        {#if $scheduledCancellation}
-                                            <p
-                                                class="text-[10px] text-red-500 font-bold"
-                                            >
-                                                Subscription ends on {new Date(
-                                                    $scheduledCancellation,
-                                                ).toLocaleDateString("en-US", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    year: "numeric",
-                                                })}
-                                            </p>
-                                        {:else if $nextBilledAt}
-                                            <p
-                                                class="text-[10px] text-app-text-muted"
-                                            >
-                                                Next billing: {new Date(
-                                                    $nextBilledAt,
-                                                ).toLocaleDateString("en-US", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    year: "numeric",
-                                                })}
-                                            </p>
-                                            {#if $status === "active"}
-                                                <span
-                                                    class="text-[10px] text-app-text-muted"
-                                                    >•</span
-                                                >
-                                                <button
-                                                    onclick={() =>
-                                                        (showCancelModal = true)}
-                                                    class="text-[10px] text-app-text-muted hover:text-red-500 font-bold cursor-pointer transition-colors"
-                                                >
-                                                    Cancel
-                                                </button>
-                                            {/if}
-                                        {/if}
-                                    </div>
-                                {/if}
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="px-3 py-1 {statusConfig.classes} text-xs font-bold rounded-full"
-                            >
-                                {statusConfig.label}
-                            </span>
-                            {#if ($status === "trialing" || $status === "past_due") && !isActivating}
-                                <button
-                                    onclick={() => (showConfirmModal = true)}
-                                    class="text-xs font-bold text-app-primary hover:underline"
-                                >
-                                    Confirm Subscription
-                                </button>
-                            {:else if $status === "active" && !$scheduledCancellation && !isSwitching && $billingInterval === "month"}
-                                <button
-                                    onclick={() => (showSwitchModal = true)}
-                                    class="flex items-center gap-1 text-xs font-bold text-app-primary hover:underline"
-                                >
-                                    <Zap size={12} />
-                                    Switch to Yearly
-                                </button>
+                        <Star size={24} fill="currentColor" />
+                    </div>
+                    <div>
+                        <p class="font-black text-app-text">Premium Plan</p>
+                        <p class="text-xs text-app-text-muted font-bold">
+                            {#if $scheduledCancellation}
+                                Ends {new Date(
+                                    $scheduledCancellation,
+                                ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                })}
+                            {:else if $nextBilledAt}
+                                Renews {new Date(
+                                    $nextBilledAt,
+                                ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                })}
                             {:else}
-                                <div class="w-2 h-2"></div>
+                                Free Account
                             {/if}
-                        </div>
+                        </p>
                     </div>
-
-                    <!-- Appearance / Theme Toggle -->
-                    <div
-                        class="flex items-center justify-between p-3 md:p-4 bg-app-bg rounded-xl border border-app-border/50"
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <span
+                        class="px-3 py-1.5 {statusConfig.classes} text-[10px] font-black rounded-full tracking-wider shadow-sm"
                     >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="p-2 bg-app-primary/10 rounded-lg text-app-primary"
-                            >
-                                {#if $theme === "dark"}
-                                    <Sun size={20} />
-                                {:else}
-                                    <Moon size={20} />
-                                {/if}
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-app-text">
-                                    Appearance
-                                </p>
-                                <p class="text-xs text-app-text-muted">
-                                    {$theme === "dark"
-                                        ? "Dark Mode"
-                                        : "Light Mode"}
-                                </p>
-                            </div>
-                        </div>
+                        {statusConfig.label}
+                    </span>
+
+                    {#if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
                         <button
-                            onclick={() =>
-                                ($theme = $theme === "dark" ? "light" : "dark")}
-                            class="px-4 py-1.5 bg-app-surface border border-app-border text-app-text text-sm font-bold rounded-lg hover:bg-app-surface-hover transition-colors shadow-sm"
+                            onclick={() => (showSwitchModal = true)}
+                            class="text-[10px] font-bold text-app-primary hover:underline flex items-center gap-1"
                         >
-                            Switch to {$theme === "dark" ? "Light" : "Dark"}
+                            <Zap size={10} />
+                            Save 30% w/ Yearly
                         </button>
-                    </div>
+                    {/if}
                 </div>
             </div>
 
-            <div class="border-t border-app-border my-4 md:my-6"></div>
+            <!-- Menu Items -->
+            <div class="space-y-3">
+                {#each menuItems as item}
+                    <a
+                        href={item.href}
+                        class="w-full bg-app-surface p-4 rounded-2xl border border-app-border shadow-sm flex items-center justify-between hover:bg-app-surface-hover transition-all group"
+                    >
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 flex items-center justify-center {item.bgColor} dark:bg-opacity-10 {item.color} rounded-2xl transition-transform group-hover:scale-105"
+                            >
+                                <item.icon size={24} />
+                            </div>
+                            <span class="font-bold text-app-text"
+                                >{item.label}</span
+                            >
+                        </div>
+                        <ChevronRight
+                            size={20}
+                            class="text-app-text-muted group-hover:text-app-text group-hover:translate-x-1 transition-all"
+                        />
+                    </a>
+                {/each}
+            </div>
 
-            <!-- Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 pt-4">
                 <button
                     onclick={handleSignOut}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-app-border text-app-text-muted hover:bg-app-surface-hover hover:text-app-text transition-colors font-medium text-sm md:text-base cursor-pointer"
+                    class="flex items-center justify-center gap-3 p-4 rounded-2xl border border-app-border bg-app-surface text-app-text font-black text-sm hover:bg-app-surface-hover transition-all shadow-sm group"
                 >
-                    <LogOut size={18} />
+                    <LogOut
+                        size={20}
+                        class="text-app-text-muted group-hover:text-app-text"
+                    />
                     Sign Out
                 </button>
                 <button
                     onclick={handleDeleteAccount}
-                    class="flex items-center justify-center gap-2 p-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium text-sm md:text-base cursor-pointer"
+                    class="flex items-center justify-center gap-3 p-4 rounded-2xl border border-red-100 bg-red-50 text-red-600 font-black text-sm hover:bg-red-100 transition-all shadow-sm group"
                 >
-                    <Trash2 size={18} />
-                    Delete Account
+                    <Trash2
+                        size={20}
+                        class="group-hover:scale-110 transition-transform"
+                    />
+                    Remove Account
                 </button>
             </div>
+
+            {#if $status === "active" && !$scheduledCancellation}
+                <button
+                    onclick={() => (showCancelModal = true)}
+                    class="w-full text-center text-xs text-app-text-muted hover:text-red-500 font-bold py-4 transition-colors cursor-pointer"
+                >
+                    Cancel Subscription
+                </button>
+            {/if}
         </div>
     {/if}
 </div>
@@ -372,3 +403,13 @@
     onClose={() => (showCancelModal = false)}
     isLoading={isCancelling}
 />
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
