@@ -456,7 +456,7 @@
   {isOpen}
   {onClose}
   {adaptive}
-  class="max-w-2xl"
+  class="w-full max-w-2xl h-[95vh] flex flex-col overflow-hidden"
   header={customHeader}
   footer={footerContent}
 >
