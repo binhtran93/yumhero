@@ -3,11 +3,10 @@ import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
-import { REDIS_URL } from '$env/static/private';
-import Redis from 'ioredis';
 import { createHash } from 'crypto';
-
-const redis = new Redis(REDIS_URL);
+import { redis } from '$lib/server/redis';
+import { verifyAuth } from '$lib/server/auth';
+import { checkRateLimit } from '$lib/server/ratelimit';
 
 interface MinimalIngredient {
     id: string;
@@ -22,6 +21,12 @@ export async function POST({ request }) {
     });
 
     try {
+        // 1. Authenticate User
+        const user = await verifyAuth(request);
+
+        // 2. Check Rate Limit
+        await checkRateLimit(user.uid);
+
         const { shoppingList, fridgeIngredients }: { shoppingList: MinimalIngredient[], fridgeIngredients: MinimalIngredient[] } = await request.json();
 
         if (!shoppingList || !fridgeIngredients) {
@@ -158,6 +163,14 @@ export async function POST({ request }) {
 
     } catch (error: any) {
         console.error('Error matching ingredients:', error);
-        return json({ error: 'Failed to match ingredients', details: error?.message || String(error) }, { status: 500 });
+
+        let status = 500;
+        if (error.message.includes('authentication') || error.message.includes('Authorization')) {
+            status = 401;
+        } else if (error.message.includes('Rate limit')) {
+            status = 429;
+        }
+
+        return json({ error: 'Failed to match ingredients', details: error?.message || String(error) }, { status });
     }
 }
