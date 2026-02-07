@@ -281,7 +281,7 @@
                                       : "text-accent-note-text",
                         )}
                     >
-                        {getLabel(item)}{itemIsLeftover ? " - leftover" : ""}
+                        {getLabel(item)}{#if itemIsLeftover}<span class="text-app-text/60 text-[11px]">{" - "}leftover</span>{/if}
 
                         {#if "quantity" in item && item.quantity > 1}
                             <span class="opacity-60 font-medium ml-1 text-xs"
