@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Pencil, Trash2, X as XIcon } from "lucide-svelte";
+    import { Pencil, Trash2 } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
 
@@ -82,8 +82,6 @@
             {/if}
         </div>
 
-        <div class="border-t border-app-border my-1"></div>
-
         <button
             class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
             onclick={(e) => {
@@ -93,19 +91,6 @@
         >
             <Trash2 size={18} />
             Delete Recipe
-        </button>
-
-        <div class="border-t border-app-border my-1"></div>
-
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={(e) => {
-                e.stopPropagation();
-                onClose();
-            }}
-        >
-            <XIcon size={18} />
-            Close
         </button>
     </div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BrushCleaning, Printer, X as XIcon } from "lucide-svelte";
+    import { BrushCleaning, Printer } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
 
@@ -92,17 +92,5 @@
             </button>
         </div>
 
-        <div class="border-t border-app-border my-1"></div>
-
-        <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-            onclick={(e) => {
-                e.stopPropagation();
-                onClose();
-            }}
-        >
-            <XIcon size={18} />
-            Close
-        </button>
     </div>
 </div>

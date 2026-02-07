@@ -65,7 +65,7 @@
             transition:fade={{ duration: 100 }}
             class="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-app-border py-1 z-50 overflow-hidden"
         >
-            <div class="px-3 py-2 border-b border-app-border mb-1">
+            <div class="px-3 py-2 mb-1">
                 <span
                     class="text-xs font-bold text-app-text-muted uppercase tracking-wider"
                     >Filter by Tag</span
