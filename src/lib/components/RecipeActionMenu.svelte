@@ -57,7 +57,7 @@
 
             // Check if we are on the detail page for this recipe
             if (
-                $page.route.id === "/recipes/[id]" &&
+                $page.route.id === "/(app)/recipes/[id]" &&
                 $page.params.id === recipeId
             ) {
                 await goto("/recipes");

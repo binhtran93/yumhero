@@ -421,9 +421,19 @@
         }
     };
 
+    const isBlobUrl = (url: string | undefined | null): boolean =>
+        Boolean(url && url.startsWith("blob:"));
+
+    const revokeBlobUrl = (url: string | undefined | null) => {
+        if (isBlobUrl(url)) {
+            URL.revokeObjectURL(url as string);
+        }
+    };
+
     const handleImageUpload = (e: Event) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
+            revokeBlobUrl(imageUrl);
             imageFile = file;
             imageUrl = URL.createObjectURL(file);
         }
@@ -444,6 +454,62 @@
         if (ingredients.length === 0)
             ingredients = [{ amount: "", unit: "", name: "" }];
         ingredientMode = "line";
+    };
+
+    type PresignedUploadResponse = {
+        uploadUrl: string;
+        publicUrl: string;
+        method: "PUT";
+        headers?: Record<string, string>;
+        key: string;
+    };
+
+    const uploadImageFileToR2 = async (file: File): Promise<string> => {
+        const currentUser = get(user);
+        if (!currentUser) {
+            throw new Error("User not authenticated");
+        }
+
+        const token = await currentUser.getIdToken();
+        const presignResponse = await fetch("/api/r2/presign-upload", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                fileName: file.name,
+                contentType: file.type,
+                size: file.size,
+            }),
+        });
+
+        if (!presignResponse.ok) {
+            let message = "Failed to create upload URL";
+            try {
+                const errorData = await presignResponse.json();
+                message = errorData.error || message;
+            } catch {
+                // Keep fallback message if JSON parsing fails
+            }
+            throw new Error(message);
+        }
+
+        const presigned: PresignedUploadResponse = await presignResponse.json();
+        const uploadResponse = await fetch(presigned.uploadUrl, {
+            method: presigned.method || "PUT",
+            headers: {
+                ...(presigned.headers || {}),
+                "Content-Type": file.type,
+            },
+            body: file,
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error("Failed to upload image to storage");
+        }
+
+        return presigned.publicUrl;
     };
 
     // Save Handler
@@ -511,8 +577,27 @@
                 const cMin = variant.cookTime || 0;
                 const totalTime = pMin + cMin;
 
-                // Note: For real app, upload imageFile and get struct. For now use placeholder/local blob
-                const finalImage = variant.imageUrl || undefined;
+                let finalImage = variant.imageUrl || undefined;
+                if (variant.imageFile) {
+                    finalImage = await uploadImageFileToR2(variant.imageFile);
+                    if (isBlobUrl(variant.imageUrl)) {
+                        revokeBlobUrl(variant.imageUrl);
+                    }
+                    variant.imageUrl = finalImage;
+                    variant.imageFile = null;
+
+                    if (activeVariantIndex < recipeVariants.length) {
+                        const activeVariant = recipeVariants[activeVariantIndex];
+                        if (activeVariant === variant) {
+                            imageUrl = finalImage;
+                            imageFile = null;
+                        }
+                    }
+                }
+
+                if (isBlobUrl(finalImage)) {
+                    finalImage = undefined;
+                }
 
                 const newRecipe: Omit<Recipe, "id"> = {
                     title: variant.title,
