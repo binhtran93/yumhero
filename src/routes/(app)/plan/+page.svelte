@@ -1023,6 +1023,12 @@
             return;
         }
 
+        // Internal drop into the same cell is a no-op (no reordering target),
+        // so skip save/loading to avoid unnecessary writes.
+        if (source.day === target.day && source.type === target.type) {
+            return;
+        }
+
         const sourceDayIndex = plan.findIndex((d) => d.day === source.day);
         const targetDayIndex = plan.findIndex((d) => d.day === target.day);
 

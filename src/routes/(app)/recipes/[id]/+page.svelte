@@ -388,15 +388,6 @@
                                 </div>
                             {/each}
                         </div>
-                        <div
-                            class="py-6 flex flex-col items-center justify-center text-center opacity-40"
-                        >
-                            <div class="w-12 h-px bg-app-border mb-3"></div>
-                            <span
-                                class="font-display font-medium text-sm italic"
-                                >Bon Appétit!</span
-                            >
-                        </div>
                     </div>
                 </div>
 
@@ -632,18 +623,6 @@
                                             </div>
                                         {/each}
                                     </div>
-                                </div>
-
-                                <div
-                                    class="py-10 flex flex-col items-center justify-center text-center opacity-40"
-                                >
-                                    <div
-                                        class="w-16 h-px bg-app-border mb-4"
-                                    ></div>
-                                    <span
-                                        class="font-display font-medium text-lg italic"
-                                        >Bon Appétit!</span
-                                    >
                                 </div>
                             </div>
                         </div>
