@@ -42,7 +42,7 @@
     fixed z-50 w-full bg-app-surface/95 backdrop-blur-md border-t border-app-border
     bottom-0 h-16 shrink-0 transition-all duration-300
     
-    md:sticky md:top-0 md:border-t-0 md:border-b md:h-16 md:flex-row md:justify-start md:gap-8 md:px-6 md:shadow-md
+    md:sticky md:top-0 md:border-t-0 md:border-b md:border-app-border-strong md:h-16 md:flex-row md:justify-start md:gap-8 md:px-6 md:shadow-md
     
     flex flex-row items-center justify-around px-2 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]
 "
@@ -74,8 +74,8 @@
                 class="
                     relative flex flex-col md:flex-row items-center gap-1 md:gap-2 px-3 py-1.5 md:py-2 md:px-4 rounded-xl transition-all duration-200 group
                     {active
-                    ? 'bg-app-primary/10 text-app-primary shadow-sm ring-1 ring-app-primary/20 font-bold'
-                    : 'text-app-text/70 hover:text-app-text hover:bg-app-surface-hover font-medium'}
+                    ? 'bg-app-primary/15 text-app-primary shadow-sm ring-1 ring-app-primary/30 font-bold'
+                    : 'text-app-text/90 hover:text-app-text hover:bg-app-surface-hover font-semibold'}
                 "
             >
                 <div class="relative flex items-center justify-center">
