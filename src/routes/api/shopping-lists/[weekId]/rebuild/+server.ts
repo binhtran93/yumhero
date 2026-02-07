@@ -4,6 +4,7 @@ import { adminDb } from '$lib/server/admin';
 import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
 import { errorResponse, fail } from '$lib/server/api';
 import { syncShoppingListFromPlan } from '$lib/server/plan-shopping';
+import { serializeFirestoreData } from '$lib/server/firestore-serialize';
 
 export const POST = async ({ request, params }) => {
     try {
@@ -45,9 +46,9 @@ export const POST = async ({ request, params }) => {
             updatedAt: new Date()
         }, { merge: true });
 
-        return json({ success: true, shopping_list: rebuilt });
+        return json({ success: true, shopping_list: serializeFirestoreData(rebuilt) });
     } catch (error) {
-        console.error('Error resetting shopping list:', error);
-        return errorResponse(error, 'Failed to reset shopping list');
+        console.error('Error rebuilding shopping list:', error);
+        return errorResponse(error, 'Failed to rebuild shopping list');
     }
 };

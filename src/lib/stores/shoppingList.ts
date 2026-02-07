@@ -1,4 +1,4 @@
-import { derived, get, type Readable } from 'svelte/store';
+import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
 import type { ShoppingListItem } from '$lib/types';
@@ -45,109 +45,55 @@ export const getShoppingList = async (weekId: string): Promise<ShoppingListItem[
 };
 
 /**
- * Helper to save the shopping list to a week
- */
-const saveShoppingList = async (weekId: string, shoppingList: ShoppingListItem[]) => {
-    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}`, {
-        method: 'PUT',
-        ...jsonRequest({
-            shopping_list: shoppingList
-        })
-    });
-};
-
-/**
  * Add a manual shopping item to a week's shopping list
  */
 export const addManualShoppingItem = async (weekId: string, ingredientName: string, amount: number, unit: string | null) => {
-    const shoppingList = await getShoppingList(weekId);
-    const normalizedName = ingredientName.trim().toLowerCase();
-    const existing = shoppingList.find(item => item.ingredient_name === normalizedName);
-
-    if (existing) {
-        const updatedSources = [...existing.sources, {
-            recipe_id: null,
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/items`, {
+        method: 'POST',
+        ...jsonRequest({
+            ingredientName,
             amount,
-            unit,
-            is_checked: false,
-            checked_from: null,
-            day: null,
-            meal_type: null
-        }];
-        existing.sources = updatedSources;
-        existing.updated_at = new Date();
-    } else {
-        const newItem: ShoppingListItem = {
-            id: crypto.randomUUID(),
-            ingredient_name: normalizedName,
-            sources: [{
-                recipe_id: null,
-                amount,
-                unit,
-                is_checked: false,
-                checked_from: null,
-                day: null,
-                meal_type: null
-            }],
-            user_id: get(user)!.uid,
-            created_at: new Date(),
-            updated_at: new Date()
-        };
-        shoppingList.push(newItem);
-    }
-
-    await saveShoppingList(weekId, shoppingList);
+            unit
+        })
+    });
 };
 
 /**
  * Delete a shopping item from a week's shopping list
  */
 export const deleteShoppingItem = async (weekId: string, itemId: string) => {
-    const shoppingList = await getShoppingList(weekId);
-    const filtered = shoppingList.filter(item => item.id !== itemId);
-    await saveShoppingList(weekId, filtered);
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/items/${itemId}`, {
+        method: 'DELETE'
+    });
 };
 
 /**
  * Toggle check state for a specific source
  */
 export const toggleShoppingItemCheck = async (weekId: string, itemId: string, sourceIndex: number, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item || !item.sources[sourceIndex]) {
-        throw new Error("Shopping item or source not found");
-    }
-
-    item.sources[sourceIndex] = {
-        ...item.sources[sourceIndex],
-        is_checked: checked,
-        checked_from: checked ? checked_from : null
-    };
-    item.updated_at = new Date();
-
-    await saveShoppingList(weekId, shoppingList);
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/items/${itemId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            op: 'set_source_checked',
+            sourceIndex,
+            checked,
+            checkedFrom: checked_from
+        })
+    });
 };
 
 /**
  * Toggle all sources for an item
  */
 export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item) {
-        throw new Error("Shopping item not found");
-    }
-
-    item.sources = item.sources.map(source => ({
-        ...source,
-        is_checked: checked,
-        checked_from: checked ? checked_from : null
-    }));
-    item.updated_at = new Date();
-
-    await saveShoppingList(weekId, shoppingList);
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/items/${itemId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            op: 'set_all_checked',
+            checked,
+            checkedFrom: checked_from
+        })
+    });
 };
 
 /**
@@ -159,52 +105,30 @@ export const batchToggleShoppingItemChecks = async (
     checked: boolean,
     checked_from: 'user' | 'fridge' | null = 'user'
 ) => {
-    const shoppingList = await getShoppingList(weekId);
-    let updatedCount = 0;
-
-    for (const itemId of itemIds) {
-        const item = shoppingList.find(i => i.id === itemId);
-        if (item) {
-            item.sources = item.sources.map(source => ({
-                ...source,
-                is_checked: checked,
-                checked_from: checked ? checked_from : null
-            }));
-            item.updated_at = new Date();
-            updatedCount++;
-        }
-    }
-
-    if (updatedCount > 0) {
-        await saveShoppingList(weekId, shoppingList);
-    }
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            op: 'batch_set_all_checked',
+            itemIds,
+            checked,
+            checkedFrom: checked_from
+        })
+    });
 };
 
 export const updateShoppingItem = async (weekId: string, itemId: string, newAmount: number, newUnit: string | null) => {
-    const shoppingList = await getShoppingList(weekId);
-    const item = shoppingList.find(i => i.id === itemId);
-
-    if (!item) {
-        throw new Error("Shopping item not found");
-    }
-
-    const newSource = {
-        recipe_id: null,
-        amount: newAmount,
-        unit: newUnit,
-        is_checked: item.sources.every(s => s.is_checked),
-        day: item.sources[0]?.day || null,
-        meal_type: item.sources[0]?.meal_type || null
-    };
-
-    item.sources = [newSource];
-    item.updated_at = new Date();
-
-    await saveShoppingList(weekId, shoppingList);
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/items/${itemId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            op: 'replace_manual_source',
+            amount: newAmount,
+            unit: newUnit
+        })
+    });
 };
 
 export const resetAllShoppingItems = async (weekId: string) => {
-    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/reset`, {
+    await apiRequest<{ success: true }>(`/api/shopping-lists/${weekId}/rebuild`, {
         method: 'POST'
     });
 };
