@@ -1,9 +1,8 @@
-import { derived, get, type Readable } from 'svelte/store';
+import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { collectionStore, type CollectionState } from './firestore';
 import type { Tag } from '$lib/types';
-import { doc, deleteDoc, collection, addDoc, updateDoc } from 'firebase/firestore';
-import { db } from '$lib/firebase';
+import { apiRequest, jsonRequest } from '$lib/api/client';
 
 export const userTags = derived<[Readable<any>, Readable<boolean>], CollectionState<Tag>>(
     [user, authLoading],
@@ -17,35 +16,33 @@ export const userTags = derived<[Readable<any>, Readable<boolean>], CollectionSt
             return;
         }
 
-        const store = collectionStore<Tag>(`users/${$user.uid}/tags`);
+        const store = collectionStore<Tag>(async () => {
+            const response = await apiRequest<{ tags: Tag[] }>('/api/tags');
+            return response.tags;
+        });
         return store.subscribe(set);
     },
     { data: [], loading: true }
 );
 
 export const addTag = async (label: string): Promise<string> => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const docRef = await addDoc(collection(db, `users/${$user.uid}/tags`), {
-        label,
-        createdAt: new Date()
+    const response = await apiRequest<{ id: string }>('/api/tags', {
+        method: 'POST',
+        ...jsonRequest({ label })
     });
 
-    await updateDoc(docRef, { id: docRef.id });
-    return docRef.id;
+    return response.id;
 };
 
 export const deleteTag = async (id: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    await deleteDoc(doc(db, `users/${$user.uid}/tags`, id));
+    await apiRequest<{ success: true }>(`/api/tags/${id}`, {
+        method: 'DELETE'
+    });
 }
 
 export const updateTag = async (id: string, label: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    await updateDoc(doc(db, `users/${$user.uid}/tags`, id), { label });
+    await apiRequest<{ success: true }>(`/api/tags/${id}`, {
+        method: 'PATCH',
+        ...jsonRequest({ label })
+    });
 };

@@ -49,6 +49,7 @@
     import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
     import { headerActions } from "$lib/stores/ui";
     import HeaderActions from "$lib/components/HeaderActions.svelte";
+    import { apiRequest } from "$lib/api/client";
 
     const DAYS = [
         "Monday",
@@ -147,9 +148,12 @@
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<Recipe>(
-                `users/${$user.uid}/recipes/${$recipeId}`,
-            );
+            const store = documentStore<Recipe>(async () => {
+                const response = await apiRequest<{ recipe: Recipe | null }>(
+                    `/api/recipes/${$recipeId}`,
+                );
+                return response.recipe;
+            });
             return store.subscribe(set);
         },
         { data: null, loading: false } as DocumentState<Recipe>,

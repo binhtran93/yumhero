@@ -28,6 +28,7 @@
     import { toasts } from "$lib/stores/toasts";
     import { goto } from "$app/navigation";
     import { EllipsisVertical } from "lucide-svelte";
+    import { apiRequest } from "$lib/api/client";
 
     interface Props {
         data: PageData;
@@ -47,9 +48,12 @@
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<Recipe>(
-                `users/${$user.uid}/recipes/${data.id}`,
-            );
+            const store = documentStore<Recipe>(async () => {
+                const response = await apiRequest<{ recipe: Recipe | null }>(
+                    `/api/recipes/${data.id}`,
+                );
+                return response.recipe;
+            });
             return store.subscribe(set);
         },
         { data: null, loading: true } as DocumentState<Recipe>,

@@ -1,12 +1,4 @@
-import { writable, type Writable } from 'svelte/store';
-import { doc, collection, onSnapshot, type QueryConstraint, query } from 'firebase/firestore';
-import { db } from '$lib/firebase';
-
-interface StoreState<T> {
-    data: T | null;
-    loading: boolean;
-    error: Error | null;
-}
+import { writable } from 'svelte/store';
 
 export interface CollectionState<T> {
     data: T[];
@@ -14,21 +6,37 @@ export interface CollectionState<T> {
 }
 
 export function collectionStore<T>(
-    path: string,
-    queryConstraints: QueryConstraint[] = []
+    fetchCollection: () => Promise<T[]>,
+    pollIntervalMs = 5000
 ) {
     const store = writable<CollectionState<T>>({ data: [], loading: true }, (set) => {
-        const q = query(collection(db, path), ...queryConstraints);
+        let active = true;
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
-            set({ data, loading: false });
-        }, (error) => {
-            console.error(`Error fetching collection ${path}:`, error);
-            set({ data: [], loading: false });
-        });
+        const load = async () => {
+            try {
+                const data = await fetchCollection();
+                if (active) {
+                    set({ data, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching collection:', error);
+                if (active) {
+                    set({ data: [], loading: false });
+                }
+            }
+        };
 
-        return () => unsubscribe();
+        load();
+        const interval = typeof window !== 'undefined'
+            ? window.setInterval(load, pollIntervalMs)
+            : null;
+
+        return () => {
+            active = false;
+            if (interval !== null) {
+                window.clearInterval(interval);
+            }
+        };
     });
 
     return {
@@ -42,23 +50,37 @@ export interface DocumentState<T> {
 }
 
 export function documentStore<T>(
-    path: string
+    fetchDocument: () => Promise<T | null>,
+    pollIntervalMs = 5000
 ) {
     const store = writable<DocumentState<T>>({ data: null, loading: true }, (set) => {
-        const docRef = doc(db, path);
+        let active = true;
 
-        const unsubscribe = onSnapshot(docRef, (snapshot) => {
-            if (snapshot.exists()) {
-                set({ data: { id: snapshot.id, ...snapshot.data() } as T, loading: false });
-            } else {
-                set({ data: null, loading: false });
+        const load = async () => {
+            try {
+                const data = await fetchDocument();
+                if (active) {
+                    set({ data, loading: false });
+                }
+            } catch (error) {
+                console.error('Error fetching document:', error);
+                if (active) {
+                    set({ data: null, loading: false });
+                }
             }
-        }, (error) => {
-            console.error(`Error fetching document ${path}:`, error);
-            set({ data: null, loading: false });
-        });
+        };
 
-        return () => unsubscribe();
+        load();
+        const interval = typeof window !== 'undefined'
+            ? window.setInterval(load, pollIntervalMs)
+            : null;
+
+        return () => {
+            active = false;
+            if (interval !== null) {
+                window.clearInterval(interval);
+            }
+        };
     });
 
     return {

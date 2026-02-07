@@ -5,6 +5,7 @@
     import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
+    import { apiRequest } from "$lib/api/client";
     import ShoppingView from "$lib/components/ShoppingView.svelte";
 
     let recipeId = $derived($page.params.id);
@@ -21,9 +22,10 @@
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<Recipe>(
-                `users/${$user.uid}/recipes/${recipeId}`,
-            );
+            const store = documentStore<Recipe>(async () => {
+                const response = await apiRequest<{ recipe: Recipe | null }>(`/api/recipes/${recipeId}`);
+                return response.recipe;
+            });
             return store.subscribe(set);
         },
         { data: null, loading: true } as DocumentState<Recipe>,

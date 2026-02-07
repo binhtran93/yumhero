@@ -1,54 +1,27 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
-import { db } from '$lib/firebase';
-import {
-    collection,
-    doc,
-    setDoc,
-    updateDoc,
-    deleteDoc,
-    onSnapshot,
-    Timestamp
-} from 'firebase/firestore';
-import type { LeftoverItem, LeftoverStatus, MealType } from '$lib/types';
+import type { LeftoverItem, MealType } from '$lib/types';
 import { removeLeftoverFromWeekPlan } from './plans';
+import { apiRequest, jsonRequest } from '$lib/api/client';
+import { collectionStore } from './firestore';
 
 /**
  * Leftovers Store
- * 
+ *
  * Manages all leftover items stored in the user's Fridge.
- * Leftovers are single, indivisible units that transition between:
- * - 'not_planned': Available in the Fridge
- * - 'planned': Assigned to a meal slot
  */
 
-// Helper to convert Firestore data to LeftoverItem
-const fromFirestore = (doc: any): LeftoverItem => {
-    const data = doc.data();
+const fromApi = (item: any): LeftoverItem => {
     return {
-        id: doc.id,
-        title: data.title,
-        sourceRecipeId: data.sourceRecipeId || undefined,
-        imageUrl: data.imageUrl ?? null,
-        status: data.status as LeftoverStatus,
-        createdAt: data.createdAt?.toDate?.() || new Date(),
-        sourceDate: data.sourceDate?.toDate?.() || new Date(),
-        sourceMealType: data.sourceMealType || 'dinner',
-        plannedFor: data.plannedFor || undefined,
-    };
-};
-
-// Helper to convert LeftoverItem to Firestore data
-const toFirestore = (item: Omit<LeftoverItem, 'id'>) => {
-    return {
+        id: item.id,
         title: item.title,
-        sourceRecipeId: item.sourceRecipeId || null,
+        sourceRecipeId: item.sourceRecipeId || undefined,
         imageUrl: item.imageUrl ?? null,
         status: item.status,
-        createdAt: Timestamp.fromDate(item.createdAt),
-        sourceDate: Timestamp.fromDate(item.sourceDate),
-        sourceMealType: item.sourceMealType,
-        plannedFor: item.plannedFor || null,
+        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+        sourceDate: item.sourceDate ? new Date(item.sourceDate) : new Date(),
+        sourceMealType: item.sourceMealType || 'dinner',
+        plannedFor: item.plannedFor || undefined
     };
 };
 
@@ -67,49 +40,30 @@ export const leftovers = derived<[Readable<any>, Readable<boolean>], { data: Lef
             return;
         }
 
-        const leftoversRef = collection(db, `users/${$user.uid}/leftovers`);
-
-        // Subscribe to realtime updates
-        const unsubscribe = onSnapshot(leftoversRef, (snapshot) => {
-            const items = snapshot.docs.map(fromFirestore);
-            // Sort by createdAt descending (newest first)
+        const store = collectionStore<LeftoverItem>(async () => {
+            const response = await apiRequest<{ leftovers: any[] }>('/api/leftovers');
+            const items = response.leftovers.map(fromApi);
             items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-            set({ data: items, loading: false });
-        }, (error) => {
-            console.error('Error fetching leftovers:', error);
-            set({ data: [], loading: false });
+            return items;
         });
 
-        return unsubscribe;
+        return store.subscribe(set);
     },
     { data: [], loading: true }
 );
 
-/**
- * Derived store: Count of items with status='not_planned' (for sidebar badge)
- */
 export const notPlannedCount = derived(leftovers, ($leftovers) => {
     return $leftovers.data.filter(item => item.status === 'not_planned').length;
 });
 
-/**
- * Derived store: Total count of items in the leftovers store (for sidebar badge)
- */
 export const totalLeftoversCount = derived(leftovers, ($leftovers) => {
     return $leftovers.data.length;
 });
 
-/**
- * Derived store: Available leftovers that can be added to meal plan
- */
 export const availableLeftovers = derived(leftovers, ($leftovers) => {
     return $leftovers.data.filter(item => item.status === 'not_planned');
 });
 
-/**
- * Add a new leftover to the Fridge.
- * Can be created from a recipe or as a manual entry.
- */
 export const addLeftoverToFridge = async (
     title: string,
     sourceRecipeId: string | undefined,
@@ -117,99 +71,53 @@ export const addLeftoverToFridge = async (
     sourceDate: Date,
     sourceMealType: MealType
 ): Promise<string> => {
-    const $user = get(user);
-    if (!$user) throw new Error('User not authenticated');
-
-    // Check for duplicates
-    const $leftovers = get(leftovers);
-    const existing = $leftovers.data.find((item) => {
-        // Check matching date and meal type
-        const sameDate =
-            item.sourceDate.getFullYear() === sourceDate.getFullYear() &&
-            item.sourceDate.getMonth() === sourceDate.getMonth() &&
-            item.sourceDate.getDate() === sourceDate.getDate();
-
-        const sameMeal = item.sourceMealType === sourceMealType;
-
-        // Also match by recipe ID or title to be specific
-        const sameContent = sourceRecipeId
-            ? item.sourceRecipeId === sourceRecipeId
-            : item.title === title;
-
-        return sameDate && sameMeal && sameContent;
+    const response = await apiRequest<{ id: string }>('/api/leftovers', {
+        method: 'POST',
+        ...jsonRequest({
+            title,
+            sourceRecipeId,
+            imageUrl,
+            sourceDate: sourceDate.toISOString(),
+            sourceMealType
+        })
     });
 
-    if (existing) {
-        throw new Error('This leftover has already been added to the fridge.');
-    }
-
-    const leftoverId = crypto.randomUUID();
-    const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
-
-    const newLeftover: Omit<LeftoverItem, 'id'> = {
-        title,
-        sourceRecipeId,
-        imageUrl: imageUrl ?? null,
-        status: 'not_planned',
-        createdAt: new Date(),
-        sourceDate,
-        sourceMealType
-    };
-
-    await setDoc(leftoverRef, toFirestore(newLeftover));
-    return leftoverId;
+    return response.id;
 };
 
-/**
- * Set a leftover's status to 'planned' and record where it's planned for.
- */
 export const setLeftoverPlanned = async (
     leftoverId: string,
     weekId: string,
     day: string,
     mealType: MealType
 ): Promise<void> => {
-    const $user = get(user);
-    if (!$user) throw new Error('User not authenticated');
-
-    const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
-
-    await updateDoc(leftoverRef, {
-        status: 'planned',
-        plannedFor: {
-            weekId,
-            day,
-            mealType,
-        },
+    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            status: 'planned',
+            plannedFor: {
+                weekId,
+                day,
+                mealType
+            }
+        })
     });
 };
 
-/**
- * Set a leftover's status back to 'not_planned' (remove from plan).
- * Clears the plannedFor field.
- */
 export const setLeftoverNotPlanned = async (leftoverId: string): Promise<void> => {
-    const $user = get(user);
-    if (!$user) throw new Error('User not authenticated');
-
-    const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
-
-    await updateDoc(leftoverRef, {
-        status: 'not_planned',
-        plannedFor: null,
+    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            status: 'not_planned',
+            plannedFor: null
+        })
     });
 };
 
-/**
- * Permanently delete a leftover.
- * @param leftoverId ID of the leftover to delete
- * @param cleanPlan Whether to also remove the leftover from any associated meal plans (default: true)
- */
 export const deleteLeftover = async (leftoverId: string, cleanPlan: boolean = true): Promise<void> => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
 
-    // Check if it's planned and we should clean up the plan document
     if (cleanPlan) {
         const item = getLeftoverById(leftoverId);
         if (item?.status === 'planned' && item.plannedFor?.weekId) {
@@ -217,14 +125,11 @@ export const deleteLeftover = async (leftoverId: string, cleanPlan: boolean = tr
         }
     }
 
-    const leftoverRef = doc(db, `users/${$user.uid}/leftovers`, leftoverId);
-    await deleteDoc(leftoverRef);
+    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
+        method: 'DELETE'
+    });
 };
 
-/**
- * Get a single leftover by ID.
- * Returns undefined if not found.
- */
 export const getLeftoverById = (leftoverId: string): LeftoverItem | undefined => {
     const $leftovers = get(leftovers);
     return $leftovers.data.find(item => item.id === leftoverId);

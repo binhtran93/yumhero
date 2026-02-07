@@ -1,9 +1,8 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
-import type { ShoppingListItem } from '$lib/types';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '$lib/firebase';
+import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
+import { apiRequest, jsonRequest } from '$lib/api/client';
 
 /**
  * Week-scoped shopping list store.
@@ -22,7 +21,10 @@ export const getWeekShoppingList = (weekId: string) => {
                 return;
             }
 
-            const store = documentStore<{ shopping_list?: ShoppingListItem[] }>(`users/${$user.uid}/plans/${weekId}`);
+            const store = documentStore<{ shopping_list?: ShoppingListItem[] }>(async () => {
+                const response = await apiRequest<{ plan: { shopping_list?: ShoppingListItem[] } | null }>(`/api/plans/${weekId}`);
+                return response.plan;
+            });
             return store.subscribe((state) => {
                 set({
                     data: state.data?.shopping_list || [],
@@ -38,30 +40,23 @@ export const getWeekShoppingList = (weekId: string) => {
  * Helper to get the current shopping list for a week
  */
 export const getShoppingList = async (weekId: string): Promise<ShoppingListItem[]> => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const docRef = doc(db, `users/${$user.uid}/plans`, weekId);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
+    const response = await apiRequest<{ plan: { shopping_list?: ShoppingListItem[] } | null }>(`/api/plans/${weekId}`);
+    if (!response.plan) {
         return [];
     }
 
-    return docSnap.data()?.shopping_list || [];
+    return response.plan.shopping_list || [];
 };
 
 /**
  * Helper to save the shopping list to a week
  */
 const saveShoppingList = async (weekId: string, shoppingList: ShoppingListItem[]) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const docRef = doc(db, `users/${$user.uid}/plans`, weekId);
-    await updateDoc(docRef, {
-        shopping_list: shoppingList,
-        updatedAt: new Date()
+    await apiRequest<{ success: true }>(`/api/plans/${weekId}`, {
+        method: 'PATCH',
+        ...jsonRequest({
+            shopping_list: shoppingList
+        })
     });
 };
 
@@ -213,19 +208,13 @@ export const updateShoppingItem = async (weekId: string, itemId: string, newAmou
 };
 
 export const resetAllShoppingItems = async (weekId: string) => {
-    const $user = get(user);
-    if (!$user) throw new Error("User not authenticated");
-
-    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
-    const planSnap = await getDoc(planRef);
-
-    if (!planSnap.exists()) {
+    const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
+    if (!response.plan) {
         await saveShoppingList(weekId, []);
         return;
     }
 
-    const planData = planSnap.data();
-    const days = planData.days;
+    const days = response.plan.days;
 
     if (!days) {
         await saveShoppingList(weekId, []);

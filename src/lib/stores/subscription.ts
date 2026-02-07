@@ -1,64 +1,70 @@
 import { writable } from 'svelte/store';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase';
 import type { User } from 'firebase/auth';
+import { apiRequest } from '$lib/api/client';
 
 export const isSubscribed = writable<boolean>(false);
 export const hasUsedTrial = writable<boolean>(false);
 export const status = writable<string | null>(null);
 export const nextBilledAt = writable<string | null>(null);
 export const scheduledCancellation = writable<string | null>(null);
-export const billingInterval = writable<"month" | "year" | null>(null);
+export const billingInterval = writable<'month' | 'year' | null>(null);
 export const subscriptionLoading = writable<boolean>(true);
 
-let unsubscribeSnapshot: (() => void) | null = null;
+let pollInterval: ReturnType<typeof setInterval> | null = null;
 
-export const syncSubscription = (user: User | null) => {
-    // Unsubscribe from previous listener if exists
-    if (unsubscribeSnapshot) {
-        unsubscribeSnapshot();
-        unsubscribeSnapshot = null;
+const resetToFree = () => {
+    isSubscribed.set(false);
+    hasUsedTrial.set(false);
+    status.set('free');
+    nextBilledAt.set(null);
+    billingInterval.set(null);
+    scheduledCancellation.set(null);
+};
+
+const loadSubscription = async () => {
+    try {
+        const data = await apiRequest<{
+            isSubscribed: boolean;
+            hasUsedTrial: boolean;
+            status: string;
+            nextBilledAt: string | null;
+            billingInterval: 'month' | 'year' | null;
+            scheduledCancellation: string | null;
+        }>('/api/subscription/status');
+
+        isSubscribed.set(data.isSubscribed);
+        hasUsedTrial.set(data.hasUsedTrial);
+        status.set(data.status);
+        nextBilledAt.set(data.nextBilledAt);
+        billingInterval.set(data.billingInterval);
+        scheduledCancellation.set(data.scheduledCancellation);
+    } catch (error) {
+        console.error('Subscription Sync Error:', error);
+    } finally {
+        subscriptionLoading.set(false);
+    }
+};
+
+export const syncSubscription = (currentUser: User | null) => {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
     }
 
-    if (!user) {
-        isSubscribed.set(false);
+    if (!currentUser) {
+        resetToFree();
         subscriptionLoading.set(false);
         return;
     }
 
-    // Set loading to true when starting a new sync
     subscriptionLoading.set(true);
+    loadSubscription();
 
-    // Listen to the user's document in Firestore
-    unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (doc) => {
-        if (doc.exists()) {
-            const data = doc.data();
-            // Derive isSubscribed from status
-            const active = data?.status === 'active' || data?.status === 'trialing';
-            const trialUsed = data?.hasUsedTrial === true;
-
-            isSubscribed.set(active);
-            hasUsedTrial.set(trialUsed);
-            status.set(data?.status || 'free');
-            nextBilledAt.set(data?.nextBilledAt || null);
-            billingInterval.set(data?.billingInterval || null);
-            scheduledCancellation.set(data?.scheduledCancellation || null);
-        } else {
-            isSubscribed.set(false);
-            hasUsedTrial.set(false);
-            status.set('free');
-            nextBilledAt.set(null);
-            billingInterval.set(null);
-            scheduledCancellation.set(null);
-        }
-        subscriptionLoading.set(false);
-    }, (error) => {
-        console.error("Subscription Sync Error:", error);
-        subscriptionLoading.set(false);
-    });
+    if (typeof window !== 'undefined') {
+        pollInterval = setInterval(loadSubscription, 15000);
+    }
 };
 
-// Helper for dev/demo if needed (only updates local store, does NOT persist to secure DB)
 export const upgradeUser = () => {
     isSubscribed.set(true);
 };

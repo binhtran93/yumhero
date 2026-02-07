@@ -2,10 +2,9 @@ import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { documentStore } from './firestore';
 import type { WeeklyPlan, ShoppingListItem, ShoppingListSource, MealType } from '$lib/types';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db } from '$lib/firebase';
 import { getShoppingList } from './shoppingList';
 import { parseAmount } from '$lib/utils/shopping';
+import { apiRequest, jsonRequest } from '$lib/api/client';
 
 export const getWeekPlan = (weekId: string) => {
     return derived<[Readable<any>, Readable<boolean>], { data: WeeklyPlan | null, loading: boolean }>(
@@ -19,7 +18,10 @@ export const getWeekPlan = (weekId: string) => {
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<{ days: WeeklyPlan }>(`users/${$user.uid}/plans/${weekId}`);
+            const store = documentStore<{ days: WeeklyPlan }>(async () => {
+                const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
+                return response.plan as { days: WeeklyPlan } | null;
+            });
             return store.subscribe((state) => {
                 set({
                     data: state.data ? state.data.days : null,
@@ -196,13 +198,13 @@ export const saveWeekPlan = async (weekId: string, plan: WeeklyPlan) => {
     const shoppingList = await syncShoppingListFromPlan(weekId, plan);
 
     // Save plan and shopping list atomically
-    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
-    await setDoc(planRef, {
-        id: weekId,
-        days: plan,
-        shopping_list: shoppingList,
-        updatedAt: new Date()
-    }, { merge: true });
+    await apiRequest<{ success: true }>(`/api/plans/${weekId}`, {
+        method: 'PUT',
+        ...jsonRequest({
+            plan,
+            shopping_list: shoppingList
+        })
+    });
 };
 
 /**
@@ -213,12 +215,9 @@ export const removeLeftoverFromWeekPlan = async (weekId: string, leftoverId: str
     const $user = get(user);
     if (!$user) return;
 
-    const planRef = doc(db, `users/${$user.uid}/plans`, weekId);
-    const planSnap = await getDoc(planRef);
-    if (!planSnap.exists()) return;
-
-    const planData = planSnap.data();
-    const days = planData.days as WeeklyPlan;
+    const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
+    const days = response.plan?.days as WeeklyPlan | undefined;
+    if (!days) return;
 
     let modified = false;
     days.forEach(day => {
