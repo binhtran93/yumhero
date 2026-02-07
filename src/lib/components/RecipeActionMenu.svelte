@@ -1,8 +1,6 @@
 <script lang="ts">
     import { EllipsisVertical, Pencil, Share2, Trash2 } from "lucide-svelte";
     import { fade, scale } from "svelte/transition";
-    import { deleteDoc, doc } from "firebase/firestore";
-    import { db } from "$lib/firebase";
     import { user } from "$lib/stores/auth";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
@@ -53,7 +51,16 @@
         isDeleting = true;
 
         try {
-            await deleteDoc(doc(db, `users/${$user.uid}/recipes/${recipeId}`));
+            const token = await $user.getIdToken();
+            const response = await fetch(`/api/recipes/${recipeId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete recipe");
+            }
 
             // Check if we are on the detail page for this recipe
             if (

@@ -9,7 +9,6 @@ export const POST = async ({ request }) => {
     try {
         const user = await verifyAuth(request);
         const userId = user.uid;
-        await checkRateLimit(userId);
 
         console.log(PADDLE_API_KEY);
         const paddle = new Paddle(PADDLE_API_KEY || '', {

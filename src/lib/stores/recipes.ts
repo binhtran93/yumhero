@@ -2,7 +2,7 @@ import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import { collectionStore, type CollectionState } from './firestore';
 import type { Recipe } from '$lib/types';
-import { doc, deleteDoc, collection, addDoc, updateDoc } from 'firebase/firestore';
+import { doc, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 
 export const userRecipes = derived<[Readable<any>, Readable<boolean>], CollectionState<Recipe>>(
@@ -47,5 +47,15 @@ export const deleteRecipe = async (id: string) => {
     const $user = get(user);
     if (!$user) throw new Error("User not authenticated");
 
-    await deleteDoc(doc(db, `users/${$user.uid}/recipes`, id));
+    const token = await $user.getIdToken();
+    const response = await fetch(`/api/recipes/${id}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to delete recipe");
+    }
 };

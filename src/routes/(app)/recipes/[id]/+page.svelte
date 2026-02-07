@@ -25,8 +25,6 @@
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import IngredientItem from "$lib/components/IngredientItem.svelte";
-    import { deleteDoc, doc } from "firebase/firestore";
-    import { db } from "$lib/firebase";
     import { toasts } from "$lib/stores/toasts";
     import { goto } from "$app/navigation";
     import { EllipsisVertical } from "lucide-svelte";
@@ -128,7 +126,16 @@
         if (!$user || !data.id) return;
         isDeleting = true;
         try {
-            await deleteDoc(doc(db, `users/${$user.uid}/recipes/${data.id}`));
+            const token = await $user.getIdToken();
+            const response = await fetch(`/api/recipes/${data.id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete recipe");
+            }
             toasts.success("Recipe deleted");
             goto("/recipes");
         } catch (error) {

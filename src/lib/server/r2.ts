@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_ACCOUNT_ID, R2_PUBLIC_URL } from '$env/static/private';
 import { getRandomHeaders } from './headers';
@@ -50,6 +50,17 @@ function getPublicBaseUrl(): string {
     return (R2_PUBLIC_URL ?? '').endsWith('/') ? (R2_PUBLIC_URL ?? '') : `${R2_PUBLIC_URL}/`;
 }
 
+function extractR2KeyFromPublicUrl(imageUrl: string): string | null {
+    const publicBase = getPublicBaseUrl();
+    if (!imageUrl.startsWith(publicBase)) {
+        return null;
+    }
+
+    const keyWithMaybeQuery = imageUrl.slice(publicBase.length);
+    const key = keyWithMaybeQuery.split('?')[0];
+    return key ? decodeURIComponent(key) : null;
+}
+
 export type PresignedR2Upload = {
     uploadUrl: string;
     publicUrl: string;
@@ -84,4 +95,18 @@ export async function createPresignedR2Upload(
         },
         key
     };
+}
+
+export async function deleteImageFromR2ByPublicUrl(imageUrl: string): Promise<boolean> {
+    const key = extractR2KeyFromPublicUrl(imageUrl);
+    if (!key) {
+        return false;
+    }
+
+    await R2.send(new DeleteObjectCommand({
+        Bucket: R2_BUCKET_NAME,
+        Key: key
+    }));
+
+    return true;
 }

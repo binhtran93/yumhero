@@ -18,8 +18,6 @@
 
     import RecipeMenu from "$lib/components/RecipeMenu.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
-    import { deleteDoc, doc } from "firebase/firestore";
-    import { db } from "$lib/firebase";
     import { user } from "$lib/stores/auth";
     import { toasts } from "$lib/stores/toasts";
 
@@ -98,9 +96,16 @@
         if (!$user || !recipeToDeleteId) return;
         isDeleting = true;
         try {
-            await deleteDoc(
-                doc(db, `users/${$user.uid}/recipes/${recipeToDeleteId}`),
-            );
+            const token = await $user.getIdToken();
+            const response = await fetch(`/api/recipes/${recipeToDeleteId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete recipe");
+            }
             toasts.success("Recipe deleted");
         } catch (error) {
             console.error("Error deleting recipe:", error);
