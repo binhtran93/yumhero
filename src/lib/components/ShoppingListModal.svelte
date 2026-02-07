@@ -561,7 +561,7 @@
 
         <div class="flex gap-3 mt-6">
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
                 onclick={() => (showAddManualModal = false)}
             >
                 <X size={18} />
@@ -630,7 +630,7 @@
 
         <div class="flex gap-3 mt-6">
             <button
-                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-2 rounded-xl text-sm font-bold bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
                 onclick={() => {
                     showEditModal = false;
                     editingItem = null;
@@ -680,7 +680,7 @@
 
         <div class="flex gap-3">
             <button
-                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-bg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 onclick={() => (showResetConfirmModal = false)}
                 disabled={isResetting}
             >

@@ -149,7 +149,7 @@
             class="p-4 border-t border-app-border bg-app-surface-deep/50 flex gap-3"
         >
             <button
-                class="px-5 py-2.5 font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors flex items-center gap-2"
+                class="px-5 py-2.5 bg-app-bg border border-app-border font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors flex items-center gap-2"
                 onclick={onClose}
             >
                 <X size={18} />

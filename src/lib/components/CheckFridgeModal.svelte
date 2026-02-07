@@ -176,7 +176,7 @@
 
         <div class="flex gap-3 mt-6">
             <button
-                class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-app-bg text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover transition-all flex items-center justify-center gap-2"
                 onclick={onClose}
                 disabled={isApplying}
             >

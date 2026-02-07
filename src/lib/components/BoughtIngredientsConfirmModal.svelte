@@ -129,7 +129,7 @@
                     <ArrowRight size={16} class="ml-1" />
                 </button>
                 <button
-                    class="w-full px-4 py-2.5 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover font-medium rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                    class="w-full px-4 py-2.5 bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
                     onclick={onSkip}
                 >
                     <Trash2 size={18} />
