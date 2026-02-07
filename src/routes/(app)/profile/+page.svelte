@@ -226,14 +226,15 @@
                 class="flex flex-col items-center gap-4 relative z-10"
                 in:fly={{ y: -20, duration: 500 }}
             >
-                <div
-                    class="relative p-1 rounded-full bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-white/20 shadow-lg"
-                >
+                <div class="relative">
+                    <div
+                        class="absolute inset-0 rounded-full bg-white/20 blur-xl animate-pulse"
+                    ></div>
                     <Avatar
                         src={$user.photoURL}
                         name={$user.displayName || $user.email}
                         size="xl"
-                        className="w-24 h-24 text-2xl ring-4 ring-white dark:ring-app-surface shadow-xl"
+                        className="relative w-32 h-32 text-4xl border-4 border-white dark:border-app-surface shadow-2xl"
                     />
                 </div>
                 <div>
