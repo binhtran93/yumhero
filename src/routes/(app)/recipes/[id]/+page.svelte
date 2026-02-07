@@ -1,5 +1,6 @@
 <script lang="ts">
     import { type PageData } from "./$types";
+    import { doc, onSnapshot } from "firebase/firestore";
     import { userTags } from "$lib/stores/tags";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
@@ -24,10 +25,11 @@
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import IngredientItem from "$lib/components/IngredientItem.svelte";
+    import { db } from "$lib/firebase";
+    import { deleteRecipe } from "$lib/stores/recipes";
     import { toasts } from "$lib/stores/toasts";
     import { goto } from "$app/navigation";
     import { EllipsisVertical } from "lucide-svelte";
-    import { apiRequest } from "$lib/api/client";
 
     interface Props {
         data: PageData;
@@ -48,29 +50,23 @@
                 return;
             }
 
-            let active = true;
-
-            const load = async () => {
-                try {
-                    const response = await apiRequest<{ recipe: Recipe | null }>(
-                        `/api/recipes/${data.id}`,
-                    );
-                    if (active) {
-                        set({ data: response.recipe, loading: false });
-                    }
-                } catch (error) {
-                    console.error("Error fetching recipe:", error);
-                    if (active) {
+            const recipeRef = doc(db, `users/${$user.uid}/recipes/${data.id}`);
+            return onSnapshot(
+                recipeRef,
+                (snapshot) => {
+                    if (!snapshot.exists()) {
                         set({ data: null, loading: false });
+                        return;
                     }
-                }
-            };
 
-            load();
-
-            return () => {
-                active = false;
-            };
+                    const recipeData = snapshot.data() as Recipe;
+                    set({ data: { ...recipeData, id: snapshot.id }, loading: false });
+                },
+                (error) => {
+                    console.error("Error listening to recipe:", error);
+                    set({ data: null, loading: false });
+                },
+            );
         },
         { data: null, loading: true } as { data: Recipe | null; loading: boolean },
     );
@@ -146,9 +142,7 @@
         if (!data.id) return;
         isDeleting = true;
         try {
-            await apiRequest<{ success: true }>(`/api/recipes/${data.id}`, {
-                method: "DELETE",
-            });
+            await deleteRecipe(data.id);
             toasts.success("Recipe deleted");
             goto("/recipes");
         } catch (error) {

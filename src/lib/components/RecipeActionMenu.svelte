@@ -3,7 +3,7 @@
     import { fade, scale } from "svelte/transition";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
-    import { apiRequest } from "$lib/api/client";
+    import { deleteRecipe } from "$lib/stores/recipes";
 
     interface Props {
         recipeId: string;
@@ -50,9 +50,7 @@
         isDeleting = true;
 
         try {
-            await apiRequest<{ success: true }>(`/api/recipes/${recipeId}`, {
-                method: "DELETE",
-            });
+            await deleteRecipe(recipeId);
 
             // Check if we are on the detail page for this recipe
             if (

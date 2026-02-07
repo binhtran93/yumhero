@@ -19,7 +19,7 @@
     import RecipeMenu from "$lib/components/RecipeMenu.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import { toasts } from "$lib/stores/toasts";
-    import { apiRequest } from "$lib/api/client";
+    import { deleteRecipe } from "$lib/stores/recipes";
 
     let searchQuery = $state("");
 
@@ -96,9 +96,7 @@
         if (!recipeToDeleteId) return;
         isDeleting = true;
         try {
-            await apiRequest<{ success: true }>(`/api/recipes/${recipeToDeleteId}`, {
-                method: "DELETE",
-            });
+            await deleteRecipe(recipeToDeleteId);
             toasts.success("Recipe deleted");
         } catch (error) {
             console.error("Error deleting recipe:", error);

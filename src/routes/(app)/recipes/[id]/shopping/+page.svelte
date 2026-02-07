@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
+    import { doc, onSnapshot } from "firebase/firestore";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
-    import { apiRequest } from "$lib/api/client";
+    import { db } from "$lib/firebase";
     import ShoppingView from "$lib/components/ShoppingView.svelte";
 
     let recipeId = $derived($page.params.id);
@@ -22,27 +23,22 @@
                 return;
             }
 
-            let active = true;
-
-            const load = async () => {
-                try {
-                    const response = await apiRequest<{ recipe: Recipe | null }>(`/api/recipes/${recipeId}`);
-                    if (active) {
-                        set({ data: response.recipe, loading: false });
-                    }
-                } catch (error) {
-                    console.error("Error fetching recipe:", error);
-                    if (active) {
+            const recipeRef = doc(db, `users/${$user.uid}/recipes/${recipeId}`);
+            return onSnapshot(
+                recipeRef,
+                (snapshot) => {
+                    if (!snapshot.exists()) {
                         set({ data: null, loading: false });
+                        return;
                     }
-                }
-            };
-
-            load();
-
-            return () => {
-                active = false;
-            };
+                    const recipeData = snapshot.data() as Recipe;
+                    set({ data: { ...recipeData, id: snapshot.id }, loading: false });
+                },
+                (error) => {
+                    console.error("Error listening to recipe:", error);
+                    set({ data: null, loading: false });
+                },
+            );
         },
         { data: null, loading: true } as { data: Recipe | null; loading: boolean },
     );

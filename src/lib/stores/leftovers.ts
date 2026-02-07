@@ -1,8 +1,9 @@
+import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, setDoc } from 'firebase/firestore';
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
 import type { LeftoverItem, MealType } from '$lib/types';
 import { removeLeftoverFromWeekPlan } from './plans';
-import { apiRequest, jsonRequest } from '$lib/api/client';
+import { db } from '$lib/firebase';
 
 /**
  * Leftovers Store
@@ -10,15 +11,31 @@ import { apiRequest, jsonRequest } from '$lib/api/client';
  * Manages all leftover items stored in the user's Fridge.
  */
 
-const fromApi = (item: any): LeftoverItem => {
+const toDate = (value: unknown): Date => {
+    if (value instanceof Date) return value;
+    if (value && typeof value === 'object' && 'toDate' in value && typeof (value as { toDate?: unknown }).toDate === 'function') {
+        return ((value as { toDate: () => Date }).toDate());
+    }
+    const parsed = new Date(String(value ?? ''));
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
+const getUtcDateKey = (date: Date): string => {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+const fromDoc = (id: string, item: any): LeftoverItem => {
     return {
-        id: item.id,
+        id,
         title: item.title,
         sourceRecipeId: item.sourceRecipeId || undefined,
         imageUrl: item.imageUrl ?? null,
         status: item.status,
-        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
-        sourceDate: item.sourceDate ? new Date(item.sourceDate) : new Date(),
+        createdAt: toDate(item.createdAt),
+        sourceDate: toDate(item.sourceDate),
         sourceMealType: item.sourceMealType || 'dinner',
         plannedFor: item.plannedFor || undefined
     };
@@ -39,29 +56,19 @@ export const leftovers = derived<[Readable<any>, Readable<boolean>], { data: Lef
             return;
         }
 
-        let active = true;
-
-        const load = async () => {
-            try {
-                const response = await apiRequest<{ leftovers: any[] }>('/api/leftovers');
-                const items = response.leftovers.map(fromApi);
+        const leftoversRef = collection(db, `users/${$user.uid}/leftovers`);
+        return onSnapshot(
+            leftoversRef,
+            (snapshot) => {
+                const items = snapshot.docs.map((entry) => fromDoc(entry.id, entry.data()));
                 items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-                if (active) {
-                    set({ data: items, loading: false });
-                }
-            } catch (error) {
-                console.error('Error fetching leftovers:', error);
-                if (active) {
-                    set({ data: [], loading: false });
-                }
+                set({ data: items, loading: false });
+            },
+            (error) => {
+                console.error('Error listening to leftovers:', error);
+                set({ data: [], loading: false });
             }
-        };
-
-        load();
-
-        return () => {
-            active = false;
-        };
+        );
     },
     { data: [], loading: true }
 );
@@ -81,18 +88,51 @@ export const addLeftoverToFridge = async (
     sourceDate: Date,
     sourceMealType: MealType
 ): Promise<string> => {
-    const response = await apiRequest<{ id: string }>('/api/leftovers', {
-        method: 'POST',
-        ...jsonRequest({
-            title,
-            sourceRecipeId,
-            imageUrl,
-            sourceDate: sourceDate.toISOString(),
-            sourceMealType
-        })
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle) throw new Error('title is required');
+
+    const leftoversRef = collection(db, `users/${$user.uid}/leftovers`);
+    const sourceDateKey = getUtcDateKey(sourceDate);
+    const existingSnapshot = await getDocs(leftoversRef);
+
+    const duplicate = existingSnapshot.docs.find((entry) => {
+        const data = entry.data() as {
+            sourceDate?: unknown;
+            sourceMealType?: string;
+            sourceRecipeId?: string | null;
+            title?: string;
+        };
+
+        const existingDate = toDate(data.sourceDate);
+        const sameDate = getUtcDateKey(existingDate) === sourceDateKey;
+        const sameMeal = data.sourceMealType === sourceMealType;
+        const sameContent = sourceRecipeId
+            ? data.sourceRecipeId === sourceRecipeId
+            : data.title === normalizedTitle;
+
+        return sameDate && sameMeal && sameContent;
     });
 
-    return response.id;
+    if (duplicate) {
+        throw new Error('This leftover has already been added to the fridge.');
+    }
+
+    const docRef = await addDoc(leftoversRef, {
+        id: '',
+        title: normalizedTitle,
+        sourceRecipeId: sourceRecipeId || null,
+        imageUrl: imageUrl ?? null,
+        status: 'not_planned',
+        createdAt: new Date(),
+        sourceDate,
+        sourceMealType,
+        plannedFor: null
+    });
+    await setDoc(doc(db, `users/${$user.uid}/leftovers/${docRef.id}`), { id: docRef.id }, { merge: true });
+    return docRef.id;
 };
 
 export const setLeftoverPlanned = async (
@@ -101,27 +141,25 @@ export const setLeftoverPlanned = async (
     day: string,
     mealType: MealType
 ): Promise<void> => {
-    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
-        method: 'PATCH',
-        ...jsonRequest({
-            status: 'planned',
-            plannedFor: {
-                weekId,
-                day,
-                mealType
-            }
-        })
-    });
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+    await setDoc(doc(db, `users/${$user.uid}/leftovers/${leftoverId}`), {
+        status: 'planned',
+        plannedFor: {
+            weekId,
+            day,
+            mealType
+        }
+    }, { merge: true });
 };
 
 export const setLeftoverNotPlanned = async (leftoverId: string): Promise<void> => {
-    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
-        method: 'PATCH',
-        ...jsonRequest({
-            status: 'not_planned',
-            plannedFor: null
-        })
-    });
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+    await setDoc(doc(db, `users/${$user.uid}/leftovers/${leftoverId}`), {
+        status: 'not_planned',
+        plannedFor: null
+    }, { merge: true });
 };
 
 export const deleteLeftover = async (leftoverId: string, cleanPlan: boolean = true): Promise<void> => {
@@ -135,9 +173,7 @@ export const deleteLeftover = async (leftoverId: string, cleanPlan: boolean = tr
         }
     }
 
-    await apiRequest<{ success: true }>(`/api/leftovers/${leftoverId}`, {
-        method: 'DELETE'
-    });
+    await deleteDoc(doc(db, `users/${$user.uid}/leftovers/${leftoverId}`));
 };
 
 export const getLeftoverById = (leftoverId: string): LeftoverItem | undefined => {
