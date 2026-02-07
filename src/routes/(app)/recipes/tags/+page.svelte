@@ -246,6 +246,7 @@
         onClose={() => (isAddModalOpen = false)}
         title="Add New Tag"
         adaptive={true}
+        class="max-w-md"
     >
         <div class="p-6 pb-12 space-y-6">
             <div class="relative group">
