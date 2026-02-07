@@ -88,7 +88,9 @@
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
-    <Header title="Manage Tags" showBack={true} backUrl="/recipes" />
+    <div class="md:hidden">
+        <Header title="Manage Tags" showBack={true} backUrl="/recipes" />
+    </div>
 
     <div
         class="bg-app-bg border-b border-app-border shrink-0 transition-all px-4 md:px-6"
