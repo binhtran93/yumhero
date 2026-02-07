@@ -62,22 +62,83 @@
     let weekShoppingListStore = $derived(getWeekShoppingListStore(weekId));
     let shoppingList = $derived($weekShoppingListStore.data);
     let isLoading = $derived($weekShoppingListStore.loading);
+    let optimisticChecks = $state<Record<string, boolean>>({});
+
+    const sourceKey = (itemId: string, sourceIndex: number) =>
+        `${itemId}:${sourceIndex}`;
+
+    let optimisticShoppingList = $derived.by(() => {
+        return (shoppingList || []).map((item) => ({
+            ...item,
+            sources: item.sources.map((source, index) => {
+                const override = optimisticChecks[sourceKey(item.id, index)];
+                if (override === undefined) return source;
+
+                return {
+                    ...source,
+                    is_checked: override,
+                    checked_from: override
+                        ? source.checked_from || "user"
+                        : null,
+                };
+            }),
+        }));
+    });
+
+    // Remove optimistic overrides once Firestore snapshot catches up.
+    $effect(() => {
+        const next = { ...optimisticChecks };
+        let changed = false;
+
+        for (const item of shoppingList || []) {
+            item.sources.forEach((source, index) => {
+                const key = sourceKey(item.id, index);
+                const override = next[key];
+                if (override === undefined) return;
+                if (source.is_checked === override) {
+                    delete next[key];
+                    changed = true;
+                }
+            });
+        }
+
+        if (changed) {
+            optimisticChecks = next;
+        }
+    });
 
     let displayedItems = $derived(
-        (shoppingList || []).filter((item) => item && item.id),
+        (optimisticShoppingList || []).filter((item) => item && item.id),
     );
 
-    let itemCount = $derived(shoppingList.length);
+    let itemCount = $derived(optimisticShoppingList.length);
     let checkedCount = $derived(
-        shoppingList.filter((item) => item.sources.every((s) => s.is_checked))
-            .length,
+        optimisticShoppingList.filter((item) =>
+            item.sources.every((s) => s.is_checked),
+        ).length,
     );
 
     const handleToggleAll = async (itemId: string, checked: boolean) => {
+        const item = (optimisticShoppingList || []).find(
+            (entry) => entry.id === itemId,
+        );
+        if (!item) return;
+
+        const nextOverrides = { ...optimisticChecks };
+        item.sources.forEach((_, index) => {
+            nextOverrides[sourceKey(itemId, index)] = checked;
+        });
+        optimisticChecks = nextOverrides;
+
         try {
             await toggleAllShoppingItemChecks(weekId, itemId, checked);
         } catch (error) {
             console.error("Failed to toggle all checks:", error);
+            const rollback = { ...optimisticChecks };
+            item.sources.forEach((_, index) => {
+                delete rollback[sourceKey(itemId, index)];
+            });
+            optimisticChecks = rollback;
         }
     };
 
@@ -86,6 +147,11 @@
         sourceIndex: number,
         checked: boolean,
     ) => {
+        optimisticChecks = {
+            ...optimisticChecks,
+            [sourceKey(itemId, sourceIndex)]: checked,
+        };
+
         try {
             await toggleShoppingSourceCheck(
                 weekId,
@@ -95,6 +161,9 @@
             );
         } catch (error) {
             console.error("Failed to toggle source:", error);
+            const rollback = { ...optimisticChecks };
+            delete rollback[sourceKey(itemId, sourceIndex)];
+            optimisticChecks = rollback;
         }
     };
 
