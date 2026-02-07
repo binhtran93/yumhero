@@ -1,35 +1,37 @@
 <script lang="ts">
-    import { type PageData } from "./$types";
-    import { doc, onSnapshot } from "firebase/firestore";
-    import { userTags } from "$lib/stores/tags";
-    import { user, loading as authLoading } from "$lib/stores/auth";
-    import type { Recipe } from "$lib/types";
-    import { derived } from "svelte/store";
-    import { formatAmount } from "$lib/utils/shopping";
-    import { formatServings } from "$lib/utils/recipe";
+    import {type PageData} from "./$types";
+    import {doc, onSnapshot} from "firebase/firestore";
+    import {userTags} from "$lib/stores/tags";
+    import {loading as authLoading, user} from "$lib/stores/auth";
+    import type {Recipe} from "$lib/types";
+    import {derived} from "svelte/store";
+    import {formatAmount} from "$lib/utils/shopping";
+    import {formatServings} from "$lib/utils/recipe";
     import Header from "$lib/components/Header.svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
     import SEO from "$lib/components/SEO.svelte";
     import {
-        Clock,
-        Users,
-        Flame,
         ChefHat,
-        Utensils,
+        Clock,
+        EllipsisVertical,
         ExternalLink,
+        Flame,
+        Pencil,
         ShoppingCart,
-        Square,
+        Trash2,
+        Users,
+        Utensils,
     } from "lucide-svelte";
-    import { fade } from "svelte/transition";
+    import {fade} from "svelte/transition";
     import RecipeMenu from "$lib/components/RecipeMenu.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import RecipeEditModal from "$lib/components/RecipeEditModal.svelte";
     import IngredientItem from "$lib/components/IngredientItem.svelte";
-    import { db } from "$lib/firebase";
-    import { deleteRecipe } from "$lib/stores/recipes";
-    import { toasts } from "$lib/stores/toasts";
-    import { goto } from "$app/navigation";
-    import { EllipsisVertical } from "lucide-svelte";
+    import {db} from "$lib/firebase";
+    import {deleteRecipe} from "$lib/stores/recipes";
+    import {toasts} from "$lib/stores/toasts";
+    import {goto} from "$app/navigation";
+    import HeaderActions from "$lib/components/HeaderActions.svelte";
 
     interface Props {
         data: PageData;
@@ -60,7 +62,10 @@
                     }
 
                     const recipeData = snapshot.data() as Recipe;
-                    set({ data: { ...recipeData, id: snapshot.id }, loading: false });
+                    set({
+                        data: { ...recipeData, id: snapshot.id },
+                        loading: false,
+                    });
                 },
                 (error) => {
                     console.error("Error listening to recipe:", error);
@@ -68,7 +73,10 @@
                 },
             );
         },
-        { data: null, loading: true } as { data: Recipe | null; loading: boolean },
+        { data: null, loading: true } as {
+            data: Recipe | null;
+            loading: boolean;
+        },
     );
 
     let recipe = $derived($recipeStore.data);
@@ -163,21 +171,46 @@
     {jsonLd}
 />
 
+{#snippet recipeActions()}
+    <div class="flex items-center gap-1 md:gap-2">
+        <button
+            onclick={() => (showEditModal = true)}
+            class="flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-lg transition-colors"
+        >
+            <Pencil size={18} />
+            <span class="hidden lg:inline">Edit</span>
+        </button>
+        <button
+            onclick={() => (showDeleteConfirm = true)}
+            class="flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-red-500/80 hover:text-red-600 hover:bg-red-50 transition-colors rounded-lg"
+        >
+            <Trash2 size={18} />
+            <span class="hidden lg:inline">Delete</span>
+        </button>
+    </div>
+{/snippet}
+
+<HeaderActions>
+    {@render recipeActions()}
+</HeaderActions>
+
 <div class="h-full flex flex-col bg-app-bg overflow-hidden">
     <!-- Base Toolbar (Visible on all screens) -->
-    <Header
-        title="Recipe Details"
-        mobileTitle={recipe?.title}
-        showBack={true}
-        backUrl="/recipes"
-    >
-        <button
-            onclick={handleShowOptions}
-            class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+    <div class="md:hidden">
+        <Header
+            title="Recipe Details"
+            mobileTitle={recipe?.title}
+            showBack={true}
+            backUrl="/recipes"
         >
-            <EllipsisVertical size={20} />
-        </button>
-    </Header>
+            <button
+                onclick={handleShowOptions}
+                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-bg rounded-full transition-colors"
+            >
+                <EllipsisVertical size={20} />
+            </button>
+        </Header>
+    </div>
 
     <!-- Main Content Scrollable Area -->
     <div class="flex-1 overflow-y-auto w-full">
