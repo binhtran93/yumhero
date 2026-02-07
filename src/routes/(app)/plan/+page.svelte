@@ -47,6 +47,8 @@
     import { toasts } from "$lib/stores/toasts";
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
     import ShoppingListModal from "$lib/components/ShoppingListModal.svelte";
+    import { headerActions } from "$lib/stores/ui";
+    import HeaderActions from "$lib/components/HeaderActions.svelte";
 
     const DAYS = [
         "Monday",
@@ -983,74 +985,87 @@
     description="Plan your weekly meals with YumHero. Organize breakfast, lunch, dinner, and snacks for the entire week."
 />
 
-<div class="h-full flex flex-col">
-    <!-- Header -->
-    <Header title="Plan Your Meal" mobileTitle="Plan">
-        <div class="flex items-center gap-2">
-            <div
-                class="flex items-center gap-1 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
-            >
-                <button
-                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                    onclick={prevWeek}
-                >
-                    <ChevronLeft size={18} />
-                </button>
-                <span
-                    class="text-xs font-bold text-center text-app-text min-w-22.5"
-                >
-                    {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
-                </span>
-                <button
-                    class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
-                    onclick={nextWeek}
-                >
-                    <ChevronRight size={18} />
-                </button>
-            </div>
-
-            <div class="hidden md:flex items-center gap-2">
-                <button
-                    class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
-                    onclick={() => (isResetModalOpen = true)}
-                    aria-label="Clear Week Plan"
-                >
-                    <BrushCleaning
-                        size={20}
-                        class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                    />
-                </button>
-
-                <a
-                    href="/print/{weekId}"
-                    target="_blank"
-                    class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group block text-app-text-muted cursor-pointer"
-                    aria-label="Print Week Plan"
-                >
-                    <Printer
-                        size={20}
-                        class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                    />
-                </a>
-            </div>
-
+{#snippet planActions()}
+    <div class="flex items-center gap-2">
+        <div
+            class="flex items-center gap-1 bg-app-bg p-1 rounded-full border border-app-border shadow-sm"
+        >
             <button
-                class="md:hidden p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group"
-                onclick={handleOpenPlanMenu}
-                aria-label="More options"
+                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                onclick={prevWeek}
             >
-                <EllipsisVertical
-                    size={24}
+                <ChevronLeft size={18} />
+            </button>
+            <span
+                class="text-xs font-bold text-center text-app-text min-w-22.5"
+            >
+                {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+            </span>
+            <button
+                class="p-1.5 hover:bg-app-surface-hover rounded-full text-app-text-muted transition-colors"
+                onclick={nextWeek}
+            >
+                <ChevronRight size={18} />
+            </button>
+        </div>
+
+        <div class="hidden md:flex items-center gap-2">
+            <button
+                class="p-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-full transition-colors relative group disabled:opacity-50"
+                onclick={() => (isResetModalOpen = true)}
+                aria-label="Clear Week Plan"
+            >
+                <BrushCleaning
+                    size={20}
                     class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
                 />
             </button>
 
-            <ShoppingCartButton
-                onclick={() => (isShoppingListOpen = true)}
-                {itemCount}
-            />
+            <a
+                href="/print/{weekId}"
+                target="_blank"
+                class="p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group block text-app-text-muted cursor-pointer"
+                aria-label="Print Week Plan"
+            >
+                <Printer
+                    size={20}
+                    class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                />
+            </a>
         </div>
-    </Header>
+
+        <button
+            class="md:hidden p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-full transition-colors relative group"
+            onclick={handleOpenPlanMenu}
+            aria-label="More options"
+        >
+            <EllipsisVertical
+                size={24}
+                class="transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+            />
+        </button>
+
+        <ShoppingCartButton
+            onclick={() => (isShoppingListOpen = true)}
+            {itemCount}
+        />
+    </div>
+{/snippet}
+
+<!-- Sync with Header Actions Store for Desktop -->
+<HeaderActions>
+    {@render planActions()}
+</HeaderActions>
+
+<div class="h-full flex flex-col">
+    <!-- Header (Mobile Only) -->
+    <div class="md:hidden">
+        <Header
+            title="Plan Your Meal"
+            mobileTitle="Plan"
+            children={planActions}
+        />
+    </div>
 
     <div
         bind:this={scrollContainer}
