@@ -4,6 +4,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
 import { parseAmount } from '$lib/utils/shopping';
 import { z } from 'zod';
+import { createHash } from 'crypto';
 
 // Define the schema for the recipe using Zod
 const IngredientSchema = z.object({
@@ -36,6 +37,7 @@ import { scraperManager } from '$lib/server/scrapers/ScraperManager';
 import { uploadImageToR2 } from '$lib/server/r2';
 import { verifyAuth } from '$lib/server/auth';
 import { checkRateLimit } from '$lib/server/ratelimit';
+import { redis } from '$lib/server/redis';
 
 export async function POST({ request }) {
     // Configure Google provider with explicit API key
@@ -54,6 +56,16 @@ export async function POST({ request }) {
 
         if (!url && !pastedText) {
             return json({ error: 'URL or text is required' }, { status: 400 });
+        }
+
+        // 3. Check Cache
+        const cacheInput = url || pastedText;
+        const cacheKey = `recipe_extract:${createHash('md5').update(cacheInput).digest('hex')}`;
+        const cachedResult = await redis.get(cacheKey);
+
+        if (cachedResult) {
+            console.log('Cache Hit for recipe extraction');
+            return json(JSON.parse(cachedResult));
         }
 
         let contentToProcess = '';
@@ -190,7 +202,10 @@ export async function POST({ request }) {
             }
         }
 
-        return json({ recipes });
+        const result = { recipes };
+        await redis.set(cacheKey, JSON.stringify(result), 'EX', 86400); // Cache for 24 hours
+
+        return json(result);
 
     } catch (error: any) {
         console.error('Error extracting recipe:', error);
