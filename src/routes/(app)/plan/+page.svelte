@@ -415,6 +415,7 @@
         ingredients: [],
         pendingRemoval: null,
     });
+    let isConfirmingBoughtIngredients = $state(false);
 
     const handleRemoveRecipe = async (
         day: string,
@@ -465,30 +466,40 @@
 
     const handleConfirmAddToFridge = async () => {
         if (!boughtIngredientsModal.pendingRemoval) return;
+        if (isConfirmingBoughtIngredients) return;
 
         const { day, type, index } = boughtIngredientsModal.pendingRemoval;
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex === -1) return;
 
-        // Add ingredients to fridge
-        await addIngredientsToFridge(
-            boughtIngredientsModal.ingredients.map((ing) => ({
-                name: ing.ingredientName,
-                amount: ing.amount,
-                unit: ing.unit,
-            })),
-        );
+        try {
+            isConfirmingBoughtIngredients = true;
 
-        await withCellSaving(day, type, async () => {
-            await removePlannedRecipe(
-                boughtIngredientsModal.plannedItemId,
+            // Add ingredients to fridge
+            await addIngredientsToFridge(
+                boughtIngredientsModal.ingredients.map((ing) => ({
+                    name: ing.ingredientName,
+                    amount: ing.amount,
+                    unit: ing.unit,
+                })),
             );
-            plan[dayIndex].meals[type].splice(index, 1);
-        });
 
-        // Close modal and show success
-        boughtIngredientsModal.isOpen = false;
-        toasts.success("Ingredients added to fridge");
+            await withCellSaving(day, type, async () => {
+                await removePlannedRecipe(
+                    boughtIngredientsModal.plannedItemId,
+                );
+                plan[dayIndex].meals[type].splice(index, 1);
+            });
+
+            // Close modal and show success
+            boughtIngredientsModal.isOpen = false;
+            toasts.success("Ingredients added to fridge");
+        } catch (error) {
+            console.error("Failed to add ingredients to fridge:", error);
+            toasts.error("Failed to add ingredients to fridge");
+        } finally {
+            isConfirmingBoughtIngredients = false;
+        }
     };
 
     const handleSkipAddToFridge = async () => {
@@ -1432,6 +1443,7 @@
     isOpen={boughtIngredientsModal.isOpen}
     recipeTitle={boughtIngredientsModal.recipeTitle}
     ingredients={boughtIngredientsModal.ingredients}
+    isConfirming={isConfirmingBoughtIngredients}
     onConfirm={handleConfirmAddToFridge}
     onSkip={handleSkipAddToFridge}
     onClose={() => (boughtIngredientsModal.isOpen = false)}

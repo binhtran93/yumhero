@@ -6,6 +6,7 @@
         ShoppingCart,
         ArrowRight,
         Trash2,
+        Loader2,
     } from "lucide-svelte";
     import { formatAmount } from "$lib/utils/shopping";
     import { portal } from "$lib/actions";
@@ -20,6 +21,7 @@
         isOpen: boolean;
         recipeTitle: string;
         ingredients: BoughtIngredient[];
+        isConfirming?: boolean;
         onConfirm: () => void;
         onSkip: () => void;
         onClose: () => void;
@@ -29,6 +31,7 @@
         isOpen,
         recipeTitle,
         ingredients,
+        isConfirming = false,
         onConfirm,
         onSkip,
         onClose,
@@ -42,7 +45,10 @@
     <div
         class="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm"
         transition:fade={{ duration: 150 }}
-        onclick={onClose}
+        onclick={() => {
+            if (isConfirming) return;
+            onClose();
+        }}
         use:portal
     ></div>
 
@@ -63,7 +69,11 @@
             <div class="relative px-6 pt-6 pb-4">
                 <button
                     class="absolute top-4 right-4 p-2 text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors"
-                    onclick={onClose}
+                    onclick={() => {
+                        if (isConfirming) return;
+                        onClose();
+                    }}
+                    disabled={isConfirming}
                     aria-label="Close"
                 >
                     <X size={20} />
@@ -121,16 +131,23 @@
                 class="flex flex-col gap-2 px-6 py-4 bg-app-surface-deep border-t border-app-border"
             >
                 <button
-                    class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-app-primary hover:bg-app-primary/90 text-white font-bold rounded-xl transition-colors"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-app-primary hover:bg-app-primary/90 disabled:opacity-70 text-white font-bold rounded-xl transition-colors"
                     onclick={onConfirm}
+                    disabled={isConfirming}
                 >
-                    <Refrigerator size={18} />
-                    Add to Fridge
-                    <ArrowRight size={16} class="ml-1" />
+                    {#if isConfirming}
+                        <Loader2 size={18} class="animate-spin" />
+                        Saving...
+                    {:else}
+                        <Refrigerator size={18} />
+                        Add to Fridge
+                        <ArrowRight size={16} class="ml-1" />
+                    {/if}
                 </button>
                 <button
-                    class="w-full px-4 py-2.5 bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                    class="w-full px-4 py-2.5 bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover disabled:opacity-70 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
                     onclick={onSkip}
+                    disabled={isConfirming}
                 >
                     <Trash2 size={18} />
                     Remove Anyway
