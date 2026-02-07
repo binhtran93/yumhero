@@ -28,6 +28,7 @@
     import type { Recipe, Ingredient, MealType } from "$lib/types";
     import { addRecipe, updateRecipe } from "$lib/stores/recipes";
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
+    import { user } from "$lib/stores/auth";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
     import { parseAmount, formatAmount } from "$lib/utils/shopping";
@@ -588,11 +589,19 @@
 
     const handleImportFromUrl = async (url: string) => {
         try {
+            const currentUser = get(user);
+            if (!currentUser) {
+                toasts.error("You must be logged in to import recipes");
+                throw new Error("User not authenticated");
+            }
+            const token = await currentUser.getIdToken();
+
             const currentTags = get(userTags).data.map((t) => t.label);
             const response = await fetch("/api/extract-recipe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ url, userTags: currentTags }),
             });
@@ -612,11 +621,19 @@
 
     const handlePasteText = async (text: string) => {
         try {
+            const currentUser = get(user);
+            if (!currentUser) {
+                toasts.error("You must be logged in to import recipes");
+                throw new Error("User not authenticated");
+            }
+            const token = await currentUser.getIdToken();
+
             const currentTags = get(userTags).data.map((t) => t.label);
             const response = await fetch("/api/extract-recipe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ text, userTags: currentTags }),
             });

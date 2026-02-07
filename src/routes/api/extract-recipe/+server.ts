@@ -34,6 +34,8 @@ const RecipeSchema = z.object({
 
 import { scraperManager } from '$lib/server/scrapers/ScraperManager';
 import { uploadImageToR2 } from '$lib/server/r2';
+import { verifyAuth } from '$lib/server/auth';
+import { checkRateLimit } from '$lib/server/ratelimit';
 
 export async function POST({ request }) {
     // Configure Google provider with explicit API key
@@ -42,6 +44,12 @@ export async function POST({ request }) {
     });
 
     try {
+        // 1. Authenticate User
+        const user = await verifyAuth(request);
+
+        // 2. Check Rate Limit
+        await checkRateLimit(user.uid);
+
         const { url, text: pastedText } = await request.json();
 
         if (!url && !pastedText) {
@@ -186,6 +194,14 @@ export async function POST({ request }) {
 
     } catch (error: any) {
         console.error('Error extracting recipe:', error);
-        return json({ error: 'Failed to extract recipe', details: error?.message || String(error) }, { status: 500 });
+
+        let status = 500;
+        if (error.message.includes('authentication') || error.message.includes('Authorization')) {
+            status = 401;
+        } else if (error.message.includes('Rate limit')) {
+            status = 429;
+        }
+
+        return json({ error: 'Failed to extract recipe', details: error?.message || String(error) }, { status });
     }
 }
