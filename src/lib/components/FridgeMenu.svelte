@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Utensils, Trash2, X as XIcon } from "lucide-svelte";
+    import { Utensils, Trash2, X as XIcon, Edit2 } from "lucide-svelte";
     import { fade } from "svelte/transition";
     import { portal } from "$lib/actions";
 
@@ -8,10 +8,11 @@
         type: "leftover" | "ingredient";
         onClose: () => void;
         onMarkAsEaten?: () => void;
+        onEdit?: () => void;
         onDelete: () => void;
     }
 
-    let { triggerRect, type, onClose, onMarkAsEaten, onDelete }: Props =
+    let { triggerRect, type, onClose, onMarkAsEaten, onEdit, onDelete }: Props =
         $props();
 
     // Calculate position with smart flip logic
@@ -82,6 +83,20 @@
                 >
                     <Utensils size={18} />
                     Mark as Eaten
+                </button>
+            {/if}
+
+            {#if type === "ingredient" && onEdit}
+                <button
+                    class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
+                    onclick={(e) => {
+                        e.stopPropagation();
+                        onEdit();
+                        onClose();
+                    }}
+                >
+                    <Edit2 size={18} />
+                    Edit
                 </button>
             {/if}
 

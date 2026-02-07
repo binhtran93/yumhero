@@ -39,6 +39,7 @@
     let itemToDelete = $state<LeftoverItem | null>(null);
     let ingredientToDelete = $state<FridgeIngredient | null>(null);
     let isEatingLeftover = $state(false);
+    let ingredientToEdit = $state<FridgeIngredient | null>(null);
 
     // Current time for past-time detection
     let now = $state(new Date());
@@ -143,6 +144,13 @@
         if (!selectedIngredient) return;
         ingredientToDelete = selectedIngredient;
         showConfirmDelete = true;
+        closeActionMenu();
+    };
+
+    const handleEditIngredient = () => {
+        if (!selectedIngredient) return;
+        ingredientToEdit = selectedIngredient;
+        showAddIngredientModal = true;
         closeActionMenu();
     };
 
@@ -726,6 +734,7 @@
             triggerRect={activeTriggerRect}
             type="ingredient"
             onClose={closeActionMenu}
+            onEdit={handleEditIngredient}
             onDelete={handleDeleteIngredient}
         />
     {/if}
@@ -762,5 +771,9 @@
 <!-- Add Ingredient Modal -->
 <FridgeIngredientModal
     isOpen={showAddIngredientModal}
-    onClose={() => (showAddIngredientModal = false)}
+    ingredient={ingredientToEdit}
+    onClose={() => {
+        showAddIngredientModal = false;
+        ingredientToEdit = null;
+    }}
 />

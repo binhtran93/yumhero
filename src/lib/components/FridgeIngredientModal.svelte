@@ -1,35 +1,63 @@
 <script lang="ts">
     import Modal from "$lib/components/Modal.svelte";
-    import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
-    import { Check, Plus } from "lucide-svelte";
+    import {
+        addIngredientsToFridge,
+        updateIngredient,
+    } from "$lib/stores/fridgeIngredients";
+    import { Check, Plus, Save } from "lucide-svelte";
+    import type { FridgeIngredient } from "$lib/types";
 
     interface Props {
         isOpen: boolean;
         onClose: () => void;
         adaptive?: boolean;
+        ingredient?: FridgeIngredient | null;
     }
 
-    let { isOpen, onClose, adaptive = true }: Props = $props();
+    let {
+        isOpen,
+        onClose,
+        adaptive = true,
+        ingredient = null,
+    }: Props = $props();
 
     let name = $state("");
     let amount = $state("");
     let unit = $state("");
     let loading = $state(false);
 
+    $effect(() => {
+        if (isOpen && ingredient) {
+            name = ingredient.name;
+            amount = ingredient.amount.toString();
+            unit = ingredient.unit || "";
+        } else if (isOpen && !ingredient) {
+            resetForm();
+        }
+    });
+
     const handleSubmit = async () => {
         if (!name || !amount) return;
 
         loading = true;
         try {
-            await addIngredientsToFridge([
-                {
-                    name: name.toLowerCase().trim(),
+            if (ingredient) {
+                await updateIngredient(ingredient.id, {
+                    name,
                     amount: parseFloat(amount),
-                    unit: unit.trim() || null,
-                },
-            ]);
-            resetForm();
+                    unit: unit || null,
+                });
+            } else {
+                await addIngredientsToFridge([
+                    {
+                        name: name.toLowerCase().trim(),
+                        amount: parseFloat(amount),
+                        unit: unit.trim() || null,
+                    },
+                ]);
+            }
             onClose();
+            resetForm();
         } catch (e) {
             console.error(e);
         } finally {
@@ -48,8 +76,10 @@
     {isOpen}
     {onClose}
     {adaptive}
-    title="Add Ingredient"
-    description="Manually add an item to your fridge inventory."
+    title={ingredient ? "Edit Ingredient" : "Add Ingredient"}
+    description={ingredient
+        ? "Update ingredient details."
+        : "Manually add an item to your fridge inventory."}
     class="max-w-md"
 >
     <div class="p-6 space-y-4">
@@ -133,7 +163,10 @@
                     <div
                         class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
                     ></div>
-                    Adding...
+                    {ingredient ? "Saving..." : "Adding..."}
+                {:else if ingredient}
+                    <Save size={18} />
+                    Save Changes
                 {:else}
                     <Plus size={18} />
                     Add Ingredient

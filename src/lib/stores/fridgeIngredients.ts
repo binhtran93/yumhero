@@ -122,6 +122,32 @@ export const deleteIngredient = async (ingredientId: string): Promise<void> => {
 };
 
 /**
+ * Update an existing ingredient in the fridge.
+ */
+export const updateIngredient = async (
+    ingredientId: string,
+    updates: Partial<{
+        name: string;
+        amount: number;
+        unit: string | null;
+    }>
+): Promise<void> => {
+    const $user = get(user);
+    if (!$user) throw new Error('User not authenticated');
+
+    const ingredientRef = doc(db, `users/${$user.uid}/fridgeIngredients`, ingredientId);
+
+    const { updateDoc } = await import('firebase/firestore');
+
+    const firestoreUpdates: any = {};
+    if (updates.name !== undefined) firestoreUpdates.name = updates.name.toLowerCase().trim();
+    if (updates.amount !== undefined) firestoreUpdates.amount = updates.amount;
+    if (updates.unit !== undefined) firestoreUpdates.unit = updates.unit ? updates.unit.trim() : null;
+
+    await updateDoc(ingredientRef, firestoreUpdates);
+};
+
+/**
  * Get a single ingredient by ID.
  */
 export const getIngredientById = (ingredientId: string): FridgeIngredient | undefined => {
