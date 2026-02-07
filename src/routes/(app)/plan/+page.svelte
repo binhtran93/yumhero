@@ -220,6 +220,32 @@
     };
 
     let weekId = $derived(getWeekId(weekRange.start));
+    const getCellKey = (day: string, type: MealType) => `${day}::${type}`;
+    let dropSavingCells = $state<Record<string, number>>({});
+
+    const markDropSaving = (day: string, type: MealType) => {
+        const key = getCellKey(day, type);
+        dropSavingCells = {
+            ...dropSavingCells,
+            [key]: (dropSavingCells[key] || 0) + 1,
+        };
+    };
+
+    const unmarkDropSaving = (day: string, type: MealType) => {
+        const key = getCellKey(day, type);
+        const current = dropSavingCells[key] || 0;
+        const next = { ...dropSavingCells };
+        if (current <= 1) {
+            delete next[key];
+        } else {
+            next[key] = current - 1;
+        }
+        dropSavingCells = next;
+    };
+
+    const isDropSaving = (day: string, type: MealType) =>
+        !!dropSavingCells[getCellKey(day, type)];
+
     const savePlan = async () => {
         await saveWeekPlan(weekId, plan);
     };
@@ -880,6 +906,15 @@
         },
         target: { day: string; type: MealType },
     ) => {
+        const savePlanForDropTarget = async () => {
+            markDropSaving(target.day, target.type);
+            try {
+                await savePlan();
+            } finally {
+                unmarkDropSaving(target.day, target.type);
+            }
+        };
+
         // Prevent dropping note into meal or recipe into note
         if (source.type === "note" && target.type !== "note") return;
         if (
@@ -928,7 +963,7 @@
                 });
             }
 
-            await savePlan();
+            await savePlanForDropTarget();
             return;
         }
 
@@ -963,7 +998,7 @@
 
             // Mark as planned in store
             await setLeftoverPlanned(leftover.id, weekId, target.day, target.type);
-            await savePlan();
+            await savePlanForDropTarget();
             return;
         }
 
@@ -1014,7 +1049,7 @@
             targetList.push(item);
         }
 
-        await savePlan();
+        await savePlanForDropTarget();
     };
 
     // Shopping List State
@@ -1257,6 +1292,10 @@
                                         )}
                                     onDrop={handleDrop}
                                     {isLoading}
+                                    isSaving={isDropSaving(
+                                        dayPlan.day,
+                                        section.type,
+                                    )}
                                     {activeDropdown}
                                     onToggleDropdown={(idx, rect) =>
                                         handleToggleDropdown(

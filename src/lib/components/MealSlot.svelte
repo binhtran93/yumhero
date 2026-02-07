@@ -35,6 +35,7 @@
         onMarkLeftoverAsEaten?: (leftoverId: string, index: number) => void;
         onMarkLeftoverAsNotEaten?: (leftoverId: string, index: number) => void;
         isLoading?: boolean;
+        isSaving?: boolean;
         activeDropdown?: {
             day: string;
             type: MealType;
@@ -61,6 +62,7 @@
         onMarkLeftoverAsEaten,
         onMarkLeftoverAsNotEaten,
         isLoading = false,
+        isSaving = false,
         activeDropdown = null,
         onToggleDropdown,
         onCloseDropdown,
@@ -187,7 +189,7 @@
         type="button"
         class="absolute inset-0 w-full h-full p-0 m-0 border-0 bg-transparent z-0 opacity-0 cursor-pointer disabled:cursor-default"
         onclick={onClick}
-        disabled={isLoading}
+        disabled={isLoading || isSaving}
         aria-label={`Add to ${type}`}
     ></button>
     <!-- Cell Header (Subtle Label) -->
@@ -217,11 +219,16 @@
         </div>
         <button
             type="button"
-            class="hidden md:block p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:text-app-text-muted! pointer-events-auto"
+            class="hidden md:flex p-1 transition-all duration-200 text-app-text-muted/0 group-hover:text-app-text-muted/80 hover:text-app-text-muted! pointer-events-auto items-center justify-center"
             onclick={onClick}
             aria-label={`Add to ${type}`}
+            disabled={isLoading || isSaving}
         >
-            <Plus size={14} />
+            {#if isLoading || isSaving}
+                <Loader size={14} class="animate-spin text-app-primary" />
+            {:else}
+                <Plus size={14} />
+            {/if}
         </button>
     </div>
 
@@ -388,15 +395,6 @@
                 class="flex-1 flex items-center justify-center min-h-8 md:hidden"
             >
                 <Plus size={16} class="text-app-text-muted/80" />
-            </div>
-        {/if}
-
-        <!-- Loading Overlay -->
-        {#if isLoading}
-            <div
-                class="absolute inset-0 bg-white/60 dark:bg-app-surface/60 flex items-center justify-center z-20"
-            >
-                <Loader size={16} class="animate-spin text-app-primary" />
             </div>
         {/if}
     </div>
