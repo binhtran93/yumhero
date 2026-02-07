@@ -3,7 +3,7 @@ import { doc, getDoc, onSnapshot, runTransaction, setDoc } from 'firebase/firest
 import { user, loading as authLoading } from './auth';
 import type { MealType, ShoppingListItem, WeeklyPlan } from '$lib/types';
 import { db } from '$lib/firebase';
-import { syncShoppingListFromPlan } from '$lib/utils/planShopping';
+import { syncShoppingListFromPlan } from '$lib/stores/planShopping';
 
 /**
  * Create a reactive week-scoped shopping list store.

@@ -4,7 +4,7 @@ import { user, loading as authLoading } from './auth';
 import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
 import { db } from '$lib/firebase';
 import { isPlannedLeftover } from '$lib/types';
-import { syncShoppingListFromPlan } from '$lib/utils/planShopping';
+import { syncShoppingListFromPlan } from '$lib/stores/planShopping';
 
 export const getWeekPlan = (weekId: string) => {
     return derived<[Readable<any>, Readable<boolean>], { data: WeeklyPlan | null, loading: boolean }>(
