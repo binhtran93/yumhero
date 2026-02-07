@@ -2,19 +2,19 @@ import { json } from '@sveltejs/kit';
 import { Paddle, Environment } from '@paddle/paddle-node-sdk';
 import { PADDLE_API_KEY, PADDLE_ENV } from '$env/static/private';
 import { adminDb } from '$lib/server/admin';
+import { verifyAuth } from '$lib/server/auth';
+import { checkRateLimit } from '$lib/server/ratelimit';
 
 export const POST = async ({ request }) => {
     try {
+        const user = await verifyAuth(request);
+        const userId = user.uid;
+        await checkRateLimit(userId);
+
         console.log(PADDLE_API_KEY);
         const paddle = new Paddle(PADDLE_API_KEY || '', {
             environment: PADDLE_ENV === 'production' ? Environment.production : Environment.sandbox
         });
-
-        const { userId } = await request.json();
-
-        if (!userId) {
-            return json({ error: 'User ID is required' }, { status: 400 });
-        }
 
         // 1. Get the subscription ID from your Database
         const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -50,6 +50,12 @@ export const POST = async ({ request }) => {
 
     } catch (err: any) {
         console.error('Activation Error:', err);
-        return json({ error: err.message || 'Failed to activate subscription' }, { status: 500 });
+        let status = 500;
+        if (err.message.includes('authentication') || err.message.includes('Authorization')) {
+            status = 401;
+        } else if (err.message.includes('Rate limit')) {
+            status = 429;
+        }
+        return json({ error: err.message || 'Failed to activate subscription' }, { status });
     }
 };

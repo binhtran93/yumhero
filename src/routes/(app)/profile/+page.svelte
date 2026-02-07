@@ -74,10 +74,14 @@
         showConfirmModal = false;
         isActivating = true;
         try {
+            const token = await $user.getIdToken();
             const response = await fetch("/api/subscription/confirm", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: $user.uid }),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({}),
             });
 
             const result = await response.json();
@@ -104,11 +108,14 @@
         const targetInterval = $billingInterval === "month" ? "year" : "month";
 
         try {
+            const token = await $user.getIdToken();
             const response = await fetch("/api/subscription/switch", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify({
-                    userId: $user.uid,
                     targetInterval,
                 }),
             });
@@ -138,10 +145,14 @@
         isCancelling = true;
 
         try {
+            const token = await $user.getIdToken();
             const response = await fetch("/api/subscription/cancel", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: $user.uid }),
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({}),
             });
 
             const result = await response.json();

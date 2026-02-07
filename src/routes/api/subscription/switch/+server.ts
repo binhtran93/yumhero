@@ -1,18 +1,24 @@
 import { json } from '@sveltejs/kit';
-import {Paddle, Environment, type ProrationBillingMode} from '@paddle/paddle-node-sdk';
+import { Paddle, Environment, type ProrationBillingMode } from '@paddle/paddle-node-sdk';
 import { PADDLE_API_KEY, PADDLE_ENV } from '$env/static/private';
 import {
     PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL,
     PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL
 } from '$env/static/public';
 import { adminDb } from '$lib/server/admin';
+import { verifyAuth } from '$lib/server/auth';
+import { checkRateLimit } from '$lib/server/ratelimit';
 
 export const POST = async ({ request }) => {
     try {
-        const { userId, targetInterval } = await request.json();
+        const user = await verifyAuth(request);
+        const userId = user.uid;
+        await checkRateLimit(userId);
 
-        if (!userId || !targetInterval) {
-            return json({ error: 'User ID and target interval are required' }, { status: 400 });
+        const { targetInterval } = await request.json();
+
+        if (!targetInterval) {
+            return json({ error: 'Target interval is required' }, { status: 400 });
         }
 
         const paddle = new Paddle(PADDLE_API_KEY || '', {
@@ -68,6 +74,12 @@ export const POST = async ({ request }) => {
 
     } catch (err: any) {
         console.error('Switch Plan Error:', err);
-        return json({ error: err.message || 'Failed to switch subscription plan' }, { status: 500 });
+        let status = 500;
+        if (err.message.includes('authentication') || err.message.includes('Authorization')) {
+            status = 401;
+        } else if (err.message.includes('Rate limit')) {
+            status = 429;
+        }
+        return json({ error: err.message || 'Failed to switch subscription plan' }, { status });
     }
 };
