@@ -27,7 +27,6 @@
     import {
         fetchBoughtIngredientsForRecipe,
         fetchWeekShoppingListCount,
-        getWeekShoppingListStore,
     } from "$lib/stores/shoppingList";
     import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
     import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
@@ -46,7 +45,6 @@
     import PlanMenu from "$lib/components/PlanMenu.svelte";
     import CookingView from "$lib/components/CookingView.svelte";
     import { twMerge } from "tailwind-merge";
-    import { type DocumentState, documentStore } from "$lib/stores/firestore";
     import { user } from "$lib/stores/auth";
     import { derived, get, writable } from "svelte/store";
     import { toasts } from "$lib/stores/toasts";
@@ -161,15 +159,32 @@
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<Recipe>(async () => {
-                const response = await apiRequest<{ recipe: Recipe | null }>(
-                    `/api/recipes/${$recipeId}`,
-                );
-                return response.recipe;
-            });
-            return store.subscribe(set);
+
+            let active = true;
+
+            const load = async () => {
+                try {
+                    const response = await apiRequest<{ recipe: Recipe | null }>(
+                        `/api/recipes/${$recipeId}`,
+                    );
+                    if (active) {
+                        set({ data: response.recipe, loading: false });
+                    }
+                } catch (error) {
+                    console.error("Error fetching recipe:", error);
+                    if (active) {
+                        set({ data: null, loading: false });
+                    }
+                }
+            };
+
+            load();
+
+            return () => {
+                active = false;
+            };
         },
-        { data: null, loading: false } as DocumentState<Recipe>,
+        { data: null, loading: false } as { data: Recipe | null; loading: boolean },
     );
 
     let modeRecipe = $derived($modeRecipeStore.data);
@@ -1026,7 +1041,6 @@
 
     // Shopping List State
     let isShoppingListOpen = $state(false);
-    let shoppingListStore = $derived(getWeekShoppingListStore(weekId));
 </script>
 
 <svelte:window onresize={checkScroll} onkeydown={handleKeydown} />

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import { documentStore, type DocumentState } from "$lib/stores/firestore";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import type { Recipe } from "$lib/types";
     import { derived } from "svelte/store";
@@ -22,13 +21,30 @@
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<Recipe>(async () => {
-                const response = await apiRequest<{ recipe: Recipe | null }>(`/api/recipes/${recipeId}`);
-                return response.recipe;
-            });
-            return store.subscribe(set);
+
+            let active = true;
+
+            const load = async () => {
+                try {
+                    const response = await apiRequest<{ recipe: Recipe | null }>(`/api/recipes/${recipeId}`);
+                    if (active) {
+                        set({ data: response.recipe, loading: false });
+                    }
+                } catch (error) {
+                    console.error("Error fetching recipe:", error);
+                    if (active) {
+                        set({ data: null, loading: false });
+                    }
+                }
+            };
+
+            load();
+
+            return () => {
+                active = false;
+            };
         },
-        { data: null, loading: true } as DocumentState<Recipe>,
+        { data: null, loading: true } as { data: Recipe | null; loading: boolean },
     );
 
     let recipe = $derived($recipeStore.data);

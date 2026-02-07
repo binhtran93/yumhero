@@ -1,6 +1,5 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
-import { documentStore } from './firestore';
 import type { WeeklyPlan } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
@@ -16,16 +15,31 @@ export const getWeekPlan = (weekId: string) => {
                 set({ data: null, loading: false });
                 return;
             }
-            const store = documentStore<{ days: WeeklyPlan }>(async () => {
-                const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
-                return response.plan as { days: WeeklyPlan } | null;
-            });
-            return store.subscribe((state) => {
-                set({
-                    data: state.data ? state.data.days : null,
-                    loading: state.loading
-                });
-            });
+
+            let active = true;
+
+            const load = async () => {
+                try {
+                    const response = await apiRequest<{ plan: { days?: WeeklyPlan } | null }>(`/api/plans/${weekId}`);
+                    if (active) {
+                        set({
+                            data: response.plan?.days ?? null,
+                            loading: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching week plan:', error);
+                    if (active) {
+                        set({ data: null, loading: false });
+                    }
+                }
+            };
+
+            load();
+
+            return () => {
+                active = false;
+            };
         },
         { data: null, loading: true }
     );

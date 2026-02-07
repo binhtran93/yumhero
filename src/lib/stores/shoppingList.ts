@@ -1,6 +1,5 @@
 import { derived, type Readable } from 'svelte/store';
 import { user, loading as authLoading } from './auth';
-import { documentStore } from './firestore';
 import type { MealType, ShoppingListItem } from '$lib/types';
 import { apiRequest, jsonRequest } from '$lib/api/client';
 
@@ -21,16 +20,30 @@ export const getWeekShoppingListStore = (weekId: string) => {
                 return;
             }
 
-            const store = documentStore<{ shopping_list?: ShoppingListItem[] }>(async () => {
-                const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
-                return { shopping_list: response.shopping_list };
-            });
-            return store.subscribe((state) => {
-                set({
-                    data: state.data?.shopping_list || [],
-                    loading: state.loading
-                });
-            });
+            let active = true;
+
+            const load = async () => {
+                try {
+                    const response = await apiRequest<{ shopping_list: ShoppingListItem[] }>(`/api/shopping-lists/${weekId}`);
+                    if (active) {
+                        set({
+                            data: response.shopping_list ?? [],
+                            loading: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching shopping list:', error);
+                    if (active) {
+                        set({ data: [], loading: false });
+                    }
+                }
+            };
+
+            load();
+
+            return () => {
+                active = false;
+            };
         },
         { data: [], loading: true }
     );
