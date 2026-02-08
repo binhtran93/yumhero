@@ -30,7 +30,8 @@
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
-    import { parseAmountValue, formatAmount } from "$lib/utils/shopping";
+    import { parseAmountValue } from "$lib/utils/shopping";
+    import { Fraction } from "$lib/utils/fraction";
     import { toasts } from "$lib/stores/toasts";
     import { twMerge } from "tailwind-merge";
     import { apiRequest, jsonRequest } from "$lib/api/client";
@@ -175,7 +176,7 @@
     const mapRecipeToVariant = (data: Partial<Recipe>): RecipeVariantState => {
         const ingList = data.ingredients
             ? data.ingredients.map((i) => ({
-                  amount: formatAmount(i.amount),
+                  amount: Fraction.format(i.amount),
                   unit: i.unit || "",
                   name: i.name,
               }))

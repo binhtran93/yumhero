@@ -8,7 +8,6 @@
     } from "lucide-svelte";
     import { fade, slide, scale } from "svelte/transition";
     import type { Recipe } from "$lib/types";
-    import { formatAmount } from "$lib/utils/shopping";
     import IngredientItem from "./IngredientItem.svelte";
     import HeaderActions from "./HeaderActions.svelte";
     import Header from "./Header.svelte";

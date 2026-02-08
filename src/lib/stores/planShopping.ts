@@ -1,6 +1,7 @@
 import type { MealType, ShoppingListItem, ShoppingListSource, WeeklyPlan } from '$lib/types';
 import { isPlannedLeftover } from '$lib/types';
-import { parseAmount } from '$lib/utils/shopping';
+import { Fraction } from '$lib/utils/fraction';
+import { parseAmountValue } from '$lib/utils/shopping';
 
 type RecipeSourceDraft = Omit<ShoppingListSource, 'is_checked' | 'checked_from'>;
 
@@ -35,7 +36,19 @@ function normalizeShoppingItem(item: ShoppingListItem): ShoppingListItem {
 }
 
 function normalizeUnit(unit: string | null): string {
-    return unit ? unit.toLowerCase().trim() : '';
+    if (!unit) return '';
+    const u = unit.toLowerCase().trim();
+    if (u === 'g' || u === 'gram' || u === 'grams') return 'g';
+    if (u === 'kg' || u === 'kilogram' || u === 'kilograms') return 'kg';
+    if (u === 'ml' || u === 'milliliter' || u === 'milliliters') return 'ml';
+    if (u === 'l' || u === 'liter' || u === 'liters') return 'l';
+    if (u === 'lb' || u === 'lbs' || u === 'pound' || u === 'pounds') return 'lb';
+    if (u === 'oz' || u === 'ounce' || u === 'ounces') return 'oz';
+    if (u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons') return 'tbsp';
+    if (u === 'tsp' || u === 'teaspoon' || u === 'teaspoons') return 'tsp';
+    if (u === 'cup' || u === 'cups') return 'cup';
+    if (u === 'pc' || u === 'pcs' || u === 'piece' || u === 'pieces') return 'pc';
+    return u;
 }
 
 function isMergeableUnit(left: string | null, right: string | null): boolean {
@@ -62,7 +75,11 @@ function pushOrMergeSource(sources: RecipeSourceDraft[], nextSource: RecipeSourc
         return;
     }
 
-    existing.amount += nextSource.amount;
+    const merged = Fraction.add(
+        Fraction.fromNumber(existing.amount) ?? { n: 0, d: 1 },
+        Fraction.fromNumber(nextSource.amount) ?? { n: 0, d: 1 }
+    );
+    existing.amount = Fraction.toNumber(merged) ?? (existing.amount + nextSource.amount);
     if (!existing.unit && nextSource.unit) {
         existing.unit = nextSource.unit;
     }
@@ -93,7 +110,7 @@ function collectPlanSources(plan: WeeklyPlan): {
                     const ingredientName = ingredient.name.trim().toLowerCase();
                     if (!ingredientName) continue;
 
-                    const parsedAmount = parseAmount(ingredient.amount);
+                    const parsedAmount = Fraction.toNumber(parseAmountValue(ingredient.amount));
                     const amount = (parsedAmount ?? 0) * quantity;
                     const source: RecipeSourceDraft = {
                         recipe_id: recipeId,

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Check, Eye, EyeOff } from "lucide-svelte";
-    import { formatAmount } from "$lib/utils/shopping";
+    import { Fraction } from "$lib/utils/fraction";
     import type { Recipe, ShoppingListSource } from "$lib/types";
     import ShoppingItemMenu from "./ShoppingItemMenu.svelte";
 
@@ -62,7 +62,7 @@
 
         // Return array of objects for granular styling
         return Array.from(unitMap.entries()).map(([unit, amount]) => ({
-            amount: formatAmount(amount),
+            amount: Fraction.format(amount),
             unit: unit || null,
         }));
     });
@@ -178,7 +178,7 @@
                         class:opacity-60={source.is_checked}
                     >
                         <span class="font-black text-app-text">
-                            {formatAmount(source.amount)}
+                            {Fraction.format(source.amount)}
                         </span>
                         {#if source.unit}
                             <span class="text-app-text/60 font-medium">

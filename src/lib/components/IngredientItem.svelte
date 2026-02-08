@@ -1,12 +1,12 @@
 <script lang="ts">
     import { CheckSquare, Square, Info } from "lucide-svelte";
     import { scale } from "svelte/transition";
-    import { amountToNumber, formatAmount } from "$lib/utils/shopping";
-    import type { Fraction } from "$lib/types";
+    import { Fraction } from "$lib/utils/fraction";
+    import type { Fraction as FractionType } from "$lib/utils/fraction";
 
     interface Props {
         name: string;
-        amount?: Fraction | null;
+        amount?: FractionType | null;
         unit?: string | null;
         notes?: string | null;
         checked?: boolean;
@@ -30,7 +30,7 @@
         onInfoClick,
     }: Props = $props();
 
-    let numericAmount = $derived(amountToNumber(amount));
+    let numericAmount = $derived(Fraction.toNumber(amount));
 </script>
 
 <div
@@ -82,7 +82,7 @@
                     <span
                         class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
                     >
-                        {formatAmount(amount)}
+                        {Fraction.format(amount)}
                     </span>
                 {/if}
                 {#if unit}

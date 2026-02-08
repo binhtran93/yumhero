@@ -1,9 +1,6 @@
-export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'note';
+import type { Fraction } from '$lib/utils/fraction';
 
-export interface Fraction {
-    n: number;
-    d: number;
-}
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'note';
 
 /**
  * Leftover status representing the two states of a leftover item.

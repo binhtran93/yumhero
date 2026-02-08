@@ -19,7 +19,7 @@
         fridgeIngredients,
     } from "$lib/stores/fridgeIngredients";
     import { isMealTimePast, parseWeekId } from "$lib/utils/mealtime";
-    import { formatAmount } from "$lib/utils/shopping";
+    import { Fraction } from "$lib/utils/fraction";
     import type { FridgeIngredient, LeftoverItem } from "$lib/types";
     import FridgeIngredientModal from "$lib/components/FridgeIngredientModal.svelte";
     import FridgeMenu from "$lib/components/FridgeMenu.svelte";
@@ -670,7 +670,7 @@
                                                     <span
                                                         class="font-bold text-app-text tabular-nums text-sm"
                                                     >
-                                                        {formatAmount(
+                                                        {Fraction.format(
                                                             ingredient.amount,
                                                         )}
                                                     </span>

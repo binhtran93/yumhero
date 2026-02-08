@@ -8,7 +8,7 @@
         Loader2,
         Check,
     } from "lucide-svelte";
-    import { formatAmount } from "$lib/utils/shopping";
+    import { Fraction } from "$lib/utils/fraction";
     import { portal } from "$lib/actions";
 
     interface BoughtIngredient {
@@ -159,7 +159,7 @@
                             <span
                                 class="text-sm text-app-text-muted font-medium bg-app-surface px-2 py-1 rounded-lg shrink-0"
                             >
-                                {formatAmount(
+                                {Fraction.format(
                                     ingredient.amount,
                                 )}{ingredient.unit ? ` ${ingredient.unit}` : ""}
                             </span>

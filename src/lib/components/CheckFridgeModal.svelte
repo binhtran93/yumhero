@@ -2,7 +2,7 @@
     import { Calendar, Check, X } from "lucide-svelte";
     import Modal from "./Modal.svelte";
     import { batchToggleShoppingItemChecks } from "$lib/stores/shoppingList";
-    import { formatAmount } from "$lib/utils/shopping";
+    import { Fraction } from "$lib/utils/fraction";
 
     interface Match {
         shoppingItemId: string;
@@ -110,7 +110,7 @@
                             <p class="text-sm font-medium text-app-text-muted">
                                 You have
                                 <span class="font-bold text-app-text"
-                                    >{formatAmount(group[0].fridgeAmount)}</span
+                                    >{Fraction.format(group[0].fridgeAmount)}</span
                                 >
                                 {#if group[0].fridgeUnit}
                                     <span class="font-bold text-app-text"
@@ -158,7 +158,7 @@
                                                 <span
                                                     class="text-app-text-muted font-medium text-sm"
                                                 >
-                                                    (Need {formatAmount(
+                                                    (Need {Fraction.format(
                                                         match.amount,
                                                     )}
                                                     {match.unit || ""})

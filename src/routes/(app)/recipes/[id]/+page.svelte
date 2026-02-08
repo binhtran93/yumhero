@@ -5,7 +5,7 @@
     import {loading as authLoading, user} from "$lib/stores/auth";
     import type {Recipe} from "$lib/types";
     import {derived} from "svelte/store";
-    import {formatAmount} from "$lib/utils/shopping";
+    import {Fraction} from "$lib/utils/fraction";
     import {formatServings} from "$lib/utils/recipe";
     import Header from "$lib/components/Header.svelte";
     import RecipeThumbnail from "$lib/components/RecipeThumbnail.svelte";
@@ -108,7 +108,7 @@
                   totalTime: `PT${recipe.totalTime}M`,
                   recipeYield: `${formatServings(recipe.servings)} servings`,
                   recipeIngredient: recipe.ingredients.map((i) =>
-                      `${formatAmount(i.amount)} ${i.unit || ""} ${i.name}`.trim(),
+                      `${Fraction.format(i.amount)} ${i.unit || ""} ${i.name}`.trim(),
                   ),
                   recipeInstructions: recipe.instructions.map(
                       (step, index) => ({
