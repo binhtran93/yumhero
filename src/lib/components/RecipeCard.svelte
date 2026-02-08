@@ -25,7 +25,7 @@
             ? mealTypes
                   .map((type) => type.charAt(0).toUpperCase() + type.slice(1))
                   .join(" • ")
-            : "No meal type",
+            : "",
     );
 
     function getTagName(tagId: string) {
@@ -66,9 +66,11 @@
             </h3>
         </div>
 
-        <p class="text-[11px] text-app-text-muted mb-1.5 line-clamp-1">
-            {mealTypeLabel}
-        </p>
+        {#if mealTypeLabel}
+            <p class="text-[11px] text-app-text-muted mb-1.5 line-clamp-1">
+                {mealTypeLabel}
+            </p>
+        {/if}
 
         <!-- Tags -->
         <div class="flex flex-wrap gap-1 mb-1.5 md:mb-2">
