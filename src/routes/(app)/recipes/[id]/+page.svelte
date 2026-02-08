@@ -134,6 +134,7 @@
     let showDeleteConfirm = $state(false);
     let isDeleting = $state(false);
     let showEditModal = $state(false);
+    let isDescriptionExpanded = $state(false);
 
     function handleShowOptions(e: MouseEvent) {
         e.preventDefault();
@@ -293,11 +294,28 @@
                             class="px-4 py-3 bg-app-surface border-b border-app-border space-y-2"
                         >
                             {#if recipe.description}
-                                <p
-                                    class="text-sm text-app-text-muted leading-relaxed"
-                                >
-                                    {recipe.description}
-                                </p>
+                                <div class="space-y-1">
+                                    <p
+                                        class="text-sm text-app-text-muted leading-relaxed {isDescriptionExpanded
+                                            ? ''
+                                            : 'line-clamp-4'}"
+                                    >
+                                        {recipe.description}
+                                    </p>
+                                    {#if recipe.description.length > 180}
+                                        <button
+                                            type="button"
+                                            class="text-xs font-bold text-app-primary hover:underline"
+                                            onclick={() =>
+                                                (isDescriptionExpanded =
+                                                    !isDescriptionExpanded)}
+                                        >
+                                            {isDescriptionExpanded
+                                                ? "Show less"
+                                                : "...more"}
+                                        </button>
+                                    {/if}
+                                </div>
                             {/if}
                             {#if recipe.sourceUrl}
                                 <a
@@ -489,11 +507,28 @@
                             </div>
 
                             {#if recipe.description}
-                                <p
-                                    class="text-app-text-muted text-base leading-relaxed line-clamp-3 md:line-clamp-4 hover:line-clamp-none transition-all cursor-pointer"
-                                >
-                                    {recipe.description}
-                                </p>
+                                <div class="space-y-1">
+                                    <p
+                                        class="text-app-text-muted text-base leading-relaxed {isDescriptionExpanded
+                                            ? ''
+                                            : 'line-clamp-3 md:line-clamp-4'}"
+                                    >
+                                        {recipe.description}
+                                    </p>
+                                    {#if recipe.description.length > 180}
+                                        <button
+                                            type="button"
+                                            class="text-sm font-bold text-app-primary hover:underline"
+                                            onclick={() =>
+                                                (isDescriptionExpanded =
+                                                    !isDescriptionExpanded)}
+                                        >
+                                            {isDescriptionExpanded
+                                                ? "Show less"
+                                                : "...more"}
+                                        </button>
+                                    {/if}
+                                </div>
                             {/if}
 
                             {#if recipe.sourceUrl}
