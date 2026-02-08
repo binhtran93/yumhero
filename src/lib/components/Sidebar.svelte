@@ -51,6 +51,13 @@
             }),
         );
     };
+
+    const formatMealTypes = (recipe: Recipe): string => {
+        if (!recipe.mealTypes || recipe.mealTypes.length === 0) return "";
+        return recipe.mealTypes
+            .map((type) => type.charAt(0).toUpperCase() + type.slice(1))
+            .join(" • ");
+    };
 </script>
 
 {#if $page.url.pathname === "/plan"}
@@ -153,11 +160,20 @@
                                     alt={recipe.title}
                                     class="w-8 h-8 rounded-lg shadow-sm"
                                 />
-                                <span
-                                    class="text-xs font-medium text-app-text line-clamp-2 group-hover:text-app-primary transition-colors"
-                                >
-                                    {recipe.title}
-                                </span>
+                                <div class="flex flex-col min-w-0">
+                                    <span
+                                        class="text-xs font-medium text-app-text line-clamp-2 group-hover:text-app-primary transition-colors"
+                                    >
+                                        {recipe.title}
+                                    </span>
+                                    {#if formatMealTypes(recipe)}
+                                        <span
+                                            class="text-[10px] text-app-text-muted line-clamp-1"
+                                        >
+                                            {formatMealTypes(recipe)}
+                                        </span>
+                                    {/if}
+                                </div>
                             </div>
                         {/each}
                     </div>
