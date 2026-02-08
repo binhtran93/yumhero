@@ -72,28 +72,28 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-        <div class="relative w-fit max-w-full">
+        <div class="relative max-w-full">
             <div
-                class="leading-tight transition-all flex flex-wrap items-baseline gap-1 {checked
+                class="leading-tight transition-all {checked
                     ? 'opacity-50'
                     : ''}"
             >
                 {#if numericAmount && numericAmount > 0}
                     <span
-                        class="font-semibold text-app-primary tabular-nums align-baseline"
+                        class="font-semibold text-app-primary tabular-nums align-baseline mr-1"
                     >
                         {Fraction.format(amount)}
                     </span>
                 {/if}
                 {#if unit}
                     <span
-                        class="text-sm font-semibold text-app-primary/80 align-baseline"
+                        class="text-sm font-semibold text-app-primary/80 align-baseline mr-1"
                     >
                         {unit}
                     </span>
                 {/if}
                 <span
-                    class="text-base font-semibold text-app-text capitalize align-baseline"
+                    class="text-base font-semibold text-app-text align-baseline"
                 >
                     {name}
                 </span>
