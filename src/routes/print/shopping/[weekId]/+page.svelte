@@ -134,7 +134,7 @@
                         class="break-inside-avoid mb-1.5 py-1 flex items-start gap-2"
                     >
                         <div
-                            class="w-3.5 h-3.5 border-2 border-stone-500 mt-0.5 shrink-0"
+                            class="w-4 h-4 border border-stone-500 shrink-0 rounded-sm"
                         ></div>
                         <p
                             class="text-[10pt] font-semibold text-app-text leading-tight lowercase"
