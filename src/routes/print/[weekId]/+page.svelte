@@ -251,7 +251,7 @@
                                         <div class="flex-1 min-w-0">
                                             <p
                                                 class={twMerge(
-                                                    "font-bold leading-tight text-[8pt]!",
+                                                    "font-bold leading-tight text-[7pt]!",
                                                     section.type === "breakfast"
                                                         ? "text-accent-breakfast-text"
                                                         : section.type ===
@@ -266,11 +266,9 @@
                                                               : "text-accent-note-text",
                                                 )}
                                             >
-                                                {"title" in item
-                                                    ? item.title
-                                                    : "text" in item
-                                                      ? item.text
-                                                      : ""}
+                                                {"recipe" in item
+                                                    ? item.recipe.title
+                                                    : ""}
 
                                                 {#if itemIsLeftover}
                                                     <span
