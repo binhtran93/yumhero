@@ -331,7 +331,7 @@
                                     day: "numeric",
                                     year: "numeric",
                                 })}
-                                {#if $status === "active" && !$scheduledCancellation}
+                                {#if ($status === "active" || $status === "trialing") && !$scheduledCancellation}
                                     <button
                                         onclick={() => (showCancelModal = true)}
                                         class="ml-2 text-[10px] text-app-text-muted hover:text-red-500 underline cursor-pointer"
@@ -420,7 +420,7 @@
                 </button>
             </div>
 
-            {#if $status === "active" && !$scheduledCancellation}
+            {#if ($status === "active" || $status === "trialing") && !$scheduledCancellation}
                 <button
                     onclick={() => (showCancelModal = true)}
                     class="w-full text-center text-xs text-app-text-muted hover:text-red-500 font-bold py-4 transition-colors cursor-pointer"

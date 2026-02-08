@@ -103,7 +103,7 @@
                     class:line-through={allChecked}
                     class:opacity-70={allChecked}
                 >
-                    <span class="font-bold text-xs sm:text-sm">
+                    <span class="font-semibold text-sm">
                         {displayName}
                     </span>
                     {#each quantityGroups as q, i}

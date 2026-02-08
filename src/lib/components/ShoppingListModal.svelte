@@ -300,7 +300,7 @@
                 class="px-4 py-3 sm:px-6 sm:py-4 shrink-0 flex items-center gap-3 border-b border-app-border"
             >
                 <button
-                    class="flex items-center gap-1.5 py-2 px-3 bg-app-primary text-white rounded-lg font-semibold text-sm hover:bg-app-primary/90 transition-all disabled:opacity-50"
+                    class="flex items-center gap-1.5 py-2 px-3 bg-transparent border border-app-primary text-app-primary rounded-lg font-semibold text-sm hover:bg-app-primary/10 transition-all disabled:opacity-50"
                     onclick={() => (showAddManualModal = true)}
                     disabled={isMatching}
                 >
