@@ -77,13 +77,24 @@ const parseIngredientLine = (line: string) => {
         return { amount: null, unit: null, name: '', notes: undefined as string | undefined };
     }
 
-    const amountMatch = trimmed.match(/^(\d+(?:\.\d+)?(?:\s+\d+\/\d+)?|\d+\/\d+|[¼½¾⅓⅔⅛⅜⅝⅞⅕⅖⅗⅘⅙⅚⅐⅑⅒])\s+(.+)$/);
     let amountRaw: string | null = null;
     let rest = trimmed;
+    const tokens = trimmed.split(/\s+/).filter(Boolean);
 
-    if (amountMatch) {
-        amountRaw = amountMatch[1];
-        rest = amountMatch[2];
+    const amountCandidates: Array<{ value: string; tokenCount: number }> = [];
+    if (tokens.length >= 1) {
+        amountCandidates.push({ value: tokens[0], tokenCount: 1 });
+    }
+    if (tokens.length >= 2) {
+        amountCandidates.push({ value: `${tokens[0]} ${tokens[1]}`, tokenCount: 2 });
+    }
+
+    for (const candidate of amountCandidates.sort((a, b) => b.tokenCount - a.tokenCount)) {
+        if (parseAmountValue(candidate.value) !== null) {
+            amountRaw = candidate.value;
+            rest = tokens.slice(candidate.tokenCount).join(' ');
+            break;
+        }
     }
 
     const [namePartRaw, notesPartRaw] = rest.split(/,\s+/, 2);
