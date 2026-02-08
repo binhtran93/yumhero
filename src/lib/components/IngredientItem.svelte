@@ -97,6 +97,13 @@
                 >
                     {name}
                 </span>
+                {#if note && !checked}
+                    <span
+                        class="text-base font-semibold text-app-text-muted align-baseline"
+                    >
+                        - {note}
+                    </span>
+                {/if}
             </div>
 
             {#if checked}
@@ -107,13 +114,6 @@
             {/if}
         </div>
 
-        {#if note && !checked}
-            <p
-                class="text-sm font-bold text-app-text-muted mt-1 pl-3 border-l-2 border-app-primary/20"
-            >
-                {note}
-            </p>
-        {/if}
     </div>
 
     <!-- Info/Expand Button (Optional) -->
