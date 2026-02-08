@@ -45,22 +45,39 @@ export const Fraction = {
     fromNumber(value: number): Fraction | null {
         if (!Number.isFinite(value)) return null;
         if (Number.isInteger(value)) return { n: value, d: 1 };
-
         const sign = value < 0 ? -1 : 1;
-        const abs = Math.abs(value);
-        let str = abs.toString();
+        const x = Math.abs(value);
+        const tolerance = 1e-9;
+        const maxDenominator = 10000;
 
-        if (str.includes('e') || str.includes('E')) {
-            str = abs.toFixed(12).replace(/0+$/, '').replace(/\.$/, '');
+        let hPrev = 0;
+        let h = 1;
+        let kPrev = 1;
+        let k = 0;
+        let b = x;
+
+        while (true) {
+            const a = Math.floor(b);
+            const hNext = a * h + hPrev;
+            const kNext = a * k + kPrev;
+
+            if (kNext > maxDenominator) break;
+
+            const approx = hNext / kNext;
+            hPrev = h;
+            h = hNext;
+            kPrev = k;
+            k = kNext;
+
+            if (Math.abs(x - approx) <= tolerance) break;
+
+            const frac = b - a;
+            if (frac <= tolerance) break;
+            b = 1 / frac;
         }
 
-        const decimalIndex = str.indexOf('.');
-        if (decimalIndex === -1) return { n: sign * Number(str), d: 1 };
-
-        const decimals = str.length - decimalIndex - 1;
-        const denominator = 10 ** decimals;
-        const numerator = Math.round(abs * denominator) * sign;
-        return Fraction.normalize({ n: numerator, d: denominator });
+        if (k === 0) return null;
+        return Fraction.normalize({ n: sign * h, d: k });
     },
     toNumber(value: Fraction | null | undefined): number | null {
         const normalized = Fraction.normalize(value);
