@@ -141,6 +141,19 @@
             day: "numeric",
         });
     };
+
+    const getItemTitle = (item: any): string => {
+        if (item && "isLeftover" in item && item.isLeftover) {
+            return item.title || "";
+        }
+        if (item && "recipe" in item) {
+            return item.recipe?.title || "";
+        }
+        if (item && "text" in item) {
+            return item.text || "";
+        }
+        return "";
+    };
 </script>
 
 <svelte:head>
@@ -266,9 +279,7 @@
                                                               : "text-accent-note-text",
                                                 )}
                                             >
-                                                {"recipe" in item
-                                                    ? item.recipe.title
-                                                    : ""}
+                                                {getItemTitle(item)}
 
                                                 {#if itemIsLeftover}
                                                     <span
