@@ -55,6 +55,10 @@
             const query = normalizeText(searchQuery);
             return (
                 normalizeText(recipe.title).includes(query) ||
+                (recipe.mealTypes &&
+                    recipe.mealTypes.some((mealType: string) =>
+                        normalizeText(mealType).includes(query),
+                    )) ||
                 (recipe.tags &&
                     recipe.tags.some((tag: string) =>
                         normalizeText(tag).includes(query),
@@ -299,6 +303,7 @@
                             totalTime={recipe.totalTime}
                             servings={recipe.servings || 1}
                             tags={recipe.tags}
+                            mealTypes={recipe.mealTypes || []}
                             onShowOptions={(e) =>
                                 handleShowOptions(e, recipe.id)}
                         />

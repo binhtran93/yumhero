@@ -50,6 +50,7 @@
             <button
                 onclick={onClose}
                 class="px-4 py-2 text-sm font-bold bg-app-bg border border-app-border text-app-text-muted hover:text-app-text hover:bg-app-surface-hover rounded-xl transition-colors flex items-center gap-2"
+                disabled={isLoading}
             >
                 <X size={18} />
                 {cancelText}

@@ -13,11 +13,20 @@
         totalTime: number;
         servings: number;
         tags: string[];
+        mealTypes?: string[];
         onShowOptions?: (e: MouseEvent) => void;
     }
 
-    let { id, title, image, totalTime, servings, tags, onShowOptions }: Props =
+    let { id, title, image, totalTime, servings, tags, mealTypes = [], onShowOptions }: Props =
         $props();
+
+    const mealTypeLabel = $derived(
+        mealTypes.length > 0
+            ? mealTypes
+                  .map((type) => type.charAt(0).toUpperCase() + type.slice(1))
+                  .join(" • ")
+            : "No meal type",
+    );
 
     function getTagName(tagId: string) {
         return $userTags.data.find((t) => t.id === tagId)?.label || tagId;
@@ -56,6 +65,10 @@
                 {title}
             </h3>
         </div>
+
+        <p class="text-[11px] text-app-text-muted mb-1.5 line-clamp-1">
+            {mealTypeLabel}
+        </p>
 
         <!-- Tags -->
         <div class="flex flex-wrap gap-1 mb-1.5 md:mb-2">

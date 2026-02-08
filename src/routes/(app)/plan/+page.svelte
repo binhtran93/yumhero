@@ -185,6 +185,7 @@
     let modeLoading = $derived($modeRecipeStore.loading);
 
     let isResetModalOpen = $state(false);
+    let isResettingPlan = $state(false);
 
     let planMenu = $state<{
         isOpen: boolean;
@@ -762,25 +763,34 @@
     }
 
     const handleResetPlan = async () => {
-        // Iterate over the current plan and unplan leftovers
-        for (const dayPlan of plan) {
-            for (const mealType of Object.keys(dayPlan.meals) as MealType[]) {
-                const items = dayPlan.meals[mealType];
-                for (const item of items) {
-                    if (
-                        "isLeftover" in item &&
-                        item.isLeftover &&
-                        item.leftoverId
-                    ) {
-                        await setLeftoverNotPlanned(item.leftoverId);
+        if (isResettingPlan) return;
+        isResettingPlan = true;
+        try {
+            // Iterate over the current plan and unplan leftovers
+            for (const dayPlan of plan) {
+                for (const mealType of Object.keys(dayPlan.meals) as MealType[]) {
+                    const items = dayPlan.meals[mealType];
+                    for (const item of items) {
+                        if (
+                            "isLeftover" in item &&
+                            item.isLeftover &&
+                            item.leftoverId
+                        ) {
+                            await setLeftoverNotPlanned(item.leftoverId);
+                        }
                     }
                 }
             }
-        }
 
-        plan = createEmptyPlan(DAYS[0]);
-        await savePlan();
-        isResetModalOpen = false;
+            plan = createEmptyPlan(DAYS[0]);
+            await savePlan();
+            isResetModalOpen = false;
+        } catch (error) {
+            console.error("Failed to clear week plan:", error);
+            toasts.error("Failed to clear week plan");
+        } finally {
+            isResettingPlan = false;
+        }
     };
 
     const currentDayName =
@@ -1443,8 +1453,12 @@
     message="Are you sure you want to remove all planned recipes for this week? This action cannot be undone."
     confirmText="Clear All"
     isDestructive={true}
+    isLoading={isResettingPlan}
     onConfirm={handleResetPlan}
-    onClose={() => (isResetModalOpen = false)}
+    onClose={() => {
+        if (isResettingPlan) return;
+        isResetModalOpen = false;
+    }}
 />
 
 {#if planMenu.isOpen && planMenu.triggerRect}
