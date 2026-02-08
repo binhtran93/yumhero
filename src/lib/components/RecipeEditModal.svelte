@@ -32,7 +32,7 @@
     import { slide, fade } from "svelte/transition";
     import { parseAmountValue } from "$lib/utils/amount";
     import { Fraction } from "$lib/utils/fraction";
-    import { normalizeUnit } from "$lib/utils/unit";
+    import { KNOWN_UNIT_TOKENS, normalizeUnit } from "$lib/utils/unit";
     import { toasts } from "$lib/stores/toasts";
     import { twMerge } from "tailwind-merge";
     import { apiRequest, jsonRequest } from "$lib/api/client";
@@ -306,22 +306,6 @@
 
     // Helper: Bulk Parsing
     const parseBulkIngredients = (text: string): FormIngredient[] => {
-        const commonUnits = new Set([
-            "cup",
-            "tbsp",
-            "tsp",
-            "g",
-            "oz",
-            "ml",
-            "l",
-            "lb",
-            "kg",
-            "pinch",
-            "clove",
-            "slice",
-            "pc",
-        ]);
-
         return text
             .split("\n")
             .filter((l) => l.trim())
@@ -345,7 +329,7 @@
 
                 if (
                     startIndex < parts.length &&
-                    commonUnits.has(normalizeUnit(parts[startIndex]))
+                    KNOWN_UNIT_TOKENS.has(normalizeUnit(parts[startIndex]))
                 ) {
                     unit = parts[startIndex];
                     startIndex += 1;

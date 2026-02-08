@@ -32,6 +32,45 @@ const UNIT_ALIASES: Record<string, string> = {
     pieces: 'pc'
 };
 
+const EXTRA_UNIT_TOKENS = [
+    'tsp.',
+    'tbsp.',
+    'c.',
+    'oz.',
+    'fl',
+    'fl.',
+    'floz',
+    'fluid',
+    'fluid-ounce',
+    'fluid-ounces',
+    'pinch',
+    'pinches',
+    'dash',
+    'dashes',
+    'clove',
+    'cloves',
+    'slice',
+    'slices',
+    'can',
+    'cans',
+    'package',
+    'packages',
+    'pack',
+    'packs',
+    'stick',
+    'sticks'
+] as const;
+
+export const KNOWN_UNIT_TOKENS = new Set<string>([
+    ...Object.keys(UNIT_ALIASES),
+    ...EXTRA_UNIT_TOKENS
+]);
+
+export const isKnownUnitToken = (value: string): boolean => {
+    const normalized = value.toLowerCase().trim();
+    return KNOWN_UNIT_TOKENS.has(normalized) || KNOWN_UNIT_TOKENS.has(normalizeUnit(normalized));
+};
+
 /**
  * Input: unit text
  * Output: canonical unit text for merging/storage
