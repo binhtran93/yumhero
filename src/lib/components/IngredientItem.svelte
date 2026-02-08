@@ -80,7 +80,7 @@
             >
                 {#if numericAmount && numericAmount > 0}
                     <span
-                        class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
+                        class="font-semibold text-app-primary tabular-nums align-baseline"
                     >
                         {Fraction.format(amount)}
                     </span>
