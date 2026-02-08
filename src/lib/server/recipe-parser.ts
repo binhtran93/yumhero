@@ -72,6 +72,14 @@ const parseServingsFromYields = (yields: string | undefined): number | null => {
 };
 
 const parseIngredientLine = (line: string) => {
+    const isNumericAmountToken = (token: string): boolean => {
+        return /^(\d+(?:\.\d+)?|\d+\/\d+|[\u00BC-\u00BE\u2150-\u215E]|\d+[\u00BC-\u00BE\u2150-\u215E])$/.test(token);
+    };
+
+    const isFractionOnlyToken = (token: string): boolean => {
+        return /^(\d+\/\d+|[\u00BC-\u00BE\u2150-\u215E])$/.test(token);
+    };
+
     const trimmed = line.trim().replace(/^[\u2022\-*]\s*/, '');
     if (!trimmed) {
         return { amount: null, unit: null, name: '', notes: undefined as string | undefined };
@@ -82,10 +90,10 @@ const parseIngredientLine = (line: string) => {
     const tokens = trimmed.split(/\s+/).filter(Boolean);
 
     const amountCandidates: Array<{ value: string; tokenCount: number }> = [];
-    if (tokens.length >= 1) {
+    if (tokens.length >= 1 && isNumericAmountToken(tokens[0])) {
         amountCandidates.push({ value: tokens[0], tokenCount: 1 });
     }
-    if (tokens.length >= 2) {
+    if (tokens.length >= 2 && isNumericAmountToken(tokens[0]) && isFractionOnlyToken(tokens[1])) {
         amountCandidates.push({ value: `${tokens[0]} ${tokens[1]}`, tokenCount: 2 });
     }
 
@@ -97,8 +105,7 @@ const parseIngredientLine = (line: string) => {
         }
     }
 
-    const [namePartRaw, notesPartRaw] = rest.split(/,\s+/, 2);
-    const words = namePartRaw.trim().split(/\s+/).filter(Boolean);
+    const words = rest.trim().split(/\s+/).filter(Boolean);
 
     let unit: string | null = null;
     let nameStartIndex = 0;
@@ -107,14 +114,14 @@ const parseIngredientLine = (line: string) => {
         nameStartIndex = 1;
     }
 
-    const name = words.slice(nameStartIndex).join(' ') || namePartRaw.trim();
+    const name = words.slice(nameStartIndex).join(' ') || rest.trim();
     const amount = parseAmountValue(amountRaw);
 
     return {
         amount,
         unit: normalizeNullableUnit(unit),
         name,
-        notes: notesPartRaw?.trim() || undefined
+        notes: undefined
     };
 };
 
