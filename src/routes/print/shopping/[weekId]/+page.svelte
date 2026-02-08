@@ -137,7 +137,7 @@
                             class="w-4 h-4 border border-stone-500 shrink-0 rounded-sm"
                         ></div>
                         <p
-                            class="text-[10pt] font-semibold text-app-text leading-tight lowercase"
+                            class="text-[10pt] font-medium text-app-text leading-tight lowercase"
                         >
                             {formatLine(item)}
                         </p>
@@ -172,13 +172,13 @@
     @media print {
         @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 0;
         }
         :global(body) {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             background: white !important;
-            padding: 0;
+            padding: 10mm;
         }
     }
 </style>
