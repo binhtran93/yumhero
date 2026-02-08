@@ -11,113 +11,88 @@
     "sourceUrl": "https://themodernproper.com/marry-me-chicken",
     "ingredients": [
       {
-        "amount": {
-          "n": 4,
-          "d": 1
-        },
+        "amount": { "n": 4, "d": 1 },
         "unit": null,
-        "name": "boneless, skinless, chicken breasts, about 2 pounds"
+        "name": "Chicken breasts",
+        "note": "boneless, skinless, about 2 pounds"
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 2
-        },
+        "amount": { "n": 3, "d": 2 },
         "unit": "tsp",
-        "name": "kosher salt"
+        "name": "Kosher salt",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "tbsp",
-        "name": "extra-virgin olive oil"
+        "name": "Extra-virgin olive oil",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 1
-        },
+        "amount": { "n": 3, "d": 1 },
         "unit": null,
-        "name": "garlic cloves, minced"
+        "name": "Garlic cloves",
+        "note": "minced"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "cup",
-        "name": "heavy cream"
+        "name": "Heavy cream",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "cup",
-        "name": "chicken stock"
+        "name": "Chicken stock",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp",
-        "name": "chicken flavor \"Better Than Bouillon\", or 1 chicken bouillon cube"
+        "name": "Chicken bouillon",
+        "note": "\"Better Than Bouillon\", or 1 chicken bouillon cube"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "cup",
-        "name": "freshly grated Parmesan cheese"
+        "name": "Parmesan cheese",
+        "note": "freshly grated"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
-        "unit": null,
-        "name": "(7-ounce) jar sun-dried tomatoes, drained and roughly chopped"
+        "amount": { "n": 1, "d": 1 },
+        "unit": "jar",
+        "name": "Sun-dried tomatoes",
+        "note": "7-ounce, drained and roughly chopped"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp",
-        "name": "Italian seasoning"
+        "name": "Italian seasoning",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "tsp",
-        "name": "freshly cracked black pepper"
+        "name": "Black pepper",
+        "note": "freshly cracked"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "tsp",
-        "name": "red pepper flakes, (optional)"
+        "name": "Red pepper flakes",
+        "note": "(optional)"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 4
-        },
+        "amount": { "n": 1, "d": 4 },
         "unit": "cup",
-        "name": "thinly sliced fresh basil leaves"
+        "name": "Fresh basil leaves",
+        "note": "thinly sliced"
       },
       {
         "amount": null,
         "unit": null,
-        "name": "Cooked pasta or mashed potatoes, for serving (optional)"
+        "name": "Pasta or mashed potatoes",
+        "note": "for serving (optional)"
       }
     ],
     "instructions": [
@@ -130,12 +105,7 @@
       "Serve",
       "Remove from heat and top the chicken with the fresh basil and remaining 1/4 cup Parmesan cheese. Sprinkle with additional red pepper flakes, if desired. Serve over pasta or mashed potatoes, if desired."
     ],
-    "mealTypes": [
-      "dinner"
-    ],
-    "tags": [
-      "default"
-    ]
+    "mealTypes": ["dinner"]
   },
   {
     "title": "Best Homemade Pancakes",
@@ -149,73 +119,58 @@
     "sourceUrl": "https://www.delish.com/cooking/recipe-ideas/a43166134/pancake-recipe/",
     "ingredients": [
       {
-        "amount": {
-          "n": 3,
-          "d": 2
-        },
+        "amount": { "n": 3, "d": 2 },
         "unit": "c.",
-        "name": "(180 g.) all-purpose flour"
+        "name": "All-purpose flour",
+        "note": "(180 g.)"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tbsp.",
-        "name": "granulated sugar"
+        "name": "Granulated sugar",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "tsp.",
-        "name": "baking powder"
+        "name": "Baking powder",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp.",
-        "name": "kosher salt"
+        "name": "Kosher salt",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 4,
-          "d": 3
-        },
+        "amount": { "n": 4, "d": 3 },
         "unit": "c.",
-        "name": "whole milk"
+        "name": "Whole milk",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": null,
-        "name": "large egg"
+        "name": "Large egg",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp.",
-        "name": "pure vanilla extract"
+        "name": "Pure vanilla extract",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "tbsp.",
-        "name": "unsalted butter, melted, plus more, softened, for cooking and serving"
+        "name": "Unsalted butter",
+        "note": "melted, plus more, softened, for cooking and serving"
       },
       {
         "amount": null,
         "unit": null,
-        "name": "Maple syrup, for serving"
+        "name": "Maple syrup",
+        "note": "for serving"
       }
     ],
     "instructions": [
@@ -225,17 +180,12 @@
       "Melt enough butter to cover surface of griddle, then pour about 1/4 cup batter onto griddle. Cook pancake until bubbles form on top and sides start to lift from pan, 2 to 3 minutes. Flip and cook until bottom is golden brown and pancake is fluffy, 2 to 3 minutes. Transfer to a wire rack. Wipe off griddle, then repeat with more butter and remaining batter (you should get about 10 pancakes).",
       "Divide pancakes among plates. Serve with butter and syrup."
     ],
-    "mealTypes": [
-      "breakfast"
-    ],
-    "tags": [
-      "default"
-    ]
+    "mealTypes": ["breakfast"]
   },
   {
     "title": "Perfect Chicken Caesar Salad",
     "image": "https://www.inspiredtaste.net/wp-content/uploads/2025/01/Chicken-Caesar-Salad-Recipe.jpg",
-    "description": "We use our homemade Caesar dressing and the most delicious Greek marinated chicken to make this salad. The flavor is out of this world! This salad makes 4 (very) generous servings or 6 generous side salads.",
+    "description": "We use our homemade Caesar dressing and the most delicious Greek marinated chicken to make this salad. The flavor is out of this world!",
     "prepTime": 110,
     "cookTime": 0,
     "totalTime": 110,
@@ -244,178 +194,141 @@
     "sourceUrl": "https://www.inspiredtaste.net/83136/chicken-caesar-salad-recipe/",
     "ingredients": [
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp",
-        "name": "olive oil"
+        "name": "Olive oil",
+        "note": "for marinade"
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "tsp",
-        "name": "honey"
+        "name": "Honey",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 2
-        },
+        "amount": { "n": 3, "d": 2 },
         "unit": "tsp",
-        "name": "balsamic vinegar"
+        "name": "Balsamic vinegar",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "cloves",
-        "name": "garlic, minced"
+        "name": "Garlic",
+        "note": "minced"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tbsp",
-        "name": "lemon juice"
+        "name": "Lemon juice",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tbsp",
-        "name": "chopped fresh dill or 1 teaspoon dried dill"
+        "name": "Fresh dill",
+        "note": "chopped (or 1 teaspoon dried dill)"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "tsp",
-        "name": "dried oregano"
+        "name": "Dried oregano",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 1
-        },
+        "amount": { "n": 3, "d": 1 },
         "unit": "tbsp",
-        "name": "plain Greek yogurt"
+        "name": "Plain Greek yogurt",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "tsp",
-        "name": "fine sea salt"
+        "name": "Fine sea salt",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "tsp",
-        "name": "fresh ground black pepper"
+        "name": "Black pepper",
+        "note": "fresh ground"
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 2
-        },
+        "amount": { "n": 3, "d": 2 },
         "unit": "lb",
-        "name": "(680g) chicken breast or thighs"
+        "name": "Chicken breast or thighs",
+        "note": "(680g)"
       },
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": null,
-        "name": "hearts romaine lettuce"
+        "name": "Romaine lettuce",
+        "note": "hearts"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": null,
-        "name": "bunch of kale"
+        "name": "Kale",
+        "note": "bunch"
+      },
+      {
+        "amount": { "n": 1, "d": 2 },
+        "unit": "medium",
+        "name": "Sweet onion",
+        "note": "sliced thin"
       },
       {
         "amount": null,
         "unit": null,
-        "name": "Half medium sweet onion, sliced thin"
+        "name": "Parmesan cheese",
+        "note": "shavings"
       },
       {
-        "amount": null,
-        "unit": null,
-        "name": "Parmesan cheese shavings"
+        "amount": { "n": 1, "d": 1 },
+        "unit": "batch",
+        "name": "Caesar dressing",
+        "note": "homemade, 1/2 cup to 2/3 cup"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
-        "unit": null,
-        "name": "batch of homemade Caesar dressing, 1/2 cup to 2/3 cup"
-      },
-      {
-        "amount": {
-          "n": 4,
-          "d": 1
-        },
+        "amount": { "n": 4, "d": 1 },
         "unit": "cup",
-        "name": "torn or cubed day-old bread, about 1-inch pieces"
+        "name": "Day-old bread",
+        "note": "torn or cubed, about 1-inch pieces"
       },
       {
-        "amount": {
-          "n": 3,
-          "d": 1
-        },
+        "amount": { "n": 3, "d": 1 },
         "unit": "tbsp",
-        "name": "olive oil"
+        "name": "Olive oil",
+        "note": "for croutons"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 4
-        },
+        "amount": { "n": 1, "d": 4 },
         "unit": null,
-        "name": "to 1/2 teaspoon dried herbs like rosemary, thyme, oregano, or Italian seasoning, optional"
+        "name": "Dried herbs",
+        "note": "to 1/2 teaspoon rosemary, thyme, oregano, or Italian seasoning (optional)"
       },
       {
         "amount": null,
         "unit": null,
-        "name": "Salt and fresh ground black pepper"
+        "name": "Salt and black pepper",
+        "note": "fresh ground"
       }
     ],
     "instructions": [
-      "Marinate the chicken: Combine the olive oil, honey, balsamic vinegar, garlic, lemon juice, dill, oregano, yogurt, salt, and pepper in a mixing bowl that is large enough to hold the chicken. Add the chicken, turning them around in the marinade so they are well coated. Marinate covered in the fridge for 1 to 8 hours.",
-      "Prep: Preheat the oven to 375F (190C). Line two baking sheets with parchment paper, one for the croutons and the other for the chicken.",
-      "Make croutons: Toss the bread with olive oil, a pinch of salt, and a few grinds of black pepper in a medium bowl. Add dried herbs, if using, and toss well. Transfer to a baking sheet. Bake, stirring once, until crisp and lightly golden around the edges, 10 to 15 minutes. Set aside.",
-      "Sear the chicken: While the croutons bake, heat a grill pan over medium heat. Lightly oil, and then place the chicken into the pan. Cook for 2 to 3 minutes on each side until grill marks, but do not cook until cooked in the middle. Watch that your heat is not too high during this step, as the honey can burn.",
-      "Finish the chicken in oven: Transfer the chicken to the prepared baking sheet and spoon over any remaining marinade from the bowl. Bake until an internal thermometer inserted into the thickest part of the chicken reads 165F, about 15 to 25 minutes, depending on how thick your chicken is. Rest for 5 minutes, and chop into bite-size pieces ready for the salad.",
-      "Prepare salad greens: Chop the romaine lettuce. Strip the leaves from hearty kale stems and chop or tear them apart. Rinse the lettuce and kale under cool water, then pat or spin them dry.",
-      "Make the salad: Toss lettuce, kale, and sliced onions with a few generous spoonfuls of the dressing. If the salad looks dry, add a bit more dressing. Scatter over a few handfuls of the croutons and finish with parmesan cheese shavings and chopped chicken."
+      "Marinate the chicken: Combine marinade ingredients in a bowl. Add chicken and coat well. Marinate 1-8 hours.",
+      "Prep: Preheat oven to 375F. Line two baking sheets.",
+      "Make croutons: Toss bread with olive oil and spices. Bake 10-15 minutes until crisp.",
+      "Sear the chicken: Grill chicken 2-3 minutes per side until marked.",
+      "Finish the chicken in oven: Transfer chicken to baking sheet. Bake until 165F (15-25 mins). Rest 5 mins and chop.",
+      "Prepare salad greens: Chop and dry romaine and kale.",
+      "Make the salad: Toss greens and onion with dressing. Add croutons, parmesan, and chicken."
     ],
-    "mealTypes": [
-      "lunch",
-      "dinner"
-    ],
-    "tags": [
-      "default"
-    ]
+    "mealTypes": ["lunch", "dinner"]
   },
   {
     "title": "Peanut Butter Energy Balls",
     "image": "https://www.eatingwell.com/thmb/_xcMFaYFFC_3UOEi2kcvWr-rs18=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/peanut-butter-energy-balls-27520-1x1-2-36bd842985c943c880b55540cb158b52.jpg",
-    "description": "Try these healthy peanut butter and chocolate energy balls when you need a boost. They deliver a mixture of simple and complex carbohydrates.",
+    "description": "Try these healthy peanut butter and chocolate energy balls when you need a boost.",
     "prepTime": 20,
     "cookTime": 0,
     "totalTime": 20,
@@ -424,55 +337,39 @@
     "sourceUrl": "https://www.eatingwell.com/recipe/275207/peanut-butter-energy-balls/",
     "ingredients": [
       {
-        "amount": {
-          "n": 2,
-          "d": 1
-        },
+        "amount": { "n": 2, "d": 1 },
         "unit": "cup",
-        "name": "rolled oats (see Tip)"
+        "name": "Rolled oats",
+        "note": "(see Tip)"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 1
-        },
+        "amount": { "n": 1, "d": 1 },
         "unit": "cup",
-        "name": "natural peanut butter or other nut butter"
+        "name": "Peanut butter",
+        "note": "natural or other nut butter"
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 2
-        },
+        "amount": { "n": 1, "d": 2 },
         "unit": "cup",
-        "name": "honey"
+        "name": "Honey",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 4
-        },
+        "amount": { "n": 1, "d": 4 },
         "unit": "cup",
-        "name": "mini chocolate chips"
+        "name": "Mini chocolate chips",
+        "note": ""
       },
       {
-        "amount": {
-          "n": 1,
-          "d": 4
-        },
+        "amount": { "n": 1, "d": 4 },
         "unit": "cup",
-        "name": "unsweetened shredded coconut"
+        "name": "Shredded coconut",
+        "note": "unsweetened"
       }
     ],
     "instructions": [
-      "Combine oats, peanut butter (or other nut butter), honey, chocolate chips and coconut in a medium bowl; stir well. Using a 1-tablespoon measure, roll the mixture into balls."
+      "Combine oats, peanut butter, honey, chocolate chips and coconut in a medium bowl; stir well. Using a 1-tablespoon measure, roll the mixture into balls."
     ],
-    "mealTypes": [
-      "snack",
-      "breakfast"
-    ],
-    "tags": [
-      "default"
-    ]
+    "mealTypes": ["snack", "breakfast"]
   }
 ]
