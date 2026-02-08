@@ -41,6 +41,7 @@
         amount: string;
         unit: string;
         name: string;
+        notes: string;
     };
 
     interface Props {
@@ -158,7 +159,7 @@
         cookTime: null,
         servings: 1,
         yields: "",
-        ingredients: [{ amount: "", unit: "", name: "" }],
+        ingredients: [{ amount: "", unit: "", name: "", notes: "" }],
         ingredientMode: "line",
         bulkIngredients: "",
         instructions: "",
@@ -180,8 +181,9 @@
                   amount: Fraction.format(i.amount),
                   unit: i.unit || "",
                   name: i.name,
+                  notes: i.notes || "",
               }))
-            : [{ amount: "", unit: "", name: "" }];
+            : [{ amount: "", unit: "", name: "", notes: "" }];
 
         return {
             id: data.id,
@@ -340,7 +342,7 @@
                     name = line.trim();
                 }
 
-                return { amount, unit, name };
+                return { amount, unit, name, notes: "" };
             });
     };
 
@@ -351,7 +353,8 @@
     };
 
     const formatIngredientToString = (i: FormIngredient) => {
-        return `${i.amount} ${i.unit} ${i.name}`.trim();
+        const base = `${i.amount} ${i.unit} ${i.name}`.trim();
+        return i.notes.trim() ? `${base}, ${i.notes.trim()}` : base;
     };
 
     const toggleMealType = (type: MealType) => {
@@ -455,7 +458,7 @@
     const switchToLine = () => {
         ingredients = parseBulkIngredients(bulkIngredients);
         if (ingredients.length === 0)
-            ingredients = [{ amount: "", unit: "", name: "" }];
+            ingredients = [{ amount: "", unit: "", name: "", notes: "" }];
         ingredientMode = "line";
     };
 
@@ -572,6 +575,7 @@
                     amount: parseAmountValue(i.amount),
                     unit: i.unit.trim() || null,
                     name: i.name,
+                    notes: i.notes.trim() || undefined,
                 }));
 
                 // Calculate minutes
@@ -667,7 +671,10 @@
     };
 
     const addIngredientRow = () => {
-        ingredients = [...ingredients, { amount: "", unit: "", name: "" }];
+        ingredients = [
+            ...ingredients,
+            { amount: "", unit: "", name: "", notes: "" },
+        ];
     };
 
     const removeIngredientRow = (index: number) => {
@@ -1031,41 +1038,61 @@
                     class="space-y-3 bg-app-surface-deep/30 p-3 md:p-4 rounded-2xl border border-app-border"
                 >
                     {#each ingredients as ing, i}
-                        <div class="flex gap-2 w-full min-w-0">
-                            <input
-                                type="text"
-                                bind:value={ing.amount}
-                                disabled={isSaving}
-                                placeholder="Qty"
-                                class="w-14 md:w-20 h-10 px-3 bg-app-bg border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50 {isValidAmountInput(
-                                    ing.amount,
-                                )
-                                    ? 'border-app-border'
-                                    : 'border-red-500'}"
-                            />
-                            <input
-                                type="text"
-                                bind:value={ing.unit}
-                                disabled={isSaving}
-                                placeholder="Unit"
-                                class="w-14 md:w-24 h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50"
-                            />
-                            <div class="flex-1 min-w-0">
+                        <div class="flex flex-col gap-2 w-full min-w-0">
+                            <div class="flex gap-2 w-full min-w-0">
                                 <input
                                     type="text"
-                                    bind:value={ing.name}
+                                    bind:value={ing.amount}
                                     disabled={isSaving}
-                                    placeholder="Ingredient"
-                                    class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
+                                    placeholder="Qty"
+                                    class="w-14 md:w-20 h-10 px-3 bg-app-bg border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50 {isValidAmountInput(
+                                        ing.amount,
+                                    )
+                                        ? 'border-app-border'
+                                        : 'border-red-500'}"
+                                />
+                                <input
+                                    type="text"
+                                    bind:value={ing.unit}
+                                    disabled={isSaving}
+                                    placeholder="Unit"
+                                    class="w-14 md:w-24 h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50"
+                                />
+                                <div class="flex-1 min-w-0">
+                                    <input
+                                        type="text"
+                                        bind:value={ing.name}
+                                        disabled={isSaving}
+                                        placeholder="Ingredient"
+                                        class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm font-medium focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
+                                    />
+                                </div>
+                                <div class="hidden md:block w-40 shrink-0">
+                                    <input
+                                        type="text"
+                                        bind:value={ing.notes}
+                                        disabled={isSaving}
+                                        placeholder="Notes (optional)"
+                                        class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-xs focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
+                                    />
+                                </div>
+                                <button
+                                    onclick={() => removeIngredientRow(i)}
+                                    disabled={isSaving}
+                                    class="w-8 h-10 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                            <div class="w-full md:hidden min-w-0">
+                                <input
+                                    type="text"
+                                    bind:value={ing.notes}
+                                    disabled={isSaving}
+                                    placeholder="Notes (optional)"
+                                    class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-xs focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
                                 />
                             </div>
-                            <button
-                                onclick={() => removeIngredientRow(i)}
-                                disabled={isSaving}
-                                class="w-8 h-10 flex items-center justify-center text-app-text-muted hover:text-red-500 rounded-lg transition-all shrink-0"
-                            >
-                                <X size={16} />
-                            </button>
                         </div>
                     {/each}
                     <button

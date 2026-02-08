@@ -321,14 +321,6 @@
                 </div>
                 <p class="text-lg font-bold text-app-text">No recipes found</p>
                 <p class="text-app-text-muted">Try adjusting your search.</p>
-                <button
-                    onclick={() => {
-                        searchQuery = "";
-                    }}
-                    class="mt-4 text-app-primary font-bold hover:underline"
-                >
-                    Clear All
-                </button>
             </div>
         {/if}
     </div>
