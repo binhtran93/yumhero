@@ -112,7 +112,7 @@
     {/if}
 
     <div
-        class="bg-white w-[210mm] min-h-[297mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:max-h-full print:w-full print:overflow-visible mx-auto md:mx-0"
+        class="bg-white w-[210mm] min-h-[297mm] shadow-2xl print:shadow-none flex flex-col p-[10mm] print:p-0 shrink-0 mb-20 print:mb-0 print:h-auto print:min-h-0 print:max-h-full print:w-full print:overflow-visible mx-auto md:mx-0"
     >
         <div class="flex items-center justify-between border-b-2 border-app-primary pb-2 mb-4">
             <h1 class="text-[16pt] font-black text-app-primary m-0">
@@ -172,13 +172,13 @@
     @media print {
         @page {
             size: A4 portrait;
-            margin: 0;
+            margin: 10mm;
         }
         :global(body) {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             background: white !important;
-            padding: 10mm;
+            padding: 0;
         }
     }
 </style>
