@@ -226,7 +226,7 @@
                 <!-- MOBILE HERO SECTION -->
                 <div class="md:hidden">
                     <!-- Hero Image with Gradient Overlay -->
-                    <div class="relative w-full aspect-square">
+                    <div class="relative w-full aspect-3/2">
                         <RecipeThumbnail
                             src={recipe.image}
                             alt={recipe.title}
@@ -497,13 +497,6 @@
                                     >
                                 </div>
                                 <div class="w-px h-4 bg-border-default"></div>
-                                <div class="flex items-center gap-2">
-                                    <Flame
-                                        size={18}
-                                        class="text-accent-breakfast"
-                                    />
-                                    <span>{recipe.calories || "-"} cal</span>
-                                </div>
                             </div>
 
                             {#if recipe.description}
