@@ -2,14 +2,14 @@ import { GOOGLE_GENERATIVE_AI_API_KEY } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
-import { parseAmount } from '$lib/utils/shopping';
+import { parseAmountValue } from '$lib/utils/shopping';
 import { z } from 'zod';
 import { createHash } from 'crypto';
 
 // Define the schema for the recipe using Zod
 const IngredientSchema = z.object({
-    amount: z.union([z.string(), z.number()]).transform(val => typeof val === 'number' ? val : parseAmount(val)).describe('The quantity of the ingredient, e.g. "1", "1/2", "200"'),
-    unit: z.string().nullable().optional().describe('The unit of measurement. Use standard abbreviations (e.g. tbsp, tsp, g, oz) or the full unit name.'),
+    amount: z.union([z.string(), z.number(), z.null()]).transform(val => val === null ? null : parseAmountValue(val)).describe('The quantity of the ingredient as a number or fraction string when present, e.g. "1", "1/2", "200". Use null if no measurable quantity is specified.'),
+    unit: z.string().nullable().optional().describe('The unit of measurement when present. Preserve explicit units from text (e.g. cup, tablespoon, teaspoons, oz, g). Use null only when no unit is given.'),
     name: z.string().describe('The name of the ingredient'),
     notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"')
 });
@@ -128,6 +128,15 @@ export async function POST({ request }) {
             If you cannot find a specific image for a variant, leave the image field empty (null/undefined).
 
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
+            INGREDIENT PARSING RULES (VERY IMPORTANT):
+            - Always parse each ingredient into: amount, unit, name, notes.
+            - If a line has an explicit unit (cup, cups, tablespoon(s), teaspoon(s), oz, g, kg, ml, l, lb, cloves, slices, etc.), you MUST put that in "unit".
+            - Do not drop units. Example: "1 cup Ranchero Sauce" => amount: 1, unit: "cup", name: "Ranchero Sauce".
+            - Example: "2 tablespoons Cotija cheese" => amount: 2, unit: "tablespoons", name: "Cotija cheese".
+            - Example: "4 corn tortillas" => amount: 4, unit: null, name: "corn tortillas".
+            - Example: "Avocado oil, for brushing" => amount: null, unit: null, name: "avocado oil", notes: "for brushing".
+            - Keep preparation words (warmed, sliced, optional, for brushing, to taste) in "notes", not in unit.
+            - Parse unicode fractions (½, ¼, ¾, etc.) as fractional amounts.
             
             CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.
             

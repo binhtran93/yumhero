@@ -1,11 +1,12 @@
 <script lang="ts">
     import { CheckSquare, Square, Info } from "lucide-svelte";
     import { scale } from "svelte/transition";
-    import { formatAmount } from "$lib/utils/shopping";
+    import { amountToNumber, formatAmount } from "$lib/utils/shopping";
+    import type { Fraction } from "$lib/types";
 
     interface Props {
         name: string;
-        amount?: number | null;
+        amount?: Fraction | null;
         unit?: string | null;
         notes?: string | null;
         checked?: boolean;
@@ -28,6 +29,8 @@
         onToggle,
         onInfoClick,
     }: Props = $props();
+
+    let numericAmount = $derived(amountToNumber(amount));
 </script>
 
 <div
@@ -75,7 +78,7 @@
                     ? 'opacity-50'
                     : ''}"
             >
-                {#if amount && amount > 0}
+                {#if numericAmount && numericAmount > 0}
                     <span
                         class="text-lg font-semibold text-app-primary tabular-nums align-baseline"
                     >

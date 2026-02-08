@@ -30,7 +30,7 @@
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
-    import { parseAmount, formatAmount } from "$lib/utils/shopping";
+    import { parseAmountValue, formatAmount } from "$lib/utils/shopping";
     import { toasts } from "$lib/stores/toasts";
     import { twMerge } from "tailwind-merge";
     import { apiRequest, jsonRequest } from "$lib/api/client";
@@ -546,7 +546,7 @@
                 }
 
                 finalIngredients = sourceIngredients.map((i) => ({
-                    amount: parseAmount(i.amount),
+                    amount: parseAmountValue(i.amount),
                     unit: i.unit.trim() || null,
                     name: i.name,
                 }));

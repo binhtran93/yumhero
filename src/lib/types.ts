@@ -1,5 +1,10 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'note';
 
+export interface Fraction {
+    n: number;
+    d: number;
+}
+
 /**
  * Leftover status representing the two states of a leftover item.
  * - 'not_planned': Available in the Fridge, ready to be added to a meal plan
@@ -65,7 +70,7 @@ export interface Tag {
 }
 
 export interface Ingredient {
-    amount: number | null;
+    amount: Fraction | null;
     unit: string | null;
     name: string;
     notes?: string;
