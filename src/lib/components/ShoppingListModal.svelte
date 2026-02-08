@@ -27,6 +27,7 @@
     import type { WeeklyPlan } from "$lib/types";
     import { toasts } from "$lib/stores/toasts";
     import { apiRequest, jsonRequest } from "$lib/api/client";
+    import { Fraction } from "$lib/utils/fraction";
 
     interface Props {
         isOpen: boolean;
@@ -293,7 +294,9 @@
                     );
                     const unit = item.sources[0]?.unit || "";
                     const amountText =
-                        totalAmount > 0 ? `${totalAmount} ${unit}`.trim() : "";
+                        totalAmount > 0
+                            ? `${Fraction.format(totalAmount)} ${unit}`.trim()
+                            : "";
                     return `
                         <div style="break-inside: avoid; margin-bottom: 6px; padding: 6px 0;">
                             <div style="display: flex; align-items: flex-start; gap: 10px;">
