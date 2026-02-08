@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import { RECIPE_PARSER_API_KEY } from '$env/static/private';
 import { parseAmountValue } from '$lib/utils/amount';
 import { isKnownUnitToken, normalizeNullableUnit } from '$lib/utils/unit';
 import { redis } from '$lib/server/redis';
@@ -8,6 +9,9 @@ const RECIPE_PARSER_API_BASE = 'https://recipe-parser-production.up.railway.app/
 const SUPPORTED_SITES_CACHE_KEY = 'recipe_parser:supported_sites:v1';
 const SUPPORTED_SITES_CACHE_TTL_SECONDS = 60 * 60 * 24;
 const PARSED_RECIPE_CACHE_TTL_SECONDS = 60 * 60 * 24;
+const RECIPE_PARSER_HEADERS = {
+    'X-API-Token': RECIPE_PARSER_API_KEY
+} as const;
 
 type SupportedSitesResponse = {
     count?: number;
@@ -16,6 +20,7 @@ type SupportedSitesResponse = {
 
 type ParsedRecipeApiResponse = {
     canonical_url?: string;
+    description?: string;
     image?: string;
     ingredients?: string[];
     instructions?: string;
@@ -114,7 +119,7 @@ const mapParsedApiRecipeToInternalRecipe = (recipe: ParsedRecipeApiResponse, sou
     return {
         title,
         image: recipe.image?.trim() || '',
-        description: recipe.site_name ? `Imported from ${recipe.site_name}` : 'Imported recipe',
+        description: recipe.description?.trim() || (recipe.site_name ? `Imported from ${recipe.site_name}` : 'Imported recipe'),
         prepTime: totalTime,
         cookTime: 0,
         totalTime,
@@ -139,7 +144,9 @@ const getSupportedSites = async (): Promise<Set<string>> => {
         }
     }
 
-    const response = await fetch(`${RECIPE_PARSER_API_BASE}/supported-sites`);
+    const response = await fetch(`${RECIPE_PARSER_API_BASE}/supported-sites`, {
+        headers: RECIPE_PARSER_HEADERS
+    });
     if (!response.ok) {
         throw new Error(`Supported sites API failed with status ${response.status}`);
     }
@@ -161,7 +168,9 @@ const fetchParsedRecipeForUrl = async (url: string): Promise<ParsedRecipeApiResp
         }
     }
 
-    const response = await fetch(`${RECIPE_PARSER_API_BASE}/recipe?url=${encodeURIComponent(url)}`);
+    const response = await fetch(`${RECIPE_PARSER_API_BASE}/recipe?url=${encodeURIComponent(url)}`, {
+        headers: RECIPE_PARSER_HEADERS
+    });
     if (!response.ok) {
         throw new Error(`Recipe parser API failed with status ${response.status}`);
     }
