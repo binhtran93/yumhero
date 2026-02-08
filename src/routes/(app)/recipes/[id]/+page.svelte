@@ -351,7 +351,7 @@
                                     name={ingredient.name}
                                     amount={ingredient.amount}
                                     unit={ingredient.unit}
-                                    notes={ingredient.notes}
+                                    note={ingredient.note}
                                     showCheckbox={false}
                                 />
                             {/each}
@@ -591,7 +591,7 @@
                                             name={ingredient.name}
                                             amount={ingredient.amount}
                                             unit={ingredient.unit}
-                                            notes={ingredient.notes}
+                                            note={ingredient.note}
                                             showCheckbox={false}
                                         />
                                     {/each}

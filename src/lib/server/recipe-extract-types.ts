@@ -6,7 +6,7 @@ export type ExtractedIngredient = {
     amount: Fraction | null;
     unit: string | null;
     name: string;
-    notes?: string;
+    note?: string;
 };
 
 export type ExtractedRecipe = {

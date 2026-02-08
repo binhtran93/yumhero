@@ -70,7 +70,7 @@ export interface Ingredient {
     amount: Fraction | null;
     unit: string | null;
     name: string;
-    notes?: string;
+    note?: string;
 }
 
 export interface ShoppingListSource {

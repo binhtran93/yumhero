@@ -12,7 +12,7 @@ const IngredientSchema = z.object({
     amount: z.union([z.string(), z.number(), z.null()]).transform((val) => val === null ? null : parseAmountValue(val)).describe('The quantity of the ingredient as a number or fraction string when present, e.g. "1", "1/2", "200". Use null if no measurable quantity is specified.'),
     unit: z.string().nullable().optional().describe('The unit of measurement when present. Preserve explicit units from text (e.g. cup, tablespoon, teaspoons, oz, g). Use null only when no unit is given.'),
     name: z.string().describe('The name of the ingredient'),
-    notes: z.string().optional().describe('Processing notes, e.g. "chopped", "diced", "to taste"')
+    note: z.string().optional().describe('Processing note, e.g. "chopped", "diced", "to taste"')
 });
 
 const RecipeSchema = z.object({
@@ -61,13 +61,13 @@ const buildPrompt = (contentType: string) => `
 
             For ingredients, extract the unit exactly as it appears or use standard abbreviations.
             INGREDIENT PARSING RULES (VERY IMPORTANT):
-            - Always parse each ingredient into: amount, unit, name, notes.
+            - Always parse each ingredient into: amount, unit, name, note.
             - If a line has an explicit unit (cup, cups, tablespoon(s), teaspoon(s), oz, g, kg, ml, l, lb, cloves, slices, etc.), you MUST put that in "unit".
             - Do not drop units. Example: "1 cup Ranchero Sauce" => amount: 1, unit: "cup", name: "Ranchero Sauce".
             - Example: "2 tablespoons Cotija cheese" => amount: 2, unit: "tablespoons", name: "Cotija cheese".
             - Example: "4 corn tortillas" => amount: 4, unit: null, name: "corn tortillas".
-            - Example: "Avocado oil, for brushing" => amount: null, unit: null, name: "avocado oil", notes: "for brushing".
-            - Keep preparation words (warmed, sliced, optional, for brushing, to taste) in "notes", not in unit.
+            - Example: "Avocado oil, for brushing" => amount: null, unit: null, name: "avocado oil", note: "for brushing".
+            - Keep preparation words (warmed, sliced, optional, for brushing, to taste) in "note", not in unit.
             - Parse unicode fractions (½, ¼, ¾, etc.) as fractional amounts.
             
             CRITICAL: The input text may contain HTML entities (like &amp;, &#039;, &quot;, etc.). You MUST decode these into their plain text characters (e.g. '&', ''', '"') in all fields (title, description, ingredients, instructions, etc). Do not preserve the HTML entities.

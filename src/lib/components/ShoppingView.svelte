@@ -105,7 +105,7 @@
                         name={ingredient.name}
                         amount={ingredient.amount}
                         unit={ingredient.unit}
-                        notes={ingredient.notes}
+                        note={ingredient.note}
                         checked={checkedIngredients[i]}
                         onToggle={() => toggleIngredient(i)}
                     />

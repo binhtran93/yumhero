@@ -8,7 +8,7 @@
         name: string;
         amount?: FractionType | null;
         unit?: string | null;
-        notes?: string | null;
+        note?: string | null;
         checked?: boolean;
         showCheckbox?: boolean;
         showInfo?: boolean;
@@ -21,7 +21,7 @@
         name,
         amount,
         unit,
-        notes,
+        note,
         checked = false,
         showCheckbox = true,
         showInfo = false,
@@ -107,11 +107,11 @@
             {/if}
         </div>
 
-        {#if notes && !checked}
+        {#if note && !checked}
             <p
                 class="text-sm font-bold text-app-text-muted mt-1 pl-3 border-l-2 border-app-primary/20"
             >
-                {notes}
+                {note}
             </p>
         {/if}
     </div>

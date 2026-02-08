@@ -41,7 +41,7 @@
         amount: string;
         unit: string;
         name: string;
-        notes: string;
+        note: string;
     };
 
     interface Props {
@@ -159,7 +159,7 @@
         cookTime: null,
         servings: 1,
         yields: "",
-        ingredients: [{ amount: "", unit: "", name: "", notes: "" }],
+        ingredients: [{ amount: "", unit: "", name: "", note: "" }],
         ingredientMode: "line",
         bulkIngredients: "",
         instructions: "",
@@ -181,9 +181,9 @@
                   amount: Fraction.format(i.amount),
                   unit: i.unit || "",
                   name: i.name,
-                  notes: i.notes || "",
+                  note: i.note || "",
               }))
-            : [{ amount: "", unit: "", name: "", notes: "" }];
+            : [{ amount: "", unit: "", name: "", note: "" }];
 
         return {
             id: data.id,
@@ -342,7 +342,7 @@
                     name = line.trim();
                 }
 
-                return { amount, unit, name, notes: "" };
+                return { amount, unit, name, note: "" };
             });
     };
 
@@ -354,7 +354,7 @@
 
     const formatIngredientToString = (i: FormIngredient) => {
         const base = `${i.amount} ${i.unit} ${i.name}`.trim();
-        return i.notes.trim() ? `${base}, ${i.notes.trim()}` : base;
+        return i.note.trim() ? `${base}, ${i.note.trim()}` : base;
     };
 
     const toggleMealType = (type: MealType) => {
@@ -458,7 +458,7 @@
     const switchToLine = () => {
         ingredients = parseBulkIngredients(bulkIngredients);
         if (ingredients.length === 0)
-            ingredients = [{ amount: "", unit: "", name: "", notes: "" }];
+            ingredients = [{ amount: "", unit: "", name: "", note: "" }];
         ingredientMode = "line";
     };
 
@@ -575,7 +575,7 @@
                     amount: parseAmountValue(i.amount),
                     unit: i.unit.trim() || null,
                     name: i.name,
-                    notes: i.notes.trim() || undefined,
+                    note: i.note.trim() || undefined,
                 }));
 
                 // Calculate minutes
@@ -673,7 +673,7 @@
     const addIngredientRow = () => {
         ingredients = [
             ...ingredients,
-            { amount: "", unit: "", name: "", notes: "" },
+            { amount: "", unit: "", name: "", note: "" },
         ];
     };
 
@@ -1070,7 +1070,7 @@
                                 <div class="hidden md:block w-40 shrink-0">
                                     <input
                                         type="text"
-                                        bind:value={ing.notes}
+                                        bind:value={ing.note}
                                         disabled={isSaving}
                                         placeholder="Notes (optional)"
                                         class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-xs focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"
@@ -1087,7 +1087,7 @@
                             <div class="w-full md:hidden min-w-0">
                                 <input
                                     type="text"
-                                    bind:value={ing.notes}
+                                    bind:value={ing.note}
                                     disabled={isSaving}
                                     placeholder="Notes (optional)"
                                     class="w-full h-10 px-3 bg-app-bg border border-app-border rounded-lg text-xs focus:border-app-primary focus:outline-none transition-all disabled:opacity-50"

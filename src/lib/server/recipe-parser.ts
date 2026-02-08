@@ -82,7 +82,7 @@ const parseIngredientLine = (line: string) => {
 
     const trimmed = line.trim().replace(/^[\u2022\-*]\s*/, '');
     if (!trimmed) {
-        return { amount: null, unit: null, name: '', notes: undefined as string | undefined };
+        return { amount: null, unit: null, name: '', note: undefined as string | undefined };
     }
 
     let amountRaw: string | null = null;
@@ -121,7 +121,7 @@ const parseIngredientLine = (line: string) => {
         amount,
         unit: normalizeNullableUnit(unit),
         name,
-        notes: undefined
+        note: undefined
     };
 };
 
