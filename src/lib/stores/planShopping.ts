@@ -1,7 +1,8 @@
 import type { MealType, ShoppingListItem, ShoppingListSource, WeeklyPlan } from '$lib/types';
 import { isPlannedLeftover } from '$lib/types';
 import { Fraction } from '$lib/utils/fraction';
-import { parseAmountValue } from '$lib/utils/shopping';
+import { parseAmountValue } from '$lib/utils/amount';
+import { areMergeableUnits } from '$lib/utils/unit';
 
 type RecipeSourceDraft = Omit<ShoppingListSource, 'is_checked' | 'checked_from'>;
 
@@ -35,28 +36,6 @@ function normalizeShoppingItem(item: ShoppingListItem): ShoppingListItem {
     };
 }
 
-function normalizeUnit(unit: string | null): string {
-    if (!unit) return '';
-    const u = unit.toLowerCase().trim();
-    if (u === 'g' || u === 'gram' || u === 'grams') return 'g';
-    if (u === 'kg' || u === 'kilogram' || u === 'kilograms') return 'kg';
-    if (u === 'ml' || u === 'milliliter' || u === 'milliliters') return 'ml';
-    if (u === 'l' || u === 'liter' || u === 'liters') return 'l';
-    if (u === 'lb' || u === 'lbs' || u === 'pound' || u === 'pounds') return 'lb';
-    if (u === 'oz' || u === 'ounce' || u === 'ounces') return 'oz';
-    if (u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons') return 'tbsp';
-    if (u === 'tsp' || u === 'teaspoon' || u === 'teaspoons') return 'tsp';
-    if (u === 'cup' || u === 'cups') return 'cup';
-    if (u === 'pc' || u === 'pcs' || u === 'piece' || u === 'pieces') return 'pc';
-    return u;
-}
-
-function isMergeableUnit(left: string | null, right: string | null): boolean {
-    const l = normalizeUnit(left);
-    const r = normalizeUnit(right);
-    return l === r || !l || !r;
-}
-
 function pushOrMergeSource(sources: RecipeSourceDraft[], nextSource: RecipeSourceDraft) {
     const existingIndex = sources.findIndex((source) =>
         source.recipe_id === nextSource.recipe_id &&
@@ -70,7 +49,7 @@ function pushOrMergeSource(sources: RecipeSourceDraft[], nextSource: RecipeSourc
     }
 
     const existing = sources[existingIndex];
-    if (!isMergeableUnit(existing.unit, nextSource.unit)) {
+    if (!areMergeableUnits(existing.unit, nextSource.unit)) {
         sources.push(nextSource);
         return;
     }

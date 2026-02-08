@@ -2,7 +2,8 @@ import { GOOGLE_GENERATIVE_AI_API_KEY } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText, Output } from 'ai';
-import { parseAmountValue } from '$lib/utils/shopping';
+import { parseAmountValue } from '$lib/utils/amount';
+import { normalizeNullableUnit } from '$lib/utils/unit';
 import { z } from 'zod';
 import { createHash } from 'crypto';
 
@@ -173,11 +174,16 @@ export async function POST({ request }) {
             const instructions = recipe.instructions && recipe.instructions.length > 0
                 ? recipe.instructions
                 : ['No instructions'];
+            const ingredients = (recipe.ingredients || []).map((ingredient) => ({
+                ...ingredient,
+                unit: normalizeNullableUnit(ingredient.unit ?? null)
+            }));
 
             return {
                 ...recipe,
                 mealTypes,
                 instructions,
+                ingredients,
                 tags: []
             };
         });

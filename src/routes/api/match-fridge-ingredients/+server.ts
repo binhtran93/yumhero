@@ -9,6 +9,7 @@ import { verifyAuth } from '$lib/server/auth';
 import { checkRateLimit, RATE_LIMITS } from '$lib/server/ratelimit';
 import { adminDb } from '$lib/server/admin';
 import { getShoppingListForWeek } from '$lib/server/shopping-list';
+import { normalizeNullableUnit } from '$lib/utils/unit';
 
 interface MinimalIngredient {
     id: string;
@@ -83,11 +84,11 @@ export async function POST({ request }) {
         for (let i = unmatchedShoppingItems.length - 1; i >= 0; i--) {
             const sItem = unmatchedShoppingItems[i];
             const sName = sItem.name.toLowerCase().trim();
-            const sUnit = sItem.unit?.toLowerCase().trim() || null;
+            const sUnit = normalizeNullableUnit(sItem.unit);
 
             const fItem = fridgeIngredients.find(f => {
                 const fName = f.name.toLowerCase().trim();
-                const fUnit = f.unit?.toLowerCase().trim() || null;
+                const fUnit = normalizeNullableUnit(f.unit);
                 return fName === sName && fUnit === sUnit;
             });
 

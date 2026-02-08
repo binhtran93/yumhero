@@ -30,8 +30,9 @@
     import { userTags, addTag as addUserTag } from "$lib/stores/tags";
     import { get } from "svelte/store";
     import { slide, fade } from "svelte/transition";
-    import { parseAmountValue } from "$lib/utils/shopping";
+    import { parseAmountValue } from "$lib/utils/amount";
     import { Fraction } from "$lib/utils/fraction";
+    import { normalizeUnit } from "$lib/utils/unit";
     import { toasts } from "$lib/stores/toasts";
     import { twMerge } from "tailwind-merge";
     import { apiRequest, jsonRequest } from "$lib/api/client";
@@ -305,47 +306,64 @@
 
     // Helper: Bulk Parsing
     const parseBulkIngredients = (text: string): FormIngredient[] => {
+        const commonUnits = new Set([
+            "cup",
+            "tbsp",
+            "tsp",
+            "g",
+            "oz",
+            "ml",
+            "l",
+            "lb",
+            "kg",
+            "pinch",
+            "clove",
+            "slice",
+            "pc",
+        ]);
+
         return text
             .split("\n")
             .filter((l) => l.trim())
             .map((line) => {
-                // Very simple parser: "1 cup flour" -> amount: 1, unit: cup, name: flour
-                // This is a naive implementation, can be improved.
-                const parts = line.trim().split(" ");
-                const amount = parts[0] || "";
-                // Try to guess unit from common units, else everything else is name
-                const commonUnits = [
-                    "cup",
-                    "cups",
-                    "tbsp",
-                    "tsp",
-                    "g",
-                    "oz",
-                    "ml",
-                    "l",
-                    "lb",
-                    "kg",
-                    "pinch",
-                    "clove",
-                    "slice",
-                ];
+                const parts = line.trim().split(/\s+/);
+                let amount = "";
                 let unit = "";
                 let name = "";
 
+                let startIndex = 0;
                 if (
                     parts.length > 1 &&
-                    commonUnits.includes(
-                        parts[1].toLowerCase().replace("s", ""),
-                    )
+                    parseAmountValue(`${parts[0]} ${parts[1]}`)
                 ) {
-                    unit = parts[1];
-                    name = parts.slice(2).join(" ");
-                } else {
-                    name = parts.slice(1).join(" ");
+                    amount = `${parts[0]} ${parts[1]}`;
+                    startIndex = 2;
+                } else if (parseAmountValue(parts[0])) {
+                    amount = parts[0];
+                    startIndex = 1;
+                }
+
+                if (
+                    startIndex < parts.length &&
+                    commonUnits.has(normalizeUnit(parts[startIndex]))
+                ) {
+                    unit = parts[startIndex];
+                    startIndex += 1;
+                }
+
+                name = parts.slice(startIndex).join(" ");
+                if (!amount && !unit) {
+                    name = line.trim();
                 }
 
                 return { amount, unit, name };
             });
+    };
+
+    const isValidAmountInput = (value: string) => {
+        const trimmed = value.trim();
+        if (!trimmed) return true;
+        return parseAmountValue(trimmed) !== null;
     };
 
     const formatIngredientToString = (i: FormIngredient) => {
@@ -530,6 +548,26 @@
                 if (sourceIngredients.length === 0) {
                     toasts.error(
                         `Recipe "${variant.title}" has no ingredients`,
+                    );
+                    isSaving = false;
+                    return;
+                }
+
+                const invalidAmounts = sourceIngredients
+                    .map((ingredient, index) => ({ ingredient, index }))
+                    .filter(
+                        ({ ingredient }) => !isValidAmountInput(ingredient.amount),
+                    );
+                if (invalidAmounts.length > 0) {
+                    const sample = invalidAmounts
+                        .slice(0, 2)
+                        .map(
+                            ({ ingredient, index }) =>
+                                `#${index + 1} "${ingredient.amount}"`,
+                        )
+                        .join(", ");
+                    toasts.error(
+                        `Recipe "${variant.title}" has invalid amount format (${sample})`,
                     );
                     isSaving = false;
                     return;
@@ -1015,7 +1053,11 @@
                                 bind:value={ing.amount}
                                 disabled={isSaving}
                                 placeholder="Qty"
-                                class="w-14 md:w-20 h-10 px-3 bg-app-bg border border-app-border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50"
+                                class="w-14 md:w-20 h-10 px-3 bg-app-bg border rounded-lg text-sm focus:border-app-primary focus:outline-none transition-all shrink-0 disabled:opacity-50 {isValidAmountInput(
+                                    ing.amount,
+                                )
+                                    ? 'border-app-border'
+                                    : 'border-red-500'}"
                             />
                             <input
                                 type="text"
