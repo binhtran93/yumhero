@@ -11,13 +11,13 @@
         title: string;
         image: string;
         totalTime: number;
-        servings: number;
-        tags: string[];
+        servings: number | null;
+        tags?: string[];
         mealTypes?: string[];
         onShowOptions?: (e: MouseEvent) => void;
     }
 
-    let { id, title, image, totalTime, servings, tags, mealTypes = [], onShowOptions }: Props =
+    let { id, title, image, totalTime, servings, tags = [], mealTypes = [], onShowOptions }: Props =
         $props();
 
     const mealTypeLabel = $derived(

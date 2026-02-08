@@ -575,7 +575,7 @@
                     amount: parseAmountValue(i.amount),
                     unit: i.unit.trim() || null,
                     name: i.name,
-                    note: i.note.trim() || undefined,
+                    ...(i.note.trim() ? { note: i.note.trim() } : {}),
                 }));
 
                 // Calculate minutes
