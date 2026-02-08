@@ -74,7 +74,7 @@
                 class="
                     relative flex flex-col md:flex-row items-center gap-1 md:gap-2 px-3 py-1.5 md:py-2 md:px-4 rounded-xl transition-all duration-200 group
                     {active
-                    ? 'bg-app-primary/15 text-app-primary shadow-sm ring-1 ring-app-primary/30 font-bold'
+                    ? 'text-app-primary font-bold'
                     : 'text-app-text/90 hover:text-app-text hover:bg-app-surface-hover font-semibold'}
                 "
             >
