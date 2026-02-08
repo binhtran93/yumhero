@@ -15,10 +15,16 @@ export const user = writable<User | null>(null);
 export const loading = writable(true); // Initial loading state
 
 import { syncSubscription } from './subscription';
+import { seedDefaultRecipesIfNeeded } from './defaultRecipes';
 
 onAuthStateChanged(auth, (u) => {
     user.set(u);
     syncSubscription(u);
+    if (u) {
+        seedDefaultRecipesIfNeeded(u.uid).catch((error) => {
+            console.error('Default recipe seeding failed:', error);
+        });
+    }
     loading.set(false);
 });
 

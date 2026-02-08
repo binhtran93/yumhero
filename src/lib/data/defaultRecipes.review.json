@@ -1,0 +1,478 @@
+[
+  {
+    "title": "Marry Me Chicken",
+    "image": "https://images.themodernproper.com/production/posts/2022/MarryMeChicken_7.jpg?w=960&h=960&q=82&fm=jpg&fit=crop&dm=1718210832&s=1c4b206a7d7574416cfdf32f44b34e9e",
+    "description": "Our easy marry me chicken recipe is simply the best one-pan dinner out there! With succulent chicken breasts, sun-dried tomatoes, and a luscious cream sauce, it's no wonder it is so beloved.",
+    "prepTime": 45,
+    "cookTime": 0,
+    "totalTime": 45,
+    "servings": 4,
+    "yields": "4 servings",
+    "sourceUrl": "https://themodernproper.com/marry-me-chicken",
+    "ingredients": [
+      {
+        "amount": {
+          "n": 4,
+          "d": 1
+        },
+        "unit": null,
+        "name": "boneless, skinless, chicken breasts, about 2 pounds"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "kosher salt"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "tbsp",
+        "name": "extra-virgin olive oil"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 1
+        },
+        "unit": null,
+        "name": "garlic cloves, minced"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "cup",
+        "name": "heavy cream"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "cup",
+        "name": "chicken stock"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp",
+        "name": "chicken flavor \"Better Than Bouillon\", or 1 chicken bouillon cube"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "cup",
+        "name": "freshly grated Parmesan cheese"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": null,
+        "name": "(7-ounce) jar sun-dried tomatoes, drained and roughly chopped"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp",
+        "name": "Italian seasoning"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "freshly cracked black pepper"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "red pepper flakes, (optional)"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 4
+        },
+        "unit": "cup",
+        "name": "thinly sliced fresh basil leaves"
+      },
+      {
+        "amount": null,
+        "unit": null,
+        "name": "Cooked pasta or mashed potatoes, for serving (optional)"
+      }
+    ],
+    "instructions": [
+      "Season and brown the chicken",
+      "Pat the chicken breasts dry with paper towels. Season all over with 1 teaspoon of the salt. Heat the oil in a large skillet over medium-high heat. Once the oil is glistening, add the chicken and cook, undisturbed, until golden brown, about 5 minutes per side. Transfer to a plate.",
+      "Make the sauce",
+      "Reduce the heat to medium and add the garlic to the same skillet. Cook, stirring, until fragrant, about 30 seconds. Stir in the heavy cream, chicken stock, bouillon, 1/4 cup of the Parmesan cheese, sun dried tomatoes, Italian seasoning, black pepper, red pepper flakes (if using), and remaining 1/2 teaspoon salt. Whisk until combined and smooth.",
+      "Add the chicken and cook",
+      "Return the seared chicken to the skillet, nestling it into the sauce. Bring to a simmer, then reduce the heat to medium-low. Cook until the sauce has thickened slightly and the internal temperature of the chicken reaches 165F on an instant-read thermometer, about 8 to 10 minutes.",
+      "Serve",
+      "Remove from heat and top the chicken with the fresh basil and remaining 1/4 cup Parmesan cheese. Sprinkle with additional red pepper flakes, if desired. Serve over pasta or mashed potatoes, if desired."
+    ],
+    "mealTypes": [
+      "dinner"
+    ],
+    "tags": [
+      "default"
+    ]
+  },
+  {
+    "title": "Best Homemade Pancakes",
+    "image": "https://hips.hearstapps.com/hmg-prod/images/best-homemade-pancakes-index-640775a2dbad8.jpg?crop=0.503xw:1.00xh;0.235xw,0&resize=1200:*",
+    "description": "If you're looking for the best homemade pancake recipe, stop here. Our easy recipe is made from a simple batter, but results in light and fluffy pancakes.",
+    "prepTime": 35,
+    "cookTime": 0,
+    "totalTime": 35,
+    "servings": 10,
+    "yields": "10 servings",
+    "sourceUrl": "https://www.delish.com/cooking/recipe-ideas/a43166134/pancake-recipe/",
+    "ingredients": [
+      {
+        "amount": {
+          "n": 3,
+          "d": 2
+        },
+        "unit": "c.",
+        "name": "(180 g.) all-purpose flour"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tbsp.",
+        "name": "granulated sugar"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "tsp.",
+        "name": "baking powder"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp.",
+        "name": "kosher salt"
+      },
+      {
+        "amount": {
+          "n": 4,
+          "d": 3
+        },
+        "unit": "c.",
+        "name": "whole milk"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": null,
+        "name": "large egg"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp.",
+        "name": "pure vanilla extract"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "tbsp.",
+        "name": "unsalted butter, melted, plus more, softened, for cooking and serving"
+      },
+      {
+        "amount": null,
+        "unit": null,
+        "name": "Maple syrup, for serving"
+      }
+    ],
+    "instructions": [
+      "In a medium bowl, whisk flour, granulated sugar, baking powder, and salt. In a large bowl, whisk milk, egg, and vanilla. While whisking, stream in melted butter and whisk to combine.",
+      "Gently fold dry ingredients into milk mixture until just combined (do not overmix; some lumps are okay).",
+      "Preheat a griddle or other large heavy skillet over medium heat until hot but not scorching, 2 to 3 minutes.",
+      "Melt enough butter to cover surface of griddle, then pour about 1/4 cup batter onto griddle. Cook pancake until bubbles form on top and sides start to lift from pan, 2 to 3 minutes. Flip and cook until bottom is golden brown and pancake is fluffy, 2 to 3 minutes. Transfer to a wire rack. Wipe off griddle, then repeat with more butter and remaining batter (you should get about 10 pancakes).",
+      "Divide pancakes among plates. Serve with butter and syrup."
+    ],
+    "mealTypes": [
+      "breakfast"
+    ],
+    "tags": [
+      "default"
+    ]
+  },
+  {
+    "title": "Perfect Chicken Caesar Salad",
+    "image": "https://www.inspiredtaste.net/wp-content/uploads/2025/01/Chicken-Caesar-Salad-Recipe.jpg",
+    "description": "We use our homemade Caesar dressing and the most delicious Greek marinated chicken to make this salad. The flavor is out of this world! This salad makes 4 (very) generous servings or 6 generous side salads.",
+    "prepTime": 110,
+    "cookTime": 0,
+    "totalTime": 110,
+    "servings": 4,
+    "yields": "4 servings",
+    "sourceUrl": "https://www.inspiredtaste.net/83136/chicken-caesar-salad-recipe/",
+    "ingredients": [
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp",
+        "name": "olive oil"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "tsp",
+        "name": "honey"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "balsamic vinegar"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "cloves",
+        "name": "garlic, minced"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tbsp",
+        "name": "lemon juice"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tbsp",
+        "name": "chopped fresh dill or 1 teaspoon dried dill"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "dried oregano"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 1
+        },
+        "unit": "tbsp",
+        "name": "plain Greek yogurt"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "tsp",
+        "name": "fine sea salt"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "tsp",
+        "name": "fresh ground black pepper"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 2
+        },
+        "unit": "lb",
+        "name": "(680g) chicken breast or thighs"
+      },
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": null,
+        "name": "hearts romaine lettuce"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": null,
+        "name": "bunch of kale"
+      },
+      {
+        "amount": null,
+        "unit": null,
+        "name": "Half medium sweet onion, sliced thin"
+      },
+      {
+        "amount": null,
+        "unit": null,
+        "name": "Parmesan cheese shavings"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": null,
+        "name": "batch of homemade Caesar dressing, 1/2 cup to 2/3 cup"
+      },
+      {
+        "amount": {
+          "n": 4,
+          "d": 1
+        },
+        "unit": "cup",
+        "name": "torn or cubed day-old bread, about 1-inch pieces"
+      },
+      {
+        "amount": {
+          "n": 3,
+          "d": 1
+        },
+        "unit": "tbsp",
+        "name": "olive oil"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 4
+        },
+        "unit": null,
+        "name": "to 1/2 teaspoon dried herbs like rosemary, thyme, oregano, or Italian seasoning, optional"
+      },
+      {
+        "amount": null,
+        "unit": null,
+        "name": "Salt and fresh ground black pepper"
+      }
+    ],
+    "instructions": [
+      "Marinate the chicken: Combine the olive oil, honey, balsamic vinegar, garlic, lemon juice, dill, oregano, yogurt, salt, and pepper in a mixing bowl that is large enough to hold the chicken. Add the chicken, turning them around in the marinade so they are well coated. Marinate covered in the fridge for 1 to 8 hours.",
+      "Prep: Preheat the oven to 375F (190C). Line two baking sheets with parchment paper, one for the croutons and the other for the chicken.",
+      "Make croutons: Toss the bread with olive oil, a pinch of salt, and a few grinds of black pepper in a medium bowl. Add dried herbs, if using, and toss well. Transfer to a baking sheet. Bake, stirring once, until crisp and lightly golden around the edges, 10 to 15 minutes. Set aside.",
+      "Sear the chicken: While the croutons bake, heat a grill pan over medium heat. Lightly oil, and then place the chicken into the pan. Cook for 2 to 3 minutes on each side until grill marks, but do not cook until cooked in the middle. Watch that your heat is not too high during this step, as the honey can burn.",
+      "Finish the chicken in oven: Transfer the chicken to the prepared baking sheet and spoon over any remaining marinade from the bowl. Bake until an internal thermometer inserted into the thickest part of the chicken reads 165F, about 15 to 25 minutes, depending on how thick your chicken is. Rest for 5 minutes, and chop into bite-size pieces ready for the salad.",
+      "Prepare salad greens: Chop the romaine lettuce. Strip the leaves from hearty kale stems and chop or tear them apart. Rinse the lettuce and kale under cool water, then pat or spin them dry.",
+      "Make the salad: Toss lettuce, kale, and sliced onions with a few generous spoonfuls of the dressing. If the salad looks dry, add a bit more dressing. Scatter over a few handfuls of the croutons and finish with parmesan cheese shavings and chopped chicken."
+    ],
+    "mealTypes": [
+      "lunch",
+      "dinner"
+    ],
+    "tags": [
+      "default"
+    ]
+  },
+  {
+    "title": "Peanut Butter Energy Balls",
+    "image": "https://www.eatingwell.com/thmb/_xcMFaYFFC_3UOEi2kcvWr-rs18=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/peanut-butter-energy-balls-27520-1x1-2-36bd842985c943c880b55540cb158b52.jpg",
+    "description": "Try these healthy peanut butter and chocolate energy balls when you need a boost. They deliver a mixture of simple and complex carbohydrates.",
+    "prepTime": 20,
+    "cookTime": 0,
+    "totalTime": 20,
+    "servings": 17,
+    "yields": "17 servings",
+    "sourceUrl": "https://www.eatingwell.com/recipe/275207/peanut-butter-energy-balls/",
+    "ingredients": [
+      {
+        "amount": {
+          "n": 2,
+          "d": 1
+        },
+        "unit": "cup",
+        "name": "rolled oats (see Tip)"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 1
+        },
+        "unit": "cup",
+        "name": "natural peanut butter or other nut butter"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 2
+        },
+        "unit": "cup",
+        "name": "honey"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 4
+        },
+        "unit": "cup",
+        "name": "mini chocolate chips"
+      },
+      {
+        "amount": {
+          "n": 1,
+          "d": 4
+        },
+        "unit": "cup",
+        "name": "unsweetened shredded coconut"
+      }
+    ],
+    "instructions": [
+      "Combine oats, peanut butter (or other nut butter), honey, chocolate chips and coconut in a medium bowl; stir well. Using a 1-tablespoon measure, roll the mixture into balls."
+    ],
+    "mealTypes": [
+      "snack",
+      "breakfast"
+    ],
+    "tags": [
+      "default"
+    ]
+  }
+]
