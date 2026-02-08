@@ -549,20 +549,20 @@
         type?: MealType,
     ) => {
         try {
-            let sourceDate: Date | undefined;
-            if (day) {
-                const dayIndex = DAYS.indexOf(day);
-                if (dayIndex !== -1) {
-                    const d = new Date(weekRange.start);
-                    d.setDate(d.getDate() + dayIndex);
-                    sourceDate = d;
-                }
+            if (!day) {
+                throw new Error("Missing planned day for leftover.");
             }
+            const dayIndex = DAYS.indexOf(day);
+            if (dayIndex === -1) {
+                throw new Error(`Invalid planned day: ${day}`);
+            }
+            const sourceDate = new Date(weekRange.start);
+            sourceDate.setDate(sourceDate.getDate() + dayIndex);
             await addLeftoverToFridge(
                 title,
                 recipeId,
                 imageUrl,
-                sourceDate || new Date(),
+                sourceDate,
                 type || "dinner",
             );
             toasts.success("Leftover added to fridge");

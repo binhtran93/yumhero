@@ -109,10 +109,11 @@
                                                 class="text-[10px] text-app-text-muted"
                                             >
                                                 {new Date(
-                                                    leftover.createdAt,
+                                                    leftover.sourceDate,
                                                 ).toLocaleDateString(
                                                     undefined,
                                                     {
+                                                        weekday: "short",
                                                         month: "short",
                                                         day: "numeric",
                                                     },
