@@ -2,6 +2,7 @@
     import { page } from "$app/stores";
     import { Calendar, Book, User } from "lucide-svelte";
     import { headerActions } from "$lib/stores/ui";
+    import { accessLoading, isPaid, status, trialEndsAt } from "$lib/stores/access";
 
     type NavItem = {
         href: string;
@@ -21,7 +22,43 @@
             return true;
         return false;
     };
+
+    const showTrialBanner = $derived(
+        !$accessLoading &&
+            !$isPaid &&
+            $status === "trial" &&
+            Boolean($trialEndsAt),
+    );
+
+    const trialEndLabel = $derived.by(() => {
+        if (!$trialEndsAt) return "";
+        const trialEndDate = new Date($trialEndsAt);
+        if (Number.isNaN(trialEndDate.getTime())) return "";
+        return trialEndDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    });
 </script>
+
+{#if showTrialBanner}
+    <div class="h-8 w-full bg-black text-white">
+        <div
+            class="h-full w-full px-3 md:px-6 flex items-center justify-between md:justify-center gap-2 md:gap-3 text-[11px] md:text-xs"
+        >
+            <p class="truncate font-semibold">
+                14-day trial active. Ends {trialEndLabel}.
+            </p>
+            <a
+                href="/pay"
+                class="shrink-0 px-2.5 py-0.5 rounded bg-white text-black text-[10px] font-bold hover:bg-gray-100 transition-colors"
+            >
+                Unlock now
+            </a>
+        </div>
+    </div>
+{/if}
 
 <nav
     class="
