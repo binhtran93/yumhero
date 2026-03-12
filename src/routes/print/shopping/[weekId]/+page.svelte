@@ -41,7 +41,7 @@
                     replaceState: true,
                 });
             } else if (!$subscriptionLoading && !$isSubscribed) {
-                goto("/subscribe", { replaceState: true });
+                goto("/pay", { replaceState: true });
             }
         }
     });

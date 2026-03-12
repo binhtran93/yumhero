@@ -62,7 +62,7 @@ const parseUserDocPurchaseState = (
 const loadPurchaseStatus = async () => {
     try {
         const data = await apiRequest<PurchaseStatusResponse>(
-            '/api/subscription/status',
+            '/api/pay/status',
             { cache: 'no-store' },
         );
         applyPurchaseState(data);

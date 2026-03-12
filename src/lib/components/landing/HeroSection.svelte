@@ -18,7 +18,7 @@
             : $subscriptionLoading
               ? "/plan"
               : !$isSubscribed
-                ? "/subscribe"
+                ? "/pay"
                 : "/plan",
     );
 </script>
