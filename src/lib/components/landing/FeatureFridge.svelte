@@ -49,11 +49,11 @@
             >
                 <!-- Leftover Tracking Card -->
                 <div
-                    class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 active:scale-[0.98]"
+                    class="p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md"
                 >
                     <div class="flex items-center gap-4 mb-5">
                         <div
-                            class="w-11 h-11 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 transition-transform duration-500 group-hover:scale-110"
+                            class="w-11 h-11 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"
                         >
                             <History size={20} strokeWidth={2.5} />
                         </div>
@@ -73,11 +73,11 @@
 
                 <!-- Zero Waste Cleanup Card -->
                 <div
-                    class="group p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5 active:scale-[0.98]"
+                    class="p-8 bg-app-surface border border-app-border rounded-[32px] shadow-md"
                 >
                     <div class="flex items-center gap-4 mb-5">
                         <div
-                            class="w-11 h-11 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-transform duration-500 group-hover:scale-110"
+                            class="w-11 h-11 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600"
                         >
                             <Zap size={20} strokeWidth={2.5} />
                         </div>
