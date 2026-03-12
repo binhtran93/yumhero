@@ -130,13 +130,13 @@
                     <h2
                         class="text-3xl md:text-5xl font-black text-app-text mb-4"
                     >
-                        Grocery list that <span class="text-app-primary"
-                            >stays in sync</span
+                        Automatically generated <span class="text-app-primary"
+                            >grocery list</span
                         >
                     </h2>
                     <p class="text-lg text-app-text-muted max-w-2xl mx-auto">
-                        Keep one clean, shared list that updates instantly as
-                        you plan meals and check items off.
+                        Add meals to your plan and YumHero instantly builds one
+                        clean list with everything you need for the week.
                     </p>
                 </div>
 
