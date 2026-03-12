@@ -1,9 +1,6 @@
 import {
     PUBLIC_PADDLE_CLIENT_TOKEN,
-    PUBLIC_PADDLE_PRICE_ID_MONTHLY,
-    PUBLIC_PADDLE_PRICE_ID_YEARLY,
-    PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL,
-    PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL,
+    PUBLIC_PADDLE_PRICE_ID,
 } from "$env/static/public";
 import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 
@@ -19,7 +16,7 @@ export async function getPaddle() {
     try {
         paddleInstance = await initializePaddle({
             token: PUBLIC_PADDLE_CLIENT_TOKEN,
-            environment: environment,
+            environment,
         });
         console.log("Paddle v2 Initialized (" + environment + ")");
         return paddleInstance;
@@ -29,32 +26,21 @@ export async function getPaddle() {
     }
 }
 
-export async function openCheckout(userId: string, plan: "monthly" | "yearly", hasUsedTrial: boolean) {
+export async function openCheckout(userId: string) {
     const paddle = await getPaddle();
     if (!paddle) {
         console.error("Paddle not initialized");
         return;
     }
 
-    let priceId: string;
-    if (hasUsedTrial) {
-        priceId = plan === "monthly"
-            ? PUBLIC_PADDLE_PRICE_ID_MONTHLY_NO_TRIAL
-            : PUBLIC_PADDLE_PRICE_ID_YEARLY_NO_TRIAL;
-    } else {
-        priceId = plan === "monthly"
-            ? PUBLIC_PADDLE_PRICE_ID_MONTHLY
-            : PUBLIC_PADDLE_PRICE_ID_YEARLY;
-    }
-
-    if (!priceId) {
-        console.error("No price ID found for plan:", plan);
+    if (!PUBLIC_PADDLE_PRICE_ID) {
+        console.error("No PUBLIC_PADDLE_PRICE_ID configured");
         return;
     }
 
     try {
         paddle.Checkout.open({
-            items: [{ priceId: priceId, quantity: 1 }],
+            items: [{ priceId: PUBLIC_PADDLE_PRICE_ID, quantity: 1 }],
             customData: { userId },
             settings: {
                 successUrl: window.location.origin + "/plan",

@@ -11,27 +11,21 @@ export const GET = async ({ request }) => {
         if (!snapshot.exists) {
             return json({
                 isSubscribed: false,
-                hasUsedTrial: false,
                 status: 'free',
-                nextBilledAt: null,
-                billingInterval: null,
-                scheduledCancellation: null
+                purchasedAt: null
             });
         }
 
         const data = snapshot.data() || {};
-        const active = data.status === 'active' || data.status === 'trialing';
+        const active = data.status === 'active';
 
         return json({
             isSubscribed: active,
-            hasUsedTrial: data.hasUsedTrial === true,
-            status: data.status || 'free',
-            nextBilledAt: data.nextBilledAt || null,
-            billingInterval: data.billingInterval || null,
-            scheduledCancellation: data.scheduledCancellation || null
+            status: active ? 'active' : 'free',
+            purchasedAt: data.purchasedAt || null
         });
     } catch (error: any) {
-        console.error('Error fetching subscription status:', error);
-        return errorResponse(error, 'Failed to fetch subscription status');
+        console.error('Error fetching purchase status:', error);
+        return errorResponse(error, 'Failed to fetch purchase status');
     }
 };

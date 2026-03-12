@@ -1,26 +1,14 @@
 <script lang="ts">
     import { user } from "$lib/stores/auth";
-    import {
-        isSubscribed,
-        subscriptionLoading,
-        hasUsedTrial,
-    } from "$lib/stores/subscription";
+    import { isSubscribed } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
-
     import { openCheckout } from "$lib/paddle";
 
-    let { onSubscribe, isLoading = $bindable(false) } = $props<{
-        onSubscribe?: (plan: "monthly" | "yearly") => void;
+    let { isLoading = $bindable(false) } = $props<{
         isLoading?: boolean;
     }>();
 
-    let isAnnual = $state(false);
-
-    const monthlyPrice = 4.99;
-    const yearlyPrice = 39.99;
-    const savingsPercent = Math.round(
-        (1 - yearlyPrice / (monthlyPrice * 12)) * 100,
-    );
+    const oneTimePrice = 9.99;
 
     const features = [
         "Ad-free recipe imports from any blog",
@@ -47,121 +35,40 @@
 
         e.preventDefault();
 
-        if (onSubscribe) {
-            onSubscribe(isAnnual ? "yearly" : "monthly");
-        } else {
-            // Default internal checkout (Landing Page behavior)
-            isLoading = true;
-            try {
-                await openCheckout(
-                    $user.uid,
-                    isAnnual ? "yearly" : "monthly",
-                    $hasUsedTrial,
-                );
-                // The loading will reset after some time or on navigation
-                setTimeout(() => (isLoading = false), 5000);
-            } catch (err) {
-                console.error("Checkout failed:", err);
-                isLoading = false;
-            }
+        isLoading = true;
+        try {
+            await openCheckout($user.uid);
+            setTimeout(() => (isLoading = false), 5000);
+        } catch (err) {
+            console.error("Checkout failed:", err);
+            isLoading = false;
         }
     }
 </script>
 
 <div class="flex flex-col items-center gap-12">
-    <!-- Billing Toggle -->
-    <div class="relative flex items-center">
-        <div
-            class="bg-app-surface-deep p-1.5 rounded-full flex items-center border border-app-border relative"
-        >
-            <div
-                class="absolute h-[calc(100%-12px)] top-[6px] transition-all duration-300 ease-out bg-app-primary rounded-full shadow-md"
-                style="width: calc(50% - 6px); left: {isAnnual
-                    ? 'calc(50%)'
-                    : '6px'}"
-            ></div>
-
-            <button
-                onclick={() => (isAnnual = false)}
-                class="px-8 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 {!isAnnual
-                    ? 'text-white'
-                    : 'text-app-text-muted hover:text-app-text'}"
-            >
-                Monthly
-            </button>
-            <button
-                onclick={() => (isAnnual = true)}
-                class="px-8 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 {isAnnual
-                    ? 'text-white'
-                    : 'text-app-text-muted hover:text-app-text'}"
-            >
-                Annually
-            </button>
-        </div>
-
-        <!-- Save Label & Arrow -->
-        <div
-            class="absolute -right-12 -top-16 md:-right-16 md:-top-16 flex flex-col items-center pointer-events-none select-none"
-        >
-            <span
-                class="font-['Caveat'] text-2xl md:text-3xl text-app-text-muted transform rotate-[8deg] -translate-x-2"
-            >
-                Save {savingsPercent}%
-            </span>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="60"
-                height="40"
-                viewBox="0 0 60 40"
-                fill="none"
-                class="text-app-text-muted transform -translate-x-2 -translate-y-1"
-            >
-                <!-- Main Curve -->
-                <path
-                    d="M50 8C40 8 18 12 12 28"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-                <!-- Arrowhead -->
-                <path
-                    d="M21 23L12 28L10 18"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-        </div>
-    </div>
-
-    <!-- Single Pricing Card -->
     <div class="w-full max-w-md">
         <div
             class="bg-app-surface rounded-3xl p-8 md:p-10 border-2 border-app-primary shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative overflow-hidden transition-all hover:shadow-[0_20px_60px_rgba(194,65,12,0.15)] group"
         >
-            <!-- Decorative background element -->
             <div
                 class="absolute top-0 right-0 w-32 h-32 bg-app-primary/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"
             ></div>
 
             <div class="text-center mb-10">
-                <h3 class="text-2xl font-bold text-app-text mb-4">Pro Plan</h3>
+                <h3 class="text-2xl font-bold text-app-text mb-4">YumHero Pro</h3>
                 <div class="flex items-baseline justify-center gap-1">
                     <span
                         class="text-5xl md:text-6xl font-black text-app-text tracking-tight transition-all"
                     >
-                        ${isAnnual ? yearlyPrice : monthlyPrice}
+                        ${oneTimePrice}
                     </span>
                     <span class="text-xl text-app-text-muted font-medium">
-                        /{isAnnual ? "yr" : "mo"}
+                        once
                     </span>
                 </div>
                 <p class="text-sm text-app-text-muted mt-3">
-                    {isAnnual
-                        ? `Billed yearly ($${(yearlyPrice / 12).toFixed(2)}/mo)`
-                        : "Billed monthly. Cancel anytime."}
+                    One-time purchase. Lifetime access.
                 </p>
             </div>
 
@@ -205,19 +112,15 @@
             >
                 {#if isLoading}
                     Processing...
-                {:else if $hasUsedTrial}
-                    Subscribe {isAnnual ? "Annually" : "Monthly"}
+                {:else if $isSubscribed}
+                    Open YumHero
                 {:else}
-                    Start 7-Day Free Trial
+                    Buy Now for ${oneTimePrice}
                 {/if}
             </a>
 
             <p class="text-center text-xs text-app-text-muted mt-5">
-                {#if !$hasUsedTrial}
-                    Start your free trial. No charge today
-                {:else}
-                    Secured by Paddle. Cancel anytime.
-                {/if}
+                Secured by Paddle. One payment, lifetime access.
             </p>
         </div>
     </div>

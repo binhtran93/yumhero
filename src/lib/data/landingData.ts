@@ -113,47 +113,17 @@ export const mockQuickRecipes = [
 
 export const pricingTiers = [
     {
-        name: "Free",
-        price: "$0",
-        description: "For casual home cooks",
+        name: "Lifetime",
+        price: "$9.99",
+        description: "One-time purchase",
         features: [
-            "7-day meal planning",
-            "Basic shopping list",
-            "5 saved recipes",
-            "Single device",
-        ],
-        cta: "Get Started",
-        highlighted: false,
-    },
-    {
-        name: "Pro",
-        price: "$5",
-        period: "/month",
-        description: "For serious meal planners",
-        features: [
-            "Unlimited planning",
+            "Drag-and-drop planner",
             "Smart shopping lists",
             "Unlimited recipes",
-            "Drag-and-drop planner",
-            "Faster weekly planning",
+            "Printable week plan",
             "Multi-device sync",
         ],
-        cta: "Start Free Trial",
-        highlighted: true,
-    },
-    {
-        name: "Family",
-        price: "$8",
-        period: "/month",
-        description: "For households",
-        features: [
-            "Everything in Pro",
-            "Up to 6 family members",
-            "Shared shopping lists",
-            "Meal preferences",
-            "Priority support",
-        ],
-        cta: "Start Free Trial",
+        cta: "Buy Now",
         highlighted: false,
     },
 ];
@@ -161,7 +131,7 @@ export const pricingTiers = [
 export const faqItems = [
     {
         question: "How much does YumHero cost?",
-        answer: "YumHero starts with a 7-day free trial on our Pro plan. After that, it's just $4.99 per month or $39.99 for an entire year (saving you 33%). You get unlimited recipe imports, smart inventory tracking, and full cross-device sync.",
+        answer: "YumHero is a one-time purchase of $9.99 USD for lifetime access. You get unlimited recipe imports, smart planning tools, and full cross-device sync.",
     },
     {
         question: "Why isn't there a permanent free plan?",
@@ -172,7 +142,7 @@ export const faqItems = [
         answer: "We are planning to launch native iOS and Android apps very soon! In the meantime, YumHero is built as a Progressive Web App (PWA). You can install it instantly by opening this site in your mobile browser and selecting 'Add to Home Screen' (on iOS, tap the Share button; on Android, tap the menu dots). It works exactly like a native app, stays in sync, and won't take up any storage space.",
     },
     {
-        question: "Can I use my subscription on multiple devices?",
+        question: "Can I use my purchase on multiple devices?",
         answer: "Absolutely! Your account syncs instantly across your phone, tablet, and computer. You can plan your week on a large desktop screen and then follow the recipe on your phone while standing at the stove.",
     },
     {

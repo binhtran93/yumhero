@@ -3,12 +3,10 @@
     import {
         isSubscribed,
         subscriptionLoading,
-        hasUsedTrial,
     } from "$lib/stores/subscription";
     import { goto } from "$app/navigation";
-    import { LogOut, ChevronDown } from "lucide-svelte";
+    import { LogOut } from "lucide-svelte";
     import { fly, fade } from "svelte/transition";
-    import { openCheckout } from "$lib/paddle";
     import PricingTable from "$lib/components/PricingTable.svelte";
 
     // Protect this route: Must be logged in
@@ -117,13 +115,7 @@
         <p
             class="text-base md:text-2xl text-app-text-muted max-w-2xl mx-auto leading-relaxed"
         >
-            {#if $hasUsedTrial}
-                Choose the plan that fits your kitchen.
-            {:else}
-                Start your 7-day free trial today. <br
-                    class="hidden md:block"
-                />
-            {/if}
+            Get lifetime access with a one-time payment of $9.99.
         </p>
     </div>
 

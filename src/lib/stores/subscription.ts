@@ -3,43 +3,31 @@ import type { User } from 'firebase/auth';
 import { apiRequest } from '$lib/api/client';
 
 export const isSubscribed = writable<boolean>(false);
-export const hasUsedTrial = writable<boolean>(false);
-export const status = writable<string | null>(null);
-export const nextBilledAt = writable<string | null>(null);
-export const scheduledCancellation = writable<string | null>(null);
-export const billingInterval = writable<'month' | 'year' | null>(null);
+export const status = writable<'free' | 'active'>('free');
+export const purchasedAt = writable<string | null>(null);
 export const subscriptionLoading = writable<boolean>(true);
 
 let pollInterval: ReturnType<typeof setInterval> | null = null;
 
-const resetToFree = () => {
+const resetPurchaseState = () => {
     isSubscribed.set(false);
-    hasUsedTrial.set(false);
     status.set('free');
-    nextBilledAt.set(null);
-    billingInterval.set(null);
-    scheduledCancellation.set(null);
+    purchasedAt.set(null);
 };
 
-const loadSubscription = async () => {
+const loadPurchaseStatus = async () => {
     try {
         const data = await apiRequest<{
             isSubscribed: boolean;
-            hasUsedTrial: boolean;
-            status: string;
-            nextBilledAt: string | null;
-            billingInterval: 'month' | 'year' | null;
-            scheduledCancellation: string | null;
+            status: 'free' | 'active';
+            purchasedAt: string | null;
         }>('/api/subscription/status');
 
         isSubscribed.set(data.isSubscribed);
-        hasUsedTrial.set(data.hasUsedTrial);
         status.set(data.status);
-        nextBilledAt.set(data.nextBilledAt);
-        billingInterval.set(data.billingInterval);
-        scheduledCancellation.set(data.scheduledCancellation);
+        purchasedAt.set(data.purchasedAt);
     } catch (error) {
-        console.error('Subscription Sync Error:', error);
+        console.error('Purchase status sync error:', error);
     } finally {
         subscriptionLoading.set(false);
     }
@@ -52,19 +40,20 @@ export const syncSubscription = (currentUser: User | null) => {
     }
 
     if (!currentUser) {
-        resetToFree();
+        resetPurchaseState();
         subscriptionLoading.set(false);
         return;
     }
 
     subscriptionLoading.set(true);
-    loadSubscription();
+    loadPurchaseStatus();
 
     if (typeof window !== 'undefined') {
-        pollInterval = setInterval(loadSubscription, 15000);
+        pollInterval = setInterval(loadPurchaseStatus, 15000);
     }
 };
 
 export const upgradeUser = () => {
     isSubscribed.set(true);
+    status.set('active');
 };

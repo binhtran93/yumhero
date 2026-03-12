@@ -10,10 +10,6 @@ export const RATE_LIMITS = {
     extractRecipe: { scope: 'extract-recipe', windowSec: 60, maxRequests: 10 },
     r2PresignUpload: { scope: 'r2-presign-upload', windowSec: 60, maxRequests: 30 },
     r2DeleteImage: { scope: 'r2-delete-image', windowSec: 60, maxRequests: 30 },
-    subscriptionCancel: { scope: 'subscription-cancel', windowSec: 60, maxRequests: 10 },
-    subscriptionConfirm: { scope: 'subscription-confirm', windowSec: 60, maxRequests: 10 },
-    subscriptionSwitch: { scope: 'subscription-switch', windowSec: 60, maxRequests: 10 },
-    subscriptionSwitchPreview: { scope: 'subscription-switch-preview', windowSec: 60, maxRequests: 20 },
 } as const satisfies Record<string, RateLimitConfig>;
 
 function sanitizeScope(scope: string): string {

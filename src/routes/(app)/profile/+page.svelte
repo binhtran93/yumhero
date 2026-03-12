@@ -3,9 +3,6 @@
     import {
         Trash2,
         LogOut,
-        User,
-        Sun,
-        Moon,
         Star,
         Info,
         Mail,
@@ -22,34 +19,17 @@
     import { toasts } from "$lib/stores/toasts";
     import {
         status,
-        nextBilledAt,
-        billingInterval,
-        scheduledCancellation,
+        purchasedAt,
+        isSubscribed,
     } from "$lib/stores/subscription";
-    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
-    import { apiRequest, jsonRequest } from "$lib/api/client";
+    import { openCheckout } from "$lib/paddle";
 
     const getStatusConfig = (s: string | null) => {
         switch (s) {
             case "active":
                 return {
-                    label: "ACTIVE",
+                    label: "PURCHASED",
                     classes: "bg-green-100 text-green-700",
-                };
-            case "trialing":
-                return {
-                    label: "FREE TRIAL",
-                    classes: "bg-blue-100 text-blue-700",
-                };
-            case "past_due":
-                return {
-                    label: "PAST DUE",
-                    classes: "bg-orange-100 text-orange-700",
-                };
-            case "canceled":
-                return {
-                    label: "CANCELED",
-                    classes: "bg-gray-100 text-gray-700",
                 };
             default:
                 return { label: "FREE", classes: "bg-gray-100 text-gray-700" };
@@ -66,141 +46,21 @@
         toasts.info("Delete account functionality coming soon.");
     };
 
-    let isActivating = $state(false);
-    let showConfirmModal = $state(false);
+    let isPurchasing = $state(false);
 
-    const handleConfirmSubscription = async () => {
-        showConfirmModal = false;
-        isActivating = true;
+    const handlePurchase = async () => {
+        if (!$user || $isSubscribed || isPurchasing) return;
+
+        isPurchasing = true;
         try {
-            const result = await apiRequest<{ success: boolean; error?: string }>(
-                "/api/subscription/confirm",
-                {
-                method: "POST",
-                ...jsonRequest({}),
-            });
-            if (result.success) {
-                toasts.success("Subscription confirmed successfully!");
-            } else {
-                toasts.error(result.error || "Failed to confirm subscription.");
-            }
-        } catch (e: any) {
-            console.error(e);
-            toasts.error("An error occurred. Please try again.");
-        } finally {
-            isActivating = false;
-        }
-    };
-
-    let isSwitching = $state(false);
-    let showSwitchModal = $state(false);
-    let previewAmount = $state<string | null>(null);
-    let previewCurrency = $state<string | null>(null);
-    let isLoadingPreview = $state(false);
-
-    const handleShowSwitchModal = async () => {
-        showSwitchModal = true;
-        isLoadingPreview = true;
-        previewAmount = null;
-
-        try {
-            const data = await apiRequest<{
-                success: boolean;
-                immediateTransaction?: { details?: { totals?: { total?: string } } };
-                currency?: string;
-            }>("/api/subscription/switch/preview", {
-                method: "POST",
-                ...jsonRequest({
-                    targetInterval: "year",
-                }),
-            });
-
-            if (data.success && data.immediateTransaction) {
-                previewAmount = data.immediateTransaction.details?.totals?.total || null;
-                previewCurrency = data.currency || null;
-            }
-        } catch (e) {
-            console.error("Failed to fetch preview", e);
-        } finally {
-            isLoadingPreview = false;
-        }
-    };
-
-    const formatPrice = (amount: string, currency: string) => {
-        if (!amount || !currency) return "";
-        const value = parseInt(amount) / 100;
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: currency,
-        }).format(value);
-    };
-
-    let switchMessage = $derived(
-        isLoadingPreview
-            ? "Calculating pro-rated amount..."
-            : previewAmount && previewCurrency
-              ? `Switching to Yearly will charge you approximately <strong>${formatPrice(previewAmount, previewCurrency)}</strong> immediately. <br/><br/>You'll <strong>save 30%</strong> per year!`
-              : "Switching to Yearly will charge you immediately. <br/><br/>You'll <strong>save 30%</strong> per year!",
-    );
-
-    const handleSwitchPlan = async () => {
-        if (!$billingInterval) return;
-        showSwitchModal = false;
-        isSwitching = true;
-        const targetInterval = $billingInterval === "month" ? "year" : "month";
-
-        try {
-            const result = await apiRequest<{ success: boolean; error?: string }>(
-                "/api/subscription/switch",
-                {
-                method: "POST",
-                ...jsonRequest({
-                    targetInterval,
-                }),
-            });
-            
-            if (result.success) {
-                toasts.success(
-                    `Successfully switched to ${targetInterval}ly plan!`,
-                );
-            } else {
-                toasts.error(result.error || "Failed to switch plan.");
-            }
-        } catch (e: any) {
-            console.error(e);
-            toasts.error("An error occurred. Please try again.");
-        } finally {
-            isSwitching = false;
-        }
-    };
-
-    let isCancelling = $state(false);
-    let showCancelModal = $state(false);
-
-    const handleCancelSubscription = async () => {
-        showCancelModal = false;
-        isCancelling = true;
-
-        try {
-            const result = await apiRequest<{ success: boolean; error?: string }>(
-                "/api/subscription/cancel",
-                {
-                method: "POST",
-                ...jsonRequest({}),
-            });
-            
-            if (result.success) {
-                toasts.success(
-                    "Subscription cancelled. You will still have access until the end of your billing period.",
-                );
-            } else {
-                toasts.error(result.error || "Failed to cancel subscription.");
-            }
-        } catch (e: any) {
-            console.error(e);
-            toasts.error("An error occurred. Please try again.");
-        } finally {
-            isCancelling = false;
+            await openCheckout($user.uid);
+            setTimeout(() => {
+                isPurchasing = false;
+            }, 5000);
+        } catch (error) {
+            console.error("Checkout failed:", error);
+            toasts.error("Unable to open checkout. Please try again.");
+            isPurchasing = false;
         }
     };
 
@@ -259,9 +119,7 @@
     class="flex-1 h-full overflow-y-auto bg-app-bg pb-24 md:pb-8 scrollbar-hide"
 >
     {#if $user}
-        <!-- Hero Section with Gradient -->
         <div class="relative pt-12 pb-8 px-4 text-center overflow-hidden">
-            <!-- Background Gradient -->
             <div
                 class="absolute inset-0 bg-gradient-to-b from-orange-100/60 to-transparent -z-10"
             ></div>
@@ -300,8 +158,6 @@
             class="max-w-xl mx-auto px-4 space-y-4 mb-12"
             in:fly={{ y: 20, duration: 500, delay: 200 }}
         >
-            <!-- Subscription Card -->
-            <!-- Subscription Card -->
             <div
                 class="bg-app-surface p-4 rounded-2xl border border-app-border shadow-sm flex justify-between items-start"
             >
@@ -312,51 +168,36 @@
                         <Star size={24} fill="currentColor" />
                     </div>
                     <div class="flex flex-col gap-1">
-                        <p class="font-black text-app-text">Premium Plan</p>
+                        <p class="font-black text-app-text">YumHero Pro</p>
                         <p class="text-xs text-app-text-muted font-bold">
-                            {#if $scheduledCancellation}
-                                Ends {new Date(
-                                    $scheduledCancellation,
-                                ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                })}
-                            {:else if $nextBilledAt}
-                                Renews {new Date(
-                                    $nextBilledAt,
-                                ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                })}
-                                {#if ($status === "active" || $status === "trialing") && !$scheduledCancellation}
-                                    <button
-                                        onclick={() => (showCancelModal = true)}
-                                        class="ml-2 text-[10px] text-app-text-muted hover:text-red-500 underline cursor-pointer"
-                                    >
-                                        Cancel
-                                    </button>
-                                {/if}
+                            {#if $isSubscribed && $purchasedAt}
+                                Purchased {new Date($purchasedAt).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                    },
+                                )}
+                            {:else if $isSubscribed}
+                                Lifetime access unlocked
                             {:else}
-                                Free Account
+                                One-time purchase for lifetime access
                             {/if}
                         </p>
-                        {#if ($status === "trialing" || $status === "past_due") && !isActivating}
+
+                        {#if !$isSubscribed}
                             <button
-                                onclick={() => (showConfirmModal = true)}
-                                class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
+                                onclick={handlePurchase}
+                                disabled={isPurchasing}
+                                class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 <Zap size={12} fill="currentColor" />
-                                Confirm Subscription
-                            </button>
-                        {:else if $status === "active" && !$scheduledCancellation && $billingInterval === "month"}
-                            <button
-                                onclick={handleShowSwitchModal}
-                                class="mt-1 px-4 py-2.5 bg-app-primary text-white text-xs font-bold rounded-lg shadow-sm hover:bg-app-primary-hover transition-colors w-fit flex items-center gap-1.5 cursor-pointer"
-                            >
-                                <Zap size={12} fill="currentColor" />
-                                Switch to Yearly & Save 30%
+                                {#if isPurchasing}
+                                    Opening Checkout...
+                                {:else}
+                                    Unlock Pro for $9.99
+                                {/if}
                             </button>
                         {/if}
                     </div>
@@ -370,7 +211,6 @@
                 </div>
             </div>
 
-            <!-- Menu Items -->
             <div class="space-y-3">
                 {#each menuItems as item}
                     <a
@@ -395,7 +235,6 @@
                 {/each}
             </div>
 
-            <!-- Action Buttons -->
             <div class="grid grid-cols-2 gap-4 pt-4">
                 <button
                     onclick={handleSignOut}
@@ -418,52 +257,9 @@
                     Remove Account
                 </button>
             </div>
-
-            {#if ($status === "active" || $status === "trialing") && !$scheduledCancellation}
-                <button
-                    onclick={() => (showCancelModal = true)}
-                    class="w-full text-center text-xs text-app-text-muted hover:text-red-500 font-bold py-4 transition-colors cursor-pointer"
-                >
-                    Cancel Subscription
-                </button>
-            {/if}
         </div>
     {/if}
 </div>
-
-<ConfirmModal
-    isOpen={showConfirmModal}
-    title="Confirm Subscription"
-    message="By confirming, you will end your trial period and start your paid subscription immediately."
-    confirmText="Confirm"
-    cancelText="Maybe Later"
-    onConfirm={handleConfirmSubscription}
-    onClose={() => (showConfirmModal = false)}
-    isLoading={isActivating}
-/>
-
-<ConfirmModal
-    isOpen={showSwitchModal}
-    title="Switch Billing Cycle"
-    message={switchMessage}
-    confirmText="Confirm Switch"
-    cancelText="Keep Current"
-    onConfirm={handleSwitchPlan}
-    onClose={() => (showSwitchModal = false)}
-    isLoading={isSwitching || isLoadingPreview}
-/>
-
-<ConfirmModal
-    isOpen={showCancelModal}
-    title="Cancel Subscription"
-    message="Are you sure you want to cancel? You will continue to have access to pro features until the end of your current billing period."
-    confirmText="Cancel Subscription"
-    cancelText="Keep My Plan"
-    isDestructive={true}
-    onConfirm={handleCancelSubscription}
-    onClose={() => (showCancelModal = false)}
-    isLoading={isCancelling}
-/>
 
 <style>
     .scrollbar-hide::-webkit-scrollbar {

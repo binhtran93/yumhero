@@ -115,7 +115,7 @@
                         <li><strong>Contact Data:</strong> Email address.</li>
                         <li>
                             <strong>Financial Data:</strong> We use third-party payment
-                            processors (Paddle) to handle subscriptions. We do not
+                            processors (Paddle) to handle purchases. We do not
                             store your full card details.
                         </li>
                         <li>
@@ -150,7 +150,7 @@
                     </p>
                     <ul class="list-disc pl-6 space-y-2">
                         <li>To register you as a new customer.</li>
-                        <li>To provide and manage your subscription.</li>
+                        <li>To provide and manage your purchase access.</li>
                         <li>To personalize your meal planning experience.</li>
                         <li>To notify you about changes to our service.</li>
                         <li>

@@ -113,34 +113,30 @@
                 </div>
             </section>
 
-            <section id="subscriptions">
+            <section id="billing">
                 <div class="flex items-center gap-3 mb-6">
                     <div
                         class="w-10 h-10 bg-app-surface border border-app-border rounded-xl flex items-center justify-center text-app-primary"
                     >
                         <AlertCircle size={20} />
                     </div>
-                    <h2 class="text-2xl font-bold">
-                        3. Subscriptions & Billing
-                    </h2>
+                    <h2 class="text-2xl font-bold">3. Billing</h2>
                 </div>
                 <div
                     class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
-                        Some parts of the service are billed on a subscription
-                        basis. You will be billed in advance on a recurring and
-                        periodic basis (monthly or annually). At the end of each
-                        period, your subscription will automatically renew under
-                        the exact same conditions unless you cancel it or
-                        YumHero cancels it.
+                        Paid access to YumHero is offered as a one-time
+                        purchase. When you complete payment, your account
+                        receives lifetime access to paid features for the
+                        duration of the service.
                     </p>
                     <p>
                         All payments are handled by our third-party processor, <strong
                             >Paddle</strong
                         >. You agree to provide a valid payment method and
-                        authorize Paddle to charge all subscription fees to such
-                        payment method.
+                        authorize Paddle to charge the displayed one-time fee
+                        to such payment method.
                     </p>
                 </div>
             </section>
