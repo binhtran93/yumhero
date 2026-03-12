@@ -1,25 +1,18 @@
 <script lang="ts">
-    import { ChefHat, Menu, X, ChevronDown, ArrowRight } from "lucide-svelte";
+    import { Menu, X, ChevronDown } from "lucide-svelte";
     import { slide } from "svelte/transition";
     import { user } from "$lib/stores/auth";
-    import {
-        hasAccess,
-        accessLoading,
-    } from "$lib/stores/access";
 
     let isMenuOpen = $state(false);
     let isMobileFeaturesOpen = $state(true);
     let isDesktopFeaturesOpen = $state(false);
 
-    const planLink = $derived(
-        !$user
-            ? "/login"
-            : $accessLoading
-              ? "/plan"
-              : !$hasAccess
-                ? "/pay"
-                : "/plan",
-    );
+    const ctaHref = $derived(!$user ? "/login" : "/plan");
+    const ctaLabel = $derived(!$user ? "Login" : "Dashboard");
+    const avatarFallback = $derived.by(() => {
+        const nameOrEmail = $user?.displayName || $user?.email || "U";
+        return nameOrEmail.charAt(0).toUpperCase();
+    });
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
@@ -132,11 +125,25 @@
             <!-- CTA Desktop -->
             <div class="hidden md:block">
                 <a
-                    href={planLink}
-                    class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95 flex items-center gap-2"
+                    href={ctaHref}
+                    class="px-4 py-1.5 bg-app-primary text-white text-sm font-bold rounded-lg hover:bg-app-primary/90 transition-all active:scale-95 flex items-center gap-2 shadow-md shadow-app-primary/20"
                 >
-                    Start Planning
-                    <ArrowRight size={16} />
+                    {#if $user}
+                        {#if $user.photoURL}
+                            <img
+                                src={$user.photoURL}
+                                alt="User avatar"
+                                class="w-6 h-6 rounded-full object-cover border border-white/40"
+                            />
+                        {:else}
+                            <span
+                                class="w-6 h-6 rounded-full bg-white/20 border border-white/40 text-white text-[11px] font-black flex items-center justify-center"
+                            >
+                                {avatarFallback}
+                            </span>
+                        {/if}
+                    {/if}
+                    <span>{ctaLabel}</span>
                 </a>
             </div>
 
@@ -222,12 +229,26 @@
                     onclick={closeMenu}>FAQ</a
                 >
                 <a
-                    href={planLink}
+                    href={ctaHref}
                     class="mt-4 w-full py-4 bg-app-primary text-white text-center font-bold rounded-xl flex items-center justify-center gap-2"
                     onclick={closeMenu}
                 >
-                    Start Planning
-                    <ArrowRight size={20} />
+                    {#if $user}
+                        {#if $user.photoURL}
+                            <img
+                                src={$user.photoURL}
+                                alt="User avatar"
+                                class="w-6 h-6 rounded-full object-cover border border-white/40"
+                            />
+                        {:else}
+                            <span
+                                class="w-6 h-6 rounded-full bg-white/20 border border-white/40 text-white text-[11px] font-black flex items-center justify-center"
+                            >
+                                {avatarFallback}
+                            </span>
+                        {/if}
+                    {/if}
+                    <span>{ctaLabel}</span>
                 </a>
             </div>
         </div>
