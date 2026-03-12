@@ -1,7 +1,7 @@
 <script lang="ts">
     import { loading as authLoading, signOut, user } from "$lib/stores/auth";
     import {
-        hasAccess,
+        isPaid,
         accessLoading,
     } from "$lib/stores/access";
     import { goto } from "$app/navigation";
@@ -17,7 +17,7 @@
             !$authLoading &&
             !$accessLoading &&
             $user &&
-            $hasAccess
+            $isPaid
         ) {
             goto("/plan", { replaceState: true });
         }

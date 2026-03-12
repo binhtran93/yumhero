@@ -48,7 +48,8 @@
             class="h-full w-full px-3 md:px-6 flex items-center justify-between md:justify-center gap-2 md:gap-3 text-[11px] md:text-xs"
         >
             <p class="truncate font-semibold">
-                14-day trial active. Ends {trialEndLabel}.
+                You’re on a free 14-day trial until {trialEndLabel}. Unlock
+                lifetime access anytime.
             </p>
             <a
                 href="/pay"
