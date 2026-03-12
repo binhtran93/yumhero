@@ -32,7 +32,7 @@
                 <p
                     class="text-base md:text-lg text-app-text-muted leading-relaxed font-medium text-center lg:text-left"
                 >
-                    Stop scrolling through life stories. Paste a URL and get
+                    Paste a URL and get
                     just the ingredients and instructions, instantly cleaned and
                     formatted.
                 </p>
