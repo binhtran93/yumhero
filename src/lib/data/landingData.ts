@@ -134,6 +134,10 @@ export const faqItems = [
         answer: "YumHero is a one-time purchase of $9.99 USD for lifetime access. You get unlimited recipe imports, smart planning tools, and full cross-device sync.",
     },
     {
+        question: "What is your refund policy?",
+        answer: "We offer a 7-day refund window from the date of purchase. If YumHero is not the right fit, contact support within 7 days and we will help with your refund request. See our full policy at /refund-policy.",
+    },
+    {
         question: "Why isn't there a permanent free plan?",
         answer: "Many free apps sell your personal data or clutter your kitchen with distracting ads. We believe your kitchen should be a focused space. By being a paid product, we can focus 100% on building tools that actually help you cook, while keeping your data private and your interface clean.",
     },

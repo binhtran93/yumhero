@@ -56,9 +56,7 @@
             <p
                 class="text-base md:text-xl text-app-text-muted mb-6 max-w-4xl mx-auto leading-relaxed"
             >
-                Precision meal planning for the organized home. Build your
-                week, generate shopping lists, and master your menu in a clean,
-                high-performance interface.
+                Plan your week, organize recipes, and generate smart shopping lists — all in one place
             </p>
             <div class="flex items-center justify-center gap-3">
                 <a

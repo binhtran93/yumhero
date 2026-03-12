@@ -104,6 +104,13 @@
                             >Security</a
                         >
                     </li>
+                    <li>
+                        <a
+                            href="/refund-policy"
+                            class="text-sm text-app-text-muted hover:text-app-primary transition-colors"
+                            >Refund Policy</a
+                        >
+                    </li>
                 </ul>
             </div>
         </div>

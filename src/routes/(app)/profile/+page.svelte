@@ -10,6 +10,7 @@
         FileText,
         Cookie,
         Lock,
+        RotateCcw,
         ChevronRight,
         Zap,
     } from "lucide-svelte";
@@ -117,6 +118,13 @@
             color: "text-red-500",
             bgColor: "bg-red-50",
             href: "/security",
+        },
+        {
+            label: "Refund Policy",
+            icon: RotateCcw,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+            href: "/refund-policy",
         },
     ];
 </script>
