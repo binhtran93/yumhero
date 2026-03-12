@@ -143,9 +143,6 @@
     };
 
     const getItemTitle = (item: any): string => {
-        if (item && "isLeftover" in item && item.isLeftover) {
-            return item.title || "";
-        }
         if (item && "recipe" in item) {
             return item.recipe?.title || "";
         }
@@ -245,8 +242,6 @@
 
                             <div class="px-2 pb-2 flex flex-col gap-2 relative">
                                 {#each dayPlan.meals[section.type] as item}
-                                    {@const itemIsLeftover =
-                                        "isLeftover" in item && item.isLeftover}
                                     <div
                                         class={twMerge(
                                             "relative flex items-center gap-2 pl-3 pr-2 py-1 rounded-xl border",
@@ -280,13 +275,6 @@
                                                 )}
                                             >
                                                 {getItemTitle(item)}
-
-                                                {#if itemIsLeftover}
-                                                    <span
-                                                        class="opacity-80 font-medium ml-1 text-[7pt]"
-                                                        >— leftover</span
-                                                    >
-                                                {/if}
 
                                                 {#if "quantity" in item && (item as any).quantity > 1}
                                                     <span

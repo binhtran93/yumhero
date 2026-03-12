@@ -1,5 +1,4 @@
 import type { MealType, ShoppingListItem, ShoppingListSource, WeeklyPlan } from '$lib/types';
-import { isPlannedLeftover } from '$lib/types';
 import { Fraction } from '$lib/utils/fraction';
 import { parseAmountValue } from '$lib/utils/amount';
 import { areMergeableUnits } from '$lib/utils/unit';
@@ -76,7 +75,6 @@ function collectPlanSources(plan: WeeklyPlan): {
             const meals = dayPlan.meals[mealType];
 
             for (const mealEntry of meals) {
-                if (isPlannedLeftover(mealEntry)) continue;
                 if (!mealEntry.recipe?.id || !Array.isArray(mealEntry.recipe.ingredients)) continue;
 
                 const recipeId = mealEntry.recipe.id;

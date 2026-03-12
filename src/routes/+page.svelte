@@ -3,7 +3,6 @@
     import HeroSection from "$lib/components/landing/HeroSection.svelte";
     import DesktopMockup from "$lib/components/landing/DesktopMockup.svelte";
     import ShoppingListMockup from "$lib/components/landing/ShoppingListMockup.svelte";
-    import FeatureFridge from "$lib/components/landing/FeatureFridge.svelte";
     import FeatureRecipeImport from "$lib/components/landing/FeatureRecipeImport.svelte";
 
     import PricingSection from "$lib/components/landing/PricingSection.svelte";
@@ -132,13 +131,12 @@
                         class="text-3xl md:text-5xl font-black text-app-text mb-4"
                     >
                         Grocery list that <span class="text-app-primary"
-                            >talk to your fridge</span
+                            >stays in sync</span
                         >
                     </h2>
                     <p class="text-lg text-app-text-muted max-w-2xl mx-auto">
-                        Never buy a second carton of eggs again. YumHero checks
-                        your inventory and automatically skips what you already
-                        have.
+                        Keep one clean, shared list that updates instantly as
+                        you plan meals and check items off.
                     </p>
                 </div>
 
@@ -195,7 +193,6 @@
             </div>
         {/if}
 
-        <FeatureFridge />
         <FeatureRecipeImport />
 
         <PricingSection />

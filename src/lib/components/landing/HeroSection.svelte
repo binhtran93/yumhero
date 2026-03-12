@@ -56,8 +56,8 @@
             <p
                 class="text-base md:text-xl text-app-text-muted mb-6 max-w-4xl mx-auto leading-relaxed"
             >
-                Precision meal planning for the organized home. Track your
-                fridge, log leftovers, and master your menu in a clean,
+                Precision meal planning for the organized home. Build your
+                week, generate shopping lists, and master your menu in a clean,
                 high-performance interface.
             </p>
             <div class="flex items-center justify-center gap-3">

@@ -5,7 +5,6 @@ const SITE_URL = 'https://yumhero.app';
 const staticPages = [
     { url: '/', changefreq: 'daily', priority: 1.0 },
     { url: '/recipes', changefreq: 'daily', priority: 0.9 },
-    { url: '/fridge', changefreq: 'daily', priority: 0.8 },
     { url: '/profile', changefreq: 'monthly', priority: 0.5 },
 ];
 

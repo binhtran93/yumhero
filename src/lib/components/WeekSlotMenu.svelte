@@ -5,7 +5,6 @@
         Plus,
         Hash,
         Users,
-        Refrigerator,
         Info,
         BrushCleaning,
     } from "lucide-svelte";
@@ -23,7 +22,6 @@
         onClose: () => void;
         onAction: (action: "cooking") => void;
         onRemove?: () => void;
-        onAddToFridge?: (title: string) => void;
     }
 
     let {
@@ -36,7 +34,6 @@
         onClose,
         onAction,
         onRemove,
-        onAddToFridge,
     }: Props = $props();
 
     let showTooltip = $state(false);
@@ -265,20 +262,6 @@
                     >
                 </div>
             </div>
-        {/if}
-
-        {#if onAddToFridge}
-            <button
-                class="w-full text-left px-4 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-3 transition-colors"
-                onclick={(e) => {
-                    e.stopPropagation();
-                    onAddToFridge(recipeTitle);
-                    onClose();
-                }}
-            >
-                <Refrigerator size={18} />
-                Put leftover to fridge
-            </button>
         {/if}
 
         {#if onRemove}

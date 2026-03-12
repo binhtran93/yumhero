@@ -1,14 +1,10 @@
 <script lang="ts">
-    import {
-        Refrigerator,
-        Check,
-    } from "lucide-svelte";
+    import { Check } from "lucide-svelte";
     import { shoppingItems } from "$lib/data/landingData";
 
-    const itemsState = shoppingItems.map((item) => ({
+    const itemsState = shoppingItems.map((item, index) => ({
         ...item,
-        found: item.inFridge,
-        checked: item.inFridge,
+        checked: index < 4,
     }));
 </script>
 
@@ -16,7 +12,6 @@
     <div
         class="bg-app-surface border border-app-border rounded-2xl shadow-md overflow-hidden relative"
     >
-        <!-- Browser Chrome -->
         <div
             class="flex items-center justify-between px-6 py-4 bg-app-surface-hover border-b border-app-border"
         >
@@ -34,9 +29,7 @@
         </div>
 
         <div class="flex h-[720px]">
-            <!-- Main Content -->
             <div class="flex-1 bg-app-bg p-6 md:p-10 overflow-hidden relative">
-                <!-- Header -->
                 <div class="flex items-center justify-between gap-4 mb-10">
                     <div>
                         <h2
@@ -47,14 +40,13 @@
                     </div>
 
                     <div
-                        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs md:text-sm font-bold border border-emerald-200"
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-app-primary/10 text-app-primary rounded-xl text-xs md:text-sm font-bold border border-app-primary/20"
                     >
-                        <Refrigerator size={16} class="md:w-[18px] md:h-[18px]" />
-                        <span>Fridge Synced</span>
+                        <Check size={16} class="md:w-[18px] md:h-[18px]" />
+                        <span>Some items done</span>
                     </div>
                 </div>
 
-                <!-- Items List (Final Static State) -->
                 <div class="space-y-1 relative">
                     {#each itemsState as item}
                         <div
@@ -97,22 +89,6 @@
                                     </span>
                                 </div>
                             </div>
-
-                            {#if item.found}
-                                <div
-                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/80 text-emerald-700 rounded-lg border border-emerald-200 shadow-sm"
-                                >
-                                    <Check
-                                        size={12}
-                                        class="text-emerald-500"
-                                        strokeWidth={3}
-                                    />
-                                    <span
-                                        class="text-[10px] font-black uppercase tracking-wider"
-                                        >In Fridge</span
-                                    >
-                                </div>
-                            {/if}
                         </div>
                     {/each}
                 </div>

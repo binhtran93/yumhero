@@ -1,7 +1,7 @@
 import { derived, get, type Readable } from 'svelte/store';
 import { doc, getDoc, onSnapshot, runTransaction, setDoc } from 'firebase/firestore';
 import { user, loading as authLoading } from './auth';
-import type { MealType, ShoppingListItem, WeeklyPlan } from '$lib/types';
+import type { ShoppingListItem, WeeklyPlan } from '$lib/types';
 import { db } from '$lib/firebase';
 import { syncShoppingListFromPlan } from '$lib/stores/planShopping';
 
@@ -44,13 +44,6 @@ export const getWeekShoppingListStore = (weekId: string) => {
         },
         { data: [], loading: true }
     );
-};
-
-const getShoppingListForWeek = async (uid: string, weekId: string): Promise<ShoppingListItem[]> => {
-    const snapshot = await getDoc(doc(db, `users/${uid}/plans/${weekId}`));
-    if (!snapshot.exists()) return [];
-    const data = snapshot.data() as { shopping_list?: ShoppingListItem[] };
-    return Array.isArray(data.shopping_list) ? data.shopping_list : [];
 };
 
 /**
@@ -129,7 +122,7 @@ export const deleteShoppingItem = async (weekId: string, itemId: string) => {
 /**
  * Toggle check state for a specific source
  */
-export const toggleShoppingItemCheck = async (weekId: string, itemId: string, sourceIndex: number, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
+export const toggleShoppingItemCheck = async (weekId: string, itemId: string, sourceIndex: number, checked: boolean, checked_from: 'user' | null = 'user') => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
 
@@ -156,7 +149,7 @@ export const toggleShoppingItemCheck = async (weekId: string, itemId: string, so
 /**
  * Toggle all sources for an item
  */
-export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string, checked: boolean, checked_from: 'user' | 'fridge' | null = 'user') => {
+export const toggleAllShoppingItemChecks = async (weekId: string, itemId: string, checked: boolean, checked_from: 'user' | null = 'user') => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
 
@@ -185,7 +178,7 @@ export const batchToggleShoppingItemChecks = async (
     weekId: string,
     itemIds: string[],
     checked: boolean,
-    checked_from: 'user' | 'fridge' | null = 'user'
+    checked_from: 'user' | null = 'user'
 ) => {
     const $user = get(user);
     if (!$user) throw new Error('User not authenticated');
@@ -255,51 +248,4 @@ export const resetAllShoppingItems = async (weekId: string) => {
         shopping_list: rebuilt,
         updatedAt: new Date()
     }, { merge: true });
-};
-
-const getBoughtIngredientsForRecipe = (
-    shoppingList: ShoppingListItem[],
-    recipeId: string,
-    day?: string,
-    mealType?: MealType
-): Array<{ ingredientName: string; amount: number; unit: string | null }> => {
-    const boughtIngredients: Array<{ ingredientName: string; amount: number; unit: string | null }> = [];
-
-    for (const item of shoppingList) {
-        for (const source of item.sources) {
-            const matchesRecipe = source.recipe_id === recipeId;
-            const matchesDay = !day || source.day === day;
-            const matchesMeal = !mealType || source.meal_type === mealType;
-
-            if (matchesRecipe && matchesDay && matchesMeal && source.is_checked) {
-                boughtIngredients.push({
-                    ingredientName: item.ingredient_name,
-                    amount: source.amount,
-                    unit: source.unit
-                });
-            }
-        }
-    }
-
-    return boughtIngredients;
-};
-
-/**
- * Get bought ingredients for a specific recipe.
- */
-export const fetchBoughtIngredientsForRecipe = async (
-    weekId: string,
-    recipeId: string,
-    day?: string,
-    mealType?: MealType
-): Promise<Array<{
-    ingredientName: string;
-    amount: number;
-    unit: string | null;
-}>> => {
-    const $user = get(user);
-    if (!$user) throw new Error('User not authenticated');
-
-    const shoppingList = await getShoppingListForWeek($user.uid, weekId);
-    return getBoughtIngredientsForRecipe(shoppingList, recipeId, day, mealType);
 };

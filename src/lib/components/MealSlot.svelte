@@ -1,19 +1,13 @@
 <script lang="ts">
     import { Plus, EllipsisVertical, Loader } from "lucide-svelte";
     import WeekSlotMenu from "$lib/components/WeekSlotMenu.svelte";
-    import LeftoverSlotMenu from "$lib/components/LeftoverSlotMenu.svelte";
     import NoteSlotMenu from "$lib/components/NoteSlotMenu.svelte";
     import type {
-        Recipe,
         MealType,
         Note,
-        PlannedRecipe,
-        PlannedLeftover,
         MealSlotItem,
     } from "$lib/types";
-    import { isPlannedLeftover } from "$lib/types";
     import { twMerge } from "tailwind-merge";
-    import { leftovers } from "$lib/stores/leftovers";
 
     interface Props {
         day: string;
@@ -26,14 +20,6 @@
         onUpdate?: (index: number, newQuantity: number) => void;
         onOpenRecipeMode?: (mode: "cooking", recipeId: string) => void;
         onEditNote?: (index: number, rect: DOMRect) => void;
-        onAddToFridge?: (
-            title: string,
-            recipeId: string,
-            imageUrl?: string,
-        ) => void;
-        onRemoveLeftoverFromPlan?: (leftoverId: string, index: number) => void;
-        onMarkLeftoverAsEaten?: (leftoverId: string, index: number) => void;
-        onMarkLeftoverAsNotEaten?: (leftoverId: string, index: number) => void;
         isLoading?: boolean;
         isSaving?: boolean;
         activeDropdown?: {
@@ -43,7 +29,6 @@
         } | null;
         onToggleDropdown?: (index: number, rect: DOMRect) => void;
         onCloseDropdown?: () => void;
-        availableRecipes?: Recipe[];
     }
 
     let {
@@ -57,25 +42,15 @@
         onUpdate,
         onOpenRecipeMode,
         onEditNote,
-        onAddToFridge,
-        onRemoveLeftoverFromPlan,
-        onMarkLeftoverAsEaten,
-        onMarkLeftoverAsNotEaten,
         isLoading = false,
         isSaving = false,
         activeDropdown = null,
         onToggleDropdown,
         onCloseDropdown,
-        availableRecipes = [],
     }: Props = $props();
 
-    const isEatenStatus = (leftoverId: string) => {
-        return !$leftovers.data.some((l) => l.id === leftoverId);
-    };
-
     const getLabel = (item: MealSlotItem | Note) => {
-        if (!("isLeftover" in item) && "recipe" in item) return item.recipe.title;
-        if ("title" in item) return item.title;
+        if ("recipe" in item) return item.recipe.title;
         if ("text" in item) return (item as Note).text;
         return "";
     };
@@ -105,11 +80,7 @@
         draggingIndex = null;
     };
 
-    const handleDragStart = (
-        e: DragEvent,
-        index: number,
-        item: MealSlotItem | Note,
-    ) => {
+    const handleDragStart = (e: DragEvent, index: number) => {
         if (isLoading || isSaving) {
             e.preventDefault();
             return;
@@ -121,7 +92,6 @@
         }, 0);
 
         if (!e.dataTransfer) return;
-        const isRecipe = "title" in item;
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData(
             "application/json",
@@ -129,7 +99,6 @@
                 day,
                 type,
                 index,
-                isRecipe,
             }),
         );
     };
@@ -242,7 +211,6 @@
         class="pointer-events-none z-10 flex-1 px-2 pb-2 flex flex-col gap-2 overflow-y-auto relative"
     >
         {#each items as item, i}
-            {@const itemIsLeftover = "isLeftover" in item && item.isLeftover}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
@@ -260,7 +228,7 @@
                     draggingIndex === i && "invisible",
                 )}
                 draggable={!isLoading && !isSaving}
-                ondragstart={(e) => handleDragStart(e, i, item)}
+                ondragstart={(e) => handleDragStart(e, i)}
                 ondragend={handleDragEnd}
                 onclick={(e) => handleCardClick(e, i)}
             >
@@ -281,7 +249,7 @@
                                       : "text-accent-note-text",
                         )}
                     >
-                        {getLabel(item)}{#if itemIsLeftover}<span class="text-app-text/60 text-[11px]">{" - "}leftover</span>{/if}
+                        {getLabel(item)}
 
                         {#if "quantity" in item && item.quantity > 1}
                             <span class="opacity-60 font-medium ml-1 text-xs"
@@ -293,20 +261,7 @@
 
                 <!-- Show menu based on item type -->
                 {#if activeDropdown?.day === day && activeDropdown?.type === type && activeDropdown?.index === i && activeTriggerRect}
-                    {#if itemIsLeftover}
-                        <!-- Leftover menu (simplified) -->
-                        <LeftoverSlotMenu
-                            triggerRect={activeTriggerRect}
-                            isEaten={isEatenStatus(item.leftoverId)}
-                            onClose={handleMenuClose}
-                            onRemoveFromPlan={() =>
-                                onRemoveLeftoverFromPlan?.(item.leftoverId, i)}
-                            onMarkAsEaten={() =>
-                                onMarkLeftoverAsEaten?.(item.leftoverId, i)}
-                            onMarkAsNotEaten={() =>
-                                onMarkLeftoverAsNotEaten?.(item.leftoverId, i)}
-                        />
-                    {:else if onUpdate && "quantity" in item}
+                    {#if onUpdate && "quantity" in item}
                         <!-- Recipe menu (full feature set) -->
                         {@const quantity = item.quantity || 1}
                         {@const baseServings = item.recipe.servings || undefined}
@@ -326,16 +281,8 @@
                                 }
                             }}
                             onRemove={() => onRemove?.(i)}
-                            onAddToFridge={onAddToFridge
-                                ? (title) =>
-                                      onAddToFridge(
-                                          title,
-                                          item.recipe.id,
-                                          item.recipe.image,
-                                      )
-                                : undefined}
                         />
-                    {:else if !itemIsLeftover && !("quantity" in item) && "text" in item}
+                    {:else if !("quantity" in item) && "text" in item}
                         <NoteSlotMenu
                             triggerRect={activeTriggerRect}
                             onClose={handleMenuClose}

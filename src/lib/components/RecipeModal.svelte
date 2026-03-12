@@ -2,24 +2,14 @@
   import {
     Search,
     Plus,
-    Minus,
     X,
     UtensilsCrossed,
     Clock,
     Users,
-    Calendar,
     Check,
   } from "lucide-svelte";
-  import type {
-    Recipe,
-    MealType,
-    LeftoverItem,
-    PlannedLeftover,
-  } from "$lib/types";
-  import { availableLeftovers } from "$lib/stores/leftovers";
-
+  import type { Recipe, MealType } from "$lib/types";
   import { twMerge } from "tailwind-merge";
-  import { fade } from "svelte/transition";
   import Modal from "$lib/components/Modal.svelte";
   import { formatServings } from "$lib/utils/recipe";
 
@@ -27,10 +17,8 @@
     isOpen: boolean;
     mealType: MealType | null;
     currentRecipes?: Recipe[];
-    currentLeftovers?: LeftoverItem[];
     onClose: () => void;
     onSelect: (recipes: Recipe[]) => void;
-    onSelectLeftovers?: (leftovers: LeftoverItem[]) => void;
     availableRecipes?: Recipe[];
     adaptive?: boolean;
   }
@@ -39,91 +27,49 @@
     isOpen,
     mealType,
     currentRecipes = [],
-    currentLeftovers = [],
     onClose,
     onSelect,
-    onSelectLeftovers,
     availableRecipes = [],
     adaptive = true,
   }: Props = $props();
 
   let searchQuery = $state("");
-
-  // Track selection: Recipe ID -> Recipe
   let selection = $state<Map<string, Recipe>>(new Map());
-  let leftoverSelection = $state<Map<string, LeftoverItem>>(new Map());
 
-  // Reset selection when modal opens
   $effect(() => {
-    if (isOpen) {
-      const newSelection = new Map<string, Recipe>();
-      // Initialize with existing recipes - selection in modal is now just a set
-      currentRecipes.forEach((recipe: any) => {
-        if (!newSelection.has(recipe.id)) {
-          newSelection.set(recipe.id, recipe);
-        }
-      });
-      selection = newSelection;
-      const newLeftoverSelection = new Map<string, LeftoverItem>();
-      currentLeftovers.forEach((leftover) => {
-        if (!newLeftoverSelection.has(leftover.id)) {
-          newLeftoverSelection.set(leftover.id, leftover);
-        }
-      });
-      leftoverSelection = newLeftoverSelection;
-      searchQuery = "";
-    }
+    if (!isOpen) return;
+
+    const newSelection = new Map<string, Recipe>();
+    currentRecipes.forEach((recipe) => {
+      if (!newSelection.has(recipe.id)) {
+        newSelection.set(recipe.id, recipe);
+      }
+    });
+
+    selection = newSelection;
+    searchQuery = "";
   });
 
-  const isSelected = (recipeId: string) => {
-    return selection.has(recipeId);
-  };
+  const isSelected = (recipeId: string) => selection.has(recipeId);
 
   const toggleSelection = (recipe: Recipe) => {
-    const newMap = new Map(selection);
-    if (newMap.has(recipe.id)) {
-      newMap.delete(recipe.id);
+    const next = new Map(selection);
+    if (next.has(recipe.id)) {
+      next.delete(recipe.id);
     } else {
-      newMap.set(recipe.id, recipe);
+      next.set(recipe.id, recipe);
     }
-    selection = newMap;
+    selection = next;
   };
 
-  // Directly remove via "x" on tag
   const removeSelection = (recipeId: string) => {
-    const newMap = new Map(selection);
-    newMap.delete(recipeId);
-    selection = newMap;
-  };
-
-  const isLeftoverSelected = (leftoverId: string) => {
-    return leftoverSelection.has(leftoverId);
-  };
-
-  const toggleLeftoverSelection = (leftover: LeftoverItem) => {
-    const newMap = new Map(leftoverSelection);
-    if (newMap.has(leftover.id)) {
-      newMap.delete(leftover.id);
-    } else {
-      newMap.set(leftover.id, leftover);
-    }
-    leftoverSelection = newMap;
-  };
-
-  const removeLeftoverSelection = (leftoverId: string) => {
-    const newMap = new Map(leftoverSelection);
-    newMap.delete(leftoverId);
-    leftoverSelection = newMap;
+    const next = new Map(selection);
+    next.delete(recipeId);
+    selection = next;
   };
 
   const handleDone = () => {
-    if (selection.size >= 0) {
-      // Return the current list of selected recipes
-      onSelect(Array.from(selection.values()));
-    }
-    if (onSelectLeftovers) {
-      onSelectLeftovers(Array.from(leftoverSelection.values()));
-    }
+    onSelect(Array.from(selection.values()));
     onClose();
   };
 
@@ -151,27 +97,12 @@
     ),
   );
 
-  // Filter available leftovers by search query
-  let matchingLeftovers = $derived(
-    [...currentLeftovers, ...$availableLeftovers]
-      .filter(
-        (l, index, self) => self.findIndex((t) => t.id === l.id) === index,
-      ) // Unique by ID
-      .filter((l) => l.title.toLowerCase().includes(searchQuery.toLowerCase())),
-  );
-
-  // Handle leftover selection
-  const handleLeftoverSelect = (leftover: LeftoverItem) => {
-    toggleLeftoverSelection(leftover);
-  };
-
   const colors = $derived(
     mealType && mealType !== "note"
       ? {
           text: `text-accent-${mealType}`,
           bg: `bg-accent-${mealType}`,
           border: `border-accent-${mealType}`,
-          hoverBg: `hover:bg-accent-${mealType}`,
           focusBorder: `focus:border-accent-${mealType}`,
           hoverText: `hover:text-accent-${mealType}`,
           hoverBorder: `hover:border-accent-${mealType}`,
@@ -181,7 +112,6 @@
           text: "text-app-primary",
           bg: "bg-app-primary",
           border: "border-app-primary",
-          hoverBg: "hover:bg-app-primary",
           focusBorder: "focus:border-app-primary",
           hoverText: "hover:text-app-primary",
           hoverBorder: "hover:border-app-primary",
@@ -192,29 +122,18 @@
   interface Section {
     id: string;
     title: string;
-    items: (Recipe | LeftoverItem)[];
-    kind: "recipe" | "leftover";
+    items: Recipe[];
   }
 
   let sections = $derived<Section[]>(
     (() => {
       const list: Section[] = [];
 
-      if (matchingLeftovers.length > 0 && onSelectLeftovers) {
-        list.push({
-          id: "leftovers",
-          title: "From Your Fridge",
-          items: matchingLeftovers,
-          kind: "leftover",
-        });
-      }
-
       if (suggestedRecipes.length > 0) {
         list.push({
           id: "suggested",
-          title: `Suggested for <span class="${colors.text} capitalize">${mealType}</span>`,
+          title: `Suggested for <span class=\"${colors.text} capitalize\">${mealType}</span>`,
           items: suggestedRecipes,
-          kind: "recipe",
         });
       }
 
@@ -223,7 +142,6 @@
           id: "other",
           title: suggestedRecipes.length > 0 ? "Other Recipes" : "All Recipes",
           items: otherRecipes,
-          kind: "recipe",
         });
       }
 
@@ -246,7 +164,6 @@
     role="button"
     tabindex="0"
   >
-    <!-- Thumbnail -->
     <div
       class="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-sm border border-app-border"
     >
@@ -265,7 +182,6 @@
       {/if}
     </div>
 
-    <!-- Info area -->
     <div class="flex-1 flex flex-col justify-center min-w-0">
       <h3
         class={twMerge(
@@ -302,90 +218,6 @@
       </div>
     </div>
 
-    <!-- Selection Indicator -->
-    <div class="flex items-center shrink-0">
-      {#if selected}
-        <div
-          class={twMerge(
-            "p-1.5 rounded-full text-white shadow-md border transition-all transform scale-110",
-            colors.bg,
-            colors.border,
-          )}
-        >
-          <Plus
-            size={14}
-            strokeWidth={4}
-            class="rotate-45"
-            aria-hidden="true"
-          />
-        </div>
-      {:else}
-        <div
-          class={twMerge(
-            "p-1.5 rounded-full bg-app-surface text-app-text-muted transition-all shadow-sm border border-app-border",
-            colors.hoverBorder,
-            colors.hoverText,
-          )}
-        >
-          <Plus size={14} strokeWidth={4} />
-        </div>
-      {/if}
-    </div>
-  </div>
-{/snippet}
-
-{#snippet leftoverItem(leftover: LeftoverItem)}
-  {@const selected = isLeftoverSelected(leftover.id)}
-  <div
-    class={twMerge(
-      "flex items-center justify-between px-3 py-2 rounded-2xl cursor-pointer gap-4 transition-all duration-200 shrink-0 mx-2 mb-1",
-      selected
-        ? colors.bgFaint + " shadow-sm"
-        : "bg-transparent hover:bg-app-surface-hover",
-    )}
-    onclick={() => handleLeftoverSelect(leftover)}
-    onkeydown={(e) => e.key === "Enter" && handleLeftoverSelect(leftover)}
-    role="button"
-    tabindex="0"
-  >
-    <!-- Thumbnail -->
-    <div
-      class="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-sm border border-app-border"
-    >
-      {#if leftover.imageUrl}
-        <img
-          src={leftover.imageUrl}
-          alt={leftover.title}
-          class="w-full h-full object-cover"
-        />
-      {:else}
-        <div
-          class="w-full h-full bg-app-surface-deep flex items-center justify-center text-app-text-muted"
-        >
-          <UtensilsCrossed size={20} />
-        </div>
-      {/if}
-    </div>
-
-    <!-- Info area -->
-    <div class="flex-1 flex flex-col justify-center min-w-0">
-      <h3
-        class={twMerge(
-          "font-display font-bold transition-colors text-sm truncate",
-          selected ? colors.text : "text-app-text",
-        )}
-      >
-        {leftover.title}
-      </h3>
-      <div
-        class="flex items-center gap-1.5 mt-1 text-[11px] text-app-text-muted font-semibold leading-none"
-      >
-        <Calendar size={12} strokeWidth={2.5} class="shrink-0 opacity-40" />
-        <span class="capitalize">From {leftover.sourceMealType}</span>
-      </div>
-    </div>
-
-    <!-- Selection Indicator -->
     <div class="flex items-center shrink-0">
       {#if selected}
         <div
@@ -460,7 +292,6 @@
   header={customHeader}
   footer={footerContent}
 >
-  <!-- Search & Selected -->
   <div class="flex flex-col border-b border-app-border bg-app-surface shrink-0">
     <div class="px-6 py-4">
       <div class="relative group">
@@ -474,7 +305,7 @@
         <input
           type="text"
           bind:value={searchQuery}
-          placeholder={`Search recipes or leftovers...`}
+          placeholder="Search recipes..."
           class={twMerge(
             "w-full pl-11 pr-4 py-2 md:py-3 text-sm bg-app-surface-deep/50 border border-app-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-app-primary/10 text-app-text transition-all placeholder:text-app-text-muted/40 font-medium",
             colors.focusBorder,
@@ -483,8 +314,7 @@
       </div>
     </div>
 
-    <!-- Selected Recipes & Leftovers Display -->
-    {#if selection.size > 0 || leftoverSelection.size > 0}
+    {#if selection.size > 0}
       <div class="px-6 pb-4 overflow-x-auto no-scrollbar">
         <div class="flex flex-wrap gap-2">
           {#each selection.values() as recipe (recipe.id)}
@@ -505,40 +335,15 @@
               </div>
             </button>
           {/each}
-          {#each leftoverSelection.values() as leftover (leftover.id)}
-            <button
-              onclick={() => removeLeftoverSelection(leftover.id)}
-              class={twMerge(
-                "flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-full text-[11px] font-bold animate-in fade-in zoom-in duration-200 transition-all cursor-pointer group border max-w-[300px]",
-                colors.text,
-                colors.border,
-                colors.bgFaint,
-              )}
-            >
-              <span class="flex items-center gap-2 min-w-0">
-                <span class="truncate">{leftover.title}</span>
-                <span
-                  class="shrink-0 text-[8px] px-1.5 py-0.5 rounded-full bg-app-primary text-white font-black uppercase tracking-tighter"
-                  >Leftover</span
-                >
-              </span>
-              <div
-                class="shrink-0 p-0.5 bg-white/80 rounded-full border border-app-border group-hover:bg-white transition-colors"
-              >
-                <X size={12} class="text-app-text" strokeWidth={3} />
-              </div>
-            </button>
-          {/each}
         </div>
       </div>
     {/if}
   </div>
 
-  <!-- List -->
   <div
     class="flex-1 overflow-y-auto bg-app-surface p-2 pb-6 flex flex-col gap-1 no-scrollbar"
   >
-    {#each sections as section, i (section.id)}
+    {#each sections as section (section.id)}
       {#if section.title}
         <div class="flex items-center gap-4 px-4 pt-4 pb-2">
           <div
@@ -551,11 +356,7 @@
       {/if}
 
       {#each section.items as item (item.id)}
-        {#if section.kind === "leftover"}
-          {@render leftoverItem(item as LeftoverItem)}
-        {:else}
-          {@render recipeItem(item as Recipe)}
-        {/if}
+        {@render recipeItem(item)}
       {/each}
     {/each}
 

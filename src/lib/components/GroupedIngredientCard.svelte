@@ -124,9 +124,6 @@
                         {/if}
                     {/each}
                 </div>
-                {#if sources.some((s) => s.is_checked && s.checked_from === "fridge")}
-                    <span class="text-[10px] text-app-text-muted">Available in fridge</span>
-                {/if}
             </div>
         </button>
 
@@ -194,13 +191,6 @@
                                 • <span class="capitalize"
                                     >{source.meal_type}</span
                                 >
-                            {/if}
-                            {#if source.is_checked && source.checked_from === "fridge"}
-                                <span
-                                    class="ml-2 px-1 py-0.5 rounded-md bg-app-primary/10 text-app-primary text-[9px] uppercase tracking-wider"
-                                >
-                                    Skipped
-                                </span>
                             {/if}
                         </span>
                     </span>

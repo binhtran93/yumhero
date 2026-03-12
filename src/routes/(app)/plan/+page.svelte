@@ -1,8 +1,6 @@
 <script lang="ts">
     import type {
-        LeftoverItem,
         MealType,
-        PlannedLeftover,
         PlannedRecipe,
         Recipe,
         WeeklyPlan,
@@ -18,19 +16,7 @@
         saveWeekPlan,
     } from "$lib/stores/plans";
     import { userRecipes } from "$lib/stores/recipes";
-    import {
-        addLeftoverToFridge,
-        deleteLeftover,
-        leftovers,
-        setLeftoverNotPlanned,
-        setLeftoverPlanned,
-    } from "$lib/stores/leftovers";
-    import {
-        fetchBoughtIngredientsForRecipe,
-        getWeekShoppingListStore,
-    } from "$lib/stores/shoppingList";
-    import { addIngredientsToFridge } from "$lib/stores/fridgeIngredients";
-    import BoughtIngredientsConfirmModal from "$lib/components/BoughtIngredientsConfirmModal.svelte";
+    import { getWeekShoppingListStore } from "$lib/stores/shoppingList";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import {
@@ -47,7 +33,7 @@
     import CookingView from "$lib/components/CookingView.svelte";
     import { twMerge } from "tailwind-merge";
     import { user } from "$lib/stores/auth";
-    import { derived, get, writable } from "svelte/store";
+    import { derived, writable } from "svelte/store";
     import { db } from "$lib/firebase";
     import { toasts } from "$lib/stores/toasts";
     import ShoppingCartButton from "$lib/components/ShoppingCartButton.svelte";
@@ -80,9 +66,6 @@
 
     const isPlannedRecipeItem = (item: unknown): item is PlannedRecipe => {
         if (!item || typeof item !== "object") return false;
-        if ("isLeftover" in (item as any) && (item as any).isLeftover) {
-            return false;
-        }
         return "recipe" in (item as any) && "quantity" in (item as any);
     };
 
@@ -106,13 +89,11 @@
         day: string | null;
         mealType: MealType | null;
         currentRecipes: Recipe[];
-        currentLeftovers: LeftoverItem[];
     }>({
         isOpen: false,
         day: null,
         mealType: null,
         currentRecipes: [],
-        currentLeftovers: [],
     });
 
     let noteModal = $state<{
@@ -325,29 +306,13 @@
 
         console.log("Open Modal:", day, type);
         const dayPlan = plan.find((d) => d.day === day);
-        // Filter to only get recipes (not leftovers) for the modal's current selection
         const currentMeals = dayPlan ? dayPlan.meals[type] : [];
-        const currentRecipes = currentMeals
-            .filter((item: any) => !("isLeftover" in item && item.isLeftover))
-            .map((item: any) => item.recipe) as Recipe[];
+        const currentRecipes = currentMeals.map((item: any) => item.recipe) as Recipe[];
 
         modal.isOpen = true;
         modal.day = day;
         modal.mealType = type;
         modal.currentRecipes = currentRecipes;
-
-        // Extract leftover items for this slot to pass to modal
-        const leftoverPlannedItems = currentMeals.filter(
-            (item: any) => "isLeftover" in item && item.isLeftover,
-        ) as PlannedLeftover[];
-
-        // Reconstruct LeftoverItem from PlannedLeftover (or fetch from store)
-        // Since we need the full LeftoverItem for the modal, we'll try to find them in the available leftovers
-        // or just construct what's needed for the UI. The modal needs id, title, and imageUrl.
-        const leftoversVal = get(leftovers);
-        modal.currentLeftovers = leftoverPlannedItems
-            .map((pl) => leftoversVal.data.find((l) => l.id === pl.leftoverId))
-            .filter(Boolean) as LeftoverItem[];
     };
 
     const handleRecipeSelect = async (recipes: Recipe[]) => {
@@ -356,22 +321,14 @@
 
         const dayIndex = plan.findIndex((d) => d.day === day);
         if (dayIndex !== -1) {
-            // Preserve existing leftovers in the slot
-            const existingLeftovers = plan[dayIndex].meals[mealType].filter(
-                (item: any) => "isLeftover" in item && item.isLeftover,
-            );
-
-            // Consolidate duplicate recipes by summing quantity
             const newRecipes: PlannedRecipe[] = [];
             recipes.forEach((newRecipe) => {
                 const existingIndex = newRecipes.findIndex(
                     (r) => r.recipe.id === newRecipe.id,
                 );
                 if (existingIndex !== -1) {
-                    // Add to quantity if recipe already exists
                     newRecipes[existingIndex].quantity += 1;
                 } else {
-                    // Add new recipe with quantity = 1
                     newRecipes.push({
                         id: crypto.randomUUID(),
                         recipe: newRecipe,
@@ -380,43 +337,12 @@
                 }
             });
 
-            // Combine leftovers (at start) with new recipes
-            // @ts-ignore - MealSlotItem union type
-            plan[dayIndex].meals[mealType] = [
-                ...existingLeftovers,
-                ...newRecipes,
-            ];
+            plan[dayIndex].meals[mealType] = newRecipes;
             await withCellSaving(day, mealType, async () => {
                 await savePlan();
             });
         }
     };
-
-    // State for bought ingredients confirmation
-    let boughtIngredientsModal = $state<{
-        isOpen: boolean;
-        recipeTitle: string;
-        recipeId: string;
-        plannedItemId: string;
-        ingredients: Array<{
-            ingredientName: string;
-            amount: number;
-            unit: string | null;
-        }>;
-        pendingRemoval: {
-            day: string;
-            type: MealType;
-            index: number;
-        } | null;
-    }>({
-        isOpen: false,
-        recipeTitle: "",
-        recipeId: "",
-        plannedItemId: "",
-        ingredients: [],
-        pendingRemoval: null,
-    });
-    let isConfirmingBoughtIngredients = $state(false);
 
     const handleRemoveRecipe = async (
         day: string,
@@ -427,30 +353,7 @@
         if (dayIndex === -1) return;
 
         const item = plan[dayIndex].meals[type][index];
-        // Only check for bought ingredients if it's a recipe (not a leftover)
         if (item && isPlannedRecipeItem(item)) {
-            const recipe = item.recipe;
-            // Check for bought ingredients
-            const boughtIngredients = await fetchBoughtIngredientsForRecipe(
-                weekId,
-                recipe.id,
-                day,
-                type,
-            );
-
-            if (boughtIngredients.length > 0) {
-                // Show confirmation modal
-                boughtIngredientsModal = {
-                    isOpen: true,
-                    recipeTitle: recipe.title,
-                    recipeId: recipe.id,
-                    plannedItemId: item.id,
-                    ingredients: boughtIngredients,
-                    pendingRemoval: { day, type, index },
-                };
-                return;
-            }
-
             await withCellSaving(day, type, async () => {
                 await removePlannedRecipe(item.id);
                 plan[dayIndex].meals[type].splice(index, 1);
@@ -458,56 +361,10 @@
             return;
         }
 
-        // Leftovers/notes still follow full plan save flow for now.
         await withCellSaving(day, type, async () => {
             plan[dayIndex].meals[type].splice(index, 1);
             await savePlan();
         });
-    };
-
-    const handleConfirmAddToFridge = async (
-        selectedIngredients: Array<{
-            ingredientName: string;
-            amount: number;
-            unit: string | null;
-        }>,
-    ) => {
-        if (!boughtIngredientsModal.pendingRemoval) return;
-        if (isConfirmingBoughtIngredients) return;
-
-        const { day, type, index } = boughtIngredientsModal.pendingRemoval;
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex === -1) return;
-
-        try {
-            isConfirmingBoughtIngredients = true;
-
-            if (selectedIngredients.length > 0) {
-                await addIngredientsToFridge(
-                    selectedIngredients.map((ing) => ({
-                        name: ing.ingredientName,
-                        amount: ing.amount,
-                        unit: ing.unit,
-                    })),
-                );
-            }
-
-            await withCellSaving(day, type, async () => {
-                await removePlannedRecipe(
-                    boughtIngredientsModal.plannedItemId,
-                );
-                plan[dayIndex].meals[type].splice(index, 1);
-            });
-
-            // Close modal and show success
-            boughtIngredientsModal.isOpen = false;
-            toasts.success("Ingredients added to fridge");
-        } catch (error) {
-            console.error("Failed to add ingredients to fridge:", error);
-            toasts.error("Failed to add ingredients to fridge");
-        } finally {
-            isConfirmingBoughtIngredients = false;
-        }
     };
 
     const handleRecipeUpdate = async (
@@ -538,176 +395,6 @@
             plan[dayIndex].meals[type] = [];
             await savePlan();
         }
-    };
-
-    // Leftover Handlers
-    const handleAddToFridge = async (
-        title: string,
-        recipeId: string,
-        imageUrl?: string,
-        day?: string,
-        type?: MealType,
-    ) => {
-        try {
-            if (!day) {
-                throw new Error("Missing planned day for leftover.");
-            }
-            const dayIndex = DAYS.indexOf(day);
-            if (dayIndex === -1) {
-                throw new Error(`Invalid planned day: ${day}`);
-            }
-            const sourceDate = new Date(weekRange.start);
-            sourceDate.setDate(sourceDate.getDate() + dayIndex);
-            await addLeftoverToFridge(
-                title,
-                recipeId,
-                imageUrl,
-                sourceDate,
-                type || "dinner",
-            );
-            toasts.success("Leftover added to fridge");
-        } catch (error: any) {
-            console.error("Failed to add leftover to fridge:", error);
-            toasts.error(error.message);
-        }
-    };
-
-    const handleSelectLeftovers = async (selectedLeftovers: LeftoverItem[]) => {
-        const { day, mealType } = modal;
-        if (!day || !mealType || mealType === "note") return;
-
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex === -1) return;
-
-        // Current leftovers in the plan
-        const existingLeftoversInPlan = plan[dayIndex].meals[mealType].filter(
-            (item: any) => "isLeftover" in item && item.isLeftover,
-        ) as PlannedLeftover[];
-
-        const currentRecipesInPlan = plan[dayIndex].meals[mealType].filter(
-            (item: any) => !("isLeftover" in item && item.isLeftover),
-        ) as PlannedRecipe[];
-
-        // 1. Identify removed leftovers
-        const selectedLeftoverIds = new Set(selectedLeftovers.map((l) => l.id));
-        const removedLeftovers = existingLeftoversInPlan.filter(
-            (pl) => !selectedLeftoverIds.has(pl.leftoverId),
-        );
-
-        for (const removed of removedLeftovers) {
-            await setLeftoverNotPlanned(removed.leftoverId);
-        }
-
-        // 2. Identify newly added leftovers
-        const existingLeftoverIds = new Set(
-            existingLeftoversInPlan.map((pl) => pl.leftoverId),
-        );
-        const newlyAddedLeftovers = selectedLeftovers.filter(
-            (l) => !existingLeftoverIds.has(l.id),
-        );
-
-        for (const added of newlyAddedLeftovers) {
-            await setLeftoverPlanned(added.id, weekId, day, mealType);
-        }
-
-        // 3. Update the plan with the new set of leftovers (mapping them to PlannedLeftover)
-        const newPlannedLeftovers: PlannedLeftover[] = selectedLeftovers.map(
-            (l) => {
-                // Try to find existing one to preserve its stable ID if possible
-                const existing = existingLeftoversInPlan.find(
-                    (pl) => pl.leftoverId === l.id,
-                );
-                return (
-                    existing || {
-                        id: crypto.randomUUID(),
-                        leftoverId: l.id,
-                        title: l.title,
-                        imageUrl: l.imageUrl,
-                        sourceRecipeId: l.sourceRecipeId,
-                        isLeftover: true,
-                    }
-                );
-            },
-        );
-
-        // Combine new recipes and leftovers
-        // @ts-ignore
-        plan[dayIndex].meals[mealType] = [
-            ...newPlannedLeftovers,
-            ...currentRecipesInPlan,
-        ];
-
-        await savePlan();
-    };
-
-    const handleRemoveLeftoverFromPlan = async (
-        day: string,
-        type: MealType,
-        leftoverId: string,
-        index: number,
-    ) => {
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex !== -1) {
-            await withCellSaving(day, type, async () => {
-                plan[dayIndex].meals[type].splice(index, 1);
-                await savePlan();
-            });
-        }
-        // Set leftover back to not_planned
-        await setLeftoverNotPlanned(leftoverId);
-    };
-
-    const handleMarkLeftoverAsEaten = async (
-        day: string,
-        type: MealType,
-        leftoverId: string,
-        index: number,
-    ) => {
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex !== -1) {
-            // NOTE: We don't splice here if we want to keep it in the plan but mark as eaten?
-            // Actually, the user's flow seems to be: Mark as eaten (disappears from fridge but stays in plan?)
-            // Wait, if I splice, it's gone from plan.
-            // But if it's gone from plan, how can they click it to "Mark as Not Eaten"?
-            // Aha! If they "Mark as Eaten" in the FRIDGE, it stays in the PLAN.
-            // If they "Mark as Eaten" in the WEEK VIEW, it SHOULD stay in the plan too?
-            // "where is mark as eaten already, dont rmeove that, this is different from delete, because it will only remove from fridge"
-            // This means when they "Mark as Eaten" in Week View, it should NOT be spliced from the plan.
-            // It should only be deleted from the fridge.
-            await savePlan();
-        }
-        // Permanently delete the leftover from fridge (cleanPlan = false)
-        await deleteLeftover(leftoverId, false);
-    };
-
-    const handleMarkLeftoverAsNotEaten = async (
-        day: string,
-        type: MealType,
-        leftoverId: string,
-        index: number,
-    ) => {
-        const dayIndex = plan.findIndex((d) => d.day === day);
-        if (dayIndex === -1) return;
-
-        const item = plan[dayIndex].meals[type][index] as PlannedLeftover;
-        if (!item || !item.isLeftover) return;
-
-        // 1. Add back to fridge
-        const newLeftoverId = await addLeftoverToFridge(
-            item.title,
-            item.sourceRecipeId,
-            item.imageUrl,
-            new Date(), // Default to today since we lost the original source date info in the plan item
-            type, // The meal type it was in
-        );
-
-        // 2. Update the meal plan with the NEW leftover ID
-        item.leftoverId = newLeftoverId;
-        plan[dayIndex].meals[type][index] = item;
-        await savePlan();
-
-        // 3. Mark as planned in the fridge
-        await setLeftoverPlanned(newLeftoverId, weekId, day, type);
     };
 
     const closeModal = () => {
@@ -766,22 +453,6 @@
         if (isResettingPlan) return;
         isResettingPlan = true;
         try {
-            // Iterate over the current plan and unplan leftovers
-            for (const dayPlan of plan) {
-                for (const mealType of Object.keys(dayPlan.meals) as MealType[]) {
-                    const items = dayPlan.meals[mealType];
-                    for (const item of items) {
-                        if (
-                            "isLeftover" in item &&
-                            item.isLeftover &&
-                            item.leftoverId
-                        ) {
-                            await setLeftoverNotPlanned(item.leftoverId);
-                        }
-                    }
-                }
-            }
-
             plan = createEmptyPlan(DAYS[0]);
             await savePlan();
             isResetModalOpen = false;
@@ -933,11 +604,9 @@
     const handleDrop = async (
         source: {
             day?: string;
-            type: MealType | "sidebar-recipe" | "sidebar-leftover";
+            type: MealType | "sidebar-recipe";
             index?: number;
-            isRecipe?: boolean;
             recipeId?: string;
-            leftoverId?: string;
         },
         target: { day: string; type: MealType },
     ) => {
@@ -951,15 +620,10 @@
         if (
             source.type !== "note" &&
             source.type !== "sidebar-recipe" &&
-            source.type !== "sidebar-leftover" &&
             target.type === "note"
         )
             return;
-        if (
-            (source.type === "sidebar-recipe" ||
-                source.type === "sidebar-leftover") &&
-            target.type === "note"
-        )
+        if (source.type === "sidebar-recipe" && target.type === "note")
             return;
 
         // Handle Sidebar Recipe Drop
@@ -976,9 +640,7 @@
 
             // Check if recipe already exists in target list
             const existingIndex = targetList.findIndex(
-                (r: any) =>
-                    !("isLeftover" in r && r.isLeftover) &&
-                    r.recipe?.id === recipe.id,
+                (r: any) => r.recipe?.id === recipe.id,
             );
 
             if (existingIndex !== -1) {
@@ -998,41 +660,6 @@
             return;
         }
 
-        // Handle Sidebar Leftover Drop
-        if (source.type === "sidebar-leftover" && source.leftoverId) {
-            const targetDayIndex = plan.findIndex((d) => d.day === target.day);
-            if (targetDayIndex === -1) return;
-
-            const leftoversVal = get(leftovers);
-            const leftover = leftoversVal.data.find(
-                (l) => l.id === source.leftoverId,
-            );
-            if (!leftover) return;
-
-            const targetList = plan[targetDayIndex].meals[target.type];
-
-            // Check if already in this slot
-            // @ts-ignore
-            if (targetList.some((item) => item.leftoverId === leftover.id))
-                return;
-
-            // Add to plan
-            // @ts-ignore
-            targetList.unshift({
-                id: crypto.randomUUID(),
-                leftoverId: leftover.id,
-                title: leftover.title,
-                imageUrl: leftover.imageUrl,
-                sourceRecipeId: leftover.sourceRecipeId,
-                isLeftover: true,
-            });
-
-            // Mark as planned in store
-            await setLeftoverPlanned(leftover.id, weekId, target.day, target.type);
-            await savePlanForDropTarget();
-            return;
-        }
-
         // Internal drop into the same cell is a no-op (no reordering target),
         // so skip save/loading to avoid unnecessary writes.
         if (source.day === target.day && source.type === target.type) {
@@ -1041,28 +668,29 @@
 
         const sourceDayIndex = plan.findIndex((d) => d.day === source.day);
         const targetDayIndex = plan.findIndex((d) => d.day === target.day);
+        const sourceIndex = source.index;
 
-        if (sourceDayIndex === -1 || targetDayIndex === -1) return;
+        if (
+            sourceDayIndex === -1 ||
+            targetDayIndex === -1 ||
+            sourceIndex === undefined
+        )
+            return;
 
-        // @ts-ignore
-        const sourceList = plan[sourceDayIndex].meals[source.type] as any[];
+        const sourceList = plan[sourceDayIndex].meals[source.type as MealType] as any[];
         const targetList = plan[targetDayIndex].meals[target.type] as any[];
 
         // Access the item safely
-        // @ts-ignore
-        const item = sourceList[source.index];
+        const item = sourceList[sourceIndex];
 
         if (!item) return;
 
         // Check if recipe already exists in target list
-        const sourceRecipeId =
-            !("isLeftover" in item && item.isLeftover) ? item.recipe.id : null;
+        const sourceRecipeId = item.recipe.id;
         const existingIndex = targetList.findIndex(
             (r: any, idx: number) =>
-                sourceRecipeId &&
-                !("isLeftover" in r && r.isLeftover) &&
                 r.recipe?.id === sourceRecipeId &&
-                (sourceList !== targetList || idx !== source.index),
+                (sourceList !== targetList || idx !== sourceIndex),
         );
 
         if (existingIndex !== -1) {
@@ -1073,13 +701,11 @@
                 (targetRecipe.quantity || 1) + (sourceRecipe.quantity || 1);
 
             // Remove from source
-            // @ts-ignore
-            sourceList.splice(source.index, 1);
+            sourceList.splice(sourceIndex, 1);
         } else {
             // Recipe doesn't exist in target, move it
             // Remove from source
-            // @ts-ignore
-            sourceList.splice(source.index, 1);
+            sourceList.splice(sourceIndex, 1);
 
             // Add to target
             // @ts-ignore
@@ -1288,45 +914,6 @@
                                     onEditNote={(idx, rect) =>
                                         handleEditNote(dayPlan.day, idx, rect)}
                                     onOpenRecipeMode={handleOpenRecipeMode}
-                                    onAddToFridge={(
-                                        title,
-                                        recipeId,
-                                        imageUrl,
-                                    ) =>
-                                        handleAddToFridge(
-                                            title,
-                                            recipeId,
-                                            imageUrl,
-                                            dayPlan.day,
-                                            section.type,
-                                        )}
-                                    onRemoveLeftoverFromPlan={(
-                                        leftoverId,
-                                        idx,
-                                    ) =>
-                                        handleRemoveLeftoverFromPlan(
-                                            dayPlan.day,
-                                            section.type,
-                                            leftoverId,
-                                            idx,
-                                        )}
-                                    onMarkLeftoverAsEaten={(leftoverId, idx) =>
-                                        handleMarkLeftoverAsEaten(
-                                            dayPlan.day,
-                                            section.type,
-                                            leftoverId,
-                                            idx,
-                                        )}
-                                    onMarkLeftoverAsNotEaten={(
-                                        leftoverId,
-                                        idx,
-                                    ) =>
-                                        handleMarkLeftoverAsNotEaten(
-                                            dayPlan.day,
-                                            section.type,
-                                            leftoverId,
-                                            idx,
-                                        )}
                                     onDrop={handleDrop}
                                     {isLoading}
                                     isSaving={isDropSaving(
@@ -1342,7 +929,6 @@
                                             rect,
                                         )}
                                     onCloseDropdown={handleCloseDropdown}
-                                    {availableRecipes}
                                 />
 
                                 <!-- Today Flash Overlay for each cell -->
@@ -1382,11 +968,9 @@
     isOpen={modal.isOpen}
     mealType={modal.mealType}
     currentRecipes={modal.currentRecipes}
-    currentLeftovers={modal.currentLeftovers}
     {availableRecipes}
     onClose={closeModal}
     onSelect={handleRecipeSelect}
-    onSelectLeftovers={handleSelectLeftovers}
 />
 
 <NotePopover
@@ -1436,16 +1020,6 @@
         </div>
     {/if}
 </Modal>
-
-<!-- Bought Ingredients Confirmation Modal -->
-<BoughtIngredientsConfirmModal
-    isOpen={boughtIngredientsModal.isOpen}
-    recipeTitle={boughtIngredientsModal.recipeTitle}
-    ingredients={boughtIngredientsModal.ingredients}
-    isConfirming={isConfirmingBoughtIngredients}
-    onConfirm={handleConfirmAddToFridge}
-    onClose={() => (boughtIngredientsModal.isOpen = false)}
-/>
 
 <ConfirmModal
     isOpen={isResetModalOpen}

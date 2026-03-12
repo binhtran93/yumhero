@@ -8,8 +8,8 @@
             color: "bg-amber-100",
         },
         {
-            title: "Why 'Fridge-First' Planning Works",
-            subtitle: "The secret to reducing food waste by 60%.",
+            title: "Why Weekly Planning Works",
+            subtitle: "A practical system that keeps meals consistent.",
             color: "bg-emerald-100",
         },
         {

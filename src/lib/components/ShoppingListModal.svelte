@@ -5,7 +5,6 @@
         ShoppingBasket,
         Plus,
         RotateCcw,
-        Refrigerator,
         Printer,
         Check,
         Save,
@@ -22,10 +21,7 @@
         updateShoppingItem,
         resetAllShoppingItems,
     } from "$lib/stores/shoppingList";
-    import CheckFridgeModal from "./CheckFridgeModal.svelte";
     import type { WeeklyPlan } from "$lib/types";
-    import { toasts } from "$lib/stores/toasts";
-    import { apiRequest, jsonRequest } from "$lib/api/client";
 
     interface Props {
         isOpen: boolean;
@@ -43,11 +39,6 @@
     let showResetConfirmModal = $state(false);
     let editingItem = $state<ShoppingListItem | null>(null);
     let isResetting = $state(false);
-
-    // Check Fridge states
-    let showCheckFridgeModal = $state(false);
-    let isMatching = $state(false);
-    let matches = $state<any[]>([]);
 
     // Form states
     let manualItemName = $state("");
@@ -237,28 +228,6 @@
         }
     };
 
-    const handleCheckFridge = async () => {
-        isMatching = true;
-        try {
-            const data = await apiRequest<{ matches?: any[] }>(
-                "/api/match-fridge-ingredients",
-                {
-                method: "POST",
-                ...jsonRequest({
-                    weekId,
-                }),
-            });
-            matches = (data.matches || []).filter(
-                (m: any) => m && m.shoppingItemId,
-            );
-            showCheckFridgeModal = true;
-        } catch (error) {
-            console.error("Error checking fridge:", error);
-        } finally {
-            isMatching = false;
-        }
-    };
-
     const handlePrint = async () => {
         if (shoppingList.length === 0) return;
         window.open(`/print/shopping/${weekId}`, "_blank");
@@ -270,7 +239,7 @@
     {onClose}
     adaptive={true}
     class="max-w-2xl"
-    closeOnEsc={!showAddManualModal && !showEditModal && !showCheckFridgeModal}
+    closeOnEsc={!showAddManualModal && !showEditModal}
 >
     {#snippet header()}
         <div
@@ -289,7 +258,6 @@
             <button
                 class="p-2 hover:bg-app-bg rounded-xl text-app-text-muted hover:text-app-text transition-all disabled:opacity-50"
                 onclick={onClose}
-                disabled={isMatching}
             >
                 <X size={20} />
             </button>
@@ -302,24 +270,9 @@
                 <button
                     class="flex items-center gap-1.5 py-2 px-3 bg-transparent border border-app-primary text-app-primary rounded-lg font-semibold text-sm hover:bg-app-primary/10 transition-all disabled:opacity-50"
                     onclick={() => (showAddManualModal = true)}
-                    disabled={isMatching}
                 >
                     <Plus size={16} />
                     Add item
-                </button>
-                <button
-                    class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
-                    onclick={handleCheckFridge}
-                    disabled={isMatching || shoppingList.length === 0}
-                >
-                    {#if isMatching}
-                        <div
-                            class="w-4 h-4 border-2 border-app-text-muted/30 border-t-app-text-muted rounded-full animate-spin"
-                        ></div>
-                    {:else}
-                        <Refrigerator size={16} />
-                    {/if}
-                    <span class="hidden sm:inline">Check Fridge</span>
                 </button>
                 <button
                     class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
@@ -332,7 +285,6 @@
                 <button
                     class="flex items-center gap-1.5 py-2 px-3 bg-app-bg text-app-text-muted rounded-lg font-semibold text-sm hover:bg-app-surface-hover hover:text-app-text transition-all disabled:opacity-50"
                     onclick={handleResetAll}
-                    disabled={isMatching}
                 >
                     <RotateCcw size={16} />
                     <span class="hidden sm:inline">Reset</span>
@@ -341,12 +293,7 @@
         {/if}
     {/snippet}
 
-    <div
-        class="px-2 py-2 sm:px-4 sm:py-4 transition-all duration-300"
-        class:pointer-events-none={isMatching}
-        class:opacity-50={isMatching}
-        class:grayscale-[0.3]={isMatching}
-    >
+    <div class="px-2 py-2 sm:px-4 sm:py-4 transition-all duration-300">
         {#if isLoading}
             <div class="flex items-center justify-center h-64">
                 <div
@@ -634,13 +581,3 @@
         </div>
     </div>
 </Modal>
-
-<CheckFridgeModal
-    isOpen={showCheckFridgeModal}
-    {weekId}
-    {matches}
-    onClose={() => (showCheckFridgeModal = false)}
-    onApplied={() => {
-        // Results are applied via toggleAllShoppingItemChecks which updates the store
-    }}
-/>

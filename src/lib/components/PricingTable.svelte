@@ -25,8 +25,8 @@
     const features = [
         "Ad-free recipe imports from any blog",
         "Rapid 2-minute weekly meal planning",
-        "Visual fridge inventory & tracking",
-        "Smart inventory check against fridge",
+        "Organized recipe library & tagging",
+        "Smart shopping list consolidation",
         "Printable week plan & grocery list",
         "Hands-free focused cooking mode",
         "Universal cloud sync across all devices",

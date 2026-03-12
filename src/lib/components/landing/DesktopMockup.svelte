@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Refrigerator, Zap, Clock } from "lucide-svelte";
+    import { Zap, Clock } from "lucide-svelte";
     import {
         mockPlan,
         mealTypes,
-        mockLeftovers,
         mockQuickRecipes,
         getMealStyles,
         getLabelColor,
@@ -22,7 +21,6 @@
         : 'hidden md:block'} bg-app-surface border border-app-border rounded-xl shadow-md overflow-hidden"
     style="contain: layout paint;"
 >
-    <!-- Browser Chrome -->
     <div
         class="flex items-center gap-2 px-4 py-3 bg-app-surface-hover border-b border-app-border"
     >
@@ -42,126 +40,68 @@
 
     <div class="relative">
         <div class="flex flex-row bg-app-bg min-h-100 overflow-hidden">
-            <!-- Mock Sidebar -->
             <div
                 class="flex w-64 flex-col border-r border-app-border bg-app-surface/50 overflow-hidden shrink-0"
             >
-                <div class="flex-1 overflow-y-auto">
-                    <!-- Leftovers Section -->
-                    <div class="p-4 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <Refrigerator
-                                    size={14}
-                                    class="text-app-primary"
-                                />
-                                <span
-                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
-                                    >Leftovers</span
-                                >
-                            </div>
-                        </div>
-                        <div class="space-y-1.5">
-                            {#each mockLeftovers as item}
-                                <div
-                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm"
-                                >
-                                    {#if item.image}
-                                        <div
-                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
-                                        >
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                class="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                    {/if}
-                                    <div class="flex-1 min-w-0">
-                                        <p
-                                            class="text-xs font-bold text-app-text leading-tight truncate"
-                                        >
-                                            {item.name}
-                                        </p>
-                                        <div
-                                            class="flex items-center gap-1 mt-1"
-                                        >
-                                            <div
-                                                class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.4)]"
-                                            ></div>
-                                            <span
-                                                class="text-[8px] font-medium text-app-text-muted"
-                                                >{item.date}</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            {/each}
+                <div class="p-4 space-y-3 border-t border-app-border">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <Zap size={14} class="text-amber-500" />
+                            <span
+                                class="text-[10px] font-bold uppercase tracking-wider text-app-text"
+                                >Quick Recipes</span
+                            >
                         </div>
                     </div>
-
-                    <!-- Quick Recipes Section -->
-                    <div class="p-4 space-y-3 border-t border-app-border">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <Zap size={14} class="text-amber-500" />
-                                <span
-                                    class="text-[10px] font-bold uppercase tracking-wider text-app-text"
-                                    >Quick Recipes</span
-                                >
-                            </div>
-                        </div>
-                        <div class="space-y-1.5">
-                            {#each mockQuickRecipes as item}
-                                <div
-                                    class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm"
-                                >
-                                    {#if item.image}
+                    <div class="space-y-1.5">
+                        {#each mockQuickRecipes as item}
+                            <div
+                                class="flex items-center gap-3 p-2 bg-app-surface border border-app-border/40 rounded-xl shadow-sm"
+                            >
+                                {#if item.image}
+                                    <div
+                                        class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
+                                    >
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                {/if}
+                                <div class="flex-1 min-w-0">
+                                    <p
+                                        class="text-xs font-bold text-app-text leading-tight truncate"
+                                    >
+                                        {item.name}
+                                    </p>
+                                    <div
+                                        class="flex items-center gap-2 mt-1"
+                                    >
                                         <div
-                                            class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-app-border/30 shadow-inner"
+                                            class="flex items-center gap-1"
                                         >
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                class="w-full h-full object-cover"
+                                            <Clock
+                                                size={8}
+                                                class="text-app-text-muted"
                                             />
-                                        </div>
-                                    {/if}
-                                    <div class="flex-1 min-w-0">
-                                        <p
-                                            class="text-xs font-bold text-app-text leading-tight truncate"
-                                        >
-                                            {item.name}
-                                        </p>
-                                        <div
-                                            class="flex items-center gap-2 mt-1"
-                                        >
-                                            <div
-                                                class="flex items-center gap-1"
-                                            >
-                                                <Clock
-                                                    size={8}
-                                                    class="text-app-text-muted"
-                                                />
-                                                <span
-                                                    class="text-[8px] font-medium text-app-text-muted"
-                                                    >15m</span
-                                                >
-                                            </div>
                                             <span
                                                 class="text-[8px] font-medium text-app-text-muted"
-                                                >• {item.calorie}</span
+                                                >15m</span
                                             >
                                         </div>
+                                        <span
+                                            class="text-[8px] font-medium text-app-text-muted"
+                                            >• {item.calorie}</span
+                                        >
                                     </div>
                                 </div>
-                            {/each}
-                        </div>
+                            </div>
+                        {/each}
                     </div>
                 </div>
             </div>
 
-            <!-- Main Grid -->
             <div class="flex-1 min-w-0 p-4 md:p-6 overflow-x-auto">
                 <div
                     class="grid bg-app-border border border-app-border rounded-lg overflow-hidden"
@@ -171,7 +111,6 @@
                         <div
                             class="flex flex-col bg-app-bg border-r border-app-border last:border-r-0"
                         >
-                            <!-- Day Header -->
                             <div
                                 class="flex flex-col items-center justify-center py-2 bg-app-surface border-b border-app-border h-12"
                             >
@@ -180,7 +119,6 @@
                                 >
                             </div>
 
-                            <!-- Meal Slots -->
                             {#each mealTypes as type}
                                 <div
                                     class="flex flex-col border-b border-app-border last:border-0 bg-app-surface min-h-25"

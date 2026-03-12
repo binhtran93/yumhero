@@ -92,19 +92,6 @@ export const mockPlan: MockDay[] = [
 
 export const mealTypes = ["breakfast", "lunch", "dinner", "snack", "note"];
 
-export const mockLeftovers = [
-    {
-        name: "Bolognese Sauce",
-        date: "yesterday",
-        image: "/mockup/bolognese.png",
-    },
-    {
-        name: "Grilled Veggies",
-        date: "2d ago",
-        image: "/mockup/veggies.png",
-    },
-];
-
 export const mockQuickRecipes = [
     {
         name: "Avocado Toast",
@@ -122,13 +109,6 @@ export const mockQuickRecipes = [
         calorie: "380 kcal",
         image: "/mockup/rice.png",
     },
-];
-
-export const fridgeItems = [
-    { name: "Chicken Breast", tag: "Today", tagColor: "bg-red-100 text-red-700" },
-    { name: "Broccoli", tag: "2 days", tagColor: "bg-yellow-100 text-yellow-700" },
-    { name: "Leftover Pasta", tag: "Ready to eat", tagColor: "bg-green-100 text-green-700" },
-    { name: "Greek Yogurt", tag: "5 days", tagColor: "bg-gray-100 text-gray-600" },
 ];
 
 export const pricingTiers = [
@@ -154,8 +134,8 @@ export const pricingTiers = [
             "Unlimited planning",
             "Smart shopping lists",
             "Unlimited recipes",
-            "Fridge tracking",
-            "Leftover integration",
+            "Drag-and-drop planner",
+            "Faster weekly planning",
             "Multi-device sync",
         ],
         cta: "Start Free Trial",
@@ -209,7 +189,7 @@ export const faqItems = [
     },
     {
         question: "Will YumHero make my grocery list for me?",
-        answer: "Yes, and it's smarter than a standard list. When you plan a meal, YumHero automatically adds the missing items to a consolidated list. You can then use the 'Check Fridge' feature to instantly cross-reference your inventory, ensuring you only buy what you actually need.",
+        answer: "Yes, and it's smarter than a standard list. When you plan a meal, YumHero automatically adds the missing items to a consolidated list so you can buy exactly what you need.",
     },
     {
         question: "Can I track my macros and nutrition?",
@@ -273,15 +253,14 @@ export const getDotColor = (type: string) => {
 };
 
 export const shoppingItems = [
-    { name: "Organic Eggs", amount: "1 dozen", inFridge: false },
-    { name: "Greek Yogurt", amount: "500g", inFridge: true },
-    { name: "Avocado", amount: "3 pcs", inFridge: false },
-    { name: "Chicken Breast", amount: "1 kg", inFridge: true },
-    { name: "Spinach", amount: "250g", inFridge: false },
-    { name: "Quinoa", amount: "500g", inFridge: false },
-    { name: "Whole Milk", amount: "1L", inFridge: true },
-    { name: "Blueberries", amount: "125g", inFridge: false },
-    { name: "Oat Milk", amount: "1L", inFridge: false },
-    { name: "Cherry Tomatoes", amount: "250g", inFridge: true },
+    { name: "Organic Eggs", amount: "1 dozen" },
+    { name: "Greek Yogurt", amount: "500g" },
+    { name: "Avocado", amount: "3 pcs" },
+    { name: "Chicken Breast", amount: "1 kg" },
+    { name: "Spinach", amount: "250g" },
+    { name: "Quinoa", amount: "500g" },
+    { name: "Whole Milk", amount: "1L" },
+    { name: "Blueberries", amount: "125g" },
+    { name: "Oat Milk", amount: "1L" },
+    { name: "Cherry Tomatoes", amount: "250g" },
 ];
-
