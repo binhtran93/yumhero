@@ -1,36 +1,77 @@
 import { json } from '@sveltejs/kit';
 import { verifyAuth } from '$lib/server/auth';
-import { adminDb } from '$lib/server/admin';
+import { adminAuth, adminDb } from '$lib/server/admin';
 import { errorResponse } from '$lib/server/api';
+
+const TRIAL_DURATION_DAYS = 14;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const parseDateValue = (value: unknown): Date | null => {
+    if (typeof value === 'string') {
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    if (
+        value &&
+        typeof value === 'object' &&
+        'toDate' in value &&
+        typeof (value as { toDate?: unknown }).toDate === 'function'
+    ) {
+        const parsed = (value as { toDate: () => Date }).toDate();
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    return null;
+};
 
 export const GET = async ({ request }) => {
     try {
         const user = await verifyAuth(request);
-        const snapshot = await adminDb.doc(`users/${user.uid}`).get();
+        const userRef = adminDb.doc(`users/${user.uid}`);
+        const snapshot = await userRef.get();
+        const data = snapshot.exists ? snapshot.data() || {} : {};
 
-        if (!snapshot.exists) {
-            return json(
-                {
-                    isSubscribed: false,
-                    status: 'free',
-                    purchasedAt: null
-                },
-                {
-                    headers: {
-                        'Cache-Control': 'no-store'
-                    }
-                }
-            );
+        const active = data.status === 'active';
+        const purchasedAt =
+            typeof data.purchasedAt === 'string' ? data.purchasedAt : null;
+
+        let trialEndDate = parseDateValue(data.trialEndsAt);
+
+        if (!trialEndDate) {
+            const authUser = await adminAuth.getUser(user.uid);
+            const createdAt = new Date(authUser.metadata.creationTime);
+            if (!Number.isNaN(createdAt.getTime())) {
+                trialEndDate = new Date(
+                    createdAt.getTime() + TRIAL_DURATION_DAYS * DAY_MS,
+                );
+            }
         }
 
-        const data = snapshot.data() || {};
-        const active = data.status === 'active';
+        const trialEndMillis = trialEndDate?.getTime() ?? null;
+        const now = Date.now();
+        const inTrial = !active && trialEndMillis !== null && now < trialEndMillis;
+        const trialDaysLeft =
+            inTrial && trialEndMillis !== null
+                ? Math.max(1, Math.ceil((trialEndMillis - now) / DAY_MS))
+                : 0;
+        const hasAccess = active || inTrial;
+        const status = active
+            ? 'active'
+            : inTrial
+              ? 'trial'
+              : trialEndMillis !== null
+                ? 'expired'
+                : 'free';
 
         return json(
             {
-                isSubscribed: active,
-                status: active ? 'active' : 'free',
-                purchasedAt: data.purchasedAt || null
+                isPaid: active,
+                hasAccess,
+                status,
+                purchasedAt,
+                trialEndsAt: trialEndDate?.toISOString() ?? null,
+                trialDaysLeft
             },
             {
                 headers: {

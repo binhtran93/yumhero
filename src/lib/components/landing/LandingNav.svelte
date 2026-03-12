@@ -3,9 +3,9 @@
     import { slide } from "svelte/transition";
     import { user } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
 
     let isMenuOpen = $state(false);
     let isMobileFeaturesOpen = $state(true);
@@ -14,9 +14,9 @@
     const planLink = $derived(
         !$user
             ? "/login"
-            : $subscriptionLoading
+            : $accessLoading
               ? "/plan"
-              : !$isSubscribed
+              : !$hasAccess
                 ? "/pay"
                 : "/plan",
     );

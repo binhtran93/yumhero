@@ -1,9 +1,9 @@
 <script lang="ts">
     import { loading as authLoading, signOut, user } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
     import { goto } from "$app/navigation";
     import { LogOut } from "lucide-svelte";
     import { fly, fade } from "svelte/transition";
@@ -15,11 +15,11 @@
             goto("/login", { replaceState: true });
         } else if (
             !$authLoading &&
-            !$subscriptionLoading &&
+            !$accessLoading &&
             $user &&
-            $isSubscribed
+            $hasAccess
         ) {
-            goto("/plan", { replaceState: true }); // Already subscribed
+            goto("/plan", { replaceState: true });
         }
     });
 

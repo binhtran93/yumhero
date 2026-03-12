@@ -1,6 +1,6 @@
 <script lang="ts">
     import { user } from "$lib/stores/auth";
-    import { isSubscribed } from "$lib/stores/subscription";
+    import { hasAccess } from "$lib/stores/access";
     import { goto } from "$app/navigation";
     import { openCheckout } from "$lib/paddle";
 
@@ -27,7 +27,7 @@
             return;
         }
 
-        if ($isSubscribed) {
+        if ($hasAccess) {
             e.preventDefault();
             goto("/plan");
             return;
@@ -101,7 +101,7 @@
 
             <a
                 href={$user
-                    ? $isSubscribed
+                    ? $hasAccess
                         ? "/plan"
                         : "/pay"
                     : "/login"}
@@ -112,7 +112,7 @@
             >
                 {#if isLoading}
                     Processing...
-                {:else if $isSubscribed}
+                {:else if $hasAccess}
                     Open YumHero
                 {:else}
                     Buy Now for ${oneTimePrice}

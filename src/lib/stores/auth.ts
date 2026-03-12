@@ -14,12 +14,12 @@ import { auth } from '../firebase';
 export const user = writable<User | null>(null);
 export const loading = writable(true); // Initial loading state
 
-import { syncSubscription } from './subscription';
+import { syncAccess } from './access';
 import { seedDefaultRecipesIfNeeded } from './defaultRecipes';
 
 onAuthStateChanged(auth, (u) => {
     user.set(u);
-    syncSubscription(u);
+    syncAccess(u);
     if (u) {
         seedDefaultRecipesIfNeeded(u.uid).catch((error) => {
             console.error('Default recipe seeding failed:', error);

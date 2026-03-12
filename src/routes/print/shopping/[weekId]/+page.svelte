@@ -4,9 +4,9 @@
     import { goto } from "$app/navigation";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
     import { getWeekShoppingListStore } from "$lib/stores/shoppingList";
     import type { ShoppingListItem } from "$lib/types";
     import { Fraction } from "$lib/utils/fraction";
@@ -40,7 +40,7 @@
                 goto(`/login?redirect=/print/shopping/${weekId}`, {
                     replaceState: true,
                 });
-            } else if (!$subscriptionLoading && !$isSubscribed) {
+            } else if (!$accessLoading && !$hasAccess) {
                 goto("/pay", { replaceState: true });
             }
         }

@@ -2,9 +2,9 @@
     import { ArrowRight, ChevronDown } from "lucide-svelte";
     import { user } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
 
     interface Props {
         onSeeItInAction?: () => void;
@@ -15,9 +15,9 @@
     const planLink = $derived(
         !$user
             ? "/login"
-            : $subscriptionLoading
+            : $accessLoading
               ? "/plan"
-              : !$isSubscribed
+              : !$hasAccess
                 ? "/pay"
                 : "/plan",
     );

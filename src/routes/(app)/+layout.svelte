@@ -4,9 +4,9 @@
     import ToastContainer from "$lib/components/ToastContainer.svelte";
     import { user, loading as authLoading } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
     import { goto } from "$app/navigation";
 
     let { children } = $props();
@@ -15,7 +15,7 @@
         if (!$authLoading) {
             if (!$user) {
                 goto("/login", { replaceState: true });
-            } else if (!$subscriptionLoading && !$isSubscribed) {
+            } else if (!$accessLoading && !$hasAccess) {
                 goto("/pay", { replaceState: true });
             }
         }

@@ -20,8 +20,9 @@
     import {
         status,
         purchasedAt,
-        isSubscribed,
-    } from "$lib/stores/subscription";
+        isPaid,
+        trialDaysLeft,
+    } from "$lib/stores/access";
     import { openCheckout } from "$lib/paddle";
 
     const getStatusConfig = (s: string | null) => {
@@ -30,6 +31,16 @@
                 return {
                     label: "PURCHASED",
                     classes: "bg-green-100 text-green-700",
+                };
+            case "trial":
+                return {
+                    label: "TRIAL",
+                    classes: "bg-amber-100 text-amber-700",
+                };
+            case "expired":
+                return {
+                    label: "EXPIRED",
+                    classes: "bg-red-100 text-red-700",
                 };
             default:
                 return { label: "FREE", classes: "bg-gray-100 text-gray-700" };
@@ -49,7 +60,7 @@
     let isPurchasing = $state(false);
 
     const handlePurchase = async () => {
-        if (!$user || $isSubscribed || isPurchasing) return;
+        if (!$user || $isPaid || isPurchasing) return;
 
         isPurchasing = true;
         try {
@@ -170,7 +181,7 @@
                     <div class="flex flex-col gap-1">
                         <p class="font-black text-app-text">YumHero Pro</p>
                         <p class="text-xs text-app-text-muted font-bold">
-                            {#if $isSubscribed && $purchasedAt}
+                            {#if $isPaid && $purchasedAt}
                                 Purchased {new Date($purchasedAt).toLocaleDateString(
                                     "en-US",
                                     {
@@ -179,14 +190,21 @@
                                         year: "numeric",
                                     },
                                 )}
-                            {:else if $isSubscribed}
+                            {:else if $isPaid}
                                 Lifetime access unlocked
+                            {:else if $status === "trial"}
+                                Free trial active • {$trialDaysLeft} day{$trialDaysLeft ===
+                                1
+                                    ? ""
+                                    : "s"} left
+                            {:else if $status === "expired"}
+                                Trial ended. Unlock lifetime access
                             {:else}
                                 One-time purchase for lifetime access
                             {/if}
                         </p>
 
-                        {#if !$isSubscribed}
+                        {#if !$isPaid}
                             <button
                                 onclick={handlePurchase}
                                 disabled={isPurchasing}

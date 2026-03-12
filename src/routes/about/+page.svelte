@@ -5,17 +5,17 @@
     import { Heart, Sparkles, Coffee, ArrowRight } from "lucide-svelte";
     import { user } from "$lib/stores/auth";
     import {
-        isSubscribed,
-        subscriptionLoading,
-    } from "$lib/stores/subscription";
+        hasAccess,
+        accessLoading,
+    } from "$lib/stores/access";
     import { Mail, MessageSquare, Send, CheckCircle2 } from "lucide-svelte";
 
     const planLink = $derived(
         !$user
             ? "/login"
-            : $subscriptionLoading
+            : $accessLoading
               ? "/plan"
-              : !$isSubscribed
+              : !$hasAccess
                 ? "/pay"
                 : "/plan",
     );
