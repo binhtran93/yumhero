@@ -499,7 +499,7 @@
             >
               <span class="truncate">{recipe.title}</span>
               <div
-                class="shrink-0 p-0.5 bg-white/80 dark:bg-black/20 rounded-full border border-app-border group-hover:bg-white dark:group-hover:bg-black/40 transition-colors"
+                class="shrink-0 p-0.5 bg-white/80 rounded-full border border-app-border group-hover:bg-white transition-colors"
               >
                 <X size={12} class="text-app-text" strokeWidth={3} />
               </div>
@@ -523,7 +523,7 @@
                 >
               </span>
               <div
-                class="shrink-0 p-0.5 bg-white/80 dark:bg-black/20 rounded-full border border-app-border group-hover:bg-white dark:group-hover:bg-black/40 transition-colors"
+                class="shrink-0 p-0.5 bg-white/80 rounded-full border border-app-border group-hover:bg-white transition-colors"
               >
                 <X size={12} class="text-app-text" strokeWidth={3} />
               </div>

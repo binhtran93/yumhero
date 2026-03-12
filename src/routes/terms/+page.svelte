@@ -66,7 +66,7 @@
                     <h2 class="text-2xl font-bold">1. Agreement to Terms</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         These Terms of Service constitute a legally binding
@@ -95,7 +95,7 @@
                     <h2 class="text-2xl font-bold">2. User Accounts</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         When you create an account with us, you must provide
@@ -125,7 +125,7 @@
                     </h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         Some parts of the service are billed on a subscription
@@ -155,7 +155,7 @@
                     <h2 class="text-2xl font-bold">4. User Content</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         Our platform allows you to post recipes, schedules, and
@@ -182,7 +182,7 @@
                     <h2 class="text-2xl font-bold">5. Termination</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We may terminate or suspend your account immediately,
@@ -211,7 +211,7 @@
                     </h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4 font-medium italic"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4 font-medium italic"
                 >
                     <p>
                         In no event shall YumHero, nor its directors, employees,

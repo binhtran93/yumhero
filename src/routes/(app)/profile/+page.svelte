@@ -18,7 +18,6 @@
     } from "lucide-svelte";
     import { fly } from "svelte/transition";
     import Avatar from "$lib/components/Avatar.svelte";
-    import { theme } from "$lib/stores/theme";
     import SEO from "$lib/components/SEO.svelte";
     import { toasts } from "$lib/stores/toasts";
     import {
@@ -264,7 +263,7 @@
         <div class="relative pt-12 pb-8 px-4 text-center overflow-hidden">
             <!-- Background Gradient -->
             <div
-                class="absolute inset-0 bg-gradient-to-b from-orange-100/60 to-transparent dark:from-orange-950/20 -z-10"
+                class="absolute inset-0 bg-gradient-to-b from-orange-100/60 to-transparent -z-10"
             ></div>
 
             <div
@@ -279,7 +278,7 @@
                         src={$user.photoURL}
                         name={$user.displayName || $user.email}
                         size="xl"
-                        className="relative w-24 h-24 text-4xl border-4 border-white dark:border-app-surface shadow-2xl"
+                        className="relative w-24 h-24 text-4xl border-4 border-white shadow-2xl"
                     />
                 </div>
                 <div>
@@ -308,7 +307,7 @@
             >
                 <div class="flex gap-4">
                     <div
-                        class="w-12 h-12 flex items-center justify-center bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-2xl shrink-0"
+                        class="w-12 h-12 flex items-center justify-center bg-orange-50 text-orange-500 rounded-2xl shrink-0"
                     >
                         <Star size={24} fill="currentColor" />
                     </div>
@@ -380,7 +379,7 @@
                     >
                         <div class="flex items-center gap-4">
                             <div
-                                class="w-12 h-12 flex items-center justify-center {item.bgColor} dark:bg-opacity-10 {item.color} rounded-2xl transition-transform group-hover:scale-105"
+                                class="w-12 h-12 flex items-center justify-center {item.bgColor} {item.color} rounded-2xl transition-transform group-hover:scale-105"
                             >
                                 <item.icon size={24} />
                             </div>

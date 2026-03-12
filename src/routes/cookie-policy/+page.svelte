@@ -62,7 +62,7 @@
                     <h2 class="text-2xl font-bold">1. What are Cookies?</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         Cookies are small text files that are placed on your
@@ -84,7 +84,7 @@
                     <h2 class="text-2xl font-bold">2. Why We Use Cookies</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We use first-party and third-party cookies for several
@@ -188,7 +188,7 @@
                     </h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         You have the right to decide whether to accept or reject

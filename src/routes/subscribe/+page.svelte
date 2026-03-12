@@ -42,7 +42,7 @@
         <div class="relative">
             <button
                 onclick={() => (isUserMenuOpen = !isUserMenuOpen)}
-                class="flex items-center rounded-full border border-stone-200 dark:border-app-border bg-white/80 dark:bg-app-surface/80 backdrop-blur-md hover:bg-app-surface-hover shadow-sm transition-all p-1"
+                class="flex items-center rounded-full border border-stone-200 bg-white/80 backdrop-blur-md hover:bg-app-surface-hover shadow-sm transition-all p-1"
             >
                 {#if $user?.photoURL}
                     <img
@@ -52,7 +52,7 @@
                     />
                 {:else}
                     <div
-                        class="w-8 h-8 rounded-full bg-app-surface border border-stone-200 dark:border-app-border flex items-center justify-center"
+                        class="w-8 h-8 rounded-full bg-app-surface border border-stone-200 flex items-center justify-center"
                     >
                         <LogOut size={14} class="text-app-text-muted" />
                     </div>
@@ -62,10 +62,10 @@
             {#if isUserMenuOpen}
                 <div
                     transition:fade={{ duration: 100 }}
-                    class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-app-surface rounded-2xl border border-stone-200 dark:border-app-border shadow-xl overflow-hidden py-2 z-50"
+                    class="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden py-2 z-50"
                 >
                     <div
-                        class="px-4 py-3 border-b border-stone-100 dark:border-app-border mb-1"
+                        class="px-4 py-3 border-b border-stone-100 mb-1"
                     >
                         <p class="text-sm font-bold text-app-text line-clamp-1">
                             {$user?.displayName || "User"}
@@ -76,7 +76,7 @@
                     </div>
                     <button
                         onclick={handleSignOut}
-                        class="w-full text-left px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-3 transition-colors"
+                        class="w-full text-left px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors"
                     >
                         <LogOut size={18} />
                         <span>Log out</span>

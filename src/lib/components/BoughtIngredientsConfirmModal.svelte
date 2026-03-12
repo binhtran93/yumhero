@@ -107,7 +107,7 @@
 
                 <div class="flex items-start gap-4">
                     <div
-                        class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shrink-0"
+                        class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shrink-0"
                     >
                         <ShoppingCart size={24} />
                     </div>

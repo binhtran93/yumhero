@@ -133,7 +133,7 @@
     <div class="fixed inset-0 z-[9998] bg-transparent" onclick={onClose}></div>
 
     <div
-        class="w-72 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999]"
+        class="w-72 bg-white rounded-xl shadow-lg border border-app-border py-1 z-[9999]"
         transition:fade={{ duration: 100 }}
         {style}
         role="menu"
@@ -169,7 +169,7 @@
                     class="flex items-center bg-app-surface-deep rounded-md border border-app-border h-8"
                 >
                     <button
-                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 disabled:pointer-events-none transition-colors rounded-l-md"
+                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 disabled:opacity-30 disabled:pointer-events-none transition-colors rounded-l-md"
                         onclick={(e) => {
                             e.stopPropagation();
                             handleQuantityChange(-1);
@@ -187,7 +187,7 @@
                     </span>
 
                     <button
-                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors rounded-r-md"
+                        class="w-8 h-full flex items-center justify-center hover:bg-black/5 transition-colors rounded-r-md"
                         onclick={(e) => {
                             e.stopPropagation();
                             handleQuantityChange(1);
@@ -283,7 +283,7 @@
 
         {#if onRemove}
             <button
-                class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+                class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors"
                 onclick={(e) => {
                     e.stopPropagation();
                     onRemove();

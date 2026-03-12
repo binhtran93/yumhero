@@ -46,7 +46,7 @@
             animate:flip={{ duration: 300 }}
             in:fly={{ y: -20, duration: 400, opacity: 0 }}
             out:fade={{ duration: 200 }}
-            class="flex items-center gap-3 p-4 rounded-2xl border shadow-lg backdrop-blur-md pointer-events-auto bg-white dark:bg-stone-900 {getColorClass(
+            class="flex items-center gap-3 p-4 rounded-2xl border shadow-lg backdrop-blur-md pointer-events-auto bg-white {getColorClass(
                 toast.type,
             )}"
         >
@@ -60,7 +60,7 @@
 
             <button
                 onclick={() => toasts.remove(toast.id)}
-                class="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                class="p-1 rounded-full hover:bg-black/5 transition-colors"
             >
                 <X size={16} class="opacity-50" />
             </button>

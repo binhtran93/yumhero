@@ -1,7 +1,6 @@
 <script lang="ts">
 	import "../app.css";
 	import { afterNavigate } from "$app/navigation";
-	import { theme } from "$lib/stores/theme";
 	import { user } from "$lib/stores/auth";
 	import { setAnalyticsUid, trackPageView } from "$lib/analytics";
 	import SEO from "$lib/components/SEO.svelte";

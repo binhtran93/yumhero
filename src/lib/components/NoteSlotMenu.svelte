@@ -58,7 +58,7 @@
     <div class="fixed inset-0 z-[9998] bg-transparent" onclick={onClose}></div>
 
     <div
-        class="w-56 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
+        class="w-56 bg-white rounded-xl shadow-lg border border-app-border py-1 z-[9999] overflow-hidden"
         transition:fade={{ duration: 100 }}
         {style}
         role="menu"
@@ -81,7 +81,7 @@
         </div>
 
         <button
-            class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 transition-colors"
+            class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors"
             onclick={(e) => {
                 e.stopPropagation();
                 onRemove();

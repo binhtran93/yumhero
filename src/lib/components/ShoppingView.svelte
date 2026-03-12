@@ -65,7 +65,7 @@
     <div class="md:hidden">
         <Header title="Shopping List" showBack={true} {onBack}>
             <button
-                class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all active:scale-90 disabled:opacity-0"
+                class="p-2 -mr-2 text-app-text-muted hover:text-red-500 hover:bg-red-50 rounded-xl transition-all active:scale-90 disabled:opacity-0"
                 onclick={clearChecked}
                 disabled={completedCount === 0}
                 title="Clear all checked items"
@@ -115,19 +115,19 @@
             {#if completedCount === totalItems && totalItems > 0}
                 <div
                     in:slide
-                    class="mt-12 p-8 bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-500/20 rounded-3xl text-center"
+                    class="mt-12 p-8 bg-emerald-50 border-2 border-emerald-500/20 rounded-3xl text-center"
                 >
                     <div
-                        class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4"
+                        class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"
                     >
                         <CheckSquare size={32} strokeWidth={2.5} />
                     </div>
                     <h3
-                        class="text-xl font-display font-black text-emerald-900 dark:text-emerald-100"
+                        class="text-xl font-display font-black text-emerald-900"
                     >
                         All Items Collected!
                     </h3>
-                    <p class="text-emerald-700 dark:text-emerald-300 font-bold">
+                    <p class="text-emerald-700 font-bold">
                         You're ready to start cooking.
                     </p>
                 </div>

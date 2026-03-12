@@ -72,7 +72,7 @@
                     <h2 class="text-2xl font-bold">1. Introduction</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         YumHero ("we," "us," or "our") respects your privacy and
@@ -100,7 +100,7 @@
                     <h2 class="text-2xl font-bold">2. Data We Collect</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         Personal data, or personal information, means any
@@ -141,7 +141,7 @@
                     <h2 class="text-2xl font-bold">3. How We Use Your Data</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We will only use your personal data when the law allows
@@ -171,7 +171,7 @@
                     <h2 class="text-2xl font-bold">4. Data Security</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We have put in place appropriate security measures to
@@ -199,7 +199,7 @@
                     <h2 class="text-2xl font-bold">5. Your Legal Rights</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         Under certain circumstances, you have rights under data

@@ -165,7 +165,7 @@
     <!-- Mobile Menu Overlay -->
     {#if isMenuOpen}
         <div
-            class="fixed top-0 left-0 w-full h-screen bg-white dark:bg-[#161412] z-40 flex flex-col pt-24 px-6 md:hidden overflow-y-auto"
+            class="fixed top-0 left-0 w-full h-screen bg-white z-40 flex flex-col pt-24 px-6 md:hidden overflow-y-auto"
             transition:slide={{ duration: 300, axis: "y" }}
         >
             <div class="flex flex-col gap-6 text-lg font-medium">

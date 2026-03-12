@@ -59,7 +59,7 @@
     {#if isMenuOpen}
         <div
             transition:fade={{ duration: 100 }}
-            class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-app-surface rounded-xl shadow-lg border border-app-border py-1 z-50 overflow-hidden"
+            class="absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-app-border py-1 z-50 overflow-hidden"
         >
             <button
                 class="w-full text-left px-3 py-2.5 text-sm font-medium text-app-text hover:bg-app-surface-hover flex items-center gap-2.5 transition-colors"
@@ -69,7 +69,7 @@
                 Edit
             </button>
             <button
-                class="w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2.5 transition-colors"
+                class="w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors"
                 onclick={handleAction(onDelete)}
             >
                 <Trash2 size={15} />

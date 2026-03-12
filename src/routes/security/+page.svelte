@@ -83,7 +83,7 @@
                     <h2 class="text-2xl font-bold">Data Protection</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We follow the principle of least privilege. Access to
@@ -109,7 +109,7 @@
                     <h2 class="text-2xl font-bold">Payment Security</h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         YumHero is PCI-DSS compliant by proxy. We never see or
@@ -133,7 +133,7 @@
                     </h2>
                 </div>
                 <div
-                    class="prose prose-lg dark:prose-invert max-w-none text-app-text-muted leading-relaxed space-y-4"
+                    class="prose prose-lg max-w-none text-app-text-muted leading-relaxed space-y-4"
                 >
                     <p>
                         We utilize continuous monitoring and alerting systems to
