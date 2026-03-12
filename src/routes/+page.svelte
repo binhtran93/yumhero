@@ -2,7 +2,6 @@
     import LandingNav from "$lib/components/landing/LandingNav.svelte";
     import HeroSection from "$lib/components/landing/HeroSection.svelte";
     import DesktopMockup from "$lib/components/landing/DesktopMockup.svelte";
-    import MobileMockup from "$lib/components/landing/MobileMockup.svelte";
     import ShoppingListMockup from "$lib/components/landing/ShoppingListMockup.svelte";
     import FeatureFridge from "$lib/components/landing/FeatureFridge.svelte";
     import FeatureRecipeImport from "$lib/components/landing/FeatureRecipeImport.svelte";
@@ -11,19 +10,10 @@
     import FAQSection from "$lib/components/landing/FAQSection.svelte";
     import LandingFooter from "$lib/components/landing/LandingFooter.svelte";
 
-    import {
-        Monitor,
-        Smartphone,
-        Maximize2,
-        X,
-        ShoppingBag,
-    } from "lucide-svelte";
-    import { fade, scale as svelteScale } from "svelte/transition";
-    import { tick } from "svelte";
+    import { X } from "lucide-svelte";
+    import { fade } from "svelte/transition";
     import { afterNavigate } from "$app/navigation";
 
-    let restartKey = $state(0);
-    let activeMockup = $state("desktop");
     let isFullscreen = $state(false);
 
     let containerWidth = $state(0);
@@ -39,8 +29,7 @@
             : `${DESKTOP_BASE_WIDTH}px`,
     );
 
-    const switchMockup = (view: string) => {
-        activeMockup = view;
+    const scrollToPlanning = () => {
         setTimeout(() => {
             document.getElementById("planning")?.scrollIntoView({
                 behavior: "smooth",
@@ -50,8 +39,7 @@
     };
 
     const handleSeeItInAction = () => {
-        restartKey += 1;
-        switchMockup("desktop");
+        scrollToPlanning();
     };
 
     afterNavigate(() => {
@@ -92,75 +80,28 @@
                     >
                         <div
                             class="relative w-full flex items-start justify-center overflow-hidden"
-                            style="height: {activeMockup === 'desktop'
-                                ? 740 * scale
-                                : 740}px; min-height: {activeMockup ===
-                            'desktop'
-                                ? 0
-                                : '700px'}; transition: height 0.4s ease-out;"
+                            style="height: {740 * scale}px; min-height: 0; transition: height 0.4s ease-out;"
                         >
-                            {#if activeMockup === "desktop"}
-                                <button
-                                    class="absolute top-0 left-1/2 -translate-x-1/2 origin-top text-left {scale <
-                                    0.9
-                                        ? 'cursor-zoom-in hover:opacity-95'
-                                        : ''}"
-                                    style="width: {mockupWidth}; transform: scale({scale});"
-                                    in:fade={{ duration: 400 }}
-                                    onclick={() => {
-                                        if (scale < 0.9) isFullscreen = true;
-                                    }}
-                                >
-                                    <DesktopMockup
-                                        {restartKey}
-                                        forceShow={true}
-                                        {scale}
-                                    />
-                                </button>
-                            {:else}
-                                <div
-                                    class="absolute top-0 left-1/2 -translate-x-1/2"
-                                    in:fade={{ duration: 400 }}
-                                >
-                                    <MobileMockup forceShow={true} />
-                                </div>
-                            {/if}
+                            <button
+                                class="absolute top-0 left-1/2 -translate-x-1/2 origin-top text-left transform-gpu will-change-transform {scale <
+                                0.9
+                                    ? 'cursor-zoom-in hover:opacity-95'
+                                    : ''}"
+                                style="width: {mockupWidth}; transform: scale({scale});"
+                                in:fade={{ duration: 400 }}
+                                onclick={() => {
+                                    if (scale < 0.9) isFullscreen = true;
+                                }}
+                            >
+                                <DesktopMockup
+                                    forceShow={true}
+                                />
+                            </button>
 
                             <!-- Shadow/Glow Effect -->
                             <div
-                                class="absolute {activeMockup === 'desktop'
-                                    ? '-inset-4'
-                                    : 'inset-x-[20%] -inset-y-4'} bg-gradient-to-r from-app-primary/5 via-transparent to-app-primary/5 rounded-2xl -z-10 blur-xl opacity-50 transition-all duration-500"
+                                class="absolute -inset-4 bg-gradient-to-r from-app-primary/5 via-transparent to-app-primary/5 rounded-2xl -z-10 blur-xl opacity-50 transition-all duration-500"
                             ></div>
-                        </div>
-
-                        <div
-                            class="mt-6 md:mt-0 inline-flex p-1 bg-app-surface border border-app-border rounded-full shadow-lg relative z-20"
-                        >
-                            <button
-                                onclick={() => switchMockup("desktop")}
-                                class="flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 {activeMockup ===
-                                'desktop'
-                                    ? 'bg-app-primary text-white shadow-md'
-                                    : 'text-app-text-muted hover:bg-app-primary/10 hover:text-app-primary'}"
-                            >
-                                <Monitor size={18} />
-                                <span class="text-sm font-bold"
-                                    >Desktop View</span
-                                >
-                            </button>
-                            <button
-                                onclick={() => switchMockup("mobile")}
-                                class="flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 {activeMockup ===
-                                'mobile'
-                                    ? 'bg-app-primary text-white shadow-md'
-                                    : 'text-app-text-muted hover:bg-app-primary/10 hover:text-app-primary'}"
-                            >
-                                <Smartphone size={18} />
-                                <span class="text-sm font-bold"
-                                    >Mobile View</span
-                                >
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -247,9 +188,7 @@
                         style="width: {DESKTOP_BASE_WIDTH}px; transform: scale({landscapeScale});"
                     >
                         <DesktopMockup
-                            {restartKey}
                             forceShow={true}
-                            scale={landscapeScale}
                         />
                     </div>
                 </div>
