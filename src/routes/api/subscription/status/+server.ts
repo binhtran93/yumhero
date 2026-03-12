@@ -9,21 +9,35 @@ export const GET = async ({ request }) => {
         const snapshot = await adminDb.doc(`users/${user.uid}`).get();
 
         if (!snapshot.exists) {
-            return json({
-                isSubscribed: false,
-                status: 'free',
-                purchasedAt: null
-            });
+            return json(
+                {
+                    isSubscribed: false,
+                    status: 'free',
+                    purchasedAt: null
+                },
+                {
+                    headers: {
+                        'Cache-Control': 'no-store'
+                    }
+                }
+            );
         }
 
         const data = snapshot.data() || {};
         const active = data.status === 'active';
 
-        return json({
-            isSubscribed: active,
-            status: active ? 'active' : 'free',
-            purchasedAt: data.purchasedAt || null
-        });
+        return json(
+            {
+                isSubscribed: active,
+                status: active ? 'active' : 'free',
+                purchasedAt: data.purchasedAt || null
+            },
+            {
+                headers: {
+                    'Cache-Control': 'no-store'
+                }
+            }
+        );
     } catch (error: any) {
         console.error('Error fetching purchase status:', error);
         return errorResponse(error, 'Failed to fetch purchase status');
